@@ -4,7 +4,7 @@
 % =============================================================================
 
 
-\newcommand{\thesistitle}{Towards Self-aware Virtual Machines}
+\newcommand{\thesistitle}{Meta-Programming Support\\for\\Reflective Software Specialization\\and\\Language Evolution}
 \newcommand{\thesisauthor}{Camillo Bruni}
 \newcommand{\thesisurl}{http://rmod.inria.fr/}
 \newcommand{\thesissubtitle}{}
@@ -46,47 +46,11 @@ I would like to thank my thesis supervisors Stéphane Ducasse and Marcus Denker 
 
 % =============================================================================
 \chapter*{Abstract}
-High-level languages implement reflection which allows a language runtime to inspect and alter its own execution and state.
-These high-level languages typically run on top of virtual machines (\VMs) which have been built to create an abstraction layer over hardware.
-Due to the isolating nature of the \VM, reflection is generally limited to the language-side.
-Several research \VMs overcome this separation and provide a unified model where there is no more a clear distinction between language-side and \VM-side.
-In such a language runtime it is possible to reflectively modify \VM components from language-side as they reside on the same abstraction layer.
-
-In this dissertation we follow the same global direction towards a unified language-runtime or self-aware \VM.
-However, instead of looking for a holistic solution we focus on a minimal approach.
-Instead of using a custom tailored language runtime we use dynamic native code activation from language-side on top of an existing \VM.
-
-We first present \B our framework for dynamic native code activation.
-\B provides a generic but low-level interface to the \VM internals.
-
-Based on this framework we then evaluate several applications that typically require direct \VM support.
-We show first how \B is used to build an efficient \FFI interface, allowing for a more structured access to \VM internal functions.
-To evaluate the limitations of \B we target two more applications: dynamic primitives and a language-side \JIT compiler.
-Both of them require a tight interaction with the underlying \VM
 
 \paragraph{Keywords:} Virtual machine, high-level low-level programming, high-level language, dynamic native code generation.
 
 % =============================================================================
 \chapter*{Résumé}
-Les langages de haut-niveau supportent des operations réflectives qui permettent à l’ environenment d’exécution d’un langage d’inspecter et de changer son propre état et sa propre exécution.
-Ces langages de haut-niveau s’exécutent normalement sur une machine virtuelle (\VM) qui ajoute une couche d’abstraction au-dessus du matériel.
-À cause de cette séparation, peu d’opération réflectives sont disponibles pour inspecter et modifier la \VM.
-Plusieurs \VMs expérimentales offrent de telles opérations réflectives en proposant un modèle unifié qui ne distingue pas la couche \VM de la couche langage. 
-
-Dans cette thèse, nous suivons une approche similaire qui propose un environnement d’exécution unifié et auto-décrit.
-Nous nous intéressons à une solution minimale.
-Au lieu de dépendre de modifications d’une \VM, nous générons dynamiquement du code natif depuis la couche langage. 
-
-Nous présentons \B, un framework pour la génération dynamique de code natif.
-\B fournit une interface générique et de bas-niveau pour accéder aux fonctionnalités fondamentales de la \VM.
-
-Grâce à \B, nous analysons plusieurs applications qui nécessitent un accès direct à la \VM.
-Nous montrons comment \B peut être utilisé pour implémenter une librairie de Foreign Function Interfaces, permettant de faciliter l’accès aux fonctionnalités bas-niveau de la \VM.
-Pour évaluer les limitations de \B, nous visons deux autres applications: la génération dynamique de primitive et un compilateur \JIT (Just-In-Time).
-Ces deux applications doivent changer le comportement de la \VM.
-Pour cela, elles ont besoin d’une interaction poussée avec la \VM.
-
-\paragraph{Mot clés:} Machine virtuelle, langage de haut-niveau, génération dynamique de code natif
  
 % =============================================================================
 \renewcommand{\baselinestretch}{1}\normalsize
@@ -102,10 +66,10 @@ Pour cela, elles ont besoin d’une interaction poussée avec la \VM.
 
 \include{chapter/introduction}
 \include{chapter/background}
-%\include{chapter/reification}
-\include{chapter/benzo}
-\include{chapter/ffi}
-\include{chapter/validation}
+\include{chapter/bootstrapping}
+\include{chapter/tailoring}
+\include{chapter/surgery}
+\include{chapter/objectspaces}
 \include{chapter/future}
 \include{chapter/conclusion}
 

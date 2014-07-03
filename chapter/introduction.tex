@@ -5,48 +5,7 @@
 \minitoc
 % =============================================================================
 
-\noindent Several high-level languages support dynamic reflection, the capability of a language to reason about itself.
-In an extended form, reflection allows a program to alter its own structures and execution at runtime.
-Many high-level programming languages run on top of a virtual machine (\VM) which provides certain advantages from running directly on the underlying hardware.
-Many high-level language \VMs pursue a strict separation between language-side and \VM-side.
-\VMs for instance provide automatic memory management or use platform agnostic instructions such as bytecodes.
-These properties allow a programming language to develop independently from the underlying hardware.
-Originally \VMs are built in performance oriented low-level programming languages such as C which on their own support little or no reflection at runtime.
-Hence, rather incidentally, reflection is limited to the language-side.
-
-However, there are other \VMs that are implemented using high-level languages which support reflection themselves.
-More specifically we see that metacircular \VMs encourage advanced reflective features and new ways of interacting with the low-level \VM world.
-Metacircular \VMs are implemented in the same language they support.
-Typically this enables a more flexible building process where more high-level structures survive the compilation process.
-The final language-runtime can profit from this and support \emph{high-level low-level programming} \cite{Fram09a}.
-This term was coined by the use of \Java to describe low-level components in the memory management toolkit of the \Jikes \VM.
-In several research \VMs this concept is used to implement typically isolated \VM components at language-side.
-But instead of generating a native version at \VM generation time, these components are evaluated at language-side, with the only difference that they have the capability to directly interact with low-level code.
-This means that the original separation of language-side and \VM is no longer evident.
-
-A language-runtime where \VM components are implemented at language-side also enables extended forms of reflection.
-With the same reflective tools it is now possible to inspect and alter \VM-level objects.
-However, this approach requires substantial effort as the \VM has to be designed from ground up in a new way.
-In this thesis we would like to follow a different approach with the same goals in mind.
-Instead of a holistic approach, we want to identify a minimal interface for performing high-level low-level programming or even extend reflection down to the \VM.
-We look for an approach which works on top of an existing high-level language \VM.
-
-To answer these questions we propose the high-level low-level programming framework \B written for \PH.
-In the core \B allows us to dynamically activate native code from language-side.
-This adds a primitive yet generic interface to the low-level \VM world.
-To validate \B we describe three distinct applications built on top of it.
-%
-\begin{description}
-	\item[\FFI:] The first one is an efficient foreign function interface (\FFI) library that is built at language-side without additional \VM support.
-	Our \FFI library outperforms existing solutions on \PH.
-	
-	\item[Dynamic Primitives:] The second applications uses \B to dynamically generate and modify \PH primitives by reusing the metacircular \VM sources.
-	By combining high-level reflection and \B's low-level performance we outperform pure \PH-based primitive instrumentation.
-	
-	\item[Language-side \JIT:] As a third, prototype application we show how \B is used to build a language-side \JIT.
-	Our prototype shows the limits of possible \VM interactions using the \B framework. 
-\end{description}
-
+lala
 
 % =============================================================================
 \section{Problem Statement}
