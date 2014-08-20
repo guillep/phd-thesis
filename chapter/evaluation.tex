@@ -1,0 +1,40 @@
+\input{chapter-header.tex}
+% ===========================================================================
+\chapter{Evolution with Object Spaces}
+\minitoc
+% ===========================================================================
+\introduction
+% ===========================================================================
+
+
+\section{Runtime Surgery}
+
+\subsection{Image Surgery and Emergency Kernel Layer}
+ %--------------------------------------
+ 
+Oz solves typical image surgery scenarios~\cite{Casa09a} such as the self-modification of the kernel and the recovery of broken images, described in sections \ref{sec:problem_surgery} and \ref{sec:problem_recovery}. Using \objectspaces turn self-brain surgery into simple brain surgery, by introducing the role of the surgeon with a host image. Broken images can be loaded inside an \objectspace to be subject of surgery in an \textbf{atomic} way. The host contains \textbf{high-level} tools such as a browser, an object inspector and a debugger to manipulate the \objectspace and ease the surgery.
+ 
+By using virtual images we can also provide a rich and \textbf{interactive} \emph{Emergency Kernel}: whenever an error occurs in the running Pharo system because of self-brain surgery, the system can give the control to a fallback image. This fallback image is a full image containing the failing image inside an \objectspace, and tools to act upon it, so it can perform surgery to solve the problem. The fallback image is to the system an \emph{Emergency Kernel} which compared to the original emergency evaluator solution, has no dependencies on the failing image and therefore avoids its self-brain surgery problems. After the surgery, the main system can get back the control and continue running.
+
+ %--------------------------------------
+\subsection{Controlled Interruption}
+ %--------------------------------------
+ 
+Image virtualization can provide a solution for process interruption~(cf. Section \ref{sec:problem_execution}). When an \objectspace is interrupted, its host obtains the control letting the interrupted \objectspace untouched. This way, the interruption process has its two problems solved:
+\begin{description}
+	\item \textbf{Non intrusive interruption.} The state of the \objectspace when the interruption took place remains unchanged. The problematic process can be found easily since is not moved to a suspended list, but remain as active process in the asleep \objectspace.
+	\item \textbf{Non restricted interruption.} Since interruption is handled by the host image, there are no restrictions on which processes can be interrupted by the interrupt key combination.
+\end{description}
+ 
+%--------------------------------------
+\subsection{Sandboxing}
+%--------------------------------------
+ 
+Oz can be used to sandbox applications by \textbf{limiting the scope of side effects} and the CPU consumption. 
+
+For example, running the some test suites of Pharo lets the system in a dirty state because of side effects. For example, the test case \ct{MCWorkingCopyTest} unloads the \ct{MonticelloMocks} package and reloads it again as \ct{Monticellomocks}, without respecting the original casing. Oz leverages this problem by isolating the side effects inside the \objectspace. The host stays unaffected and can analyze the test results when they finish to run. Finally, the \objectspace under testing can be discarded while the user can continue working with the host.
+
+
+
+% =============================================================================
+\input{chapter-footer.tex}
