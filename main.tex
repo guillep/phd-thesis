@@ -5,7 +5,7 @@
 
 
 \newcommand{\thesistitle}{Meta-Programming Support\\for\\Reflective Software Specialization\\and\\Language Evolution}
-\newcommand{\thesisauthor}{Camillo Bruni}
+\newcommand{\thesisauthor}{Guillermo Polito}
 \newcommand{\thesisurl}{http://rmod.inria.fr/}
 \newcommand{\thesissubtitle}{}
 \newcommand{\thesisdate}{16. May 2014}
@@ -16,7 +16,7 @@
 \graphicspath{{.}{figure/}}
 
 % Uncomment to disable the comments
-\setboolean{showcomments}{false}
+\setboolean{showcomments}{true}
 
 \begin{document}
 
@@ -66,17 +66,18 @@ I would like to thank my thesis supervisors Stéphane Ducasse and Marcus Denker 
 
 \include{chapter/introduction}
 \include{chapter/background}
-\include{chapter/bootstrapping}
-\include{chapter/tailoring}
-\include{chapter/surgery}
 \include{chapter/objectspaces}
+\include{chapter/evolution_with_object_spaces}
+%\include{chapter/tailoring}
+%\include{chapter/surgery}
+\include{chapter/implementation}
 \include{chapter/future}
 \include{chapter/conclusion}
 
 % =============================================================================
 
 \bibliographystyle{include/cami}
-\bibliography{local}
+\bibliography{others,rmod,scg}
 
 % =============================================================================
 

@@ -179,6 +179,61 @@ Initializations of this step are performed by the collaboration of the source an
 \subsection{Challenges of Bootstrapping a Reflective Object-Oriented System}
 % ===========================================================================
 
+\gp{new challenges}
+
+\subsubsection{Isolation of the new language kernel} Bootstrapping a reflective language implies that both host and guest language kernels coexist in the same environment while the bootstrap process takes place. The \emph{guest} kernel has to be isolated from the host language kernel \ie it must have no references to objects from the host language kernel. There are two main reasons for this requirement:
+
+\begin{description}
+\item[Leaked references imply a dependency.] In the presence of leaked references, the host language cannot be discarded and thus, the guest language kernel cannot be used without the host.
+\item[Cross-kernel interaction cause unexpected failures.] Leaked references may be used to perform unmediated method invocations from a language kernel to another. These \emph{cross language-kernel method invocations} without mediation provoke a failure in the method lookup mechanism. On method invocation, the VM looks up in the class hierarchy of the receiver a method with the same signature as the invocation~(\ie they have same \emph{identical} symbol as signature). Indeed, since each language kernel contains its own \ct{Symbol} class and symbol table, the method lookup mechanism fails.
+
+%, since the language kernels are indeed different and the symbols to lookup in method dictionaries are not identical. Also, VM primitives do fail if they receive as argument an instance of a class from a different kernel, since they expect instances from the same language kernel.
+
+\end{description}
+
+\subsubsection{Tackle unicity hypothesis}
+The infrastructural elements such as the VM or the compiler are built under the assumption that only one language kernel exists at runtime.
+In the Pharo language the bytecodes and primitive invocations rely on the existence of only one copy of some special objects~(\eg \ct{nil}, \ct{true} or \ct{false}, and also objects with special formats such as strings, arrays, or methods). The virtual machine recognizes the special objects from the host language, and misbehaves with the ones from the guest language \eg sending the \ct{isNil} message to the \ct{nil} object from the host may result into \ct{true}, while sending the same message to the \ct{nil} instance from the guest may result into \ct{false}. This happens because the virtual machine assumes the existence of a single \ct{nil} object, the one from the host language~(cf. Figure \ref{fig:unicity_hipothesis}).
+
+\begin{figure}[ht]
+\center
+\includegraphics[width=.8\linewidth]{unicity_hipothesis}
+\caption{\textbf{Example of the unicity hipothesis problem.} The Virtual Machine recognizes only the \ct{nil} object from the host language kernel as such. \label{fig:unicity_hipothesis}}
+\end{figure}
+
+
+\subsubsection{Avoid Logic duplications} During the bootstrap, the builder contains code to honor the invariants of those objects it creates inside the guest language kernel. These invariants are also present in the guest language specification. However, since the guest language kernel cannot execute its own code during the bootstrap process~(and thus, it cannot enforce its own invariants), this poses a logic duplication between the builder and the specification. To illustrate this problem with an example, consider the method \ct{Dictionary>>initialize:} used to initialize a \ct{Dictionary} instance, in Figure~\ref{code:logic_dup}:
+
+\begin{figure}[ht]
+\begin{code}
+Dictionary>>initialize: n
+    "Initialize array to an array size of n"
+    array := Array new: n.
+    tally := 0
+\end{code}
+\caption{\textbf{Code of the method \ct{Dictionary>>initialize}.}\label{code:logic_dup}}
+\end{figure}
+
+In order to respect the invariants of Dictionary initialization, the builder should execute some code as the one in Figure~\ref{code:logic_dup2}. This piece of code presents a logic duplication that cannot be easily eliminated. Note that this code, while written in Smalltalk syntax, would have the same form and problems if written in another language such as C.
+
+\begin{figure}[ht]
+\begin{code}
+Builder>>createDictionaryWith: n
+    "Initialize a dictionary in the language kernel"
+    | dictionary internalArray |
+    dictionary := self instantiate: 'Dictionary'.
+    internalArray := self instantiate: 'Array' withSize: n.
+    dictionary setInstanceVariable: 'array' with: internalArray.
+    dictionary setInstanceVariable: 'tally' with: 0.
+    ^ dictionary
+\end{code}
+\caption{\textbf{Code of the Builder implementing the same logic as in \ct{Dictionary>>initialize}.}\label{code:logic_dup2}}
+\end{figure}
+
+Additionally, the methods installed in the guest kernel must also honor the same invariants. This introduces a redundancy in the system: the code to manipulate the guest language in its early stages is duplicated with the code that will be installed in the final bootstrapped language, so the invariants of the guest language are always honored.
+
+\gp{old challenges}
+
 Meta-circularities make the process of building a new reflective system more complex than building a system without them. 
 The building process should solve these meta-circularities and provide a working system.
 Once solved, we say the meta-circularities are \emph{closed}.
@@ -206,11 +261,136 @@ Ruby presents an object-model very similar to Smalltalk extended with mixins.
 \end{center}
 \end{figure}
 
+To solve these issues we proposed in a previous article the \emph{bootstrap of object-oriented reflective language kernels}~\cite{Poli13b}. By bootstrapping, the initialization of the language kernel is extracted from the VM and written in the same language it defines~(cf. Section \ref{sec:background}). Thus, the low level code is transformed in high level code, the language definition is decoupled from the VM initialization, and all its code is put together in one place. This solution has been shown to be effective but exposed some new challenges~(cf. Section \ref{sec:challenges}):
+\begin{description}
+
+\item[Isolation of the new language kernel.] The bootstrapped language kernel~(the \emph{guest} kernel) should be isolated from the language kernel executing the bootstrap process~(the \emph{host} kernel). The object graph of the guest kernel must fulfill the transitive closure property \ie have no references to objects of the host language. %Additionally, the tools residing in the bootstrapping language are not aware of the language that is being bootstrapped. Thus, they are not prepared to handle both languages at the same time and isolate each from the other.
+
+\item[Tackle unicity hypothesis.] The infrastructural elements such as the VM or the compiler are built under the assumption that only one language kernel exists at runtime. Bootstrapping introduces a new language kernel on this infrastructure and breaks this assumption.
+
+\item[Avoid Logic duplications.] Still some logic used to manipulate the object graph of the guest kernel during construction is duplicated with the code that will be installed inside the bootstrapped language kernel.
+
+\end{description}
+
 % ===========================================================================
 \subsection{Object Spaces for Bootstrapping}
 % ===========================================================================
 
-lalala
+
+We sketched the concept of object spaces in previous work~\cite{Poli13a}. We implemented with this purpose Oz\footnote{Not related to the Oz programming language. The name Oz for Pharo is inspired on the metaphor of multiple world manipulation.}, an extension of the Pharo programming implementing object spaces. An object space in Oz is composed by two main elements: the object runtime system it encapsulates and a \emph{membrane} of proxy objects controlling the interaction between the inner and outer runtime systems. The main purpose of these proxy objects is to hide the internal representation of the objects inside the object space. We consider these proxy objects mainly as mirrors~\cite{Brac04b}, as they expose only reflective behavior on the objects they represent \eg a mirror on a \ct{User} object cannot be manipulated in terms of its name or password, but only in terms of its instance variables and class.
+
+When bootstrapping, the guest language kernel is hosted inside an object space. The builder manipulates and introspects the guest language kernel through this object space. The bootstrap process uses Oz through the following API to interact with its guest language kernel. Note that all operations will return a mirror instead of a reference to the corresponding object. The object space and its mirrors mediate all interaction with the objects inside the guest runtime system to ensure isolation~(Section \ref{sec:mirrors}):
+
+\begin{description}
+\item[Accessing well known objects.] Well known objects such as \ct{nil}, \ct{true} and \ct{false} can be get and set from an object space. The bootstrap process uses it during the well known instances initialization step. Once an object space is configured with such objects, it can execute code using them and overcome the \textbf{unicity hypothesis}.
+\begin{code}
+mirror getNil();
+mirror getTrue();
+mirror getFalse();
+
+void setNil(mirror aNilObject);
+void setTrue(mirror aTrueObject);
+void setFalse(mirror aFalseObject);
+\end{code}
+
+\item[Object allocation.] Object allocation operations provide support for the initialization of the guest language kernel. In particular, \ct{allocateObjectOfSize()} is the unsafe operation used to instantiate the first objects when there are no classes available.
+\begin{code}
+mirror allocateObjectOfSize(int size);
+mirror allocateObjectOfClass(mirror aClass);
+mirror compile(String sourceCode, mirror aClass);
+\end{code}
+
+\item[Runtime system manipulation.] To initialize the classes in the guest language kernel, Oz provides with operations to install classes and obtain the list of classes installed.
+\begin{code}
+void installClass(mirror aClass);
+List<mirror> getClasses();
+\end{code}
+
+\item[Code execution.] Oz provides with operations to manipulate the processes/threads of the guest language kernel. In particular, the \ct{runForTime()} operation will execute the guest language kernel with whichever processes it has installed, directly on the VM.
+\begin{code}
+List<mirror> getProcesses();
+mirror createProcessDoing(String expression);
+void runForTime(int milliseconds);
+\end{code}
+%\caption{\textbf{Code of the Builder implementing the same logic as in \ct{Dictionary>>initialize}.}\label{code:logic_dup2}}
+%\end{figure}
+\end{description}
+
+\subsubsection{Ensuring Isolation through Mirrors}\label{sec:mirrors}
+
+Oz provides access to the objects inside its inner runtime system through proxy objects. We consider these proxy objects as mirrors~\cite{Brac04b} as they provide only reflective operations on the objects they represent. These mirrors conform a \emph{membrane} that mediates the interaction between guest and host language kernels to keep them \textbf{isolated} from each other \ie object references from the guest language kernel do not leak into the host language kernel and vice-versa. To ensure isolation, mirrors provide the following API to interact with the objects they wrap:
+
+\begin{description}
+\item[Class access.] Method installation and object manipulation is achieved by class access operations. In particular, the \ct{setClass()} operation is used in the first steps of the bootstrap process to close the main circularities and set the class of the \ct{nil} object.
+\begin{code}
+mirror getClass().
+void setClass(mirror aClass).
+\end{code}
+
+\item[Internal state access.] Every object initialization of the bootstrap process is achieved by altering their internal state. Mirrors provide a low level API to get and set the fields of an object.
+\begin{code}
+mirror getInstanceVariable(String variableName).
+void setInstanceVariable(String variableName, mirror anObject).
+\end{code}
+\end{description}
+
+Note from the signatures presented that all mirror operations will return a mirror in exchange, and so, interaction with other objects inside the object space is mediated by Oz. Mirrors could give and revoke permissions on the wrapped object and enforce invariants to keep the model consistent~\cite{Teru13a}.
+Oz provides also specific kinds of mirrors with high level APIs to manipulate objects with a specific format and/or behavior such as classes, methods, activation records or processes. We do not cover high level mirrors in this paper because they are not relevant to the bootstrap process.
+
+%An object space uses a cross compiler to generate methods for the guest language. %We based our cross compiler in the Opal compiler toolchain\cite{Bera13a}. 
+%The cross compiler receives as input the source code to compile and a \ct{binding-resolver} object that defines how names will be resolved during compilation. The output of the cross compiler is both the bytecode for the guest object space and a list of literals that belong to the method and will be afterwards translated into their guest representation. The literal objects resolved during compilation are classified in two different categories:
+%
+%\begin{description}
+%\item[Immediate Literal objects.]  These literal objects are translated from the host language to the guest language using the literal translation mechanism showed in Figure \ref{fig:cross_compiling}.
+%\item[Name bindings.] Those objects that are accessed though a name, such as classes or class variables. These literals are resolved during compilation as symbolic references \eg if a method contains a reference to the class \ct{String}, after compilation, the list of literals will contain a \ct{GlobalBinding} object with the name of the referenced class~(\ct{'String'} in this case). In our implementation, we consider three main binding objects: \ct{GlobalBinding}, \ct{ClassVariableBinding} and \ct{UndefinedBinding}, which is used when the name could not be resolved.
+%\end{description} 
+%
+%After compilation, the creation of a method takes place inside the guest language. The bytecodes are installed in this new method, and the literals are resolved inside the guest language. Figure \ref{fig:cross_compiling} shows the relationship between the source code, the binding objects and the final translated method.
+
+%\begin{figure*}[ht]
+%\begin{center}
+%\includegraphics[width=.70\linewidth]{cross-compiling}
+%\caption{\textbf{Mapping of literals from source code to their representation inside the guest language.} The cross compiler takes the original source code and outputs a list of bytecode and literals objects from the host language. Literal objects such as strings are resolved as normal string objects while class references are resolved as \ct{GlobalBinding} objects. Afterwards, the translation step transforms the host literal string to a guest literal string and the global binding is resolved into a reference to the class inside the guest language. \label{fig:cross_compiling}}
+%\end{center}
+%\end{figure*}
+
+
+\subsubsection{Tackling Duplications with AST Interpretation}\label{sec:ast_interpreter}
+
+To avoid logic and code duplications between the builder and the language kernel specification, we decided to use the kernel specification for both an input to compile the methods in the guest language kernel and to manipulate it. We use an AST interpreter to execute the code from the kernel specification inside the guest object space. Figure~\ref{code:logic_dup3} illustrates how the method in Figure~\ref{code:logic_dup2} can be rewritten to avoid the duplication with the original \ct{Dictionary} method from Figure~\ref{code:logic_dup}. Indeed the code in the example is simplified: since we would like to support the rename of class and method names, those names should not be hardcoded in the real code.
+
+\begin{figure}[ht]
+\begin{code}
+Builder>>createDictionaryWith: n
+    "Initialize a dictionary in the language kernel"
+    ^ self astInterpreter
+            execute: 'Dictionary new: size'
+            binding: { 'size' -> n }.
+\end{code}
+\caption{\textbf{New code of the Builder using the same logic as in \ct{Dictionary>>initialize} without repetition.}\label{code:logic_dup3}}
+\end{figure}
+
+The AST interpreter provides with the following good properties to the bootstrap process:
+
+\begin{description}
+
+\item[Allow execution in non-yet causally connected systems.] The AST interpreter allows the execution of code inside the object space when classes have no methods installed. To do that the AST interpreter overrides the method lookup mechanism executing the code defined in the guest language specification. Internally, it uses a map that associates the classes inside an object space with their representation in the language specification to bootstrap.
+
+\item[Avoid code duplication.] The AST interpreter uses the source code found in the new language specification to manipulate the guest language and compile methods in the guest language. Since the logic comes from a single source~(the language specification) there is \textbf{no code or logic duplication}. Thus, the only one point for extension or modification of the bootstrapped system is its specification.
+
+\item[Provide hooks for primitive methods.] The AST interpreter allows one to control the execution at every step of it and provides hooks to intercept and change primitive methods. This way, the AST interpreter \textbf{overcomes the unicity hypothesis} exposed in Section \ref{sec:challenges}. 
+
+\end{description}
+
+The AST interpreter has two main points of interaction with Oz: access the well known objects needed for execution~(\ie \ct{nil}, \ct{true} and \ct{false}) and provide object fields' access~(\ie get a field of an object when it is accessed, and set a field of an object when it is assigned). Figure~\ref{fig:ast_interaction} shows the interaction between the AST interpreter and an object space when executing the first statement of the \ct{Dictionary>>initialize} method shown in Figure~\ref{code:logic_dup}. The object space is accessed to instantiate the \ct{Array} class, returning a mirror on it. Then, the mirror on the dictionary is in charge of assigning the array in the corresponding instance variable. The mirror dictionary unwraps the array before assignment to avoid introducing a mirror reference inside the guest language kernel.
+
+\begin{figure*}[ht]
+\center
+\includegraphics[width=1\linewidth]{AST_interaction}
+\caption{\textbf{Illustrating the AST interpreter interaction with an object space and mirrors.} \label{fig:ast_interaction}}
+\end{figure*}
+
+
 
 % ===========================================================================
 \section{Tailoring}
@@ -220,6 +400,11 @@ lalala
 % ===========================================================================
 \subsection{Evolution by Tailoring} \label{sec:example_intro}
 % ===========================================================================
+
+Unused code units represent serious drawbacks in constrained devices. 
+First, unused code units may forbid the deployment into a constrained resource device.
+It may also interfere with the deployment and usage of other applications, because of large memory footprints in both secondary~(disk storage) and primary~(RAM) memory~\cite{Mart12a} or the presence of slow networks in the case of rich web applications.
+Second, some deployment targets may have an infrastructure designed in such a manner that forbids the deployment of large applications. For example, the Android's Dalvik VM restricts an application to deploy only 65536 methods.
 
 % ===========================================================================
 \subsection{Reducing an Application's Memory Footprint, a Motivating Example} \label{sec:example_intro}
@@ -365,6 +550,32 @@ Any \ct{String} resulting from a program execution or program configuration can 
 \subsection{Object Spaces support for Tailoring}
 %============================================================================
 
+\gp{make explicit that Tornado requires a special infrastructure to run => it needs 'only' during the process to access classes, install methods, stop execution. It also needs a way to extract the code units that were installed for deploy.}
+
+Tornado is based on an architecture that allows complex manipulation of both the nurtured and the reference applications. Examples of such complex manipulations are \eg Tornado must be notified when a failure occurs in the nurtured application because some code unit is missing, it should be able to start/pause/stop its execution at safe points, install missing code units such as classes and methods, and query runtime information from both the reference and nurtured applications. Our approach performs those tasks through the manipulation of the \emph{object runtime systems} of the applications. An object runtime system is a runtime system of an object-oriented application \eg a running Java virtual machine executing a Java program, and thus, containing the objects and classes of the application. We identify the following components as part of Tornado's architecture~(cf. Figure~\ref{fig:tornado_code units}):
+
+\begin{description}
+\item[Object runtime manipulation interface.] An object runtime manipulation interface allows one to act over an object runtime system by controlling its runtime execution~(\eg starting, pausing and restarting it, and installing new threads/processes) and perform introspection and intercession~(\eg installing classes and methods, retrieve the loaded classes) on it. A well known example of such an interface is the JVM TI~(JVM tool interface)~\cite{JVMTI}.
+We use this module to pause the reference application, suspend the execution of the nurtured application when a failure is detected, get the methods to install from the reference application, and install the necessary methods and classes into the nurtured application.
+
+\item[Advanced intercession module.] An advanced intercession module allows advanced reflective capabilities such as modifying an object's behavior during runtime. Tornado uses this module to capture message sends and so to be notified when it finds missing code units. JRebel~\cite{Jreb12a}, Reflectivity~\cite{Denk08a} or Bifrost~\cite{Res12} are examples of such intercession libraries.
+
+\end{description}
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.95\linewidth]{tornado_components2}
+\caption{\small\textbf{Tornado's architecture overview.}\label{fig:tornado_code units}}
+\end{center}
+\end{figure}
+
+
+\subsection{The object runtime manipulation interface: Oz object spaces}
+
+Tornado monitors the execution of the nurtured application and manipulates it during runtime as explained in Section~\ref{sec:infrastructure}.
+We built Tornado using our Oz\footnote{Not related to the Oz programming language. The name Oz for Pharo is inspired on the metaphor of multiple world manipulation.} object spaces~\cite{Poli13a} solution as the \emph{object runtime manipulation interface}. Oz is an extension of the Pharo programming language implementing \emph{protection domains} so called \emph{object spaces}. Oz presents a first class representation of an object space providing a high level API to manipulate those protection domains.
+
+In our Tornado implementation, the reference and nurtured applications are contained each in a different object space. Tornado places traps inside the nurtured object space and starts its execution. This execution is performed directly on a Pharo Virtual Machine, and thus, there is no speed overhead as soon as traps are not involved. Whenever the nurtured object space's execution founds a trap, it pauses and returns the control to Tornado. Tornado inspects the classes and methods in the reference object space through mirrors~\cite{ShortBrac04b} and installs the needed code units from the reference object space on demand, either by creating new objects or compiling new methods. Then, it restarts the nurtured object space's execution from the message send that activated the trap.
 
 \section{Runtime Surgery?}
 
