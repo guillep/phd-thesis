@@ -577,6 +577,91 @@ We built Tornado using our Oz\footnote{Not related to the Oz programming languag
 
 In our Tornado implementation, the reference and nurtured applications are contained each in a different object space. Tornado places traps inside the nurtured object space and starts its execution. This execution is performed directly on a Pharo Virtual Machine, and thus, there is no speed overhead as soon as traps are not involved. Whenever the nurtured object space's execution founds a trap, it pauses and returns the control to Tornado. Tornado inspects the classes and methods in the reference object space through mirrors~\cite{ShortBrac04b} and installs the needed code units from the reference object space on demand, either by creating new objects or compiling new methods. Then, it restarts the nurtured object space's execution from the message send that activated the trap.
 
+\subsection{Related Work}
+
+ \begin{table*}[ht]
+ \small
+ 	\centering
+\includegraphics[width=\linewidth]{criteria_overview}
+ 	\begin{tabular}{|ccccc>{\columncolor[gray]{0.8}}c|}
+	
+\hline
+ 			& \textbf{Dedicated}
+ 			& \textbf{Static}
+			& \textbf{Hybrid}
+ 			& \textbf{Dynamic}
+ 			& \textbf{Tornado} \\
+ 			& \textbf{SDKs}
+ 			& \textbf{Analysis}
+			& \textbf{Analysis}
+ 			& \textbf{Analysis}
+ 			& \\
+%  \cmidrule(r){2-6}
+% \midrule
+
+		Base Library&&&&&\\Support
+ 			& + & + & + & + & +\\
+		\hline
+		Third-Party&&&&&\\ Library Support
+ 			& - & + & + & + & +\\
+		\hline
+		Legacy Code&&&&&\\ Support
+ 			& - & + & + & + & + \\
+		\hline
+		Reflection&&&&&\\ Support
+ 			& + & - & - & + & + \\
+		\hline
+		Special&&&&&\\ Infrastructure& - & + & - & - & + \\for Running
+ 			&&&&&\\
+		\hline
+		Flexibility
+ 			& - & - & - & - & +  \\
+ 	 \hline
+ 	\end{tabular}
+ 	\caption{Evaluation criteria applied to related work on deployment code unit tailoring techniques}
+ 	\label{tb:comparison}
+ \end{table*}
+ 
+The reduction of the deployment footprint of object-oriented applications has been subject of interest both in industry and research since many years. In such regard, we identified four different families of solutions for dead code elimination: dedicated SDKs~(cf. section \ref{section:static_selection_rw}), static analyses~(cf. section \ref{section:static_rw}), dynamic analyses~(cf. section \ref{section:dynamic_rw}) and hybrid analyses~(cf. section \ref{section:hybrid_rw}). Table~\ref{tb:comparison} presents a comparison of these techniques, given the criteria defined in section~\ref{sec:criteria}.
+
+\subsection{Dedicated SDKs}%Pre-conceived specialized application-independent platforms}
+\label{section:static_selection_rw}
+
+Dedicated SDKs are SDKs containing frameworks and/or libraries prepared to run under specific circumstances. For example, Java Micro Edition~(J2ME)~\cite{JavaME} as the dedicated version of the Java SDK, or Cocoa Touch as the one of Cocoa. These specialized SDKs are reduced platforms to run applications inside mobile and constrained devices. These platforms provide a reduced and fixed set of base libraries defined a priori and in a not customizable way. Applications have to be written especially for them, and thus legacy code and third-party libraries not written especially for it are not compatible. Reflection is available since the statically tailored base libraries are built in a not automatic fashion, and the application code is not tailored.
+
+\subsection{Static Analysis-Based Techniques}\label{section:static_rw}
+
+Static analysis approaches for dead code elimination make use of the static information of a program to select the minimal subset of used elements. The bibliography describes four different algorithms to achieve this goal: unique name, class hierarchy analysis~(CHA), rapid type analysis~(RTA) and reachable members analysis~(RMA) \cite{Baco96a, Titz06a}. These techniques share a common approach, selecting an entry point method of an application and following from it the execution flow using the available static information \ie type annotations, and class and method names, building a call-graph~\cite{ShortGrov97a}.
+
+These techniques have been studied and applied in many environments and languages. Rayside et al.~\cite{ShortRays02a}, Jax~\cite{ShortTip03a} and the ExoVM System~\cite{Titz06a} propose application extraction tools using these techniques for Java applications. Sallenave et al.~\cite{Sall10a} apply RTA to produce smaller .NET assemblies for embedded systems. Bournoutian et al.~\cite{Bour14a} use CHA to optimize on-device Objective-C applications.
+
+In summary, these approaches are based on the static types found either in the source code or byte code. Thus, they are not applicable efficiently in dynamic languages with no static type information. These solutions are valuable as they allow one to tailor base and third-party libraries, and legacy code. Their tailoring approach generates new deployment units that can run on the standard runtime infrastructure. The main drawback of this approach appears in the presence of reflection and configuration files, which will only work with a subset of reflective invocations through complementary analyses on the strings found in the source code. Also, existing solutions in this family lack the flexibility to declare and identify levels of tailoring, making it an "all or nothing".
+
+\gp{Closed World Assumption kills you guys!}
+
+\subsection{Dynamic Analysis-Based Techniques}\label{section:dynamic_rw}
+
+Dynamic analysis techniques use exclusively runtime information~(\ie execution flow, alive objects, execution statistics) to perform dead code elimination. Amongst these, we identify two different approaches: \emph{load on demand} and \emph{code collection}. Load on demand approaches detect during runtime whenever a class or method needs to be installed and request it to a server application. Code collection approaches deploy the full application  and garbage collect unused code based on usage statistics. Related work in this family share a common characteristic: these techniques are used inside ubiquitous systems \ie systems meant to be always connected. Ubiquitous systems, as they are always connected, have a possibility to fallback and recover in the case of incompleteness. However, to focus here on the dead code elimination techniques, we will discuss the incompleteness recovery techniques in section \ref{section:completeness}.
+
+JUCE~\cite{ShortPopa04a,ShortTeod01a} is a platform for ubiquitous devices supporting code load on demand and code collection. Its approach for building up an application is similar to Tornado's. First, it initializes a minimal running application and code is loaded, with a method granularity, from a server located in a different machine. Unused code is collected following usage statistics, and loaded back again on demand if needed.
+
+OLIE~\cite{Gu03a} is an engine that intelligently partitions and offloads objects during runtime to minimize memory consumption. It is part of the adaptive infrastructure for distributed loading (AIDE). In OLIE, offloaded objects are indeed migrated to nearby remote devices. Migrated objects can be accesses later through proxies that perform remote invocations on them.
+
+SlimVM~\cite{Kers09a, Wagn11a} is an ubiquitous system where all code resides on a remote server and is loaded only on demand on small devices. Some static analysis is performed only on the server to reduce the size of the transported code, by identifying most likely needed code. SlimVM changes the class format,  However, on the client side, every code load is done dynamically.
+
+All solutions inside this category share one main property: they require to run the application inside a special infrastructure to apply their techniques \eg specialized VMs implementing remote lazy loading, code collection or special bytecode sets. The main challenge of these solutions resides on applying these techniques while minimizing their impact on performance during the runtime. Additionally, these solutions require their applications to run exclusively inside their infrastructure. Tornado works in the same way as these solutions: it uses a special infrastructure to run the desired application and select the used elements.  However, Tornado provides also with the ability to extract this application and run in \emph{offline} mode, using the non-modified infrastructure.
+
+Regarding dynamic features such as reflection, this kind of solutions are the ones that can, potentially, handle it in the best way since they have in runtime all the information needed to resolve it. JUCE and OLIE, as Tornado, handle naturally reflection as they do not change the runtime representation (which programs make assumptions of, when they use metaprogramming). SlimVM on the other side, had to change the reflection support because they changed the object and class representation on their VM.
+
+Regarding its applicability, SlimVM needs to recompile the whole application into its own format, while OLIE and JUCE, as Tornado, can tailor base and third party libraries without any modifications on it. Thus, the latter two can be applied to legacy code also for free. None of these solutions provide with the ability to select the level of tailoring always working on the full application. In contrast, Tornado uses Seeds to force a minimal subset of elements to be part of the application.
+
+
+\subsection{Hybrid Analysis-Based Techniques}\label{section:hybrid_rw}
+
+Hybrid analysis techniques mix static and dynamic~(\ie runtime) information to provide better results. The common approach of these is to start an application, such as Tornado does, and pause it after some minimal runtime information is available \ie call stacks are created, some classes are loaded and initialized, and some objects are instantiated. Then, it uses the built stack of alive objects to perform a static analysis, as described in section \ref{section:static_rw}, with concrete type information.
+
+Java in The Small (JITS)~\cite{ShortCour10a} uses a hybrid approach to select the used parts of a program, and then loads them inside a binary image. A specialized VM loads the binary image at startup. JITS's approach tailors base and third-party libraries as well as application specific code. It does not require modifications on the existent application to tailor it, so a legacy application could theoretically be tailored with this approach. JITS does not offer the possibility to configure the tailoring level, since it was designed to be used only in embedded devices where no more than one application would be running. Regarding reflection, JITS presents the same drawbacks as the other static call graph analysis approaches since not all the runtime information about the reflective invocations can be deduced.
+
 \section{Runtime Surgery?}
 
 ??
