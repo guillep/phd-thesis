@@ -25,7 +25,7 @@ A Changeboxes prototype was developed in Smalltalk and its scoping mechanisms we
 \item[Class access interception.] Smalltalk resolves class names at compile time, inserting a reference to the given class inside the method's literal array. However, accessing a class should yield different class objects if the changebox contains a different version of it. To resolve this, class accesses affected by a changebox are postponed until runtime, and the code is recompiled in such a way: instead of putting the class inside the literal array, the class is dynamically looked-up from the class table when it is accessed.
 \end{description}
 
-Changeboxes model proves sound to update and migrate application and framework classes. However, it does not affect critical classes
+Changeboxes model proves sound to update and migrate application and framework classes. However, it has the main drawback of not affecting critical classes in the system. Changeboxes prototype does not work on classes such as \ct{Array} or \ct{CompiledMethod} as the underlying infrastructure~(the VM) restricts the system to the existence of only one of them at the same time. The changes model does not provide neither a solution for this problem, as it focuses on application code update, leaving this as an open problem.
 
 \subsubsection*{Worlds}Scoping side-effects has been the focus of two recents works. Worlds~\cite{Wart08a} provide a way to control and scope side-effects in Javascript. Similar to
 ObjectSpaces, side-effects are limited to a first-class environment.
