@@ -15,11 +15,11 @@
 
 \subsection*{Changeboxes} \cite{Denk07c} encapsulate and scope changes, allowing several versions of a system to coexist in a single runtime environment, effectively adapting version control from static source code to running systems. Changeboxes scope code changes, while ObjectSpaces scope generic object references; also, Changeboxes do not directly address the problem of applying changes to code that is critical to the runtime system itself.
 
-Scoping side-effects has been the focus of two recents works. Worlds~\cite{Wart08a} provide a way to control and scope side-effects in Javascript. Similar to
+\subsection*{Worlds}Scoping side-effects has been the focus of two recents works. Worlds~\cite{Wart08a} provide a way to control and scope side-effects in Javascript. Similar to
 ObjectSpaces, side-effects are limited to a first-class environment.  Tanter proposed a more flexible scheme: contextual values~\cite{Tant08b} are scoped 
 by a very general context function.
 
-Gemstone \cite{Otis91a} provides the concept of class versions. Classes are
+\subsection*{Gemstone}Gemstone \cite{Otis91a} provides the concept of class versions. Classes are
 automatically versioned, but existing instances keep the class (shape and
 behavior) of the original definition. Instances can be migrated at any time.
 Gemstone provides (database) transaction semantics, thus state can be rolled
@@ -28,12 +28,26 @@ Gemstone's class versions extend the usual Smalltalk class evolution mechanism f
 large datasets, and domain-specific migration policies. In contrast, ObjectSpaces target general 
 reflective access and bootstrap-like evolutions of code that is critical to the environment.
 
+
+\subsection*{Class Loaders}
 In Java, new class definitions can be loaded using a class loader
 \cite{Lian98a}. Class loaders define namespaces, a class type is defined by the
 name of the class and its class loader. Thus the type system will prohibit
 references between namespaces defined by two different loaders. Class loaders
 can be used to load new versions of code and allow for these versions to coexist
 at runtime, but they do not provide a first-class model of change.
+
+Class loaders are used by the Java virtual machine to enforce certain rules about the
+namespaces used by the Java classes. It dynamically loads classes into the Java
+virtual machine. Moreover this mechanism is used to enforce security, most of the time by
+rewriting the bytecode but it can be used to load classes from trusted sources. In
+\cite{Fong10a} they use it to enforce scoping rules to determine the visibility of
+names in various region of the program. They allow the user to control untrusted
+namespaces and classes, they have defined a language to define security policy. Jensen and all in 
+\cite{Jens98a} have made a formalization of the class loader. To enforce security, they use 
+a ByteCode verifier to check if the ByteCode doesn't try to do a overflow or underflow operations.
+
+\subsection*{JVMTI}
 Java also provides JPDA, a remote debugging architecture that specifies a native interface on the debuggee VM, and a matching API for the debugger front-end, running in a separate VM. However, JDPA only supports introspection features like  inspection and monitoring, and very limited intercession \cite{jdpa}.
 
 \subsection*{Reflectivity}One problem meta-circular architectures is that meta-objects rely on the same code they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon.
@@ -41,7 +55,39 @@ In \cite{Denk08b}, Denker et al solve this problem by tracking the degree of met
 
 \section{Virtualization Techniques}
 
+\subsection*{Xen}
 The most related family of work is virtualization approaches like Xen \cite{Chis07xen}. Virtualization makes it possible to run several operating systems at once on a single physical machine. As these approaches target full operating systems, they rely on support from the hardware platform, and in some cases from the guest OS; they also concentrate on performance and production features, and consider the guest system mostly as a black box. In contrast, ObjectSpaces provide full control and reflective access to their contents.
+
+\subsection*{Multi User Virtual Machine}
+In \cite{Czaj03a} the authors present a multi-user virtual machine where users can manipulate their
+private files, or load their native libraries. Applications in the virtual machine are called \textit{isolates}.
+In the MVM most of the class representation is shared, the static fields, class initialization state is not shared.
+The user identity is associated with the isolate, users can access securely their private files. They use
+a remote server using inter-process communication which is launched with the user right and manages file operations.
+
+\subsection*{Java Isolates}
+Java Isolates \cite{JS121} allow multiple applications to run inside the same Java virtual machine.
+Nothing is shared between the different applications. Resources like CPU time, memory are controlled 
+and restricted. Isolates can communicate through channel, since nothing is shared the data are copied. 
+Java Isolates are defined in the Java Specification Request 121, but no commercials Java virtual 
+machine implement the specification.
+
+\subsection*{SafeTcl}
+SafeTcl \cite{Oust-97a} allows one to execute code inside a safe interpreter which execute a safe subset of
+Tcl commands. A security policy can be given to the safe interpreter to grant or remove
+privileges. Commands can be aliased so the untrusted interpreter call an aliased method and
+the command is fully implemented by a trusted interpreter. An untrusted script is
+isolated in its interpreter given a few extra commands. Unfortunately SafeTcl, has no memory limit
+support and some color specifications can crash the interpreter.
+
+\subsection*{J-Kernel and Luna}
+J-Kernel \cite{Hawb98a} and Luna \cite{Hawb02a} present a solution similar to ours regarding the memory usage. They are Java solution for isolating object graphs with security purposes. In them, each object graph is called a \emph{protection domain}. All protection domains loaded in a system, and their objects, share the same memory space. 
+
+The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept. In our solution, the separation is given by the same inability to forge object references and the membrane objects that control the communication.
+
+\subsection*{KaffeOS}
+KaffeOS \cite{Back00a} makes an explicit domain separation in memory by using different memory heaps in the virtual machine. They enforce domain separation by using memory write barriers. Cross-domain references become cross-heap references, and thus, they need special virtual machine support.
+KaffeOS presents a model where resource accounting is handled at the level of the virtual machine. Our solution aims to control and account resources at the language level. However, our implementation is not complete yet on this front.
 
 \section{Metacircular VMs}
 
