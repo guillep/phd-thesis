@@ -13,13 +13,27 @@
 % ===========================================================================
 \section{Scoping Changes}
 
-\subsection*{Changeboxes} \cite{Denk07c} encapsulate and scope changes, allowing several versions of a system to coexist in a single runtime environment, effectively adapting version control from static source code to running systems. Changeboxes scope code changes, while ObjectSpaces scope generic object references; also, Changeboxes do not directly address the problem of applying changes to code that is critical to the runtime system itself.
+\subsection{Application Level Changes}
 
-\subsection*{Worlds}Scoping side-effects has been the focus of two recents works. Worlds~\cite{Wart08a} provide a way to control and scope side-effects in Javascript. Similar to
-ObjectSpaces, side-effects are limited to a first-class environment.  Tanter proposed a more flexible scheme: contextual values~\cite{Tant08b} are scoped 
+\subsubsection*{\textsc{Changeboxes}} Changeboxes~\cite{Denk07c} is a change model designed to encapsulate and scope changes. Its main purpose is to allow several versions of a system to coexist at runtime \ie the existence in the same environment of different versions of the same classes and methods. In changeboxes, a \emph{changebox} is a first-class entity that encapsulates changes made on elements~(classes and methods) and an executable version of the system with its changes applied. The system can contain many changeboxes at the same time, and applications can be scoped to run within different changeboxes. This notion of dynamically scoping an application to a changebox allows one to have co-existing environments~(\eg testing, development, production), increasing the developer's efficiency. Furthermore, it eases application update and migration to new versions, and reduces its update down-time as the application does not have to be stopped to be updated.
+
+A Changeboxes prototype was developed in Smalltalk and its scoping mechanisms were implemented as follows:
+
+\begin{description}
+\item[Message send interception.] Message sends can activate different methods, within different changeboxes. A MethodWrapper~\cite{Bran98a} is placed instead of the method that has multiple versions, and it delegates the execution to the method that corresponds to the currently valid changebox.
+
+\item[Class access interception.] Smalltalk resolves class names at compile time, inserting a reference to the given class inside the method's literal array. However, accessing a class should yield different class objects if the changebox contains a different version of it. To resolve this, class accesses affected by a changebox are postponed until runtime, and the code is recompiled in such a way: instead of putting the class inside the literal array, the class is dynamically looked-up from the class table when it is accessed.
+\end{description}
+
+Changeboxes model proves sound to update and migrate application and framework classes. However, it does not affect critical classes
+
+\subsubsection*{Worlds}Scoping side-effects has been the focus of two recents works. Worlds~\cite{Wart08a} provide a way to control and scope side-effects in Javascript. Similar to
+ObjectSpaces, side-effects are limited to a first-class environment.
+
+\subsubsection*{Contextual Values}Tanter proposed a more flexible scheme: contextual values~\cite{Tant08b} are scoped 
 by a very general context function.
 
-\subsection*{Gemstone}Gemstone \cite{Otis91a} provides the concept of class versions. Classes are
+\subsubsection*{Gemstone}Gemstone \cite{Otis91a} provides the concept of class versions. Classes are
 automatically versioned, but existing instances keep the class (shape and
 behavior) of the original definition. Instances can be migrated at any time.
 Gemstone provides (database) transaction semantics, thus state can be rolled
@@ -28,8 +42,7 @@ Gemstone's class versions extend the usual Smalltalk class evolution mechanism f
 large datasets, and domain-specific migration policies. In contrast, ObjectSpaces target general 
 reflective access and bootstrap-like evolutions of code that is critical to the environment.
 
-
-\subsection*{Class Loaders}
+\subsubsection*{Class Loaders}
 In Java, new class definitions can be loaded using a class loader
 \cite{Lian98a}. Class loaders define namespaces, a class type is defined by the
 name of the class and its class loader. Thus the type system will prohibit
@@ -47,17 +60,21 @@ namespaces and classes, they have defined a language to define security policy. 
 \cite{Jens98a} have made a formalization of the class loader. To enforce security, they use 
 a ByteCode verifier to check if the ByteCode doesn't try to do a overflow or underflow operations.
 
-\gp{Here starts the "Scoping changes between execution levels"}
+\subsection{Meta Level Changes} \gp{do not like this name}
 
-\gp{Tower of inter peters here!}
-
-\subsection*{JVMTI}
+\subsubsection*{JVMTI}
 Java also provides JPDA, a remote debugging architecture that specifies a native interface on the debuggee VM, and a matching API for the debugger front-end, running in a separate VM. However, JDPA only supports introspection features like  inspection and monitoring, and very limited intercession \cite{jdpa}.
 
-\subsection*{Reflectivity}One problem meta-circular architectures is that meta-objects rely on the same code they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon.
+\subsubsection*{Reflectivity}One problem meta-circular architectures is that meta-objects rely on the same code they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon.
 In \cite{Denk08b}, Denker et al solve this problem by tracking the degree of metaness of the execution context. Meta-objects can only reflect on objects of a lower metaness, thus simulating the semantics of an infinite tower of distinct meta-interpreters. The existing work on Meta-context is only concerned with scoping behavioral changes. More work is needed to extend this work to structure. We plan to explore how ObjectSpaces can be used to provide a way to control structural reflective change.
 
 \section{Virtualization Techniques}
+
+\subsection*{Tower of Interpreters}
+
+\subsection*{Black}
+
+It has a meta-level interpreter which it can modify from the meta-level. Kind of the tower of interpreters but only one level.
 
 \subsection*{Xen}
 The most related family of work is virtualization approaches like Xen \cite{Chis07xen}. Virtualization makes it possible to run several operating systems at once on a single physical machine. As these approaches target full operating systems, they rely on support from the hardware platform, and in some cases from the guest OS; they also concentrate on performance and production features, and consider the guest system mostly as a black box. In contrast, ObjectSpaces provide full control and reflective access to their contents.
@@ -101,7 +118,6 @@ After presented the technical background of metacircular \VMs we are presenting 
 In this first part present \VMs that focus on compile-time reflection.
 In \secref{background-reified-vms} we will then focus on a list of \VMs that reify their components and allow for a more close interaction with the language-side.
 
-\newpage
 \subsubsection*{\Squeak \ST \VM}
 \seclabel{background-squeak}
 % ---------------------------------------------------------------------------
