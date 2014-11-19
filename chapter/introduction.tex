@@ -204,6 +204,42 @@ The image has been a big monolithic unit since years, leading to hidden and hard
 \section{Problem Statement}
 % =============================================================================
 
+\gp{Start lala from here}
+
+The evolution of a language kernel presents two main challenges to solve: changing the elements of compliance with its Virtual Machine and changing elements having an impact on the system's meta-circularities.
+
+\subsection{Changing the Language-VM Interface}
+
+\gp{maybe this first part explaining problems could be part of the problem statement in the introduction}
+%\gp{not sure if defining metacircularities is useful}The causal connections define circular definitions in the system, namely \emph{metacircularities}~\cite{Chib96a, Denk08b}.
+Modifying a language kernel to adapt it to these and other situations~(either to do bug fixing or add new features to it) becomes a cumbersome task for some of the following reasons: 
+\begin{description}
+\item[High amount of low level code.] The initialization of the language's circular definitions is often done in the VM by using a low level language, often a mixture of C, C++ and Assembly. This poses a high entry barrier to developers not versed in such kind of languages.
+\item[Language definition is scattered.] The language kernel under initialization is defined by both source code files written in the same language and imperative code present in the VM. Although splitted and scattered, they define the same language and a change in one of these parts may impact on the other one.
+\item[Runtime initialization mixes concerns.] The initialization of the language kernel is mixed ~(and coupled) with the initialization of the rest of the runtime system. This introduces an undesired coupling that affects the development and the understanding of the code.
+\end{description}
+
+\gp{write the related work of the new bootstrap paper: metacircular vas help to solve the gap between the language kernel and the VM, and so, easing the change of interface. See Jikes RVM, SqueakVM, Klein VM allow some grade of bootstrap or manipulation of the underlying runtime system}
+
+\subsection{Changing a Language's Metacircularities}
+
+Some methods or classes in a Smalltalk image are very sensitive to changes, either because they are used pervasively throughout the system, or take part in important subsystems like the user interface, the compiler, the debugger, the metaclass hierarchy, or classes that are well-known to the virtual machine.
+This is because Smalltalk has a single scope where not only everything is visible, but also reflectively accessible.
+Any breakage in this kind of code usually leads to spectacular failure. A simple example would be adding a breakpoint in the iterator method \ct{Array>>do:}. In Pharo Smalltalk, adding this breakpoint impacts about 90000 \ct{Array} instances and the image freezes \cite{Denk08b}.
+It is thus very difficult to debug or change this code in a realistic setting, without risking to impact the whole image.
+
+But the fact is, some evolutions do require changes to this sensitive code.
+If temporary breakage is necessary, then the maintainers must find a way to apply the changes with reduced tools and extra care.
+Alternatively, some images are destined to run under restricted conditions that make it impractical to include a complete set of development tools, or simply to access them: for instance, images running on remote servers do not have an active graphical interface\footnote{Remote display solutions like VNC do exist, but suffer from usability and portability problems.}.
+This makes development, testing, and maintenance impractical or even impossible.
+
+Current solutions or workarounds are to work on a renamed copy of the classes, or to remotely control a separate image via remote objects.
+However, in the first case we only delay the problem, because the complete impact of changes cannot be assessed until the copied and modified classes are merged back into the system.
+In the latter case, if a change causes the remote image to crash, then it will be impossible to assess the problem.
+
+
+\gp{finished lala here}
+
 \gp{write from scratch}
 Following the problem description listed in the above introduction we identified the following abstract concerns with existing reflective languages and their \VMs.
 %
