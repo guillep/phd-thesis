@@ -9,10 +9,10 @@
 
 This chapter presents the related work to this dissertation. With that in mind, we organize and classify the related work in two different axis \ie virtualization aspects and runtime manipulation. The reader would notice that some of the related works we present may fit into more than one of these axis. However, for the sake of clarity, we emphasize the aspects we believe will clarify the understanding of the rest of this thesis.
 
-This chapter starts by presenting a brief introduction to virtualization, its terminology and moreover its usage. We find amongst those usages, that the \emph{co-existence} and \emph{control} of virtual technology may fit into the manipulation of runtimes.
-Following, we dive into related work that implement and apply those two techniques, but not in the runtime manipulation scenario as we understand it.
+The first part of this chapter focuses on runtime manipulation of object-oriented applications. We first show related work that focus on the safe modification of language semantics at runtime. Then, we show how metacircular runtimes aim to have an unified language runtime to ease its modification. \gp{I should add some conclusion}
 
-The second part of this chapter focuses on runtime manipulation of object-oriented applications. We first show related work that focus on the safe modification of language semantics at runtime. Then, we show how metacircular runtimes aim to have an unified language runtime to ease its modification.
+The second part of this chapter starts by presenting a brief introduction to virtualization, its terminology and moreover its usage. We find amongst those usages, that the \emph{co-existence} and \emph{control} of virtual technology may fit into the manipulation of runtimes.
+Following, we dive into related work that implement and apply those two techniques, but not in the runtime manipulation scenario as we understand it.\gp{should add some conclusion}
 
 This chapter finishes by presenting a detailed description of the problem statement and a final outlook of the upcoming chapters in the light of the found problems.
 
@@ -22,6 +22,12 @@ This chapter finishes by presenting a detailed description of the problem statem
 % ===========================================================================
 
 \section{Runtime modification}
+
+Modifying a runtime system can be a cumbersome task. On one side, we recognize that virtual machines and the languages that run on top of then are very interrelated and interdependent software components. For example, a language must comply to the execution model provided by its \VM~(\eg a bytecode set or an object model), and the \VM may understand the language's internals to manipulate it~(\eg run it, optimize it or manage its memory).
+
+On the other side, reflective runtimes have a circular dependency on themselves: they rely on the concept of causal connection. When we make a change in a reflective runtime, we should ensure these causal connections still hold at any point of the runtime's life. In case a causal connection is broken, the runtime may become unusable as there is no means for it to keep reflecting upon itself correctly.
+
+The related work we present in this section presents two main topics of interest for us. First, we present those works that target the modification of a language's semantics by safe means~(\ie avoiding crashes). We follow by looking at the field of metacircular runtimes and \VMs, to study how they ease the modification of a runtime by means of simplifying the language-\VM relation for development.
 
 \subsection{Safe modification of language semantics}
 
@@ -372,6 +378,8 @@ MVM can run any normal Java application. Additionally, MVM-aware applications ca
 %and restricted. Isolates can communicate through channel, since nothing is shared the data are copied. 
 %Java Isolates are defined in the Java Specification Request 121, but no commercials Java virtual 
 %machine implement the specification.
+
+\section{Problem Statement}
 
 % =============================================================================
 \input{chapter-footer.tex}
