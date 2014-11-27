@@ -1,7 +1,7 @@
 \input{chapter-header.tex}
 
 % ===========================================================================
-\chapter{An Infrastructure for Software Evolution: Object Spaces}
+\chapter{VirtuaTalk: An Infrastructure for Runtime Evolution}
 \minitoc
 % ===========================================================================
 \introduction
@@ -119,7 +119,7 @@ void setInstanceVariable(String variableName, mirror anObject).
 
 % ===========================================================================
 
-\section{First-class Code Interpreter} \label{sec:execution}
+\section{Code Execution in not-yet Causally-Connected languages} \label{sec:execution}
 
 An \objectspace's execution is fully controllable from the host. The host can introspect and modify an \objectspace processes via mirrors to obtain information such as the method currently on execution, the values on the stack or the current program counter. Besides from those reflective operations, an \objectspace provides also operations to suspend, resume or terminate existing processes, and to install new ones.
 
