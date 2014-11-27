@@ -6,89 +6,35 @@
 % ===========================================================================
 \introduction
 % ===========================================================================
-	
-	
+
+This chapter presents the related work to this dissertation. With that in mind, we organize and classify the related work in two different axis \ie virtualization aspects and runtime manipulation. The reader would notice that some of the related works we present may fit into more than one of these axis. However, for the sake of clarity, we emphasize the aspects we believe will clarify the understanding of the rest of this thesis.
+
+This chapter starts by presenting a brief introduction to virtualization, its terminology and moreover its usage. We find amongst those usages, that the \emph{co-existence} and \emph{control} of virtual technology may fit into the manipulation of runtimes.
+Following, we dive into related work that implement and apply those two techniques, but not in the runtime manipulation scenario as we understand it.
+
+The second part of this chapter focuses on runtime manipulation of object-oriented applications. We first show related work that focus on the safe modification of language semantics at runtime. Then, we show how metacircular runtimes aim to have an unified language runtime to ease its modification.
+
+This chapter finishes by presenting a detailed description of the problem statement and a final outlook of the upcoming chapters in the light of the found problems.
+
+
 % ===========================================================================
 \newpage
 % ===========================================================================
-\section{Scoping Changes}
 
-\subsection{Application Level Changes}
+\section{Runtime modification}
 
-\subsubsection*{\textsc{Class Loaders}}
-In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A class loader is a first-class entity responsible of loading classes: create their runtime representation, loading their methods and linking their class references. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load different classes with the same name. These classes will be isolated in the sense that they will not be visible to the others.
+\subsection{Safe modification of language semantics}
 
-Class loaders can be specialized and extended to provide custom behavior. For example, Fong et. al.~\cite{Fong10a} use the class loading mechanism to enforce scoping rules and determine the visibility of names in various region of the program. They allow the user to control untrusted
-namespaces and classes, they have defined a language to define security policy. Jensen et. al.~\cite{Jens98a} provide a formalization of the class loader with the means to enforce security. They also use a bytecode verifier on class loading to check if a class' bytecode doesn't try to perform overflow or underflow operations.
+\subsubsection*{Tower of Interpreters}
 
-The isolating mechanism of class loaders is useful in the scoping context. New versions of code can be loaded in a different class loader and coexist at runtime. However, its basic mechanism does not support a way to manage changes, or update an application.
-
-\subsubsection*{\textsc{Changeboxes}}
-
-Changeboxes~\cite{Denk07c} is a change model designed to encapsulate and scope changes. Its main purpose is to allow several versions of a system to coexist at runtime \ie the existence in the same environment of different versions of the same classes and methods. In changeboxes, a \emph{changebox} is a first-class entity that encapsulates changes made on elements~(classes and methods) and an executable version of the system with its changes applied. The system can contain manyxº changeboxes at the same time, and applications can be scoped to run within different changeboxes. This notion of dynamically scoping an application to a changebox allows one to have co-existing environments~(\eg testing, development, production), increasing the developer's efficiency. Furthermore, it eases application update and migration to new versions, and reduces its update down-time as the application does not have to be stopped to be updated.
-
-A Changeboxes prototype was developed in Smalltalk and its scoping mechanisms were implemented as follows:
-
-\begin{description}
-\item[Message send interception.] Message sends can activate different methods, within different changeboxes. A MethodWrapper~\cite{Bran98a} is placed instead of the method that has multiple versions, and it delegates the execution to the method that corresponds to the currently valid changebox.
-
-\item[Class access interception.] Smalltalk resolves class names at compile time, inserting a reference to the given class inside the method's literal array. However, accessing a class should yield different class objects if the changebox contains a different version of it. To resolve this, class accesses affected by a changebox are postponed until runtime, and the code is recompiled in such a way: instead of putting the class inside the literal array, the class is dynamically looked-up from the class table when it is accessed.
-\end{description}
-
-Changeboxes model proves sound to update and migrate application and framework classes. However, it has the main drawback of not affecting critical classes in the system. Changeboxes prototype does not work on classes such as \ct{Array} or \ct{CompiledMethod} as the underlying infrastructure~(the VM) restricts the system to the existence of only one of them at the same time. The changes model does not provide neither a solution for this problem, as it focuses on application code update, leaving this as an open problem.
-
-\subsubsection*{\textsc{Caja\textbackslash Cajita}}
-
-\subsubsection*{\textsc{Worlds}}
-Worlds~\cite{Wart08a} provide a way to control and scope side-effects in Javascript. Side-effects are limited to a first-class environment.
-
-\subsubsection*{\textsc{Contextual Values}}Tanter proposed a more flexible scheme: contextual values~\cite{Tant08b} are scoped 
-by a very general context function.
-
-\subsubsection*{\textsc{Gemstone}}
-Gemstone \cite{Otis91a} provides the concept of class versions. Classes are
-automatically versioned, but existing instances keep the class (shape and
-behavior) of the original definition. Instances can be migrated at any time.
-Gemstone provides (database) transaction semantics, thus state can be rolled
-back should the migration fail.
-Gemstone's class versions extend the usual Smalltalk class evolution mechanism for robustness, 
-large datasets, and domain-specific migration policies. In contrast, ObjectSpaces target general 
-reflective access and bootstrap-like evolutions of code that is critical to the environment.
-
-\subsection{Meta Level Changes} \gp{do not like this name}
-
-\subsubsection*{JVMTI}
-Java also provides JPDA, a remote debugging architecture that specifies a native interface on the debuggee VM, and a matching API for the debugger front-end, running in a separate VM. However, JDPA only supports introspection features like  inspection and monitoring, and very limited intercession \cite{jdpa}.
-
-\subsubsection*{Reflectivity}One problem meta-circular architectures is that meta-objects rely on the same code they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon.
+\subsection*{Reflectivity}One problem meta-circular architectures is that meta-objects rely on the same code they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon.
 In \cite{Denk08b}, Denker et al solve this problem by tracking the degree of metaness of the execution context. Meta-objects can only reflect on objects of a lower metaness, thus simulating the semantics of an infinite tower of distinct meta-interpreters. The existing work on Meta-context is only concerned with scoping behavioral changes. More work is needed to extend this work to structure. We plan to explore how ObjectSpaces can be used to provide a way to control structural reflective change.
 
-\section{Virtualization Techniques}
-
-\subsection*{Tower of Interpreters}
-
-\subsection*{Black}
+\subsubsection*{Black}
 
 It has a meta-level interpreter which it can modify from the meta-level. Kind of the tower of interpreters but only one level.
 
-\subsection*{Xen}
-The most related family of work is virtualization approaches like Xen \cite{Chis07xen}. Virtualization makes it possible to run several operating systems at once on a single physical machine. As these approaches target full operating systems, they rely on support from the hardware platform, and in some cases from the guest OS; they also concentrate on performance and production features, and consider the guest system mostly as a black box. In contrast, ObjectSpaces provide full control and reflective access to their contents.
-
-\subsection*{Multi User Virtual Machine}
-In \cite{Czaj03a} the authors present a multi-user virtual machine where users can manipulate their
-private files, or load their native libraries. Applications in the virtual machine are called \textit{isolates}.
-In the MVM most of the class representation is shared, the static fields, class initialization state is not shared.
-The user identity is associated with the isolate, users can access securely their private files. They use
-a remote server using inter-process communication which is launched with the user right and manages file operations.
-
-\subsection*{Java Isolates}
-Java Isolates \cite{JS121} allow multiple applications to run inside the same Java virtual machine.
-Nothing is shared between the different applications. Resources like CPU time, memory are controlled 
-and restricted. Isolates can communicate through channel, since nothing is shared the data are copied. 
-Java Isolates are defined in the Java Specification Request 121, but no commercials Java virtual 
-machine implement the specification.
-
-\subsection*{SafeTcl}
+\subsubsection*{SafeTcl}
 SafeTcl \cite{Oust-97a} allows one to execute code inside a safe interpreter which execute a safe subset of
 Tcl commands. A security policy can be given to the safe interpreter to grant or remove
 privileges. Commands can be aliased so the untrusted interpreter call an aliased method and
@@ -96,18 +42,8 @@ the command is fully implemented by a trusted interpreter. An untrusted script i
 isolated in its interpreter given a few extra commands. Unfortunately SafeTcl, has no memory limit
 support and some color specifications can crash the interpreter.
 
-\subsection*{J-Kernel and Luna}
-J-Kernel \cite{Hawb98a} and Luna \cite{Hawb02a} present a solution similar to ours regarding the memory usage. They are Java solution for isolating object graphs with security purposes. In them, each object graph is called a \emph{protection domain}. All protection domains loaded in a system, and their objects, share the same memory space. 
+\subsection{Metacircular Runtimes}
 
-The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept. In our solution, the separation is given by the same inability to forge object references and the membrane objects that control the communication.
-
-\subsection*{KaffeOS}
-KaffeOS \cite{Back00a} makes an explicit domain separation in memory by using different memory heaps in the virtual machine. They enforce domain separation by using memory write barriers. Cross-domain references become cross-heap references, and thus, they need special virtual machine support.
-KaffeOS presents a model where resource accounting is handled at the level of the virtual machine. Our solution aims to control and account resources at the language level. However, our implementation is not complete yet on this front.
-
-\section{Metacircular VMs}
-
-\subsection{Compile-time Reified \VMs}
 % ---------------------------------------------------------------------------
 After presented the technical background of metacircular \VMs we are presenting several concrete implementations in more detail.
 In this first part present \VMs that focus on compile-time reflection.
@@ -213,7 +149,7 @@ Again, this is similar to \PyPy's \GC, both are provided as a service and do not
 Instead, the \VM programmer tweaks parameters of the \JIT or \GC.
 
 % ---------------------------------------------------------------------------
-\subsection{Runtime Reified or Self-aware \VMs}
+\gp{Runtime Reified or Self-aware \VMs}
 \seclabel{background-reified-vms}
 % ---------------------------------------------------------------------------
 
@@ -350,11 +286,92 @@ From the literature presented about the \Klein project we see a strong focus on 
 The fact that the language-runtime allows \VM-level reflection to change the \VM dynamically is not directly mentioned in the literature.
 While we see the practical limitations of changing the \VM at runtime we would like to open the doors to this new form of reflection.
 
+\section{Virtualization}
 
-% ===========================================================================
-\section{Summary and Outlook}
-% ===========================================================================
+\subsection{Application Co-existence Techniques}
 
+\subsubsection*{\textsc{Class Loaders}}
+In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A class loader is a first-class entity responsible of loading classes: create their runtime representation, loading their methods and linking their class references. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load different classes with the same name. These classes will be isolated in the sense that they will not be visible to the others.
+
+Class loaders can be specialized and extended to provide custom behavior. For example, Fong et. al.~\cite{Fong10a} use the class loading mechanism to enforce scoping rules and determine the visibility of names in various region of the program. They allow the user to control untrusted
+namespaces and classes, they have defined a language to define security policy. Jensen et. al.~\cite{Jens98a} provide a formalization of the class loader with the means to enforce security. They also use a bytecode verifier on class loading to check if a class' bytecode doesn't try to perform overflow or underflow operations.
+
+The isolating mechanism of class loaders is useful in the scoping context. New versions of code can be loaded in a different class loader and coexist at runtime. However, its basic mechanism does not support a way to manage changes, or update an application.
+
+\subsubsection*{\textsc{Changeboxes}}
+
+Changeboxes~\cite{Denk07c} is a change model designed to encapsulate and scope changes. Its main purpose is to allow several versions of a system to coexist at runtime \ie the existence in the same environment of different versions of the same classes and methods. In changeboxes, a \emph{changebox} is a first-class entity that encapsulates changes made on elements~(classes and methods) and an executable version of the system with its changes applied. The system can contain many changeboxes at the same time, and applications can be scoped to run within different changeboxes. This notion of dynamically scoping an application to a changebox allows one to have co-existing environments~(\eg testing, development, production), increasing the developer's efficiency. Furthermore, it eases application update and migration to new versions, and reduces its update down-time as the application does not have to be stopped to be updated.
+
+A Changeboxes prototype was developed in Smalltalk and its scoping mechanisms were implemented as follows:
+
+\begin{description}
+\item[Message send interception.] Message sends can activate different methods, within different changeboxes. A MethodWrapper~\cite{Bran98a} is placed instead of the method that has multiple versions, and it delegates the execution to the method that corresponds to the currently valid changebox.
+
+\item[Class access interception.] Smalltalk resolves class names at compile time, inserting a reference to the given class inside the method's literal array. However, accessing a class should yield different class objects if the changebox contains a different version of it. To resolve this, class accesses affected by a changebox are postponed until runtime, and the code is recompiled in such a way: instead of putting the class inside the literal array, the class is dynamically looked-up from the class table when it is accessed.
+\end{description}
+
+Changeboxes model proves sound to update and migrate application and framework classes. However, it has the main drawback of not affecting critical classes in the system. Changeboxes prototype does not work on classes such as \ct{Array} or \ct{CompiledMethod} as the underlying infrastructure~(the VM) restricts the system to the existence of only one of them at the same time. The changes model does not provide neither a solution for this problem, as it focuses on application code update, leaving this as an open problem.
+
+\subsubsection*{\textsc{Caja\textbackslash Cajita}}
+
+\subsubsection*{\textsc{Worlds}}
+Worlds~\cite{Wart08a} provide a way to control and scope side-effects in Javascript. Side-effects are limited to a first-class environment.
+
+\subsubsection*{\textsc{Gemstone}}
+Gemstone \cite{Otis91a} provides the concept of class versions. Classes are
+automatically versioned, but existing instances keep the class (shape and
+behavior) of the original definition. Instances can be migrated at any time.
+Gemstone provides (database) transaction semantics, thus state can be rolled
+back should the migration fail.
+Gemstone's class versions extend the usual Smalltalk class evolution mechanism for robustness, 
+large datasets, and domain-specific migration policies. In contrast, ObjectSpaces target general 
+reflective access and bootstrap-like evolutions of code that is critical to the environment.
+
+\subsubsection*{KaffeOS}
+KaffeOS \cite{Back00a} makes an explicit domain separation in memory by using different memory heaps in the virtual machine. They enforce domain separation by using memory write barriers. Cross-domain references become cross-heap references, and thus, they need special virtual machine support.
+KaffeOS presents a model where resource accounting is handled at the level of the virtual machine.
+
+\subsubsection*{J-Kernel}
+J-Kernel \cite{Hawb98a}
+
+\subsubsection*{Luna}
+ and Luna \cite{Hawb02a} present a solution similar to ours regarding the memory usage. They are Java solution for isolating object graphs with security purposes. In them, each object graph is called a \emph{protection domain}. All protection domains loaded in a system, and their objects, share the same memory space. 
+
+The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept.
+
+\subsection{Application Control}
+
+\subsubsection*{JVMTI}
+Java also provides JPDA, a remote debugging architecture that specifies a native interface on the debuggee VM, and a matching API for the debugger front-end, running in a separate VM. However, JDPA only supports introspection features like  inspection and monitoring, and very limited intercession \cite{jdpa}.
+
+\subsection*{Xen and Operating System Virtualization techniques}
+Amongst the most important works on virtualization,we can found approaches like Xen~\cite{Chis07xen}. Xen is a Virtual Machine Monitor~(VMM) that allows to control and manage Virtual Machines in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. Virtualization, in these terms, enables the following applications:
+
+\begin{description}
+
+\item[Server Consolidation.]
+\item[Co-located hosting facilities.]
+\item[Distributed web services.]
+\item[Secure computing platforms.]
+\item[Application Mobility.]
+
+\end{description}
+
+This virtualization approach has another main characteristic: it considers its guest systems as a black box, and it does not allow one to observe or modify its internals.
+
+\subsubsection*{MVM: a Multi User Virtual Machine}
+The Multi-user Virtual Machine~\cite{Czaj03a,Czaj01a} is a general purpose virtual machine for the Java language that allows the co-existence of different applications, potentially from different users. Each application running on top of the MVM is an \emph{isolate} based on the Java Application Isolation API specification~\cite{JSR121}.
+
+Many isolates co-exist not inteferring each other, as they believe they own their private JVM: the runtime is modified, so state is not shared between them by default. MVM allows several communication mechanisms to securely communicate isolates: from standard mechanisms such as sockets, up to \emph{links}, a low-level isolate-to-isolate mechanism introduced by the Isolate API.
+
+MVM can run any normal Java application. Additionally, MVM-aware applications can use the API it provides to control the life-cycle~(\eg creation, suspension, resuming and and termination) and the available resources of other isolates.
+
+%\subsection*{Java Isolates}
+%Java Isolates \cite{JSR121} allow multiple applications to run inside the same Java virtual machine.
+%Nothing is shared between the different applications. Resources like CPU time, memory are controlled 
+%and restricted. Isolates can communicate through channel, since nothing is shared the data are copied. 
+%Java Isolates are defined in the Java Specification Request 121, but no commercials Java virtual 
+%machine implement the specification.
 
 % =============================================================================
 \input{chapter-footer.tex}
