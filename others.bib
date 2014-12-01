@@ -2,22 +2,174 @@
 %% http://bibdesk.sourceforge.net/
 
 
-%% Created for wam at 2013-04-18 18:11:27 +0200 
+%% Created for Lucas Godoy at 2014-09-24 17:15:12 +0200 
 
 
 %% Saved with string encoding Unicode (UTF-8) 
 
+@article{Wurt13a,
+ author = {W\"{u}rthinger, Thomas and Wimmer, Christian and Stadler, Lukas},
+ title = {Unrestricted and Safe Dynamic Code Evolution for Java},
+ journal = {Sci. Comput. Program.},
+ issue_date = {May, 2013},
+ volume = {78},
+ number = {5},
+ month = may,
+ year = {2013},
+ issn = {0167-6423},
+ pages = {481--498},
+ numpages = {18},
+ url = {http://dx.doi.org/10.1016/j.scico.2011.06.005},
+ doi = {10.1016/j.scico.2011.06.005},
+ publisher = {Elsevier North-Holland, Inc.},
+ address = {Amsterdam, The Netherlands, The Netherlands}
+}
 
+@inproceedings{Pina14a,
+	title = {Rubah: {DSU} for {J}ava on a stock {JVM}},
+	author = {Lu\'is Pina and Lu\'is Veiga and Mickael Hicks},
+	booktitle = {Proceedings of OOPSLA},
+	year = {2014}
+}
 
-@article{Land11a,
-	Author = {Tatiana von Landesberger and Arjan Kuijper and Tobias Schreck and J{\"o}rn Kohlhammer and Jarke J. van Wijk and Jean-Daniel Fekete and Dieter W. Fellner},
-	Ee = {http://dx.doi.org/10.1111/j.1467-8659.2011.01898.x},
-	Journal = {Comput. Graph. Forum},
-	Number = {6},
-	Pages = {1719-1749},
-	Title = {Visual Analysis of Large Graphs: State-of-the-Art and Future Research Challenges},
-	Volume = {30},
-	Year = {2011}}
+@inproceedings{Hiro14a,
+	Abstract = {Although there is a principle that states a commit should only include changes for a single task, it is not always respected by developers. This means that code repositories of- ten include commits that contain tangled changes. The presence of such tangled changes hinders analyzing code repositories because most mining software repository (MSR) ap- proaches are designed with the assumption that every commit includes only changes for a single task. In this paper, we propose a technique to inform developers that they are in the process of committing tangled changes. The proposed technique utilizes the changes included in the past commits to judge whether a given commit includes tangled changes. If it determines that the proposed commit may include tangled changes, it offers suggestions on how the tangled changes can be split into a set of untangled changes.},
+	Annote = {inproceedings},
+	Author = {Hiroyuki Kirinuki and Yoshiki Higo and Keisuke Hotta and Shinji Kusumoto},
+	Booktitle = {Proceedings of the 22nd International Conference on Program Comprehension},
+	Date-Added = {2014-09-24 15:12:30 +0000},
+	Date-Modified = {2014-09-24 15:14:38 +0000},
+	Title = {Hey! Are You Committing Tangled Changes?},
+	Year = {2014}}
+
+@inproceedings{Gwiz03a,
+	Abstract = {During software evolution, programmers add new functionalities and release new versions of software.This is complicated work, particularly in large applications, and tools are needed to deal with it. In this paper we introduce a tool named JTracker that helps programmers implement change propagation in Java applications.We conducted a case study of a change in open source application JMeter, in which we used JTracker.},
+	Annote = {inproceedings},
+	Author = {Steve Gwizdala and Yong Jiang and Vaclav Rajlich},
+	Booktitle = {Proceedings of the Seventh European Conference on Software Maintenance and Reengineering},
+	Date-Added = {2014-09-22 12:53:09 +0000},
+	Date-Modified = {2014-09-22 12:55:21 +0000},
+	Title = {JTracker - A Tool for change Propagation in Java},
+	Year = {2003}}
+
+@inproceedings{Kagd10a,
+	Abstract = {The paper presents an approach that combines conceptual and evolutionary techniques to support change impact analysis in source code. Information Retrieval (IR) is used to derive conceptual couplings from the source code in a single version (release) of a software system. Evolutionary couplings are mined from source code commits. The premise is that such combined methods provide improvements to the accuracy of impact sets. A rigorous empirical assessment on the changes of the open source systems Apache httpd, ArgoUML, iBatis, and KOffice is also reported. The results show that a combination of these two techniques, across several cut points, provides statistically significant improvements in accuracy over either of the two techniques used independently. Improvements in recall values of up to 20% over the conceptual technique in KOffice and up to 45% over the evolutionary technique in iBatis were reported.},
+	Annote = {inproceedings},
+	Author = {Huzefa Kagdi and Malcom Gethers and Denys Poshyvanyk and Michael L. Collard},
+	Booktitle = {17th Working Conference on Reverse Engineering},
+	Date-Added = {2014-09-18 09:21:45 +0000},
+	Date-Modified = {2014-09-18 09:23:44 +0000},
+	Pages = {119-128},
+	Title = {Blending Conceptual and Evolutionary Couplings to Support Change Impact Analysis in Source Code},
+	Year = {2010}}
+
+@inproceedings{Kagd07b,
+	Abstract = {The thesis proposes a software-change prediction approach that is based on mining fine-grained evolutionary couplings from source code repositories. Here, fine-grain refers to identifying couplings between source code entities such as methods, control structures, or even comments. This differs from current source code mining techniques that typically only identify couplings between files or fairly high-level entities. Furthermore, the model combines the mined evolutionary couplings with the estimated changes identified by traditional impact analysis techniques (e.g., static analysis of call and program-dependency graphs). The research hypothesis is that software-change prediction using the proposed synergistic approach results in an overall improved expressiveness (i.e., granularity and context given to a developer) and effectiveness (i.e., accuracy of the prediction).},
+	Annote = {inproceedings},
+	Author = {Huzefa Kagdi},
+	Booktitle = {ASE '07 - Proceedings of the twenty-second IEEE/ACM international conference on Automated software engineering},
+	Date-Added = {2014-09-18 09:11:23 +0000},
+	Date-Modified = {2014-09-18 09:13:36 +0000},
+	Pages = {559-562},
+	Title = {Improving Change Prediction with Fine-Grained Source Code Mining},
+	Year = {2007}}
+
+@inproceedings{Nega12a,
+	Abstract = {Researchers use file-based Version Control System (VCS) as the primary source of code evolution data. VCSs are widely used by developers, thus, researchers get easy access to historical data of many projects. Although it is convenient, research based on VCS data is incomplete and imprecise. Moreover, answering questions that correlate code changes with other activities (e.g., test runs, refactoring) is impossible. Our tool, CodingTracker, non-intrusively records fine-grained and diverse data during code development. CodingTracker collected data from 24 de- velopers: 1,652 hours of development, 23,002 committed files, and 314,085 testcase runs.
+This allows us to answer: How much code evolution data is not stored in VCS? How much do developers intersperse refactorings and edits in the same commit? How frequently do developers fix failing tests by changing the test itself? How many changes are committed to VCS without being tested? What is the temporal and spacial locality of changes?},
+	Annote = {inproceedings},
+	Author = {Stas Negara and Mohsen Vakilian and Nicholas Chen and Ralph E. Johnson and Danny Dig},
+	Booktitle = {Proceedings of the 26th European Conference on Object-Oriented Programming (ECOOP)},
+	Date-Added = {2014-09-18 08:53:32 +0000},
+	Date-Modified = {2014-09-18 08:58:58 +0000},
+	Title = {Is It Dangerous to Use Version Control Histories to Study Source Code Evolution?},
+	Year = {2012}}
+
+@inproceedings{Chis14b,
+	Abstract = {Debuggers are crucial tools for developing object-oriented software systems
+		as they give developers direct access to the running systems. Nevertheless, traditional
+		debuggers rely on generic mechanisms to explore and exhibit the execution stack and system
+		state, while developers reason about and formulate domain-specific questions using concepts
+		and abstractions from their application domains. This creates an abstraction gap between the
+		debugging needs and the debugging support leading to an inefficient and error-prone debugging
+		effort. To reduce this gap, we propose a framework for developing domain-specific debuggers
+		called the Moldable Debugger. The Moldable Debugger is adapted to a domain by creating and
+		combining domain-specific debugging operations with domain-specific debugging views, and adapts
+		itself to a domain by selecting, at run time, appropriate debugging operations and views.
+		We motivate the need for domain-specific debugging, identify a set of key requirements and show
+		how our approach improves debugging by adapting the debugger to several domains.},
+	Author = {Chi\c{s}, Andrei and G\^{i}rba, Tudor and Nierstrasz, Oscar},
+	Booktitle = {Software Language Engineering},
+	Doi = {10.1007/978-3-319-11245-9_6},
+	Editor = {Combemale, Beno\{i}t and Pearce, DavidJ. and Barais, Olivier and Vinju, JurgenJ.},
+	Isbn = {978-3-319-11244-2},
+	Keywords = {scg-pub, debugging, development environments, customization},
+	Language = {English},
+	Medium = {2},
+	Pages = {102-121},
+	Peerreview = {yes},
+	Publisher = {Springer International Publishing},
+	Series = {Lecture Notes in Computer Science},
+	Title = {The {Moldable Debugger}: A Framework for Developing Domain-Specific Debuggers},
+	Url = {http://scg.unibe.ch/archive/papers/Chis14b-MoldableDebugger.pdf},
+	Volume = {8706},
+	Year = {2014},
+	Bdsk-Url-1 = {http://scg.unibe.ch/archive/papers/Chis14b-MoldableDebugger.pdf},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1007/978-3-319-11245-9_6}}
+
+@inproceedings{Wlok09a,
+	Abstract = {Software development teams exchange source code in shared repositories. These repositories are kept consistent by having developers follow a commit policy, such as "Program edits can be committed only if all available tests succeed.'' Such policies may result in long intervals between commits, increasing the likelihood of duplicative develop- ment and merge conflicts. Furthermore, commit policies are generally not automatically enforceable.
+We present a program analysis to identify committable changes that can be released early, without causing failures of existing tests, even in the presence of failing tests in a developer's local workspace. The algorithm can support relaxed commit policies that allow early release of changes, reducing the potential for merge conflicts. In experiments using several versions of a non-trivial software system with failing tests, 3 newly enabled commit policies were shown to allow a significant percentage of changes to be committed.},
+	Annote = {inproceedings},
+	Author = {Jan Wloka and Barbara Ryder and Frank Tip and Xiaoxia Ren},
+	Booktitle = {Proceeding ICSE '09 Proceedings of the 31st International Conference on Software Engineering},
+	Date-Added = {2014-09-17 15:09:08 +0000},
+	Date-Modified = {2014-09-17 15:15:57 +0000},
+	Pages = {507-517},
+	Title = {Safe-Commit analysis to Facilitate Team Software Development},
+	Year = {2009}}
+
+@inproceedings{Hatt08a,
+	Abstract = {Several techniques and algorithms for impact analysis of software systems have been recently published in litera- ture. Most of them, however, are not practical enough to be applied in the software industry because, among other rea- sons, they produce too many false results (either positive or negative). In this paper, we propose and evaluate the use of two measures from information retrieval, namely preci- sion and recall, to help express and compare precision and accuracy of impact analysis techniques and algorithms.},
+	Author = {Lile Hattori and Dalton Guerrero and Jorge Figueiredo and Joao Brunet and Jemerson Dam\'asio},
+	Booktitle = {7th IEEE/ACIS International Conference on Computer and Information Science},
+	Date-Added = {2014-09-08 14:56:40 +0000},
+	Date-Modified = {2014-09-09 12:43:18 +0000},
+	Pages = {513 - 518},
+	Title = {On the Precision and Accuracy of Impact Analysis Techniques},
+	Year = {2008}}
+
+@inproceedings{Kagd07a,
+	Abstract = {The paper advocates the need for the investigation and development of a software-change prediction methodology that combines the change sets estimated from software dependency analysis (via single-version analysis) and the actual change sets found in software version histories (via multiple-version analysis). Traditionally prescribed methodologies such as Impact Analysis (IA) are based on the former, whereas a more recent methodology, Mining Software Repository (MSR), is based on the latter. The research hypothesis is that combining these two methodologies will result in an overall improved support for software-change prediction.},
+	Author = {Huzefa Kagdi and Jonathan I. Maletic},
+	Booktitle = {Fourth International Workshop on Mining Software Repositories},
+	Date-Added = {2014-09-08 11:53:34 +0000},
+	Date-Modified = {2014-09-08 11:55:51 +0000},
+	Title = {Combining Single-Version and Evolutionary Dependencies for Software-Change Prediction},
+	Year = {2007}}
+
+@inproceedings{Vand04a,
+	Author = {W. Vanderperren and D. Suvee},
+	Booktitle = {1st AOSD Workshop on Dynamic Aspects},
+	Title = {Optimizing JAsCo dynamic AOP through HotSwap and Jutta},
+	Year = {2004}}
+
+@inproceedings{Puka08a,
+	Author = {M Pukall and C Kastner and G Saake},
+	Booktitle = {Asian Software Engineering Conference},
+	Title = {Towards unanticipated runtime adaptation of Java applications},
+	Year = {2008}}
+
+@inproceedings{Chis13a,
+	Abstract = {The debugger is an essential tool in any programming environment, as it helps developers understand the dynamic behaviour of software systems. However, traditional debuggers fail in answering domain-specific questions, as the semantics of what they show and do are fixed. In this paper we introduce our work towards a moldable debugger which, unlike traditional debuggers, both adapts itself and can be adapted to a particular debugging context. Thus, it allows developers to answer their questions by using concepts from their own application domains.},
+	Author = {Andrei Chi\c{s} and Oscar Nierstrasz and Tudor G\^{i}rba},
+	Booktitle = {Proceedings of the 7th Workshop on Dynamic Languages and Applications},
+	Doi = {10.1145/2489798.2489801},
+	Title = {Towards a Moldable Debugger},
+	Url = {http://scg.unibe.ch/archive/papers/Chis13a-TowardsMoldableDebugger.pdf},
+	Year = {2013},
+	Bdsk-Url-1 = {http://scg.unibe.ch/archive/papers/Chis13a-TowardsMoldableDebugger.pdf},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/2489798.2489801}}
 
 @article{ACM94a,
 	Author = {{ACM}},
@@ -1246,6 +1398,13 @@
 	Type = {{Ph.D}. Thesis},
 	Year = {1996}}
 
+@inproceedings{Agga06a,
+	Author = {Aggarwal, Ashish and Jalote, Pankaj},
+	Booktitle = {International Computer Software and Applications Conference},
+	Pages = {343--350},
+	Title = {Integrating Static and Dynamic Analysis for Detecting Vulnerabilities},
+	Year = {2006}}
+
 @article{Agha85a,
 	Author = {Gul Agha},
 	Journal = {IEEE Database Engineering},
@@ -1721,6 +1880,24 @@
 	Publisher = {IEEE Computer Society Press},
 	Title = {Instantiating and Detecting Design Patterns: Putting Bits and Pieces Together},
 	Year = {2001}}
+
+@inproceedings{Alco12a,
+	Address = {New York, NY, USA},
+	Articleno = {3},
+	Author = {Alcocer, Juan Pablo Sandoval},
+	Booktitle = {Proceedings of the International Workshop on Smalltalk Technologies},
+	Doi = {10.1145/2448963.2448966},
+	Isbn = {978-1-4503-1897-6},
+	Location = {Ghent, Belgium},
+	Numpages = {7},
+	Pages = {3:1--3:7},
+	Publisher = {ACM},
+	Series = {IWST '12},
+	Title = {Tracking down software changes responsible for performance loss},
+	Url = {http://doi.acm.org/10.1145/2448963.2448966},
+	Year = {2012},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/2448963.2448966},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/2448963.2448966}}
 
 @book{Alde84a,
 	Address = {Beverly Hills},
@@ -2533,6 +2710,44 @@
 	Volume = {39},
 	Year = {2004},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/982962.964027}}
+
+@inproceedings{Anco07a,
+	Abstract = {Although the C-based interpreter of Python is
+                   reasonably fast, implementations on the CLI or the JVM
+                   platforms offers some advantages in terms of robustness
+                   and interoperability. Unfortunately, because the CLI
+                   and JVM are primarily designed to execute statically
+                   typed, object-oriented languages, most dynamic language
+                   implementations cannot use the native bytecodes for
+                   common operations like method calls and exception
+                   handling; as a result, they are not able to take full
+                   advantage of the power offered by the CLI and JVM. We
+                   describe a different approach that attempts to preserve
+                   the flexibility of Python, while still allowing for
+                   efficient execution. This is achieved by limiting the
+                   use of the more dynamic features of Python to an
+                   initial, bootstrapping phase. This phase is used to
+                   construct a final RPython (Restricted Python) program
+                   that is actually executed. RPython is a proper subset
+                   of Python, is statically typed, and does not allow
+                   dynamic modification of class or method definitions;
+                   however, it can still take advantage of Python features
+                   such as mixins and first-class methods and classes.
+                   This paper presents an overview of RPython, including
+                   its design and its translation to both CLI and JVM
+                   bytecode. We show how the bootstrapping phase can be
+                   used to implement advanced features, like extensible
+                   classes and generative programming. We also discuss
+                   what work remains before RPython is truly ready for
+                   general use, and compare the performance of RPython
+                   with that of other approaches.},
+	Author = {Ancona, D. and Ancona, M. and Cuni, A and Matsakis, N.},
+	Booktitle = {Proceedings of the 2007 Symposium on Dynamic Languages (DSL 07)},
+	Ftp = {ftp://ftp.disi.unige.it/pub/person/AnconaD/DLS08.pdf},
+	Pages = {53--64},
+	Publisher = {ACM},
+	Title = {R{P}ython: a Step Towards Reconciling Dynamically and Statically Typed OO Languages},
+	Year = {2007}}
 
 @inproceedings{Anco97a,
 	Author = {D. Ancona and E. Zucca},
@@ -3445,6 +3660,20 @@
 	Volume = {1061},
 	Year = {1996}}
 
+@inproceedings{Arba97a,
+	Acmid = {884371},
+	Address = {Washington, DC, USA},
+	Author = {Arbaugh, W. A. and Farber, D. J. and Smith, J. M.},
+	Booktitle = {Proceedings of the 1997 IEEE Symposium on Security and Privacy},
+	Keywords = {AEGIS architecture, Internet commerce, active networks, bootstrap architecture, computer bootstrapping, hardware validity, initialization, integrity chain, integrity check failures, lower-layer integrity, recovery process, reliability, robust systems, security, system integrity guarantees, transitions},
+	Pages = {65--},
+	Publisher = {IEEE Computer Society},
+	Series = {SP '97},
+	Title = {A secure and reliable bootstrap architecture},
+	Url = {http://dl.acm.org/citation.cfm?id=882493.884371},
+	Year = {1997},
+	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=882493.884371}}
+
 @inproceedings{Arce08a,
 	Author = {Arcelli Fontana Francesca and Perin Fabrizio and Raibulet Claudia and Ravani Stefano},
 	Booktitle = {Proceedings of 4th PCODA at the 15th Working Conference on Reverse Engineering (WCRE 2008)},
@@ -4163,6 +4392,15 @@
 	Title = {Beyond Bullet Points},
 	Year = {2005}}
 
+@article{Atki70a,
+	Author = {Atkinson, A. B.},
+	Journal = {Journal of Economic Theory},
+	Number = {3},
+	Pages = {244--263},
+	Title = {{On the measurement of inequality}},
+	Volume = {2},
+	Year = {1970}}
+
 @inproceedings{Atki86a,
 	Author = {Robert G. Atkinson},
 	Booktitle = {Proceedings OOPSLA '86, ACM SIGPLAN Notices},
@@ -4373,6 +4611,13 @@
 	Title = {Concerto2/Audit-{CC}++ User Manual},
 	Year = {1996}}
 
+@inproceedings{Audr00a,
+	Author = {Mockus, Audris and Votta, Lawrence G.},
+	Booktitle = {International Conference on Software Maintenance},
+	Pages = {120--130},
+	Title = {{Identifying Reasons for Software Changes using Historic Databases}},
+	Year = {2000}}
+
 @incollection{Auer95a,
 	Author = {Ken Auer},
 	Booktitle = {Pattern languages of program design},
@@ -4395,6 +4640,25 @@
 	Month = aug,
 	Title = {Building program Behavior Models},
 	Year = {1998}}
+
+@inproceedings{Aust11a,
+	Acmid = {2048136},
+	Address = {New York, NY, USA},
+	Author = {Austin, Thomas H. and Disney, Tim and Flanagan, Cormac},
+	Booktitle = {Proceedings of the 2011 ACM international conference on object oriented programming systems languages and applications},
+	Doi = {10.1145/2048066.2048136},
+	Isbn = {978-1-4503-0940-0},
+	Keywords = {behavioral intercession, metaobject protocols, proxies},
+	Location = {Portland, Oregon, USA},
+	Numpages = {18},
+	Pages = {921--938},
+	Publisher = {ACM},
+	Series = {OOPSLA '11},
+	Title = {Virtual values for language extension},
+	Url = {http://doi.acm.org/10.1145/2048066.2048136},
+	Year = {2011},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/2048066.2048136},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/2048066.2048136}}
 
 @article{Avgu05a,
 	Author = {Pavel Avgustinov and Aske Simon Christensen and Laurie Hendren and Sascha Kuzins and Jennifer Lhot\'{a}k and Ondrej Lhot\'{a}k and Oege de Moor and Damien Sereni and Ganesh Sittampalam and Julian Tibble},
@@ -4467,6 +4731,22 @@
 	Volume = {3460},
 	Year = {2005}}
 
+@inproceedings{Bacch13a,
+	Acmid = {2486882},
+	Address = {Piscataway, NJ, USA},
+	Author = {Bacchelli, Alberto and Bird, Christian},
+	Booktitle = {Proceedings of the 2013 International Conference on Software Engineering},
+	Isbn = {978-1-4673-3076-3},
+	Location = {San Francisco, CA, USA},
+	Numpages = {10},
+	Pages = {712--721},
+	Publisher = {IEEE Press},
+	Series = {ICSE '13},
+	Title = {Expectations, Outcomes, and Challenges of Modern Code Review},
+	Url = {http://dl.acm.org/citation.cfm?id=2486788.2486882},
+	Year = {2013},
+	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=2486788.2486882}}
+
 @article{Bach01,
 	Author = {Jonthan Bachrach and Keith Playford},
 	Issn = {0362-1340},
@@ -4533,6 +4813,14 @@
 	Author = {G. Back and W. Hsieh and J. Lepreau},
 	Booktitle = {4th USENIX International Symposium on Operating System Design and Implementation (OSDI)},
 	Title = {Processes in KaffeOS: Isolation, Resource Management and Sharing in Java},
+	Year = {2000}}
+
+@inproceedings{Back20a,
+	Author = {Back, G. and Hsieh, W.C. and Lepreau, J.},
+	Booktitle = {Proceedings of the 4th conference on Symposium on Operating System Design \& Implementation-Volume 4},
+	Organization = {USENIX Association},
+	Pages = {23--23},
+	Title = {Processes in KaffeOS: Isolation, resource management, and sharing in Java},
 	Year = {2000}}
 
 @book{Baco98a,
@@ -5686,6 +5974,15 @@
 	Year = {2003},
 	Bdsk-Url-1 = {http://www.ddj.com/ftp/2003/2003_07/dyproxy.zip}}
 
+@inproceedings{Barn13a,
+  title={Automated planning for software architecture evolution},
+  author={Barnes, Jeffrey M and Pandey, Ashutosh and Garlan, David},
+  booktitle={Automated Software Engineering (ASE), 2013 IEEE/ACM 28th International Conference on},
+  pages={213--223},
+  year={2013},
+  organization={IEEE}
+}
+
 @article{Baro81a,
 	Author = {A.J. Baroody and D.J. De Witt},
 	Journal = {ACM TODS},
@@ -5878,6 +6175,12 @@
 	Url = {http://dx.doi.org/10.1109/SUITE.2009.5070011},
 	Year = {2009},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1109/SUITE.2009.5070011}}
+
+@techreport{Basa06a,
+	Author = {Wojciech Basalaj and Frank van den Beuken},
+	Institution = {Programming Research},
+	Title = {{Correlation Between Coding Standards Compliance and Software Quality}},
+	Year = {2006}}
 
 @book{Bash99a,
 	Author = {Imran Bashir and Amrit L. Goel},
@@ -6179,6 +6482,15 @@
 	Url = {http://repository.readscheme.org/ftp/papers/pepm99/bawden.pdf},
 	Year = {1999},
 	Bdsk-Url-1 = {http://repository.readscheme.org/ftp/papers/pepm99/bawden.pdf}}
+
+@inproceedings{Baxt06a,
+	Author = {Baxter, Gareth and Frean, Marcus and Noble, James and Rickerby, Mark and Smith, Hayden and Visser, Matt and Melton, Hayden and Tempero, Ewan},
+	Booktitle = {21st Conference on Object-oriented Programming Systems, Languages, and Applications},
+	Date-Added = {2014-07-08 13:56:25 +0000},
+	Date-Modified = {2014-07-08 13:56:37 +0000},
+	Pages = {397--412},
+	Title = {Understanding the Shape of Java Software},
+	Year = {2006}}
 
 @proceedings{Baxt97a,
 	Editor = {Ira Baxter, Alex Quilici, Chris Verhoef},
@@ -6696,6 +7008,25 @@
 	Journal = {Journal of Software Maintenance: Research and Practice},
 	Title = {An Evaluation of Reverse Engineering Tools},
 	Year = {1998}}
+
+@inproceedings{Belle14a,
+	Acmid = {2597082},
+	Address = {New York, NY, USA},
+	Author = {Beller, Moritz and Bacchelli, Alberto and Zaidman, Andy and Juergens, Elmar},
+	Booktitle = {Proceedings of the 11th Working Conference on Mining Software Repositories},
+	Doi = {10.1145/2597073.2597082},
+	Isbn = {978-1-4503-2863-0},
+	Keywords = {Code Review, Defects, Open Source Software},
+	Location = {Hyderabad, India},
+	Numpages = {10},
+	Pages = {202--211},
+	Publisher = {ACM},
+	Series = {MSR 2014},
+	Title = {Modern Code Reviews in Open-source Projects: Which Problems Do They Fix?},
+	Url = {http://doi.acm.org/10.1145/2597073.2597082},
+	Year = {2014},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/2597073.2597082},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/2597073.2597082}}
 
 @inproceedings{Belli97a,
 	Author = {F. Belli and R. Crisan},
@@ -7393,6 +7724,26 @@
 	Isbn = {978-0-262-16188-6},
 	Title = {The foundations of {Esterel}},
 	Year = {2000}}
+
+@article{Bers90a,
+	Acmid = {77650},
+	Address = {New York, NY, USA},
+	Author = {Bershad, Brian N. and Anderson, Thomas E. and Lazowska, Edward D. and Levy, Henry M.},
+	Doi = {10.1145/77648.77650},
+	Issn = {0734-2071},
+	Issue_Date = {Feb. 1990},
+	Journal = {ACM Trans. Comput. Syst.},
+	Month = feb,
+	Number = {1},
+	Numpages = {19},
+	Pages = {37--55},
+	Publisher = {ACM},
+	Title = {Lightweight Remote Procedure Call},
+	Url = {http://doi.acm.org/10.1145/77648.77650},
+	Volume = {8},
+	Year = {1990},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/77648.77650},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/77648.77650}}
 
 @inproceedings{Bert07a,
 	Address = {Washington, DC, USA},
@@ -8388,6 +8739,17 @@
 	Volume = 1628,
 	Year = {1999}}
 
+@article{Black08a,
+	Author = {Sue Black},
+	Bibsource = {DBLP, http://dblp.uni-trier.de},
+	Ee = {http://dx.doi.org/10.1016/j.infsof.2007.07.008},
+	Journal = {Information {\&} Software Technology},
+	Number = {7-8},
+	Pages = {723-736},
+	Title = {Deriving an approximation algorithm for automatic computation of ripple effect measures},
+	Volume = {50},
+	Year = {2008}}
+
 @article{Blah88a,
 	Author = {M.R. Blaha and W.J. Premerlani and James E. Rumbaugh},
 	Journal = {CACM},
@@ -8859,6 +9221,13 @@
 	Title = {Reconciling {Use} {Cases} via {Controlled} {Language} and {Graphical} {Models}},
 	Year = {2001}}
 
+@techreport{Boet07a,
+	Author = {G. Boetticher and T. Menzies and T. Ostrand},
+	Booktitle = {Workshop on the Evaluation of Software Defect Detection Tools},
+	Institution = {West Virginia University, Department of Computer Science},
+	Title = {PROMISE Repository of Empirical Software Engineering Data},
+	Year = {2007}}
+
 @article{Bohn07a,
 	Address = {Los Alamitos, CA, USA},
 	Author = {Johannes Bohnet and Jurgen Dollner},
@@ -8885,6 +9254,18 @@
 	Publisher = {IEEE Computer Society Press},
 	Title = {Software Change Impact Analysis},
 	Year = {1996}}
+
+@inproceedings{Bohn96b,
+	Author = {Bohner, S.A},
+	Booktitle = {Software Maintenance 1996, Proceedings., International Conference on},
+	Doi = {10.1109/ICSM.1996.564987},
+	Issn = {1063-6773},
+	Keywords = {management of change;software development management;software maintenance;Year 2000 Date situation;software change efforts;software change estimates;software change impact analysis;software change process;software change visibility;software community;software life cycle objects;software maintenance;year 2000 perspective;Software maintenance},
+	Month = {nov},
+	Pages = {42-51},
+	Title = {Impact analysis in the software change process: a year 2000 perspective},
+	Year = {1996},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1109/ICSM.1996.564987}}
 
 @inproceedings{Boji00a,
 	Author = {Dragan Bojic and Dusan Velasevic},
@@ -9057,6 +9438,7 @@
 
 @inproceedings{Bono08a,
 	Author = {Viviana Bono and Ferruccio Damiani and Elena Giachino},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1007/978-0-387-09680-3\_25},
 	Booktitle = {Fifth IFIP International Conference On Theoretical Computer Science - TCS 2008},
 	Doi = {10.1007/978-0-387-09680-3\_25},
 	Pages = {367-382},
@@ -9065,8 +9447,15 @@
 	Title = {On Traits and Types in a Java-like Setting},
 	Url = {http://www.di.unito.it/~damiani/papers/ifip-tcs-B-2008.html},
 	Year = {2008},
-	Bdsk-Url-1 = {http://www.di.unito.it/~damiani/papers/ifip-tcs-B-2008.html},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1007/978-0-387-09680-3\_25}}
+	Bdsk-Url-2 = {http://www.di.unito.it/~damiani/papers/ifip-tcs-B-2008.html}}
+
+@incollection{Bono12a,
+	Author = {Bono, Viviana and Ku{\'s}mierek, Jarek and Mulatero, Mauro},
+	Booktitle = {ECOOP 2012--Object-Oriented Programming},
+	Pages = {560--588},
+	Publisher = {Springer},
+	Title = {Magda: a new language for modularity},
+	Year = {2012}}
 
 @inproceedings{Bono98a,
 	Address = {London, UK},
@@ -9189,6 +9578,20 @@
 	Publisher = {Addison Wesley},
 	Title = {The Unified Modeling Language User Guide},
 	Year = {1999}}
+
+@inproceedings{Boog08a,
+	Author = {Boogerd, C. and Moonen, L.},
+	Booktitle = {International Conference on Software Maintenance},
+	Pages = {277 -286},
+	Title = {{Assessing the Value of Coding Standards: An Empirical Study}},
+	Year = {2008}}
+
+@inproceedings{Boog09a,
+	Author = {Boogerd, Cathal and Moonen, Leon},
+	Booktitle = {{Working Conference on Mining Software Repositories}},
+	Pages = {41--50},
+	Title = {{Evaluating the Relation Between Coding Standard Violations and Faults Within and Across Software Versions}},
+	Year = {2009}}
 
 @inproceedings{Boot00a,
 	Address = {New York, NY, USA},
@@ -9909,7 +10312,7 @@
 
 @misc{Brac10b,
 	Author = {Gilad Bracha},
-	Howpublished = {http://www.hpi.uni-potsdam.de/hirschfeld/events/past/media/100105_Bracha_2010_LinguisticReflectionViaMirrors_HPI.mp4},
+	Howpublished = {\url{http://bracha.org/Site/Talks.html}},
 	Title = {Linguistic Reflection via Mirrors. Talk at HPI Potsdam},
 	Year = {2010}}
 
@@ -11521,6 +11924,21 @@
 	Year = {2002},
 	Bdsk-Url-1 = {http://scg.unibe.ch/archive/projects/Buch02a.pdf}}
 
+@inproceedings{Buch02b,
+	Acmid = {729576},
+	Address = {London, UK, UK},
+	Author = {Buchheim, Christoph and J\"{u}nger, Michael and Leipert, Sebastian},
+	Booktitle = {Revised Papers from the 10th International Symposium on Graph Drawing},
+	Isbn = {3-540-00158-1},
+	Numpages = {10},
+	Pages = {344--353},
+	Publisher = {Springer-Verlag},
+	Series = {GD '02},
+	Title = {Improving Walker's Algorithm to Run in Linear Time},
+	Url = {http://dl.acm.org/citation.cfm?id=647554.729576},
+	Year = {2002},
+	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=647554.729576}}
+
 @mastersthesis{Buch03a,
 	Abstract = {Redocumentation and design recovery are two
                   important areas of reverse engineering. Detection of
@@ -12569,6 +12987,16 @@
 	Volume = {27},
 	Year = {1992}}
 
+@article{Cali12a,
+	Author = {Radu Calinescu and Carlo Ghezzi and Marta Z. Kwiatkowska and Raffaela Mirandola},
+	Ee = {http://doi.acm.org/10.1145/2330667.2330686},
+	Journal = {Commun. ACM},
+	Number = {9},
+	Pages = {69-77},
+	Title = {Self-adaptive software needs quantitative verification at runtime},
+	Volume = {55},
+	Year = {2012}}
+
 @book{Call05a,
 	Author = {Werner Callebaut and Diego Rasskin-Gutman},
 	Publisher = {MIT press},
@@ -12610,6 +13038,17 @@
 	Publisher = {Princeton University Press},
 	Title = {Self-Organization in Biological Systems},
 	Year = {2001}}
+
+@book{Cama13a,
+	Booktitle = {Assurances for Self-Adaptive Systems},
+	Editor = {Javier C{\'a}mara and Rog{\'e}rio de Lemos and Carlo Ghezzi and Ant{\'o}nia Lopes},
+	Ee = {http://dx.doi.org/10.1007/978-3-642-36249-1},
+	Isbn = {978-3-642-36248-4},
+	Publisher = {Springer},
+	Series = {Lecture Notes in Computer Science},
+	Title = {Assurances for Self-Adaptive Systems - Principles, Models, and Techniques},
+	Volume = {7740},
+	Year = {2013}}
 
 @techreport{Cama95a,
 	Abstract = {This thesis presents a proof system to support the
@@ -12830,6 +13269,7 @@
 @article{Canf96a,
 	Address = {New York, NY, USA},
 	Author = {G. Canfora and A. Cimitile and M. Munro},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1002/(SICI)1097-024X(199601)26:1<25::AID-SPE994>3.3.CO;2-K},
 	Doi = {10.1002/(SICI)1097-024X(199601)26:1<25::AID-SPE994>3.3.CO;2-K},
 	Issn = {0038-0644},
 	Journal = {Softw. Pract. Exper.},
@@ -12839,7 +13279,7 @@
 	Title = {An improved algorithm for identifying objects in code},
 	Volume = {26},
 	Year = {1996},
-	Bdsk-Url-1 = {http://dx.doi.org/10.1002/(SICI)1097-024X(199601)26:1<25::AID-SPE994>3.3.CO;2-K}}
+	Bdsk-Url-2 = {http://dx.doi.org/10.1002/(SICI)1097-024X(199601)26:1%3C25::AID-SPE994%3E3.3.CO;2-K}}
 
 @article{Canf98a,
 	Author = {Gerardo Canfora and Aniello Cimitile and Ugo de Carlini and Andrea {De Lucia}},
@@ -14240,6 +14680,17 @@
 	Title = {Object Databases in Practice},
 	Year = {1998}}
 
+@article{Chel02a,
+	Author = {Chelf, Benjamin and Engler, Dawson and Hallem, Seth},
+	Journal = {SIGSOFT Software Engineering Notes},
+	Month = {nov},
+	Number = {1},
+	Pages = {51--60},
+	Publisher = {ACM},
+	Title = {{How to Write System-specific, Static Checkers in Metal}},
+	Volume = {28},
+	Year = {2002}}
+
 @inproceedings{Chen00a,
 	Author = {Chen, Kunrong and Rajlich, V{\'a}clav},
 	Booktitle = {Proceedings IEEE International Conference on Software Maintenance (ICSM)},
@@ -15076,14 +15527,6 @@
 	Title = {The war room command console: shared visualizations for inclusive team coordination},
 	Year = {2005}}
 
-@inproceedings{Cinn12a,
-	Author = {Cinn{\'e}ide, M.{\'O}. and Tratt, L. and Harman, M. and Counsell, S. and Moghadam, I.H.},
-	Booktitle = {Proc. Empirical Software Engineering and Management (ESEM)},
-	Month = sep,
-	Note = {to appear},
-	Title = {Experimental Assessment of Software Metrics Using Automated Refactoring},
-	Year = {2012}}
-
 @misc{Cifu06a,
 	Key = {Squawk},
 	Note = {http://developers.sun.com/learning/javaoneonline/2006/coolstuff/TS-1598.pdf},
@@ -15163,6 +15606,14 @@
 	Note = {Cincom},
 	Title = {VisualWorks Application Developer's Guide},
 	Year = {2002}}
+
+@inproceedings{Cinn12a,
+	Author = {Cinn{\'e}ide, M.{\'O}. and Tratt, L. and Harman, M. and Counsell, S. and Moghadam, I.H.},
+	Booktitle = {Proc. Empirical Software Engineering and Management (ESEM)},
+	Month = sep,
+	Note = {to appear},
+	Title = {Experimental Assessment of Software Metrics Using Automated Refactoring},
+	Year = {2012}}
 
 @book{Cioba06a,
 	Booktitle = {Applications of Membrane Computing},
@@ -16586,6 +17037,13 @@
 	Year = {2006},
 	Bdsk-Url-1 = {http://research.cs.queensu.ca/~cordy/Papers/Cordy_PEPM06_TXL.pdf}}
 
+@inproceedings{Corm00a,
+	Author = {Flanagan, Cormac and Leino, K. Rustan M. and Lillibridge, Mark and Nelson, Greg and Saxe, James B. and Stata, Raymie},
+	Booktitle = {Conference on Programming Language Design and Implementation},
+	Pages = {234--245},
+	Title = {{Extended Static Checking for Java}},
+	Year = {2002}}
+
 @inproceedings{Corm90a,
 	Address = {White Plains, New York},
 	Author = {G.V. Cormack and A.K. Wright},
@@ -16698,6 +17156,26 @@
 	Title = {{MJ}: a rational module system for {Java} and its applications},
 	Year = {2003},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/949305.949326}}
+
+@inproceedings{Cosse12a,
+	Acmid = {2393661},
+	Address = {New York, NY, USA},
+	Articleno = {55},
+	Author = {Cossette, Bradley E. and Walker, Robert J.},
+	Booktitle = {Proceedings of the ACM SIGSOFT 20th International Symposium on the Foundations of Software Engineering},
+	Doi = {10.1145/2393596.2393661},
+	Isbn = {978-1-4503-1614-9},
+	Keywords = {API, adaptive change, recommendation systems},
+	Location = {Cary, North Carolina},
+	Numpages = {11},
+	Pages = {55:1--55:11},
+	Publisher = {ACM},
+	Series = {FSE '12},
+	Title = {Seeking the Ground Truth: A Retroactive Study on the Evolution and Migration of Software Libraries},
+	Url = {http://doi.acm.org/10.1145/2393596.2393661},
+	Year = {2012},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/2393596.2393661},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/2393596.2393661}}
 
 @inproceedings{Cost03a,
 	Address = {Darmstadt, Germany},
@@ -16816,7 +17294,7 @@
 	Year = {2005}}
 
 @inproceedings{Cour05a,
-	Author = {Alexandre Courbot and Re Courbot and Jean-Jacques Vandewalle and Gilles Grimaud and Jean-jacques V},
+	Author = {Alexandre Courbot and Jean-Jacques Vandewalle and Gilles Grimaud},
 	Booktitle = {In Proceedings of Second International Workshop on Construction and Analysis of Safe, Secure, and Interoperable Smart Devices},
 	Doi = {10.1007/11741060_4},
 	Isbn = {3-540-33689-3},
@@ -16856,6 +17334,13 @@
 	Title = {The Categorical Abstract Machine},
 	Volume = {201},
 	Year = {1985}}
+
+@article{Cout12a,
+	Author = {Cesar Couto and Joao Eduardo Montandon and Christofer Silva and Marco Tulio Valente},
+	Journal = {Software Quality Journal},
+	Pages = {1--17},
+	Title = {{Static Correspondence and Correlation Between Field Defects and Warnings Reported by a Bug Finding Tool}},
+	Year = {2012}}
 
 @inproceedings{Cout87a,
 	Address = {Paris, France},
@@ -17403,6 +17888,17 @@
 	Bdsk-Url-1 = {http://scg.unibe.ch/archive/papers/Cruz98bManagingEvolution.pdf},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1109/DEXA.1998.707460}}
 
+@article{Csal08a,
+	Author = {Csallner, Christoph and Smaragdakis, Yannis and Xie, Tao},
+	Journal = {Transactions on Software Engineering and Methodology},
+	Month = {may},
+	Number = {2},
+	Pages = {1--37},
+	Publisher = {ACM},
+	Title = {DSD-Crasher: A Hybrid Analysis Tool for Bug Finding},
+	Volume = {17},
+	Year = {2008}}
+
 @article{Cuad09a,
 	Author = {Jes\'us S\'anchez Cuadrado and Jes\'us Garc\'ia Molina},
 	Doi = {10.1109/TSE.2009.14},
@@ -17606,6 +18102,16 @@
 	Year = {2000},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/353171.353195}}
 
+@article{Czaj01a,
+	Author = {Czajkowski, G. and Dayn{\'e}s, L.},
+	Journal = {ACM SIGPLAN Notices},
+	Number = {11},
+	Pages = {125--138},
+	Publisher = {ACM},
+	Title = {Multitasking without comprimise: a virtual machine evolution},
+	Volume = {36},
+	Year = {2001}}
+
 @inproceedings{Czaj03,
 	Acmid = {1247347},
 	Address = {Berkeley, CA, USA},
@@ -17807,22 +18313,12 @@
 	Bdsk-Url-1 = {http://www.w3.org/TR/DOM-Level-2-Events}}
 
 @manual{DOM98,
-  Author       = {L. Wood and J. Sorensen and S. Byrne and R.S. Sutor
-                  and V. Apparao and S. Isaacs and G. Nicol and M.
-                  Champion},
-  Organization = {World Wide Web Consortium},
-  Title        = {Document Object Model Specification {DOM} 1.0},
-  url          = {http://www.w3.org/TR/REC-DOM-Level-1},
-  Year         = {1998}
-}
-
-@manual{Hick12a,
-  Author       = {Hickson, Ian},
-  Organization = {World Wide Web Consortium},
-  Title        = {Web Workers (Candidate Recommendation)},
-  url          = {http://www.w3.org/TR/workers},
-  Year         = {2012}
-}
+	Author = {L. Wood and J. Sorensen and S. Byrne and R.S. Sutor and V. Apparao and S. Isaacs and G. Nicol and M. Champion},
+	Organization = {World Wide Web Consortium},
+	Title = {Document Object Model Specification {DOM} 1.0},
+	Url = {http://www.w3.org/TR/REC-DOM-Level-1},
+	Year = {1998},
+	Bdsk-Url-1 = {http://www.w3.org/TR/REC-DOM-Level-1}}
 
 @misc{DPWS,
 	Key = {DPWS},
@@ -18473,6 +18969,13 @@
 	Title = {201 Principles of Software Development},
 	Year = {1995}}
 
+@inproceedings{Daws00a,
+	Author = {Engler, Dawson and Chelf, Benjamin and Chou, Andy and Hallem, Seth},
+	Booktitle = {Symposium on Operating System Design \& Implementation},
+	Pages = {1--16},
+	Title = {{Checking system Rules Using System-specific, Programmer-Written Compiler Extensions}},
+	Year = {2000}}
+
 @inproceedings{Daya88a,
 	Author = {Umeshwar Dayal and Alejandro Buchmann and Dennis McCarthy},
 	Booktitle = {Proceedings of the 2nd workshop on Object-Oriented Database Systems: Advances in Object-Oriented Database Systems},
@@ -18580,12 +19083,28 @@
 	Title = {Patterns for System Testing},
 	Year = {1998}}
 
+@article{DeLe13a,
+	Author = {Rog{\'e}rio de Lemos and David Garlan and Carlo Ghezzi and Holger Giese},
+	Ee = {http://dx.doi.org/10.4230/DagRep.3.12.67},
+	Journal = {Dagstuhl Reports},
+	Number = {12},
+	Pages = {67-96},
+	Title = {Software Engineering for Self-Adaptive Systems: Assurances (Dagstuhl Seminar 13511)},
+	Volume = {3},
+	Year = {2013}}
+
 @book{DeMa02,
 	Author = {Tom DeMarco},
 	Isbn = {0-7679-0769-8},
 	Publisher = {Broadway Books},
 	Title = {Slack, Getting Past Burnout, BusyWork, and the Myth of Total Efficiency},
 	Year = {2002}}
+
+@inproceedings{DeMa14a,
+	Author = {F. DeMarco and J. Xuan and D. Le Berre and M. Monperrus},
+	Booktitle = {CSTVA},
+	Title = {Automatic Repair of Buggy If Conditions and Missing Preconditions with SMT},
+	Year = {2014}}
 
 @book{DeMa86a,
 	Author = {Tom deMarco},
@@ -20017,6 +20536,14 @@
 	Year = {2008},
 	Bdsk-Url-2 = {http://www.info.uaic.ro/bin/Annals/XVIII%20http://scg.unibe.ch/archive/papers/Deza08bEvolvingObjects.pdf}}
 
+@incollection{Dezan10a,
+	Author = {Dezani-Ciancaglini, Mariangiola and De'Liguoro, Ugo},
+	Booktitle = {Web Services and Formal Methods},
+	Pages = {1--28},
+	Publisher = {Springer},
+	Title = {Sessions and session types: an overview},
+	Year = {2010}}
+
 @inproceedings{DiLu01a,
 	Author = {Guiseppe Antonio {Di Lucca} and Massimiliano {Di Penta} and Anna Rita Fasolino and Pasquale Granato},
 	Booktitle = {Proceedings Seventh IEEE Workshop on Empirical Studies of Software Maintenance},
@@ -20474,6 +21001,12 @@
 	Title = {Towards Flexible and Safe Technology for Runtime Evolution of {Java} Language Applications},
 	Year = {2001}}
 
+@phdthesis{Dmit01b,
+	Author = {M. Dmitriev},
+	School = {University of Glasgow},
+	Title = {Safe Class and Data Evolution in Large and Long-Lived Java Applications},
+	Year = {2001}}
+
 @misc{Dmit04a,
 	Author = {Sergey Dmitriev},
 	Journal = {onBoard online magazine},
@@ -20896,6 +21429,16 @@
 	Title = {Composition, reuse and interaction analysis of stateful aspects},
 	Year = {2004},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/976270.976288}}
+
+@article{Doue06a,
+	Author = {Douence, R{\'e}mi and Fritz, Thomas and Loriant, Nicolas and Menaud, Jean-Marc and S{\'e}gura-Devillechaise, Marc and S\"udholt, Mario},
+	Journal = {Transaction on Aspect-Oriented Software Development},
+	Month = jan,
+	Number = {1},
+	Publisher = {LNCS},
+	Title = {An expressive aspect language for system applications with Arachne},
+	Volume = {1},
+	Year = {2006}}
 
 @inproceedings{Dous05a,
 	Author = {Bernard DOUSSET and Said KAROUACH},
@@ -21559,6 +22102,15 @@
 	Title = {State Patterns},
 	Year = {1997}}
 
+@book{ECMA11a,
+	Editor = {ECMA},
+	Month = jul,
+	Publisher = {European Computer Machinery Association},
+	Title = {ECMAScript Language Specification version 5},
+	Url = {http://www.ecma-international.org/publications/standards/Ecma-262.htm},
+	Year = {2011},
+	Bdsk-Url-1 = {http://www.ecma-international.org/publications/standards/Ecma-262.htm}}
+
 @techreport{ECMA83a,
 	Author = {{ECMA}},
 	Institution = {ECMA},
@@ -21573,15 +22125,6 @@
 	Title = {ECMAScript Language Specification},
 	Url = {http://www.ecma-international.org/publications/standards/Ecma-262-arch.htm},
 	Year = {1997},
-	Bdsk-Url-1 = {http://www.ecma-international.org/publications/standards/Ecma-262.htm}}
-
-@book{ECMA11a,
-	Editor = {ECMA},
-	Month = jul,
-	Publisher = {European Computer Machinery Association},
-	Title = {ECMAScript Language Specification version 5},
-	Url = {http://www.ecma-international.org/publications/standards/Ecma-262.htm},
-	Year = {2011},
 	Bdsk-Url-1 = {http://www.ecma-international.org/publications/standards/Ecma-262.htm}}
 
 @misc{ELanguage,
@@ -22901,6 +23444,19 @@
 	Year = {2008},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.cl.2007.05.002}}
 
+@article{Fabr12b,
+	Author = {Fabry, Johan and Galdames, Daniel},
+	Doi = {10.1002/spe.2117},
+	Issn = {1097-024X},
+	Journal = {Software: Practice and Experience},
+	Keywords = {PHANtom, Aspect-Oriented Programming, Smalltalk},
+	Pages = {n/a--n/a},
+	Publisher = {John Wiley & Sons, Ltd},
+	Title = {PHANtom: a modern aspect language for Pharo Smalltalk},
+	Url = {http://dx.doi.org/10.1002/spe.2117},
+	Year = {2012},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1002/spe.2117}}
+
 @article{Fabr74a,
 	Author = {R.S. Fabry},
 	Journal = {CACM},
@@ -23298,6 +23854,15 @@
 	Title = {A Little {Java}, {A} Few Patterns},
 	Year = {1998}}
 
+@inproceedings{Fent00a,
+	Author = {Fenton, Norman E. and Neil, Martin},
+	Booktitle = {ACM Press},
+	Date-Added = {2014-07-08 13:25:55 +0000},
+	Date-Modified = {2014-07-08 13:26:25 +0000},
+	Pages = {357--370},
+	Title = {Software Metrics: Roadmap},
+	Year = {2000}}
+
 @inproceedings{Fent89a,
 	Author = {Jay Fenton and Kent Beck},
 	Booktitle = {Proceedings OOPSLA '89, ACM SIGPLAN Notices},
@@ -23647,6 +24212,16 @@
 	Url = {http://en.wikipedia.org/wiki/N-puzzle},
 	Bdsk-Url-1 = {http://en.wikipedia.org/wiki/N-puzzle}}
 
+@article{Filh11a,
+	Author = {Joao Araujo Filho, Silvio Souza and Marco Tulio Valente},
+	Journal = {Software, IET},
+	Month = {aug},
+	Number = {4},
+	Pages = {366 --374},
+	Title = {{Study on the Relevance of the Warnings Reported by Java Bug-finding Tools}},
+	Volume = {5},
+	Year = {2011}}
+
 @inproceedings{Fill07a,
 	Author = {Filli{\^a}tre, Jean-Christophe and March{\'e}, Claude},
 	Booktitle = {CAV'07: 19th International Conference on Computer Aided Verification},
@@ -23911,7 +24486,7 @@ java compiled to native},
 	Title = {Marmot: An Optimizing Compiler for Java},
 	Url = {http://research.microsoft.com/apps/pubs/default.aspx?id=68561},
 	Year = {1999},
-	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDRBWJGNsYXNzV05TLmtleXNaTlMub2JqZWN0c4AHog4PgAKAA6IREoAEgAVccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QSi4uLy4uLy4uLy4uLy4uLy4uL3BhcGVyL0ZpdHo5OGEgTWFybW90IEFuIE9wdGltaXppbmcgQ29tcGlsZXIgZm9yIEphdmEucGRm0gkXGBlXTlMuZGF0YYAGTxEB0gAAAAAB0gACAAAEZGF0YQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAx+A0lUgrAAAANdALH0ZpdHo5OGEgTWFybW90IEFuIE9wIzM0NTVFNC5wZGYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA0VeTJb1NoUERGIAAAAAAABgACAAAJAAAAAAAAAAAAAAAAAAAAAAVwYXBlcgAAEAAIAADH4Bh1AAAAEQAIAADJb0VYAAAAAQAIADXQCwAEHR0AAgA0ZGF0YTplZHVjYXRpb246cGFwZXI6Rml0ejk4YSBNYXJtb3QgQW4gT3AjMzQ1NUU0LnBkZgAOAGYAMgBGAGkAdAB6ADkAOABhACAATQBhAHIAbQBvAHQAIABBAG4AIABPAHAAdABpAG0AaQB6AGkAbgBnACAAQwBvAG0AcABpAGwAZQByACAAZgBvAHIAIABKAGEAdgBhAC4AcABkAGYADwAKAAQAZABhAHQAYQASAEMvZWR1Y2F0aW9uL3BhcGVyL0ZpdHo5OGEgTWFybW90IEFuIE9wdGltaXppbmcgQ29tcGlsZXIgZm9yIEphdmEucGRmAAATAA0vVm9sdW1lcy9kYXRhAP//AADSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXU5TTXV0YWJsZURhdGGjHR8gVk5TRGF0YVhOU09iamVjdNIbHCIjXE5TRGljdGlvbmFyeaIiIF8QD05TS2V5ZWRBcmNoaXZlctEmJ1Ryb290gAEACAARABoAIwAtADIANwBAAEYATQBUAFwAZwBpAGwAbgBwAHMAdQB3AIQAjgDbAOAA6ADqAsACxQLQAtkC5wLrAvIC+wMAAw0DEAMiAyUDKgAAAAAAAAIBAAAAAAAAACgAAAAAAAAAAAAAAAAAAAMs},
+	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QSi4uLy4uLy4uLy4uLy4uLy4uL3BhcGVyL0ZpdHo5OGEgTWFybW90IEFuIE9wdGltaXppbmcgQ29tcGlsZXIgZm9yIEphdmEucGRm0hcLGBlXTlMuZGF0YU8RAdIAAAAAAdIAAgAABGRhdGEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMfgNJVIKwAAADXQCx9GaXR6OThhIE1hcm1vdCBBbiBPcCMzNDU1RTQucGRmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANFXkyW9TaFBERiAAAAAAAAYAAgAACQAAAAAAAAAAAAAAAAAAAAAFcGFwZXIAABAACAAAx+AYdQAAABEACAAAyW9FWAAAAAEACAA10AsABB0dAAIANGRhdGE6ZWR1Y2F0aW9uOnBhcGVyOkZpdHo5OGEgTWFybW90IEFuIE9wIzM0NTVFNC5wZGYADgBmADIARgBpAHQAegA5ADgAYQAgAE0AYQByAG0AbwB0ACAAQQBuACAATwBwAHQAaQBtAGkAegBpAG4AZwAgAEMAbwBtAHAAaQBsAGUAcgAgAGYAbwByACAASgBhAHYAYQAuAHAAZABmAA8ACgAEAGQAYQB0AGEAEgBDL2VkdWNhdGlvbi9wYXBlci9GaXR6OThhIE1hcm1vdCBBbiBPcHRpbWl6aW5nIENvbXBpbGVyIGZvciBKYXZhLnBkZgAAEwANL1ZvbHVtZXMvZGF0YQD//wAAgAbSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXU5TTXV0YWJsZURhdGGjHR8gVk5TRGF0YVhOU09iamVjdNIbHCIjXE5TRGljdGlvbmFyeaIiIF8QD05TS2V5ZWRBcmNoaXZlctEmJ1Ryb290gAEACAARABoAIwAtADIANwBAAEYATQBVAGAAZwBqAGwAbgBxAHMAdQB3AIQAjgDbAOAA6AK+AsACxQLQAtkC5wLrAvIC+wMAAw0DEAMiAyUDKgAAAAAAAAIBAAAAAAAAACgAAAAAAAAAAAAAAAAAAAMs},
 	Bdsk-Url-1 = {http://research.microsoft.com/apps/pubs/default.aspx?id=68561}}
 
 @techreport{Fium83a,
@@ -23985,6 +24560,7 @@ java compiled to native},
 
 @article{Fiut99a,
 	Author = {R. Fiutem and G. Antoniol and P. Tonella and E. Merlo},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1002/(SICI)1096-908X(199909/10)11:5<339::AID-SMR196>3.3.CO;2-9},
 	Doi = {10.1002/(SICI)1096-908X(199909/10)11:5<339::AID-SMR196>3.3.CO;2-9},
 	Issn = {1040-550X},
 	Journal = {Journal of Software Maintenance: Research and Practice},
@@ -23994,7 +24570,7 @@ java compiled to native},
 	Title = {ART: an Architectural Reverse Engineering Environment},
 	Volume = 11,
 	Year = {1999},
-	Bdsk-Url-1 = {http://dx.doi.org/10.1002/(SICI)1096-908X(199909/10)11:5<339::AID-SMR196>3.3.CO;2-9}}
+	Bdsk-Url-2 = {http://dx.doi.org/10.1002/(SICI)1096-908X(199909/10)11:5%3C339::AID-SMR196%3E3.3.CO;2-9}}
 
 @inproceedings{Fjel79a,
 	Author = {R.K. Fjeldstad and W. T. Hamlen},
@@ -24689,6 +25265,27 @@ java compiled to native},
 	Volume = {21},
 	Year = {1987}}
 
+@inproceedings{Fram09a,
+	Abstract = {The power of high-level languages lies in their abstraction over hardware and software complexity, leading to greater security, better reliability, and lower development costs. However, opaque abstractions are often show-stoppers for systems programmers, forcing them to either break the abstraction, or more often, simply give up and use a different language. This paper addresses the challenge of opening up a high-level language to allow practical low-level programming without forsaking integrity or performance. The contribution of this paper is three-fold: 1) we draw together common threads in a diverse literature, 2) we identify a framework for extending high-level languages for low-level programming, and 3) we show the power of this approach through concrete case studies. Our framework leverages just three core ideas: extending semantics via intrinsic methods, extending types via unboxing and architectural-width primitives, and controlling semantics via scoped semantic regimes. We develop these ideas through the context of a rich literature and substantial practical experience. We show that they provide the power necessary to implement substantial artifacts such as a high-performance virtual machine, while preserving the software engineering benefits of the host language. The time has come for high-level low-level programming to be taken more seriously: 1) more projects now use high-level languages for systems programming, 2) increasing architectural heterogeneity and parallelism heighten the need for abstraction, and 3) a new generation of high-level languages are under development and ripe to be influenced.},
+	Address = {New York, NY, USA},
+	Annote = {targets static programming languages},
+	Author = {Frampton, Daniel and Blackburn, Stephen M. and Cheng, Perry and Garner, Robin J. and Grove, David and Eliot and Salishev, Sergey I.},
+	Booktitle = {Proceedings of the 2009 ACM SIGPLAN/SIGOPS international conference on Virtual execution environments},
+	Doi = {10.1145/1508293.1508305},
+	Isbn = {978-1-60558-375-4},
+	Location = {Washington, DC, USA},
+	Pages = {81--90},
+	Posted-At = {2013-01-13 19:01:34},
+	Priority = {2},
+	Publisher = {ACM},
+	Rating = {4},
+	Read = {1},
+	Series = {VEE '09},
+	Title = {Demystifying magic: high-level low-level programming},
+	Url = {http://dx.doi.org/10.1145/1508293.1508305},
+	Year = {2009},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1145/1508293.1508305}}
+
 @book{Fram93a,
 	Author = {Frame Technology Corporation},
 	Isbn = {41-03776-00},
@@ -25310,6 +25907,26 @@ java compiled to native},
 	Title = {F-Script. Cocoa Developer's Best Friend},
 	Url = {http://www.fscript.org/},
 	Bdsk-Url-1 = {http://www.fscript.org/}}
+
+@article{Fugg98a,
+	Acmid = {278941},
+	Address = {Piscataway, NJ, USA},
+	Author = {Fuggetta, Alfonso and Picco, Gian Pietro and Vigna, Giovanni},
+	Doi = {10.1109/32.685258},
+	Issn = {0098-5589},
+	Issue_Date = {May 1998},
+	Journal = {IEEE Trans. Softw. Eng.},
+	Keywords = {Mobile code, mobile agent, distributed application, design paradigm.},
+	Month = may,
+	Number = {5},
+	Numpages = {20},
+	Pages = {342--361},
+	Publisher = {IEEE Press},
+	Title = {Understanding Code Mobility},
+	Url = {http://dx.doi.org/10.1109/32.685258},
+	Volume = {24},
+	Year = {1998},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1109/32.685258}}
 
 @inproceedings{Fugi90a,
 	Author = {Mariagrazia Fugini and Barbara Pernici},
@@ -25944,6 +26561,18 @@ java compiled to native},
 	Title = {Quality prediction of service compositions through probabilistic model checking},
 	Year = {2008}}
 
+@article{Gall09,
+	Author = {Gall, H C and Fluri, B and Pinzger, M},
+	Issn = {0740-7459},
+	Journal = {IEEE Software},
+	Month = {feb},
+	Number = 1,
+	Pages = {26-33},
+	Publisher = {IEEE},
+	Title = {Change analysis with evolizer and ChangeDistiller},
+	Volume = {26},
+	Year = {2009}}
+
 @inproceedings{Gall09a,
 	Abstract = {Internet-scale code search is the problem of finding
                   source on the Internet. Developers are typically
@@ -26219,6 +26848,7 @@ java compiled to native},
 
 @article{Gans00a,
 	Author = {Gansner and North},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1002/1097-024X(200009)30:11<1203::AID-SPE338>3.3.CO;2-E},
 	Doi = {10.1002/1097-024X(200009)30:11<1203::AID-SPE338>3.3.CO;2-E},
 	Journal = {Software Practice Experience.},
 	Number = 11,
@@ -26227,7 +26857,7 @@ java compiled to native},
 	Title = {An Open Graph Visualization System and its Applications to Software Engineering},
 	Volume = 30,
 	Year = {2000},
-	Bdsk-Url-1 = {http://dx.doi.org/10.1002/1097-024X(200009)30:11<1203::AID-SPE338>3.3.CO;2-E}}
+	Bdsk-Url-2 = {http://dx.doi.org/10.1002/1097-024X(200009)30:11%3C1203::AID-SPE338%3E3.3.CO;2-E}}
 
 @book{Gant99a,
 	Author = {Bernhard Ganter and Rudolf Wille},
@@ -26358,6 +26988,22 @@ java compiled to native},
 	Publisher = {Wiley and Sons},
 	Title = {Large Scale Software Architecture},
 	Year = {2003}}
+
+@inproceedings{Garl09a,
+ author = {Garlan, David and Schmerl, Bradley},
+ title = {{\AE}vol: A Tool for Defining and Planning Architecture Evolution},
+ booktitle = {Proceedings of the 31st International Conference on Software Engineering},
+ series = {ICSE'09},
+ year = {2009},
+ isbn = {978-1-4244-3453-4},
+ pages = {591--594},
+ numpages = {4},
+ url = {http://dx.doi.org/10.1109/ICSE.2009.5070563},
+ doi = {10.1109/ICSE.2009.5070563},
+ acmid = {1555081},
+ publisher = {IEEE Computer Society},
+ address = {Washington, DC, USA}
+}
 
 @inproceedings{Garl86a,
 	Address = {London, UK},
@@ -26589,6 +27235,17 @@ java compiled to native},
 	Url = {http://scg.unibe.ch/archive/masters/Aebi03a.pdf},
 	Year = {2006},
 	Bdsk-Url-1 = {http://scg.unibe.ch/archive/masters/Aebi03a.pdf}}
+
+@article{Geet14a,
+	Author = {Geetika, Rani and Singh, Paramvir},
+	Date-Added = {2014-07-08 13:44:54 +0000},
+	Date-Modified = {2014-07-08 13:45:15 +0000},
+	Journal = {Software Engineering Notes},
+	Number = {2},
+	Pages = {1--8},
+	Title = {Dynamic Coupling Metrics for Object Oriented Software Systems: A Survey},
+	Volume = {39},
+	Year = {2014}}
 
 @article{Geha82a,
 	Author = {N. Gehani},
@@ -27084,14 +27741,6 @@ java compiled to native},
 	Title = {Muse: {A} Multimedia Filing System},
 	Year = {1987}}
 
-@conference{Fleu07a,
-	Author = {Fabien Fleutot and Laurence Tratt},
-	Booktitle = {Proceedings of the Workshop on Dynamic Languages and Applications},
-	Title = {Contrasting compile-time meta-programming in {Metalua} and {Converge}},
-	Url = {http://tratt.net/laurie/research/publications/papers/fleutot_tratt__contrasting_compile_time_meta_programming_in_metalua_and_converge.pdf},
-	Year = {2007},
-	Bdsk-Url-1 = {http://tratt.net/laurie/research/publications/papers/fleutot_tratt__contrasting_compile_time_meta_programming_in_metalua_and_converge.pdf}}
-
 @inproceedings{Gibb89a,
 	Address = {Austin, Texas},
 	Author = {Simon Gibbs},
@@ -27112,6 +27761,14 @@ java compiled to native},
 	Title = {Software Information Systems: {A} Software Community Perspective},
 	Type = {Object Oriented Development},
 	Year = {1989}}
+
+@conference{Fleu07a,
+	Author = {Fabien Fleutot and Laurence Tratt},
+	Booktitle = {Proceedings of the Workshop on Dynamic Languages and Applications},
+	Title = {Contrasting compile-time meta-programming in {Metalua} and {Converge}},
+	Url = {http://tratt.net/laurie/research/publications/papers/fleutot_tratt__contrasting_compile_time_meta_programming_in_metalua_and_converge.pdf},
+	Year = {2007},
+	Bdsk-Url-1 = {http://tratt.net/laurie/research/publications/papers/fleutot_tratt__contrasting_compile_time_meta_programming_in_metalua_and_converge.pdf}}
 
 @techreport{Gibb89c,
 	Author = {Simon Gibbs},
@@ -27420,6 +28077,18 @@ java compiled to native},
 	Publisher = {Thomson Computer Press},
 	Title = {Software Quality},
 	Year = {1992}}
+
+@article{Gini21a,
+	Author = {C. Gini},
+	Citeulike-Article-Id = {1204714},
+	Journal = {The Economic Journal},
+	Keywords = {misc},
+	Pages = {124--126},
+	Posted-At = {2007-04-03 15:51:53},
+	Priority = {2},
+	Title = {Measurement of Inequality of Incomes},
+	Volume = {31},
+	Year = {1921}}
 
 @incollection{Gira87a,
 	Author = {Jean-Yves Girard},
@@ -27835,6 +28504,13 @@ java compiled to native},
 	Volume = {4},
 	Year = {1998}}
 
+@inproceedings{Goem11a,
+	Author = {Goeminne, M. and Mens, T.},
+	Booktitle = {Proc. Int'l Workshop SQM 2011},
+	Publisher = {CEUR-WS workshop proceedings},
+	Title = {{Evidence for the Pareto principle in Open Source Software Activity}},
+	Year = {2011}}
+
 @inproceedings{Goer05a,
 	Author = {Carsten G\"org and Peter Weissgerber},
 	Booktitle = {Proceedings of IWPC (13th International Workshop on Program Comprehension},
@@ -28116,6 +28792,14 @@ java compiled to native},
 	Booktitle = {On-Line Fault Detection and Supervision in Chemical Process Industries.},
 	Title = {Detection of distorted pattern using dynamic time warping algorithm and application for the supervision of bioprocesses},
 	Year = {1995}}
+
+@inproceedings{Golm01a,
+	Author = {Golm, M. and Kleinder, E. and Bellosa, F.},
+	Booktitle = {Hot Topics in Operating Systems, 2001. Proceedings of the Eighth Workshop on},
+	Organization = {IEEE},
+	Pages = {3--8},
+	Title = {Beyond Address Spaces-Flexibility, Performance, Protection, and Resource Management in the Type-Safe JX Operating System},
+	Year = {2001}}
 
 @inproceedings{Golm02a,
 	Address = {Berkeley, CA, USA},
@@ -28527,6 +29211,17 @@ java compiled to native},
 	Type = {Report Internal},
 	Year = {1992}}
 
+@article{Goues12a,
+	Author = {Le Goues, Clair and ThanhVu Nguyen and Stephanie Forrest and Westley Weimer},
+	Doi = {doi:10.1109/TSE.2011.104},
+	Journal = {IEEE Transactions on Software Engineering},
+	Number = {1},
+	Pages = {54--72},
+	Title = {GenProg: A Generic Method for Automatic Software Repair},
+	Volume = {38},
+	Year = {2012},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1109/TSE.2011.104}}
+
 @article{Goul93a,
 	Author = {Jhon D. Gould and Jacob Ukelson and Stephen J. Boies},
 	Journal = {Int. J. Man-Machine Studies},
@@ -28773,6 +29468,14 @@ java compiled to native},
 	Pages = {144--154},
 	Title = {The Transaction Concept: Virtues and Limitations},
 	Year = {1981}}
+
+@inproceedings{Gray86,
+	Author = {Jim Gray},
+	Bibsource = {DBLP, \url{http://dblp.uni-trier.de}},
+	Booktitle = {Symposium on Reliability in Distributed Software and Database Systems},
+	Pages = {3-12},
+	Title = {Why Do Computers Stop and What Can Be Done About It?},
+	Year = {1986}}
 
 @inproceedings{Gree03a,
 	Address = {New York, NY, USA},
@@ -29251,12 +29954,30 @@ java compiled to native},
 	Volume = 23,
 	Year = {2001}}
 
-@book{Grub05a,
+@inproceedings{Grov97a,
+	Acmid = {264352},
+	Address = {New York, NY, USA},
+	Author = {Grove, David and DeFouw, Greg and Dean, Jeffrey and Chambers, Craig},
+	Booktitle = {Proceedings of the 12th ACM SIGPLAN Conference on Object-oriented Programming, Systems, Languages, and Applications},
+	Doi = {10.1145/263698.264352},
+	Isbn = {0-89791-908-4},
+	Location = {Atlanta, Georgia, USA},
+	Numpages = {17},
+	Pages = {108--124},
+	Publisher = {ACM},
+	Series = {OOPSLA '97},
+	Title = {Call Graph Construction in Object-oriented Languages},
+	Url = {http://doi.acm.org/10.1145/263698.264352},
+	Year = {1997},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/263698.264352},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/263698.264352}}
+
+@book{Grub03a,
 	Author = {Penny Grubb and Armstrong A. Takang},
 	Edition = {second edition},
 	Publisher = {World Scientific},
 	Title = {Software Maintenance Concepts and Practices},
-	Year = {2005}}
+	Year = {2003}}
 
 @inproceedings{Grun00a,
 	Author = {John Grundy and John Hosking},
@@ -29494,6 +30215,22 @@ java compiled to native},
 	Year = {1998},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/286936.286961}}
 
+@inproceedings{Guha10a,
+	Acmid = {1883988},
+	Address = {Berlin, Heidelberg},
+	Author = {Guha, Arjun and Saftoiu, Claudiu and Krishnamurthi, Shriram},
+	Booktitle = {Proceedings of the 24th European conference on Object-oriented programming},
+	Isbn = {3-642-14106-4, 978-3-642-14106-5},
+	Location = {Maribor, Slovenia},
+	Numpages = {25},
+	Pages = {126--150},
+	Publisher = {Springer-Verlag},
+	Series = {ECOOP'10},
+	Title = {The essence of javascript},
+	Url = {http://dl.acm.org/citation.cfm?id=1883978.1883988},
+	Year = {2010},
+	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=1883978.1883988}}
+
 @article{Guib82a,
 	Author = {Leo Guibas and J. Stolfi},
 	Journal = {ACM TOG},
@@ -29555,6 +30292,45 @@ java compiled to native},
 	Title = {Declarative failure recovery for sensor networks},
 	Year = {2007},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/1218563.1218583}}
+
+@inproceedings{Gunt10a,
+	Acmid = {1868700},
+	Address = {New York, NY, USA},
+	Author = {G\"{u}nther, Sebastian and Sunkle, Sagar},
+	Booktitle = {Proceedings of the 2Nd International Workshop on Feature-Oriented Software Development},
+	Doi = {10.1145/1868688.1868700},
+	Isbn = {978-1-4503-0208-1},
+	Keywords = {domain-specific languages, feature-oriented programming, metaprogramming, runtime adaptation, software product lines},
+	Location = {Eindhoven, The Netherlands},
+	Numpages = {8},
+	Pages = {80--87},
+	Publisher = {ACM},
+	Series = {FOSD '10},
+	Title = {Dynamically Adaptable Software Product Lines Using Ruby Metaprogramming},
+	Url = {http://doi.acm.org/10.1145/1868688.1868700},
+	Year = {2010},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/1868688.1868700},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/1868688.1868700}}
+
+@inproceedings{Gunt11a,
+	Acmid = {2019145},
+	Address = {New York, NY, USA},
+	Articleno = {8},
+	Author = {G\"{u}nther, Sebastian and Fischer, Marco},
+	Booktitle = {Proceedings of the 15th International Software Product Line Conference, Volume 2},
+	Doi = {10.1145/2019136.2019145},
+	Isbn = {978-1-4503-0789-5},
+	Keywords = {feature-oriented programming, software product lines},
+	Location = {Munich, Germany},
+	Numpages = {8},
+	Pages = {8:1--8:8},
+	Publisher = {ACM},
+	Series = {SPLC '11},
+	Title = {Supporting Program Variant Generation and Feature Files in rbFeatures},
+	Url = {http://doi.acm.org/10.1145/2019136.2019145},
+	Year = {2011},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/2019136.2019145},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/2019136.2019145}}
 
 @book{Gunt92a,
 	Author = {Carl. A. Gunter},
@@ -29695,6 +30471,15 @@ java compiled to native},
 	Title = {Goldilocks and Three Specifications},
 	Volume = {668},
 	Year = {1993}}
+
+@book{Gutt95a,
+	Author = {Guttman, B. and Guttman, B. and Roback, E.A.},
+	Isbn = {9780788128301},
+	Publisher = {Diane Publishing Company},
+	Title = {An Introduction to Computer Security: The Nist Handbook},
+	Url = {http://csrc.nist.gov/publications/nistpubs/800-12/},
+	Year = {1995},
+	Bdsk-Url-1 = {http://csrc.nist.gov/publications/nistpubs/800-12/}}
 
 @book{Guzd01a,
 	Author = {Mark Guzdial},
@@ -30074,6 +30859,12 @@ java compiled to native},
 	Title = {Protection in the Guide Object-Oriented Distributed System},
 	Volume = {821},
 	Year = {1994}}
+
+@article{Hai02,
+	Author = {Brent Hailpern, Padmanabhan Santhanam},
+	Journal = {IBM Systems Journal},
+	Title = {Software Debugging, Testing, and Verification},
+	Year = {2002}}
 
 @article{Hail90a,
 	Author = {Brent Hailpern and Harold Ossher},
@@ -30962,6 +31753,16 @@ java compiled to native},
 	Year = {2006},
 	Bdsk-Url-1 = {http://janus.cs.utwente.nl:8000/twiki/pub/EIWAS2006/FinalPapers/HavingaNagyBergmans2006.pdf}}
 
+@article{Hawb02a,
+	Author = {Hawblitzel, C. and von Eicken, T.},
+	Journal = {ACM SIGOPS Operating Systems Review},
+	Number = {SI},
+	Pages = {391--403},
+	Publisher = {ACM},
+	Title = {Luna: a flexible Java protection system},
+	Volume = {36},
+	Year = {2002}}
+
 @inproceedings{Hawb98a,
 	Address = {Berkeley, CA, USA},
 	Author = {Hawblitzel, Chris and Chang, Chi-Chao and Czajkowski, Grzegorz and Hu, Deyu and von Eicken, Thorsten},
@@ -31052,7 +31853,7 @@ java compiled to native},
 	Year = {1992}}
 
 @inproceedings{Heal93a,
-	Author = {Healey, C. G. and Booth, K. S. and Enns J. T.},
+	Author = {Healey, C. G. and Booth, K. S. and Enns, J. T.},
 	Booktitle = {GI '93: Proceedings of Graphics Interface},
 	Title = {Harnessing Preattentive Processes for Multivariate Data Visualization},
 	Year = {1993}}
@@ -31725,6 +32526,18 @@ java compiled to native},
 	Title = {Atlas der politischen Landschaften},
 	Year = {2003}}
 
+@article{Herm13a,
+	Address = {Los Alamitos, CA, USA},
+	Author = {Fabien Hermenier and Julia Lawall and Gilles Muller},
+	Issn = {1545-5971},
+	Journal = {IEEE Transactions on Dependable and Secure Computing},
+	Number = {5},
+	Pages = {273-286},
+	Publisher = {IEEE Computer Society},
+	Title = {BtrPlace: A Flexible Consolidation Manager for Highly Available Applications},
+	Volume = {10},
+	Year = {2013}}
+
 @article{Hern88a,
 	Author = {Herndon, Jr., Robert M. and Valdis A. Berzins},
 	Journal = {IEEE Transactions on Software Engineering},
@@ -31962,6 +32775,14 @@ java compiled to native},
 	Year = {2008},
 	Bdsk-Url-1 = {http://doi.acm.org/10.1145/1408681.1408682},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1145/1408681.1408682}}
+
+@manual{Hick12a,
+	Author = {Hickson, Ian},
+	Organization = {World Wide Web Consortium},
+	Title = {Web Workers (Candidate Recommendation)},
+	Url = {http://www.w3.org/TR/workers},
+	Year = {2012},
+	Bdsk-Url-1 = {http://www.w3.org/TR/workers}}
 
 @book{Higg87a,
 	Author = {David A. Higgins and Nicholas Zvegintzov},
@@ -33000,6 +33821,7 @@ java compiled to native},
 	Month = sep,
 	Note = {was holt06a which conflicted with scg},
 	Number = {5},
+	Pages = {741--748},
 	Title = {Hierarchical Edge Bundles: Visualization of Adjacency Relations in Hierarchal Data},
 	Volume = {12},
 	Year = {2006}}
@@ -33256,6 +34078,17 @@ java compiled to native},
 	Title = {Understanding Russell: {A} First Attempt},
 	Volume = {173},
 	Year = {1984}}
+
+@article{Hoov36a,
+	Author = {Hoover, E. M.},
+	Issn = {0034-6535},
+	Journal = {The Review of Economic Statistics},
+	Number = {4},
+	Pages = {162--171},
+	Publisher = {JSTOR},
+	Title = {{The measurement of industrial localization}},
+	Volume = {18},
+	Year = {1936}}
 
 @book{Hopc79a,
 	Address = {Reading, Mass.},
@@ -33894,6 +34727,13 @@ java compiled to native},
 	Title = {{SOS Interface}: un generateur d'interfaces Homme-Machine},
 	Year = {1986}}
 
+@article{Hum99,
+	Author = {Watts S. Humphrey},
+	Journal = {Technical Report Vol. 2, Issue 1},
+	Publisher = {Carnegie Mellon Software Engineering Institute},
+	Title = {Bugs or Defects ?},
+	Year = {1999}}
+
 @article{Humm08a,
 	Author = {Hummel, O. and Janjic, W. and Atkinson, C.},
 	Booktitle = {Software, IEEE},
@@ -33989,7 +34829,7 @@ java compiled to native},
 	Title = {{An Overview of the Singularity Project}},
 	Url = {http://research.microsoft.com/apps/pubs/default.aspx?id=52716},
 	Year = {2005},
-	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDRBWJGNsYXNzV05TLmtleXNaTlMub2JqZWN0c4AHog4PgAKAA6IREoAEgAVccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QSC4uLy4uLy4uLy4uLy4uLy4uL3BhcGVyL0h1bnRhIEFuIE92ZXJ2aWV3IG9mIHRoZSBTaW5ndWxhcml0eSBQcm9qZWN0LnBkZtIJFxgZV05TLmRhdGGABk8RAcwAAAAAAcwAAgAABGRhdGEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMfgNJVIKwAAADXQCx9IdW50YSBBbiBPdmVydmlldyBvZiMzNDJGMUMucGRmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANC8cyW20dlBERiAAAAAAAAYAAgAACQAAAAAAAAAAAAAAAAAAAAAFcGFwZXIAABAACAAAx+AYdQAAABEACAAAyW2mZgAAAAEACAA10AsABB0dAAIANGRhdGE6ZWR1Y2F0aW9uOnBhcGVyOkh1bnRhIEFuIE92ZXJ2aWV3IG9mIzM0MkYxQy5wZGYADgBiADAASAB1AG4AdABhACAAQQBuACAATwB2AGUAcgB2AGkAZQB3ACAAbwBmACAAdABoAGUAIABTAGkAbgBnAHUAbABhAHIAaQB0AHkAIABQAHIAbwBqAGUAYwB0AC4AcABkAGYADwAKAAQAZABhAHQAYQASAEEvZWR1Y2F0aW9uL3BhcGVyL0h1bnRhIEFuIE92ZXJ2aWV3IG9mIHRoZSBTaW5ndWxhcml0eSBQcm9qZWN0LnBkZgAAEwANL1ZvbHVtZXMvZGF0YQD//wAA0hscHR5aJGNsYXNzbmFtZVgkY2xhc3Nlc11OU011dGFibGVEYXRhox0fIFZOU0RhdGFYTlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVkQXJjaGl2ZXLRJidUcm9vdIABAAgAEQAaACMALQAyADcAQABGAE0AVABcAGcAaQBsAG4AcABzAHUAdwCEAI4A2QDeAOYA6AK4Ar0CyALRAt8C4wLqAvMC+AMFAwgDGgMdAyIAAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAAAAADJA==},
+	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QSC4uLy4uLy4uLy4uLy4uLy4uL3BhcGVyL0h1bnRhIEFuIE92ZXJ2aWV3IG9mIHRoZSBTaW5ndWxhcml0eSBQcm9qZWN0LnBkZtIXCxgZV05TLmRhdGFPEQHMAAAAAAHMAAIAAARkYXRhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADH4DSVSCsAAAA10AsfSHVudGEgQW4gT3ZlcnZpZXcgb2YjMzQyRjFDLnBkZgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADQvHMlttHZQREYgAAAAAAAGAAIAAAkAAAAAAAAAAAAAAAAAAAAABXBhcGVyAAAQAAgAAMfgGHUAAAARAAgAAMltpmYAAAABAAgANdALAAQdHQACADRkYXRhOmVkdWNhdGlvbjpwYXBlcjpIdW50YSBBbiBPdmVydmlldyBvZiMzNDJGMUMucGRmAA4AYgAwAEgAdQBuAHQAYQAgAEEAbgAgAE8AdgBlAHIAdgBpAGUAdwAgAG8AZgAgAHQAaABlACAAUwBpAG4AZwB1AGwAYQByAGkAdAB5ACAAUAByAG8AagBlAGMAdAAuAHAAZABmAA8ACgAEAGQAYQB0AGEAEgBBL2VkdWNhdGlvbi9wYXBlci9IdW50YSBBbiBPdmVydmlldyBvZiB0aGUgU2luZ3VsYXJpdHkgUHJvamVjdC5wZGYAABMADS9Wb2x1bWVzL2RhdGEA//8AAIAG0hscHR5aJGNsYXNzbmFtZVgkY2xhc3Nlc11OU011dGFibGVEYXRhox0fIFZOU0RhdGFYTlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVkQXJjaGl2ZXLRJidUcm9vdIABAAgAEQAaACMALQAyADcAQABGAE0AVQBgAGcAagBsAG4AcQBzAHUAdwCEAI4A2QDeAOYCtgK4Ar0CyALRAt8C4wLqAvMC+AMFAwgDGgMdAyIAAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAAAAADJA==},
 	Bdsk-Url-1 = {http://research.microsoft.com/apps/pubs/default.aspx?id=52716}}
 
 @article{Hunt07a,
@@ -34244,6 +35084,18 @@ java compiled to native},
 	Note = {http://www.iolanguage.com/},
 	Title = {IO Home Page}}
 
+@techreport{ISO01a,
+	Author = {ISO},
+	Institution = {ISO},
+	Title = {{International Standard -- ISO/IEC 9126-1:2001 -- Software engineering -- Product quality}},
+	Year = {2001}}
+
+@techreport{ISO06a,
+	Author = {ISO},
+	Institution = {ISO},
+	Title = {{International Standard -- ISO/IEC 14764 IEEE Std 14764-2006}},
+	Year = {2006}}
+
 @techreport{ISO89a,
 	Author = {{ISO8807}},
 	Institution = {ISO8807},
@@ -34436,6 +35288,13 @@ java compiled to native},
 	Key = {Imposter},
 	Note = {http://csoki.ki.iif.hu/$\sim$vitezg/impostor/},
 	Title = {{Imposter}}}
+
+@inbook{Ing83,
+	Author = {Daniel H. Ingalls},
+	Chapter = {The Evolution of the Smalltalk-80 Virtual Machine},
+	Publisher = {Addison-Wesley, Reading, MA},
+	Title = {Smalltalk 80: Bits of History},
+	Year = {1983}}
 
 @inproceedings{Inga76a,
 	Author = {Dan Ingalls},
@@ -34711,9 +35570,10 @@ java compiled to native},
 	Bdsk-Url-1 = {http://java.sun.com/products/javabeans/docs/spec.html}}
 
 @misc{JDI,
-	Key = {JDI},
-	Note = {http://java.sun.com/{\-}j2se/1.4.2/docs/{\-}jguide/jpda/{\-}jarchitecture.html},
-	Title = {Java Debug Interface (JDI)}}
+	Author = {Oracle},
+	Howpublished = {\url{http://docs.oracle.com/javase/7/docs/jdk/api/jpda/jdi/index.html}},
+	Title = {Java Debug Interface (JDI)},
+	Year = {2013}}
 
 @misc{JEdit,
 	Author = {{jEdit web site}},
@@ -34739,9 +35599,10 @@ java compiled to native},
 	Bdsk-Url-1 = {http://loose.upt.ro/iplasma/jmondrian.html}}
 
 @misc{JPDA,
-	Key = {JPDA},
-	Note = {http://java.sun.com/products/jpda/},
-	Title = {Sun Microsystems, Java Platform Debugger Architecture}}
+	Author = {Oracle},
+	Howpublished = {\url{http://docs.oracle.com/javase/7/docs/technotes/guides/jpda/}},
+	Title = {Java Platform Debugger Architecture (JPDA)},
+	Year = {2013}}
 
 @misc{JQuery,
 	Key = {jQuery},
@@ -35245,6 +36106,12 @@ java compiled to native},
 	Key = {JavaME},
 	Note = {http://java.sun.com/javame/index.jsp},
 	Title = {Java Micro Edition}}
+
+@misc{JavaS13,
+	Author = {Oracle},
+	Howpublished = {\url{http://docs.oracle.com/javase/7/docs/technotes/guides/security/index.html}},
+	Title = {The Security Manager},
+	Year = {2013}}
 
 @inproceedings{Jaza02a,
 	Address = {Berlin},
@@ -36099,6 +36966,12 @@ java compiled to native},
 	Type = {MIT/LCS/TM-386},
 	Year = {1989}}
 
+@misc{Jreb12a,
+	Author = {ZeroTurnAround},
+	Howpublished = {\url{http://files.zeroturnaround.com/pdf/JRebelWhitePaper2012-1.pdf}},
+	Title = {What developers want: The end of application Redeployes},
+	Year = {2012}}
+
 @misc{Jref,
 	Key = {jRef},
 	Note = {http://jrefactory.sourceforge.net/},
@@ -36305,6 +37178,12 @@ java compiled to native},
 	Title = {A Multiparadigm Approach to Compiler Construction},
 	Type = {Draft},
 	Year = {1994}}
+
+@misc{JvNeu45,
+	Author = {John von Neumann},
+	Howpublished = {IEEE CS Press Book, "The anatomy of a Microprocessor"},
+	Title = {First Draft of a Report on the EDVAC},
+	Year = {1945}}
 
 @misc{Jython,
 	Key = {jython},
@@ -36993,6 +37872,13 @@ java compiled to native},
 	Year = {2005},
 	Bdsk-Url-1 = {http://vpri.org/pdf/rn2005002_authoring.pdf}}
 
+@book{Kay72,
+	Address = {Palo Alto, California},
+	Author = {Adele Goldberg, Alan Kay},
+	Publisher = {Xerox Palo Alto Hesearch Center},
+	Title = {Smalltalk-72 instruction manual},
+	Year = {1976}}
+
 @inproceedings{Kay72a,
 	Author = {Alan C. Kay},
 	Booktitle = {Proceedings of the ACM National Conference},
@@ -37410,6 +38296,14 @@ java compiled to native},
 	Title = {Scaling up dynamic time warping to massive datasets},
 	Year = {1999}}
 
+@inproceedings{Keph05a,
+	Author = {Kephart, J.O.},
+	Booktitle = {ICSE 2005},
+	Month = {may},
+	Pages = {15-22},
+	Title = {Research challenges of autonomic computing},
+	Year = {2005}}
+
 @book{Keri04a,
 	Author = {Joshua Kerievsky},
 	Isbn = {0321213351},
@@ -37493,6 +38387,12 @@ java compiled to native},
 	Publisher = {John Wiley \& Sons},
 	Title = {Introduction to Groupware, Workflow and Workgroup Computing},
 	Year = {1995}}
+
+@article{Kic01,
+	Author = {Gregor Kiczales and Erik Hilsdale and Jim Hugunin and Mik Kersten and Jeffrey Palm and William G. Griswold},
+	Journal = {Communications of the ACM},
+	Title = {Getting Started with AspectJ},
+	Year = {2001}}
 
 @unpublished{Kici01a,
 	Author = {Emre K{\i}c{\i}man and Laurence Melloul and Armando Fox},
@@ -37819,6 +38719,13 @@ java compiled to native},
 	Year = {2006},
 	Bdsk-Url-1 = {http://scg.unibe.ch/archive/papers/Kim06aTARE.pdf}}
 
+@inproceedings{Kim06b,
+	Author = {Kim, Sunghun and Zimmermann, Thomas and Pan, Kai and Whitehead, E. James Jr.},
+	Booktitle = {International Conference on Automated Software Engineering},
+	Pages = {81--90},
+	Title = {{Automatic Identification of Bug-Introducing Changes}},
+	Year = {2006}}
+
 @inproceedings{Kim07a,
 	Address = {Washington, DC, USA},
 	Author = {Sunghun Kim and Thomas Zimmermann and E. James Whitehead Jr. and Andreas Zeller},
@@ -37843,6 +38750,12 @@ java compiled to native},
 	Series = {ESEC-FSE '07},
 	Title = {Which warnings should I fix first?},
 	Year = {2007}}
+
+@inproceedings{Kim13a,
+	Author = {D. Kim and J. Nam and J. Song and S. Kim},
+	Booktitle = {In Proceedings of the International Conference on Software Engineering},
+	Title = {Automatic patch generation learned from human-written patches},
+	Year = {2013}}
 
 @inproceedings{Kim87a,
 	Author = {Won Kim and Jay Banerjee and Hong-Tai Chou and Jorge F. Garza and Darrell Woelk},
@@ -38674,6 +39587,15 @@ java compiled to native},
 	Title = {Capturing Dynamic Program Behaviour with UML Collaboration Diagrams},
 	Year = {2001}}
 
+@article{Kolm76a,
+	Author = {Kolm, S.-C.},
+	Journal = {Journal of Economic Theory},
+	Number = {3},
+	Pages = {416-442},
+	Title = {{Unequal inequalities I}},
+	Volume = {12},
+	Year = {1976}}
+
 @inproceedings{Kols98a,
 	Author = {U. K{\"o}lsch},
 	Booktitle = {Proceedings of WCRE '98},
@@ -38715,6 +39637,13 @@ java compiled to native},
 	Url = {http://www.cs.wisc.edu/~raghavan/pldi03-paper.pdf},
 	Year = {2002},
 	Bdsk-Url-1 = {http://www.cs.wisc.edu/~raghavan/pldi03-paper.pdf}}
+
+@inproceedings{Kong07a,
+	Author = {Kong, Deguang and Zheng, Quan and Chen, Chao and Shuai, Jianmei and Zhu, Ming},
+	Booktitle = {International Conference on Scalable Information Systems},
+	Pages = {1--7},
+	Title = {ISA: a Source Code Static Vulnerability Detection System Based on Data Fusion},
+	Year = {2007}}
 
 @inproceedings{Kono96a,
 	Address = {Linz, Austria},
@@ -40604,6 +41533,14 @@ java compiled to native},
 	Note = {http://plone.org/products/archgenxml},
 	Title = {{Language Integrated Queries}}}
 
+@book{LaL90,
+	Address = {Upper Saddle River, NJ, USA},
+	Author = {LaLonde, Wilf R. and Pugh, John R.},
+	Isbn = {0-13-468414-1},
+	Publisher = {Prentice-Hall, Inc.},
+	Title = {Inside Smalltalk: vol. 1},
+	Year = {1990}}
+
 @inproceedings{LaLo86a,
 	Author = {Wilf R. LaLonde and Dave A. Thomas and John R. Pugh},
 	Booktitle = {Proceedings OOPSLA '86, ACM SIGPLAN Notices},
@@ -41147,6 +42084,16 @@ java compiled to native},
 	Title = {Proceedings {ESEC}'91},
 	Volume = {550},
 	Year = {1991}}
+
+@article{Land11a,
+	Author = {Tatiana von Landesberger and Arjan Kuijper and Tobias Schreck and J{\"o}rn Kohlhammer and Jarke J. van Wijk and Jean-Daniel Fekete and Dieter W. Fellner},
+	Ee = {http://dx.doi.org/10.1111/j.1467-8659.2011.01898.x},
+	Journal = {Comput. Graph. Forum},
+	Number = {6},
+	Pages = {1719-1749},
+	Title = {Visual Analysis of Large Graphs: State-of-the-Art and Future Research Challenges},
+	Volume = {30},
+	Year = {2011}}
 
 @article{Land66a,
 	Author = {P.J. Landin},
@@ -41944,6 +42891,19 @@ java compiled to native},
 	Volume = {1098},
 	Year = {1996}}
 
+@incollection{Led02,
+	Author = {David, Pierre-Charles and Ledoux, Thomas},
+	Booktitle = {On the Move to Meaningful Internet Systems 2002: CoopIS, DOA, and ODBASE},
+	Isbn = {978-3-540-00106-5},
+	Pages = {773-790},
+	Publisher = {Springer Berlin Heidelberg},
+	Series = {Lecture Notes in Computer Science},
+	Title = {An Infrastructure for Adaptable Middleware},
+	Url = {http://dx.doi.org/10.1007/3-540-36124-3_52},
+	Volume = {2519},
+	Year = {2002},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1007/3-540-36124-3_52}}
+
 @article{Ledg77a,
 	Author = {H.F. Ledgard and R.W. Taylor},
 	Journal = {CACM},
@@ -42537,6 +43497,27 @@ java compiled to native},
 	Title = {Dynamic Model Design Recovery and Architecture Abstraction of Object Oriented Software.},
 	Year = {2005}}
 
+@inproceedings{Li06a,
+	Author = {Li, Zhenmin and Tan, Lin and Wang, Xuanhui and Lu, Shan and Zhou, Yuanyuan and Zhai, Chengxiang},
+	Booktitle = {Proceedings of the 1st workshop on Architectural and system support for improving software dependability},
+	Pages = {25--33},
+	Title = {{Have Things Changed Now? An Empirical Study of Bug Characteristics in Modern Open Source Software}},
+	Year = {2006}}
+
+@article{Li12,
+	Author = {Li, Bixin and Sun, Xiaobing and Leung, Hareton and Zhang, Sai},
+	Doi = {10.1002/stvr.1475},
+	Issn = {1099-1689},
+	Journal = {Software Testing, Verification and Reliability},
+	Keywords = {change impact analysis, survey, source code, application},
+	Number = {8},
+	Pages = {613--646},
+	Title = {A survey of code-based change impact analysis techniques},
+	Url = {http://dx.doi.org/10.1002/stvr.1475},
+	Volume = {23},
+	Year = {2013},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1002/stvr.1475}}
+
 @techreport{Li91a,
 	Address = {Massy, France},
 	Author = {Jiarong Li},
@@ -42869,6 +43850,21 @@ java compiled to native},
 	Pages = {38--48},
 	Title = {Assuring a Good Style for Object-Oriented Programs},
 	Year = {1989}}
+
+@inproceedings{Lied97a,
+	Acmid = {822414},
+	Address = {Washington, DC, USA},
+	Author = {Liedtke, J. and Elphinstone, K. and Schiinberg, S. and Hartig, H. and Heiser, G. and Islam, N. and Jaeger, T},
+	Booktitle = {Proceedings of the 6th Workshop on Hot Topics in Operating Systems (HotOS-VI)},
+	Isbn = {0-8186-7834-8},
+	Keywords = {performance evaluation, interprocess communication, achieved IPC performance, extensibility, cross-address-space communication, application-specific modules, operating system, L4 microkernel, Intel Pentium, Mips R4600, DEC Alpha, microprocessors, direct costs, L1 cache, average indirect costs},
+	Pages = {28--},
+	Publisher = {IEEE Computer Society},
+	Series = {HOTOS '97},
+	Title = {Achieved IPC Performance},
+	Url = {http://dl.acm.org/citation.cfm?id=822075.822414},
+	Year = {1997},
+	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=822075.822414}}
 
 @techreport{Lien03a,
 	Abstract = {Web-applications are very popular, lightweight
@@ -44193,6 +45189,15 @@ java compiled to native},
 	Volume = {47},
 	Year = {1977}}
 
+@inproceedings{Lori07a,
+	Author = {Loriant, Nicolas and Menaud, Jean-Marc},
+	Booktitle = {2007 IADIS Conference on Applied Computing},
+	Month = feb,
+	Title = {Generalized Dynamic Probes for the Linux Kernel and Applications with Arachne},
+	Url = {http://hal.inria.fr/inria-00441367},
+	Year = {2007},
+	Bdsk-Url-1 = {http://hal.inria.fr/inria-00441367}}
+
 @inproceedings{Lorm06a,
 	Author = {M. Lormans and A. van Deursen},
 	Booktitle = {Proceedings of the 10th European Conference on Software Maintenance and Reengineering (CSMR'06)},
@@ -44258,6 +45263,17 @@ java compiled to native},
 	Volume = 4,
 	Year = {1998}}
 
+@article{Lour08a,
+	Author = {Louridas, Panagiotis and Spinellis, Diomidis and Vlachos, Vasileios},
+	Date-Added = {2014-07-08 13:58:36 +0000},
+	Date-Modified = {2014-07-08 13:59:11 +0000},
+	Journal = {ACM Transactions on Software Engineering and Methodology},
+	Number = {1},
+	Pages = {2:1--2:26},
+	Title = {Power Laws in Software},
+	Volume = {18},
+	Year = {2008}}
+
 @book{Love93a,
 	Address = {New York},
 	Author = {Tom Love},
@@ -44315,6 +45331,12 @@ java compiled to native},
 	Title = {The Hermes Language in Outline Form},
 	Volume = {27},
 	Year = {1992}}
+
+@inproceedings{Lu05a,
+	Author = {Shan Lu and Zhenmin Li and Feng Qin and Lin Tan and Pin Zhou and Yuanyuan Zhou},
+	Booktitle = {Workshop on the Evaluation of Software Defect Detection Tools},
+	Title = {Bugbench: Benchmarks for evaluating bug detection tools},
+	Year = {2005}}
 
 @inproceedings{Lu09a,
 	Address = {Paris, France},
@@ -45676,6 +46698,12 @@ java compiled to native},
 	Title = {ObjVProlog: Metaclasses in Logic},
 	Year = {1989}}
 
+@inproceedings{Male91a,
+	Author = {Jacques Malenfant and Christophe Dony and Pierre Cointe},
+	Booktitle = {OOPSLA '91 Workshop on Reflection and Meta-Level Architectures in Object-Oriented Programming},
+	Title = {{Reflection in Prototype-Based Object-Oriented Programming Languages}},
+	Year = {1991}}
+
 @inproceedings{Male92a,
 	Address = {Tokyo},
 	Author = {Jacques Malenfant and Christophe Dony and Pierre Cointe},
@@ -46364,6 +47392,23 @@ java compiled to native},
 	Title = {Implementing Orthogonally Persistent {Java}},
 	Year = {2000}}
 
+@inproceedings{Marq05a,
+	Acmid = {2113450},
+	Address = {Berlin, Heidelberg},
+	Author = {Marquet, Kevin and Courbot, Alexandre and Grimaud, Gilles},
+	Booktitle = {Proceedings of the Second International Conference on Embedded Software and Systems},
+	Doi = {10.1007/11599555_9},
+	Isbn = {3-540-30881-4, 978-3-540-30881-2},
+	Location = {Xi'an, China},
+	Numpages = {8},
+	Pages = {63--70},
+	Publisher = {Springer-Verlag},
+	Series = {ICESS'05},
+	Title = {Ahead of Time Deployment in ROM of a Java-OS},
+	Url = {http://dx.doi.org/10.1007/11599555_9},
+	Year = {2005},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1007/11599555_9}}
+
 @inproceedings{Marq89a,
 	Author = {Jos\'e Alves Marques and Paulo Guedes},
 	Booktitle = {Proceedings OOPSLA '89, ACM SIGPLAN Notices},
@@ -46606,6 +47651,18 @@ java compiled to native},
 	Title = {What Killed {Smalltalk} Could Kill {Ruby}, Too},
 	Url = {http://blip.tv/file/2089545},
 	Bdsk-Url-1 = {http://blip.tv/file/2089545}}
+
+@article{Mart13z,
+	Author = {Martinez, Matias and Monperrus, Martin},
+	Doi = {10.1007/s10664-013-9282-8},
+	Issn = {1382-3256},
+	Journal = {Empirical Software Engineering},
+	Pages = {1-30},
+	Publisher = {Springer},
+	Title = {Mining software repair models for reasoning on the search space of automated program fixing},
+	Url = {http://dx.doi.org/10.1007/s10664-013-9282-8},
+	Year = {2013},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1007/s10664-013-9282-8}}
 
 @techreport{Mart82a,
 	Author = {Pat Martin and Dennis Tsichritzis},
@@ -47375,22 +48432,21 @@ java compiled to native},
 	Year = {2005},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1109/PERCOM.2005.10}}
 
+@article{McGa01a,
+	Author = {McGarry, J.},
+	Journal = {IEEE Software},
+	Number = {5},
+	Pages = {19},
+	Title = {When it comes to measuring software, every project is unique},
+	Volume = {18},
+	Year = {2001}}
+
 @book{McGi92a,
 	Author = {Henry McGilton and Mary Campione},
 	Isbn = {0-201-63228-4},
 	Publisher = {Addison Wesley},
 	Title = {PostScript by Example},
 	Year = {1992}}
-
-@article{McGa01a,
-  title={When it comes to measuring software, every project is unique},
-  author={McGarry, J.},
-  journal={IEEE Software},
-  volume={18},
-  number={5},
-  pages={19},
-  year={2001}
-}
 
 @techreport{McGr01a,
 	Author = {John D. McGregor},
@@ -48044,6 +49100,13 @@ java compiled to native},
 	Year = {1996},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/243327.243620}}
 
+@inproceedings{Meng08a,
+	Author = {Meng, Na and Wang, Qianxiang and Wu, Qian and Mei, Hong},
+	Booktitle = {International Conference on Quality Software},
+	Pages = {169--174},
+	Title = {An Approach to Merge Results of Multiple Static Analysis Tools (Short Paper)},
+	Year = {2008}}
+
 @inproceedings{Mens00a,
 	Author = {Mens, Tom},
 	Booktitle = {Proceedings of the International Workshop on Applications of Graph Transformations with Industrial Relevance},
@@ -48490,6 +49553,22 @@ java compiled to native},
 	Title = {On Asynchrony in Name-Passing Calculi},
 	Volume = {1443},
 	Year = {1998}}
+
+@inproceedings{Mesb07a,
+	Acmid = {1252784},
+	Address = {Washington, DC, USA},
+	Author = {Mesbah, Ali and van Deursen, Arie},
+	Booktitle = {Proceedings of the 11th European Conference on Software Maintenance and Reengineering},
+	Doi = {10.1109/CSMR.2007.33},
+	Isbn = {0-7695-2802-3},
+	Numpages = {10},
+	Pages = {181--190},
+	Publisher = {IEEE Computer Society},
+	Series = {CSMR '07},
+	Title = {Migrating Multi-page Web Applications to Single-page AJAX Interfaces},
+	Url = {http://dx.doi.org/10.1109/CSMR.2007.33},
+	Year = {2007},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1109/CSMR.2007.33}}
 
 @techreport{Mese90a,
 	Author = {Jos\'e Meseguer},
@@ -49599,6 +50678,25 @@ java compiled to native},
 	Year = {2001},
 	Bdsk-Url-1 = {http://portal.acm.org/citation.cfm?id=715910}}
 
+@inproceedings{Mill01c,
+	Acmid = {365034},
+	Address = {New York, NY, USA},
+	Author = {Millett, Lynette I. and Friedman, Batya and Felten, Edward},
+	Booktitle = {Proceedings of the SIGCHI conference on Human factors in computing systems},
+	Doi = {10.1145/365024.365034},
+	Isbn = {1-58113-327-8},
+	Keywords = {Internet Explorer, Netscape Navigator, Value-Sensitive Design, Web browsers, World Wide Web, computer ethics, cookies, e-business, e-commerce, ethics, human values, human-computer interaction, informed consent, interface design, locus of control, online interactions, personalization, privacy, security, social computing, social impact, tracking},
+	Location = {Seattle, Washington, United States},
+	Numpages = {7},
+	Pages = {46--52},
+	Publisher = {ACM},
+	Series = {CHI '01},
+	Title = {Cookies and Web browser design: toward realizing informed consent online},
+	Url = {http://doi.acm.org/10.1145/365024.365034},
+	Year = {2001},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/365024.365034},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/365024.365034}}
+
 @inproceedings{Mill03a,
 	Author = {Todd Millstein and Mark Reay and Craig Chambers},
 	Booktitle = {Proceedings of the 18th ACM SIGPLAN conference on Object-oriented programing, systems, languages, and applications},
@@ -50211,6 +51309,12 @@ java compiled to native},
 	Year = {2008},
 	Bdsk-Url-1 = {http://www.mirandabanda.org/cogblog/}}
 
+@inproceedings{Mira11a,
+	Author = {Eliot Miranda},
+	Booktitle = {Proceedings of VMIL 2011},
+	Title = {The Cog Smalltalk Virtual Machine},
+	Year = {2011}}
+
 @inproceedings{Mira87a,
 	Author = {Eliot Miranda},
 	Booktitle = {Proceedings OOPSLA '87, ACM SIGPLAN Notices},
@@ -50525,6 +51629,25 @@ java compiled to native},
 	Title = {Computational Lambda-Calculus and Monads},
 	Year = {1989}}
 
+@inproceedings{Mogu02a,
+	Acmid = {511450},
+	Address = {New York, NY, USA},
+	Author = {Mogul, Jeffery C.},
+	Booktitle = {Proceedings of the 11th international conference on World Wide Web},
+	Doi = {10.1145/511446.511450},
+	Isbn = {1-58113-449-5},
+	Keywords = {HTTP, protocol design},
+	Location = {Honolulu, Hawaii, USA},
+	Numpages = {12},
+	Pages = {25--36},
+	Publisher = {ACM},
+	Series = {WWW '02},
+	Title = {Clarifying the fundamentals of HTTP},
+	Url = {http://doi.acm.org/10.1145/511446.511450},
+	Year = {2002},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/511446.511450},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/511446.511450}}
+
 @inproceedings{Moha06a,
 	Author = {Naouel Moha and Duc-loc Huynh and Yann-Gael Gueheneuc},
 	Booktitle = {Langages et Mod\`eles \`a Objets},
@@ -50605,6 +51728,35 @@ java compiled to native},
 	Publisher = {HEISE},
 	Title = {Eiffel: Objektorientiertes Programmieren in der Praxis},
 	Year = {1993}}
+
+@inproceedings{Monp10a,
+	Author = {Monperrus, Martin and Bruch, Marcel and Mezini, Mira},
+	Booktitle = {ECOOP 2010},
+	Doi = {10.1007/978-3-642-14107-2_2},
+	Isbn = {978-3-642-14106-5},
+	Pages = {2-25},
+	Publisher = {Springer Berlin Heidelberg},
+	Series = {Lecture Notes in Computer Science},
+	Title = {Detecting Missing Method Calls in Object-Oriented Software},
+	Url = {http://dx.doi.org/10.1007/978-3-642-14107-2_2},
+	Volume = {6183},
+	Year = {2010},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1007/978-3-642-14107-2_2}}
+
+@inproceedings{Monp14a,
+	Author = {Monperrus, Martin},
+	Booktitle = {Proceedings of the 36th International Conference on Software Engineering},
+	Doi = {10.1145/2568225.2568324},
+	Isbn = {978-1-4503-2756-5},
+	Numpages = {9},
+	Pages = {234--242},
+	Publisher = {ACM},
+	Series = {ICSE 2014},
+	Title = {A Critical Review of "Automatic Patch Generation Learned from Human-written Patches": Essay on the Problem Statement and the Evaluation of Automatic Software Repair},
+	Url = {http://doi.acm.org/10.1145/2568225.2568324},
+	Year = {2014},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/2568225.2568324},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/2568225.2568324}}
 
 @article{Monr97a,
 	Author = {Robert T. Monroe and Andrew Kompanek and Ralph Melton and David Garlan},
@@ -51120,6 +52272,26 @@ java compiled to native},
 	Volume = 512,
 	Year = {1991}}
 
+@article{Mos09,
+	Acmid = {1526249},
+	Address = {New York, NY, USA},
+	Author = {Mostinckx, Stijn and Van Cutsem, Tom and Timbermont, Stijn and Gonzalez Boix, Elisa and Tanter, \'{E}ric and De Meuter, Wolfgang},
+	Doi = {10.1002/spe.v39:7},
+	Issn = {0038-0644},
+	Issue_Date = {May 2009},
+	Journal = {Softw. Pract. Exper.},
+	Keywords = {AmbientTalk, actors, metaprogramming, mirages, mirrors, reflection},
+	Month = may,
+	Number = {7},
+	Numpages = {39},
+	Pages = {661--699},
+	Publisher = {John Wiley \& Sons, Inc.},
+	Title = {Mirror-based reflection in AmbientTalk},
+	Url = {\url{http://dx.doi.org/10.1002/spe.v39:7}},
+	Volume = {39},
+	Year = {2009},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1002/spe.v39:7}}
+
 @incollection{Mose93a,
 	Author = {Simon Moser and Robert Siegenthaler},
 	Booktitle = {OUTPUT Sonderausgabe "Objektorientierte Systeme"},
@@ -51343,6 +52515,30 @@ java compiled to native},
 	Title = {Corba Design Patterns},
 	Year = {1997}}
 
+@misc{Msdn12a,
+	Author = {Microsoft},
+	Howpublished = {\url{http://msdn.microsoft.com/en-us/library/bt727f1t.aspx}},
+	Title = {How to: Set Up Remote Debugging, Visual Studio 2012},
+	Year = {2012}}
+
+@misc{Msdn12b,
+	Author = {Microsoft},
+	Howpublished = {\url{http://msdn.microsoft.com/en-us/library/vstudio/ms242231.aspx}},
+	Title = {Debugger Security, Visual Studio 2012},
+	Year = {2012}}
+
+@misc{Msdn12c,
+	Author = {Microsoft},
+	Howpublished = {\url{http://msdn.microsoft.com/en-us/library/ms164927.aspx}},
+	Title = {Supported Code Changes (C\#), Visual Studio 2012},
+	Year = {2012}}
+
+@misc{Msdn13d,
+	Author = {Microsoft},
+	Howpublished = {\url{http://msdn.microsoft.com/en-us/library/bt727f1t\%28v=vs.71\%29.aspx}},
+	Title = {Setting Up Remote Debugging, Visual Studio 2013},
+	Year = {2013}}
+
 @inproceedings{Muel00a,
 	Author = {Hausi A. M{\"{u}}ller and Jens H. Jahnke and Dennis B. Smith and Margaret-Anne Storey and Scott R. Tilley and Kenny Wong},
 	Booktitle = {Proceedings of the conference on The future of Software engineering},
@@ -51558,6 +52754,20 @@ java compiled to native},
 	Title = {Independent Web Application Modeling and Development with Netsilon},
 	Volume = {4},
 	Year = {2005}}
+
+@inproceedings{Mull10a,
+	Acmid = {1940139},
+	Address = {Berlin, Heidelberg},
+	Author = {M\"{u}ller, Christoph and Reina, Guido and Burch, Michael and Weiskopf, Daniel},
+	Booktitle = {Proceedings of the 6th international conference on Advances in visual computing - Volume Part III},
+	Isbn = {3-642-17276-8, 978-3-642-17276-2},
+	Location = {Las Vegas, NV, USA},
+	Numpages = {11},
+	Pages = {447--457},
+	Publisher = {Springer-Verlag},
+	Series = {ISVC'10},
+	Title = {Subversion statistics sifter},
+	Year = {2010}}
 
 @phdthesis{Mull86a,
 	Author = {Hausi A. M{\"u}ller},
@@ -51856,6 +53066,13 @@ java compiled to native},
 	Year = {2006},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/1124772.1124832}}
 
+@book{Myer11a,
+	Author = {Myers, Glenford J and Sandler, Corey and Badgett, Tom},
+	Edition = {Third},
+	Publisher = {John Wiley \& Sons},
+	Title = {The art of software testing},
+	Year = {2011}}
+
 @book{Myer75a,
 	Address = {New York},
 	Author = {G. J. Myers},
@@ -51960,11 +53177,12 @@ java compiled to native},
 	Title = {{ASP.NET}}}
 
 @misc{NSProxy,
+	Bdsk-Url-1 = {http://developer.apple.com/library/ios/\#documentation/cocoa/reference/foundation/Classes/NSProxy_Class/Reference/Reference.html},
 	Howpublished = {\url{http://developer.apple.com/library/ios/\#documentation/cocoa/reference/foundation/Classes/NSProxy_Class/Reference/Reference.html}},
 	Key = {NSProxy},
 	Title = {Apple. Developer Library Documentation},
 	Url = {http://developer.apple.com/library/ios/\#documentation/cocoa/reference/foundation/Classes/NSProxy_Class/Reference/Reference.html},
-	Bdsk-Url-1 = {http://developer.apple.com/library/ios/\#documentation/cocoa/reference/foundation/Classes/NSProxy_Class/Reference/Reference.html}}
+	Bdsk-Url-2 = {http://developer.apple.com/library/ios/%5C#documentation/cocoa/reference/foundation/Classes/NSProxy_Class/Reference/Reference.html}}
 
 @mastersthesis{Naab05a,
 	Author = {Matthias Naab},
@@ -51984,6 +53202,13 @@ java compiled to native},
 	Month = oct,
 	Title = {Editing Multitype Documents},
 	Year = {1981}}
+
+@inproceedings{Naga05a,
+	Author = {Nagappan, Nachiappan and Ball, Thomas},
+	Booktitle = {International Conference on Software Engineering},
+	Pages = {580--586},
+	Title = {Static Analysis Tools as Early Indicators of Pre-release Defect Density},
+	Year = {2005}}
 
 @inproceedings{Nagk06a,
 	Author = {Priya Nagpurkar and Chandra Krintz},
@@ -52152,6 +53377,13 @@ java compiled to native},
 	Type = {TR-93-04-02},
 	Year = {1993}}
 
+@inproceedings{Neam06a,
+	Author = {Iulian Neamtiu and Michael W. Hicks and Gareth Stoyle and Manuel Oriol},
+	Booktitle = {PLDI},
+	Pages = {72-83},
+	Title = {Practical dynamic software updating for C},
+	Year = {2006}}
+
 @article{Neam08,
 	Address = {New York, NY, USA},
 	Author = {Neamtiu, Iulian and Hicks, Michael and Foster, Jeffrey S. and Pratikakis, Polyvios},
@@ -52311,7 +53543,7 @@ java compiled to native},
 	Read = {1},
 	Title = {{Cross-Site Scripting Prevention with Dynamic Data Tainting and Static Analysis}},
 	Year = {2007},
-	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDRBWJGNsYXNzV05TLmtleXNaTlMub2JqZWN0c4AHog4PgAKAA6IREoAEgAVccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8Qci4uLy4uLy4uLy4uLy4uLy4uL3BhcGVyL05lbnQwN2EgQ3Jvc3MtU2l0ZSBTY3JpcHRpbmcgUHJldmVudGlvbiB3aXRoIER5bmFtaWMgRGF0YSBUYWludGluZyBhbmQgU3RhdGljIEFuYWx5c2lzLnBkZtIJFxgZV05TLmRhdGGABk8RAkoAAAAAAkoAAgAABGRhdGEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMfgNJVIKwAAADXQCx9OZW50MDdhIENyb3NzLVNpdGUgUyMzNDlGRkQucGRmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANJ/9yXg3TVBERiAAAAAAAAYAAgAACQAAAAAAAAAAAAAAAAAAAAAFcGFwZXIAABAACAAAx+AYdQAAABEACAAAyXgpPQAAAAEACAA10AsABB0dAAIANGRhdGE6ZWR1Y2F0aW9uOnBhcGVyOk5lbnQwN2EgQ3Jvc3MtU2l0ZSBTIzM0OUZGRC5wZGYADgC2AFoATgBlAG4AdAAwADcAYQAgAEMAcgBvAHMAcwAtAFMAaQB0AGUAIABTAGMAcgBpAHAAdABpAG4AZwAgAFAAcgBlAHYAZQBuAHQAaQBvAG4AIAB3AGkAdABoACAARAB5AG4AYQBtAGkAYwAgAEQAYQB0AGEAIABUAGEAaQBuAHQAaQBuAGcAIABhAG4AZAAgAFMAdABhAHQAaQBjACAAQQBuAGEAbAB5AHMAaQBzAC4AcABkAGYADwAKAAQAZABhAHQAYQASAGsvZWR1Y2F0aW9uL3BhcGVyL05lbnQwN2EgQ3Jvc3MtU2l0ZSBTY3JpcHRpbmcgUHJldmVudGlvbiB3aXRoIER5bmFtaWMgRGF0YSBUYWludGluZyBhbmQgU3RhdGljIEFuYWx5c2lzLnBkZgAAEwANL1ZvbHVtZXMvZGF0YQD//wAA0hscHR5aJGNsYXNzbmFtZVgkY2xhc3Nlc11OU011dGFibGVEYXRhox0fIFZOU0RhdGFYTlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVkQXJjaGl2ZXLRJidUcm9vdIABAAgAEQAaACMALQAyADcAQABGAE0AVABcAGcAaQBsAG4AcABzAHUAdwCEAI4BAwEIARABEgNgA2UDcAN5A4cDiwOSA5sDoAOtA7ADwgPFA8oAAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAAAAADzA==}}
+	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8Qci4uLy4uLy4uLy4uLy4uLy4uL3BhcGVyL05lbnQwN2EgQ3Jvc3MtU2l0ZSBTY3JpcHRpbmcgUHJldmVudGlvbiB3aXRoIER5bmFtaWMgRGF0YSBUYWludGluZyBhbmQgU3RhdGljIEFuYWx5c2lzLnBkZtIXCxgZV05TLmRhdGFPEQJKAAAAAAJKAAIAAARkYXRhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADH4DSVSCsAAAA10AsfTmVudDA3YSBDcm9zcy1TaXRlIFMjMzQ5RkZELnBkZgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADSf/cl4N01QREYgAAAAAAAGAAIAAAkAAAAAAAAAAAAAAAAAAAAABXBhcGVyAAAQAAgAAMfgGHUAAAARAAgAAMl4KT0AAAABAAgANdALAAQdHQACADRkYXRhOmVkdWNhdGlvbjpwYXBlcjpOZW50MDdhIENyb3NzLVNpdGUgUyMzNDlGRkQucGRmAA4AtgBaAE4AZQBuAHQAMAA3AGEAIABDAHIAbwBzAHMALQBTAGkAdABlACAAUwBjAHIAaQBwAHQAaQBuAGcAIABQAHIAZQB2AGUAbgB0AGkAbwBuACAAdwBpAHQAaAAgAEQAeQBuAGEAbQBpAGMAIABEAGEAdABhACAAVABhAGkAbgB0AGkAbgBnACAAYQBuAGQAIABTAHQAYQB0AGkAYwAgAEEAbgBhAGwAeQBzAGkAcwAuAHAAZABmAA8ACgAEAGQAYQB0AGEAEgBrL2VkdWNhdGlvbi9wYXBlci9OZW50MDdhIENyb3NzLVNpdGUgU2NyaXB0aW5nIFByZXZlbnRpb24gd2l0aCBEeW5hbWljIERhdGEgVGFpbnRpbmcgYW5kIFN0YXRpYyBBbmFseXNpcy5wZGYAABMADS9Wb2x1bWVzL2RhdGEA//8AAIAG0hscHR5aJGNsYXNzbmFtZVgkY2xhc3Nlc11OU011dGFibGVEYXRhox0fIFZOU0RhdGFYTlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVkQXJjaGl2ZXLRJidUcm9vdIABAAgAEQAaACMALQAyADcAQABGAE0AVQBgAGcAagBsAG4AcQBzAHUAdwCEAI4BAwEIARADXgNgA2UDcAN5A4cDiwOSA5sDoAOtA7ADwgPFA8oAAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAAAAADzA==}}
 
 @misc{NesC,
 	Author = {Eric Brewer and David Culler and David Gay and Phil Levis and Rob von Behren and Matt Welsh},
@@ -55504,6 +56736,13 @@ java compiled to native},
 	Title = {Expressive Pointcuts for Increased Modularity},
 	Year = {2005}}
 
+@inproceedings{Ostr04a,
+	Author = {Ostrand, Thomas J. and Weyuker, Elaine J. and Bell, Robert M.},
+	Booktitle = {ACM SIGSOFT International Symposium on Software Testing and Analysis},
+	Pages = {86--96},
+	Title = {{Where the Bugs Are}},
+	Year = {2004}}
+
 @techreport{Oswa03a,
 	Author = {Baltisar Oswald and Silvan Auer},
 	Institution = {University of Bern},
@@ -55535,12 +56774,13 @@ java compiled to native},
 
 @book{Oust94a,
 	Author = {John K. Ousterhout},
+	Bdsk-Url-1 = {http://cseng.aw.com/bookdetail.qry?ISBN=0-201-63337-X\&ptype=0},
 	Isbn = {0-201-63337-X},
 	Publisher = {Addison Wesley},
 	Title = {Tcl and the Tk Toolkit},
 	Url = {http://cseng.aw.com/bookdetail.qry?ISBN=0-201-63337-X\&ptype=0},
 	Year = {1994},
-	Bdsk-Url-1 = {http://cseng.aw.com/bookdetail.qry?ISBN=0-201-63337-X\&ptype=0}}
+	Bdsk-Url-2 = {http://cseng.aw.com/bookdetail.qry?ISBN=0-201-63337-X%5C&ptype=0}}
 
 @article{Oust98a,
 	Author = {John K. Ousterhout},
@@ -56351,6 +57591,25 @@ java compiled to native},
 	Year = {2007},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/1297797.1297815}}
 
+@inproceedings{Parn11,
+	Acmid = {2001445},
+	Address = {New York, NY, USA},
+	Author = {Parnin, Chris and Orso, Alessandro},
+	Booktitle = {Proceedings of the 2011 International Symposium on Software Testing and Analysis},
+	Doi = {10.1145/2001420.2001445},
+	Isbn = {978-1-4503-0562-4},
+	Keywords = {statistical debugging, user studies},
+	Location = {Toronto, Ontario, Canada},
+	Numpages = {11},
+	Pages = {199--209},
+	Publisher = {ACM},
+	Series = {ISSTA '11},
+	Title = {Are automated debugging techniques actually helping programmers?},
+	Url = {http://doi.acm.org/10.1145/2001420.2001445},
+	Year = {2011},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/2001420.2001445},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/2001420.2001445}}
+
 @article{Parn72a,
 	Author = {David L. Parnas},
 	Doi = {10.1145/361598.361623},
@@ -56548,6 +57807,21 @@ java compiled to native},
 	Title = {Prototyping an Interactive Electronic Book System Using an Object-Oriented Approach},
 	Volume = {322},
 	Year = {1988}}
+
+@article{Past09,
+	Author = {Pasternak, Benny and Tyszberowicz, Shmuel and Yehudai, Amiram},
+	Doi = {10.1007/s10009-009-0115-4},
+	Issn = {1433-2779},
+	Journal = {International Journal on Software Tools for Technology Transfer},
+	Language = {English},
+	Number = {4},
+	Pages = {273-290},
+	Publisher = {Springer-Verlag},
+	Title = {GenUTest: a unit test and mock aspect generation tool},
+	Url = {http://dx.doi.org/10.1007/s10009-009-0115-4},
+	Volume = {11},
+	Year = {2009},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1007/s10009-009-0115-4}}
 
 @inproceedings{Pate06a,
 	Author = {Sandipkumar Patel and Yogesh Dandawate and John Kuriakose},
@@ -57155,6 +58429,14 @@ java compiled to native},
 	Volume = {17},
 	Year = {1992},
 	Bdsk-Url-1 = {http://www.bell-labs.com/user/dep/work/papers/swa-sen.ps}}
+
+@inproceedings{Perry87,
+	Author = {Perry, D E},
+	Booktitle = {ICSE '87: Proceedings of the 9th international conference on Software Engineering},
+	Month = mar,
+	Publisher = {IEEE Computer Society Press},
+	Title = {Software interconnection models},
+	Year = {1987}}
 
 @book{Pers08a,
 	Author = {Michael Perscheid and David Tibbe and Martin beck and Stefan Berger and Peter Osburg and Jeff Eastman and Michael Haupt and Robert Hirschfeld},
@@ -58155,17 +59437,14 @@ java compiled to native},
 	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=2028067.2028079}}
 
 @inproceedings{Polo01a,
-  author    = {Macario Polo and
-               Mario Piattini and
-               Francisco Ruiz},
-  title     = {Using Code Metrics to Predict Maintenance of Legacy Programs:
-               A Case Study},
-  booktitle = {ICSM},
-  year      = {2001},
-  pages     = {202-208},
-  url        = {http://computer.org/proceedings/icsm/1189/11890202abs.htm},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
+	Author = {Macario Polo and Mario Piattini and Francisco Ruiz},
+	Bibsource = {DBLP, http://dblp.uni-trier.de},
+	Booktitle = {ICSM},
+	Pages = {202-208},
+	Title = {Using Code Metrics to Predict Maintenance of Legacy Programs: A Case Study},
+	Url = {http://computer.org/proceedings/icsm/1189/11890202abs.htm},
+	Year = {2001},
+	Bdsk-Url-1 = {http://computer.org/proceedings/icsm/1189/11890202abs.htm}}
 
 @inproceedings{Pomb94a,
 	Author = {G. Pomberger and W. Pree},
@@ -58314,6 +59593,25 @@ java compiled to native},
 	Title = {Debugging natural semantics specifications},
 	Year = {2005},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/1085130.1085140}}
+
+@inproceedings{Popa04a,
+	Acmid = {1023723},
+	Address = {New York, NY, USA},
+	Author = {Popa, Lucian and Raiciu, Costin and Teodorescu, Radu and Athanasiu, Irina and Pandey, Raju},
+	Booktitle = {Proceedings of the 10th Annual International Conference on Mobile Computing and Networking},
+	Doi = {10.1145/1023720.1023723},
+	Isbn = {1-58113-868-7},
+	Keywords = {caching, code collection, garbage collection},
+	Location = {Philadelphia, PA, USA},
+	Numpages = {14},
+	Pages = {16--29},
+	Publisher = {ACM},
+	Series = {MobiCom '04},
+	Title = {Using Code Collection to Support Large Applications on Mobile Devices},
+	Url = {http://doi.acm.org/10.1145/1023720.1023723},
+	Year = {2004},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/1023720.1023723},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/1023720.1023723}}
 
 @inproceedings{Popo01a,
 	Author = {Andrei Popovici and Gustavo Alonso and Thomas Gross},
@@ -58846,6 +60144,25 @@ java compiled to native},
 	Title = {Proceedings {STACS}'96},
 	Volume = {1046},
 	Year = {1996}}
+
+@inproceedings{Puka09a,
+	Acmid = {1596506},
+	Address = {New York, NY, USA},
+	Author = {Pukall, Mario and Siegmund, Norbert and Cazzola, Walter},
+	Booktitle = {Proceedings of the 2009 ESEC/FSE Workshop on Software Integration and Evolution @ Runtime},
+	Doi = {10.1145/1596495.1596506},
+	Isbn = {978-1-60558-681-6},
+	Keywords = {runtime adaptation, software product lines},
+	Location = {Amsterdam, The Netherlands},
+	Numpages = {4},
+	Pages = {33--36},
+	Publisher = {ACM},
+	Series = {SINTER '09},
+	Title = {Feature-oriented Runtime Adaptation},
+	Url = {http://doi.acm.org/10.1145/1596495.1596506},
+	Year = {2009},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/1596495.1596506},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/1596495.1596506}}
 
 @inproceedings{Pulv01a,
 	Author = {E.Pulverm{\"u}ller and A. Speck and J.O.Coplien and M. D'Hondt and W.DeMeuter},
@@ -59543,6 +60860,26 @@ java compiled to native},
 	Year = {1995},
 	Bdsk-Url-1 = {http://www.dstc.edu.au/papers/icodp95.ps.gz}}
 
+@article{Rays02a,
+	Acmid = {781586},
+	Address = {Amsterdam, The Netherlands, The Netherlands},
+	Author = {Rayside, Derek and Kontogiannis, Kostas},
+	Doi = {10.1016/S0167-6423(02)00059-X},
+	Issn = {0167-6423},
+	Issue_Date = {November 2002},
+	Journal = {Sci. Comput. Program.},
+	Keywords = {Java, application extraction, call graph construction, embedded systems, library extraction, static dependency graph},
+	Month = nov,
+	Number = {2-3},
+	Numpages = {26},
+	Pages = {245--270},
+	Publisher = {Elsevier North-Holland, Inc.},
+	Title = {Extracting Java Library Subsets for Deployment on Embedded Systems},
+	Url = {http://dx.doi.org/10.1016/S0167-6423(02)00059-X},
+	Volume = {45},
+	Year = {2002},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1016/S0167-6423(02)00059-X}}
+
 @inproceedings{Rays06a,
 	Address = {New York, NY, USA},
 	Author = {Derek Rayside and Lucy Mendel and Daniel Jackson},
@@ -59810,6 +61147,17 @@ java compiled to native},
 	Pages = {(To appear)},
 	Title = {Enabling Mobile Network Managers},
 	Year = {1997}}
+
+@article{Reim04a,
+	Author = {Reimer, Darrell and Schonberg, Edith and Srinivas, Kavitha and Srinivasan, Harini and Alpern, Bowen and Johnson, Robert D. and Kershenbaum, Aaron and Koved, Larry},
+	Journal = {SIGSOFT Software Engineering Notes},
+	Month = {jul},
+	Number = {4},
+	Pages = {243--251},
+	Publisher = {ACM},
+	Title = {{SABER: Smart Analysis Based Error Reduction}},
+	Volume = {29},
+	Year = {2004}}
 
 @misc{Reim11a,
 	Author = {Alejandro Reimondo},
@@ -60266,6 +61614,12 @@ java compiled to native},
 	Title = {The Use of Program Profiling for Software Maintenance with Applications to the Year 2000 Problem},
 	Year = {1997}}
 
+@phdthesis{Res12,
+	Author = {Jorge Ressia},
+	School = {Institut fur Informatik und angewandte Mathematik},
+	Title = {Object-Centric Reflection},
+	Year = {2012}}
+
 @book{Resc06a,
 	Author = {Eric Rescorla},
 	Isbn = {0-201-61598-3},
@@ -60278,37 +61632,6 @@ java compiled to native},
 	Publisher = {MIT Press},
 	Title = {Turtles, Termites, and Traffic Jams},
 	Year = {1994}}
-
-@inproceedings{Ress12a,
-	Abstract = {During the process of developing and maintaining a complex
-	                  software system, developers pose detailed questions about the
-	                  runtime behavior of the system. Source code views offer strictly
-	                  limited insights, so developers often turn to tools like debuggers
-	                  to inspect and interact with the running system. Unfortunately,
-	                  traditional debuggers focus on the runtime stack as the key
-	                  abstraction to support debugging operations, though the questions
-	                  developers pose often have more to do with objects and their
-	                  interactions.
-	                  We propose object-centric debugging as an alternative approach
-	                  to interacting with a running software system. We show how, by
-	                  focusing on objects as the key abstraction, natural debugging
-	                  operations can be defined to answer developer questions related
-	                  to runtime behavior. We present a running prototype of an
-	                  object-centric debugger, and demonstrate, with the help of a series
-	                  of examples, how object-centric debugging offers more effective
-	                  support for many typical developer tasks than a traditional
-	                  stack-oriented debugger.},
-	Annote = {internationalconference},
-	Author = {Ressia, Jorge and Bergel, Alexandre and Nierstrasz, Oscar},
-	Booktitle = {Proceeding of the 34rd international conference on Software engineering},
-	Doi = {10.1109/ICSE.2012.6227167},
-	Location = {Zurich, Switzerland},
-	Series = {ICSE '12},
-	Title = {Object-Centric Debugging},
-	Url = {http://scg.unibe.ch/archive/papers/Ress12a-ObjectCentricDebugging.pdf},
-	Year = {2012},
-	Bdsk-Url-1 = {http://scg.unibe.ch/archive/papers/Ress12a-ObjectCentricDebugging.pdf},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1109/ICSE.2012.6227167}}
 
 @inproceedings{Ress09a,
 	Abstract = {In conventional software applications,
@@ -60376,6 +61699,53 @@ java compiled to native},
 	Year = {2010},
 	Bdsk-Url-1 = {http://scg.unibe.ch/archive/papers/Ress10a-RuntimeEvolution.pdf}}
 
+@inproceedings{Ress12a,
+	Abstract = {During the process of developing and maintaining a complex
+	                  software system, developers pose detailed questions about the
+	                  runtime behavior of the system. Source code views offer strictly
+	                  limited insights, so developers often turn to tools like debuggers
+	                  to inspect and interact with the running system. Unfortunately,
+	                  traditional debuggers focus on the runtime stack as the key
+	                  abstraction to support debugging operations, though the questions
+	                  developers pose often have more to do with objects and their
+	                  interactions.
+	                  We propose object-centric debugging as an alternative approach
+	                  to interacting with a running software system. We show how, by
+	                  focusing on objects as the key abstraction, natural debugging
+	                  operations can be defined to answer developer questions related
+	                  to runtime behavior. We present a running prototype of an
+	                  object-centric debugger, and demonstrate, with the help of a series
+	                  of examples, how object-centric debugging offers more effective
+	                  support for many typical developer tasks than a traditional
+	                  stack-oriented debugger.},
+	Annote = {internationalconference},
+	Author = {Ressia, Jorge and Bergel, Alexandre and Nierstrasz, Oscar},
+	Booktitle = {Proceeding of the 34rd international conference on Software engineering},
+	Doi = {10.1109/ICSE.2012.6227167},
+	Location = {Zurich, Switzerland},
+	Series = {ICSE '12},
+	Title = {Object-Centric Debugging},
+	Url = {http://scg.unibe.ch/archive/papers/Ress12a-ObjectCentricDebugging.pdf},
+	Year = {2012},
+	Bdsk-Url-1 = {http://scg.unibe.ch/archive/papers/Ress12a-ObjectCentricDebugging.pdf},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1109/ICSE.2012.6227167}}
+
+@article{Ress12e,
+	Annote = {internationaljournal},
+	Author = {Ressia, Jorge and G\^irba, Tudor and Nierstrasz, Oscar and Perin, Fabrizio and Renggli, Lukas},
+	Doi = {10.1002/spe.2160},
+	Issn = {1097-024X},
+	Journal = {Software: Practice and Experience},
+	Keywords = {snf12 jb12 scg-pub scg12 bifrost talents reflection traits Mixins object-specific smalltalk girba},
+	Medium = {2},
+	Peerreview = {yes},
+	Publisher = {John Wiley & Sons, Ltd},
+	Title = {Talents: an environment for dynamically composing units of reuse},
+	Url = {http://scg.unibe.ch/archive/papers/Ress12eTalentsSPE.pdf},
+	Year = {2012},
+	Bdsk-Url-1 = {http://scg.unibe.ch/archive/papers/Ress12eTalentsSPE.pdf},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1002/spe.2160}}
+
 @inproceedings{Rett02a,
 	Address = {Washington, DC, USA},
 	Author = {A. Rettberg and W. Thronicke},
@@ -60425,6 +61795,26 @@ java compiled to native},
 	Title = {The Coherence of Languages with Intersection Types},
 	Volume = {526},
 	Year = {1991}}
+
+@article{Reyn93a,
+	Acmid = {198114},
+	Address = {Hingham, MA, USA},
+	Author = {Reynolds John C.},
+	Doi = {10.1007/BF01019459},
+	Issn = {0892-4635},
+	Issue_Date = {Nov. 1993},
+	Journal = {Lisp Symb. Comput.},
+	Keywords = {continuation, continuation-passing style, semantics},
+	Month = nov,
+	Number = {3-4},
+	Numpages = {16},
+	Pages = {233--248},
+	Publisher = {Kluwer Academic Publishers},
+	Title = {The discoveries of continuations},
+	Url = {http://dx.doi.org/10.1007/BF01019459},
+	Volume = {6},
+	Year = {1993},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1007/BF01019459}}
 
 @inproceedings{Reyn94a,
 	Author = {Jeffrey C. Reynar},
@@ -60928,6 +62318,13 @@ java compiled to native},
 	Url = {http://www.rigi.csc.uvic.ca/},
 	Bdsk-Url-1 = {http://www.rigi.csc.uvic.ca/}}
 
+@techreport{Rigo05a,
+	Author = {A. Rigo and M. Hudson and S. Pedroni},
+	Institution = {PyPy consortium},
+	Number = {D05.1},
+	Title = {Compiling dynamic language implementations},
+	Year = {2005}}
+
 @inproceedings{Rigo06a,
 	Address = {New York, NY, USA},
 	Author = {Armin Rigo and Samuele Pedroni},
@@ -61007,6 +62404,21 @@ java compiled to native},
 	Title = {Metaphoric Polymorphism: Taking Code Reuse One Step Further},
 	Volume = {1098},
 	Year = {1996}}
+
+@inproceedings{Ripp04a,
+	Acmid = {1071580},
+	Author = {Rippert, Christophe and Courbot, Alexandre and Grimaud, Gilles},
+	Booktitle = {Proceedings of the 3rd International Symposium on Principles and Practice of Programming in Java},
+	Isbn = {1-59593-171-6},
+	Location = {Las Vegas, Nevada},
+	Numpages = {8},
+	Pages = {75--82},
+	Publisher = {Trinity College Dublin},
+	Series = {PPPJ '04},
+	Title = {A Low-footprint Class Loading Mechanism for Embedded Java Virtual Machines},
+	Url = {http://dl.acm.org/citation.cfm?id=1071565.1071580},
+	Year = {2004},
+	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=1071565.1071580}}
 
 @incollection{Risi00a,
 	Author = {Linda Rising},
@@ -61297,6 +62709,29 @@ java compiled to native},
 	Title = {Improving Code Completion with Program History},
 	Volume = {17},
 	Year = {2010}}
+
+@inproceedings{Robb12a,
+	Address = {Berlin, Heidelberg},
+	Author = {Robbes, Romain and R\"{o}thlisberger, David and Tanter, \'{E}ric},
+	Booktitle = {Proceedings of the 26th European conference on Object-Oriented Programming},
+	Doi = {10.1007/978-3-642-31057-7_3},
+	Isbn = {978-3-642-31056-0},
+	Location = {Beijing, China},
+	Numpages = {25},
+	Pages = {28--52},
+	Publisher = {Springer-Verlag},
+	Series = {ECOOP'12},
+	Title = {Extensions during software evolution: do objects meet their promise?},
+	Year = {2012},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1007/978-3-642-31057-7_3}}
+
+@article{Robb13a,
+	Author = {Romain Robbes and Michele Lanza},
+	Journal = {Automated Software Engineering},
+	Note = {to appear},
+	Publisher = {Springer},
+	Title = {Improving Code Completion with Program History},
+	Year = {2013}}
 
 @article{Robb98a,
 	Author = {Jason E. Robbins and David F. Redmiles},
@@ -62219,6 +63654,16 @@ java compiled to native},
 	Title = {Rational Rose 98: Roundtrip Engineering with C++},
 	Year = {1998}}
 
+@article{Rosi11a,
+	Author = {Rosik, Jacek and Le Gear, Andrew and Buckley, Jim and Babar, Muhammad Ali and Connolly, Dave},
+	Journal = {Software: Practice and Experience},
+	Number = {1},
+	Pages = {63--86},
+	Publisher = {Wiley Online Library},
+	Title = {Assessing architectural drift in commercial software development: a case study},
+	Volume = {41},
+	Year = {2011}}
+
 @inproceedings{Rosn00a,
 	Author = {Peter Rosner and Tracy Hall and Tobias Mayer},
 	Booktitle = {Proceedings of IWSM '00 (10th International Workshop on New Approaches in Software Measurement)},
@@ -62236,6 +63681,13 @@ java compiled to native},
 	Publisher = {Morgan Kauffmann},
 	Title = {Usability Engineering},
 	Year = {2002}}
+
+@conference{Ruta04a,
+	Author = {Nick Rutar and Christian B. Almazan and Jeffrey S. Foster},
+	Booktitle = {Software Reliability Engineering, 2004. ISSRE 2004. 15th International Symposium on},
+	Pages = {245--256},
+	Title = {A comparison of bug finding tools for {Java}},
+	Year = {2004}}
 
 @techreport{Ross06,
 	Author = {Guido van Rossum and Nick Coghlan},
@@ -62473,6 +63925,20 @@ java compiled to native},
 	Title = {Object-Oriented Methodologies for Large Scale Projects: does it work?},
 	Volume = {858},
 	Year = {1994}}
+
+@article{Rove08a,
+	Address = {Los Alamitos, CA, USA},
+	Author = {Per Rovegard and Lefteris Angelis and Claes Wohlin},
+	Doi = {10.1109/TSE.2008.s32},
+	Issn = {0098-5589},
+	Journal = {IEEE Transactions on Software Engineering},
+	Number = {4},
+	Pages = {516-530},
+	Publisher = {IEEE Computer Society},
+	Title = {An Empirical Study on Views of Importance of Change Impact Analysis Issues},
+	Volume = {34},
+	Year = {2008},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1109/TSE.2008.s32}}
 
 @article{Rovn86a,
 	Author = {P. Rovner},
@@ -62790,13 +64256,6 @@ java compiled to native},
 	Url = {http://www.xprogramming.com/testfram.htm},
 	Bdsk-Url-1 = {http://www.xprogramming.com/testfram.htm}}
 
-@conference{Ruta04a,
-	Author = {Nick Rutar and Christian B. Almazan and Jeffrey S. Foster},
-	Booktitle = {Software Reliability Engineering, 2004. ISSRE 2004. 15th International Symposium on},
-	Pages = {245--256},
-	Title = {A comparison of bug finding tools for {Java}},
-	Year = {2004}}
-
 @article{Sabe03a,
 	Author = {Andrei Sabelfeld and Andrew C. Myers},
 	Journal = {IEEE Journal on Selected Areas in Communications},
@@ -62988,6 +64447,23 @@ java compiled to native},
 	Title = {Purity and Side Effect Analysis for {Java} Programs.},
 	Year = {2005}}
 
+@article{Sale09a,
+	Address = {New York, NY, USA},
+	Articleno = {14},
+	Author = {Salehie, Mazeiar and Tahvildari, Ladan},
+	Issn = {1556-4665},
+	Journal = {ACM Transaction Autononmous Adaptative Systems},
+	Month = may,
+	Number = {2},
+	Numpages = {42},
+	Pages = {14:1--14:42},
+	Publisher = {ACM},
+	Title = {Self-adaptive Software: Landscape and Research Challenges},
+	Url = {http://doi.acm.org/10.1145/1516533.1516538},
+	Volume = {4},
+	Year = {2009},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/1516533.1516538}}
+
 @inproceedings{Sale92a,
 	Author = {Hayssam Saleh and Philippe Gautron},
 	Booktitle = {Proceedings of the ECOOP '91 Workshop on Object-Based Concurrent Computing},
@@ -63008,6 +64484,22 @@ java compiled to native},
 	Title = {The Protection of Information in Computer Systems},
 	Volume = {63},
 	Year = {1975}}
+
+@article{Salv13a,
+	Author = {Guido Salvaneschi and Carlo Ghezzi and Matteo Pradella},
+	Ee = {http://doi.acm.org/10.1145/2491465.2491466},
+	Journal = {TAAS},
+	Number = {2},
+	Pages = {7},
+	Title = {An Analysis of Language-Level Support for Self-Adaptive Software},
+	Volume = {8},
+	Year = {2013}}
+
+@book{Sam07,
+	Author = {Samudra Gupta},
+	Publisher = {APress},
+	Title = {Pro Apache jog4j. Second Edition.},
+	Year = {2007}}
 
 @book{Same97a,
 	Author = {Johannes Sametinger},
@@ -63467,6 +64959,12 @@ java compiled to native},
 	Volume = {2803},
 	Year = {2003},
 	Bdsk-Url-1 = {http://www.math.s.chiba-u.ac.jp/~sakurai/papers/metavar-rev.dvi.gz}}
+
+@inproceedings{Sato03b,
+	Author = {Y. Sato and S. Chiba and M. Tatsubori},
+	Booktitle = {GPCE'03},
+	Title = {A Selective, Just-in-Time Aspect Weaver},
+	Year = {2003}}
 
 @inproceedings{Sato05a,
 	Author = {Yoshiki Sato and Shigeru Chiba},
@@ -64950,6 +66448,16 @@ java compiled to native},
 	Volume = {140},
 	Year = {1982}}
 
+@book{Seac03a,
+	Author = {Seacord, R.C. and PLAKOSH, D.A. and LEWIS, G.A.A.},
+	Isbn = {9780321118844},
+	Publisher = {ADDISON WESLEY Publishing Company Incorporated},
+	Series = {The SEI Series in Software Engineering},
+	Title = {Modernizing Legacy Systems: Software Technologies, Engineering Processes, and Business Practices},
+	Url = {http://books.google.fr/books?id=sZsy2X1EA9UC},
+	Year = {2003},
+	Bdsk-Url-1 = {http://books.google.fr/books?id=sZsy2X1EA9UC}}
+
 @misc{Seaside,
 	Key = {Seaside},
 	Note = {http://www.seaside.st},
@@ -65217,8 +66725,10 @@ java compiled to native},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/1143997.1144315}}
 
 @inproceedings{Sere10a,
-	Author = {Alexander Serebrenik and Mark van den Brand},
-	Booktitle = {Proceedings of ICSM 2010},
+	Author = {A. Serebrenik and M. G. J. van den Brand},
+	Booktitle = {Int. Conf. on Software Maintenance},
+	Pages = {1--9},
+	Publisher = {IEEE},
 	Title = {Theil index for aggregation of software metrics values},
 	Year = {2010}}
 
@@ -66455,6 +67965,13 @@ java compiled to native},
 	Url = {http://www-bsac.eecs.berkeley.edu/archive/users/warneke-brett/SmartDust/index.html},
 	Bdsk-Url-1 = {http://www-bsac.eecs.berkeley.edu/archive/users/warneke-brett/SmartDust/index.html}}
 
+@mastersthesis{Smed09a,
+	Author = {Gideon Joachim Smeding},
+	School = {University of Utrecht - Center for Software Technology},
+	Title = {An executable operational semantics for Python},
+	Type = {Master thesis},
+	Year = {2009}}
+
 @incollection{Smia10a,
 	Abstract = {Reuse of software artifacts (blueprints and code) is
                   normally associated with organising a systematic
@@ -66697,6 +68214,7 @@ java compiled to native},
 
 @article{Smit96a,
 	Author = {Randall B. Smith and Dave Ungar},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1002/(SICI)1096-9942(1996)2:3<161::AID-TAPO3>3.0.CO;2-Z},
 	Doi = {10.1002/(SICI)1096-9942(1996)2:3<161::AID-TAPO3>3.0.CO;2-Z},
 	Journal = {TAPOS special issue on Subjectivity in Object-Oriented Systems},
 	Number = {3},
@@ -66705,8 +68223,7 @@ java compiled to native},
 	Url = {http://www.mip.sdu.dk/~bnj/library/Us_Ungar.pdf},
 	Volume = {2},
 	Year = {1996},
-	Bdsk-Url-1 = {http://www.mip.sdu.dk/~bnj/library/Us_Ungar.pdf},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1002/(SICI)1096-9942(1996)2:3<161::AID-TAPO3>3.0.CO;2-Z}}
+	Bdsk-Url-2 = {http://www.mip.sdu.dk/~bnj/library/Us_Ungar.pdf}}
 
 @phdthesis{Smit97a,
 	Address = {Stanford, CA, USA},
@@ -66715,6 +68232,26 @@ java compiled to native},
 	School = {Stanford University},
 	Title = {Pygmalion: a creative programming environment},
 	Year = {1975}}
+
+@article{Smit97b,
+	Acmid = {248461},
+	Address = {New York, NY, USA},
+	Author = {Smith, Randall B. and Wolczko, Mario and Ungar, David},
+	Doi = {10.1145/248448.248461},
+	Issn = {0001-0782},
+	Issue_Date = {April 1997},
+	Journal = {Commun. ACM},
+	Month = apr,
+	Number = {4},
+	Numpages = {7},
+	Pages = {72--78},
+	Publisher = {ACM},
+	Title = {From Kansas to Oz: collaborative debugging when a shared world breaks},
+	Url = {http://doi.acm.org/10.1145/248448.248461},
+	Volume = {40},
+	Year = {1997},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/248448.248461},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/248448.248461}}
 
 @inproceedings{Smith01a,
 	Author = {S. Smith and G. Meszaros},
@@ -67052,6 +68589,12 @@ java compiled to native},
 	Title = {Software Engineering},
 	Year = {2000}}
 
+@book{Somm01,
+	Author = {Ian Sommerville},
+	Publisher = {Addison-Wesley},
+	Title = {Software Engineering (6th ed.)},
+	Year = {2001}}
+
 @book{Somm92a,
 	Author = {Ian Sommerville},
 	Edition = {Fourth},
@@ -67109,6 +68652,11 @@ java compiled to native},
 	Title = {A dot-matrix program with dynamic threshold control suited for genomic {DNA} and protein sequence analysis},
 	Volume = {167},
 	Year = {1995}}
+
+@misc{Sope02a,
+	Author = {Soper, P.},
+	Title = {JSR 121: Application Isolation API Specification. Java Specification Requests},
+	Year = {2002}}
 
 @inproceedings{Sorg88a,
 	Address = {Oslo},
@@ -68318,14 +69866,19 @@ java compiled to native},
 	Volume = {3696},
 	Year = {2005},
 	Bdsk-Url-1 = {http://dblp.uni-trier.de/db/conf/icann/icann2005-1.html#StrickertTSS05}}
-	
+
 @techreport{Stri12a,
-	title={Chaperones and impersonators: Run-time support for contracts on higher-order, stateful values},
-	author={Strickland, T Stephen and Tobin-Hochstadt, Sam and Findler, Robert Bruce and Flatt, Matthew},
-	year={2012},
-	institution={NU-CCIS-12-01}
-}
-	
+	Author = {Strickland, T Stephen and Tobin-Hochstadt, Sam and Findler, Robert Bruce and Flatt, Matthew},
+	Institution = {NU-CCIS-12-01},
+	Title = {Chaperones and impersonators: Run-time support for contracts on higher-order, stateful values},
+	Year = {2012}}
+
+@inproceedings{Stri12b,
+	Author = {Strickland, T.S. and Tobin-Hochstadt, S. and Findler, R.B. and Flatt, M.},
+	Booktitle = {OOPSLA'12},
+	Title = {Chaperones and impersonators: run-time support for reasonable interposition},
+	Year = {2012}}
+
 @inproceedings{Strn07a,
 	Address = {New York, NY, USA},
 	Author = {Rok Strni\v{s}a and Peter Sewell and Matthew Parkinson},
@@ -69529,6 +71082,22 @@ java compiled to native},
 	Volume = {19},
 	Year = {1976}}
 
+@inproceedings{Teod01a,
+	Acmid = {741339},
+	Address = {London, UK, UK},
+	Author = {Teodorescu, Radu and Pandey, Raju},
+	Booktitle = {Proceedings of the 3rd International Conference on Ubiquitous Computing},
+	Isbn = {3-540-42614-0},
+	Location = {Atlanta, Georgia, USA},
+	Numpages = {20},
+	Pages = {76--95},
+	Publisher = {Springer-Verlag},
+	Series = {UbiComp '01},
+	Title = {Using JIT Compilation and Configurable Runtime Systems for Efficient Deployment of Java Programs on Ubiquitous Devices},
+	Url = {http://dl.acm.org/citation.cfm?id=647987.741339},
+	Year = {2001},
+	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=647987.741339}}
+
 @article{Term05a,
 	Address = {Los Alamitos, CA, USA},
 	Author = {Maurice Termeer and Christian F.J. Lange and Alexandru Telea and Michel R.V. Chaudron},
@@ -69541,6 +71110,15 @@ java compiled to native},
 	Volume = {0},
 	Year = {2005},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1109/VISSOF.2005.1684298}}
+
+@inproceedings{Terr12a,
+	Author = {Ricardo Terra and Marco Tulio Valente and Krzysztof Czarnecki and Roberto S. Bigonha},
+	Booktitle = {16th European Conference on Software Maintenance and Reengineering, Early Research Achievements Track},
+	Date-Added = {2014-07-08 13:53:44 +0000},
+	Date-Modified = {2014-07-08 13:53:57 +0000},
+	Pages = {335--340},
+	Title = {Recommending Refactorings to Reverse Software Architecture Erosion},
+	Year = {2012}}
 
 @book{Terr90a,
 	Author = {Peter Terrel},
@@ -69641,6 +71219,12 @@ java compiled to native},
 	Title = {Object Imaging},
 	Volume = {952},
 	Year = {1995}}
+
+@book{Thei67a,
+	Author = {H. Theil},
+	Publisher = {North-Holland},
+	Title = {Economics and {I}nformation {T}heory},
+	Year = {1967}}
 
 @inproceedings{Theod98a,
 	Author = {L. Theodoros and H.M. Edwards and A. Bryant and N. Willis},
@@ -70241,6 +71825,26 @@ java compiled to native},
 	Title = {{TinyOS}: An open-source {OS} for the networked sensor regime},
 	Url = {http://www.tinyos.net},
 	Bdsk-Url-1 = {http://www.tinyos.net}}
+
+@article{Tip03a,
+	Acmid = {859695},
+	Address = {New York, NY, USA},
+	Author = {Tip, Frank and Sweeney, Peter F. and Laffra, Chris},
+	Doi = {10.1145/859670.859695},
+	Issn = {0001-0782},
+	Issue_Date = {August 2003},
+	Journal = {Commun. ACM},
+	Month = aug,
+	Number = {8},
+	Numpages = {6},
+	Pages = {35--40},
+	Publisher = {ACM},
+	Title = {Extracting Library-based Java Applications},
+	Url = {http://doi.acm.org/10.1145/859670.859695},
+	Volume = {46},
+	Year = {2003},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/859670.859695},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/859670.859695}}
 
 @article{Tip95a,
 	Author = {Frank Tip},
@@ -71538,6 +73142,21 @@ java compiled to native},
 	Title = {Software Stability},
 	Year = {1981}}
 
+@article{Turve94a,
+	Author = {Turver, Richard J. and Munro, Malcolm},
+	Doi = {10.1002/smr.4360060104},
+	Issn = {1096-908X},
+	Journal = {Journal of Software Maintenance: Research and Practice},
+	Keywords = {Documentation, Impact analysis, Ripple effect, Software maintenance},
+	Number = {1},
+	Pages = {35--52},
+	Publisher = {John Wiley & Sons, Ltd},
+	Title = {An early impact analysis technique for software maintenance},
+	Url = {http://dx.doi.org/10.1002/smr.4360060104},
+	Volume = {6},
+	Year = {1994},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1002/smr.4360060104}}
+
 @mastersthesis{Twai84a,
 	Author = {Kenneth J. Twaites},
 	School = {Department of Computer Science, University of Toronto},
@@ -71694,6 +73313,15 @@ java compiled to native},
 	Title = {Gemini: Maintenance Support Environment Based on Code Clone Analysis},
 	Year = {2002}}
 
+@inproceedings{Ujha10a,
+	Author = {Ujhazi, Bela and Ferenc, Rudolf and Poshyvanyk, Denys and Gyim{\'o}thy, Tibor},
+	Booktitle = {10th International Working Conference on Source Code Analysis and Manipulation},
+	Date-Added = {2014-07-08 13:43:24 +0000},
+	Date-Modified = {2014-07-08 13:43:42 +0000},
+	Pages = {33--42},
+	Title = {New Conceptual Coupling and Cohesion Metrics for Object-Oriented Systems},
+	Year = {2010}}
+
 @article{Ullm76a,
 	Address = {New York, NY, USA},
 	Author = {J. R. Ullmann},
@@ -71733,6 +73361,24 @@ java compiled to native},
 	Title = {Constructing a metacircular Virtual machine in an exploratory programming environment},
 	Year = {2005},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1145/1094855.1094865}}
+
+@inproceedings{Unga07a,
+	Acmid = {1238853},
+	Address = {New York, NY, USA},
+	Author = {Ungar, David and Smith, Randall B.},
+	Booktitle = {Proceedings of the third ACM SIGPLAN conference on History of programming languages},
+	Doi = {10.1145/1238844.1238853},
+	Isbn = {978-1-59593-766-7},
+	Keywords = {Self, adaptive optimization, cartoon animation, dynamic language, dynamic optimization, exploratory programming, history of programming languages, morphic, object-oriented language, programming environment, prototype-based programming language, virtual machine},
+	Location = {San Diego, California},
+	Pages = {9-1--9-50},
+	Publisher = {ACM},
+	Series = {HOPL III},
+	Title = {Self},
+	Url = {http://doi.acm.org/10.1145/1238844.1238853},
+	Year = {2007},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/1238844.1238853},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/1238844.1238853}}
 
 @article{Unga84a,
 	Author = {Dave Ungar},
@@ -72033,6 +73679,12 @@ java compiled to native},
 	Title = {On the design of the ECMAScript Reflection API},
 	Year = {2012}}
 
+@inproceedings{Vanc13a,
+	Author = {Van Cutsem, Tom and Miller, Mark S.},
+	Booktitle = {ECOOP'13},
+	Title = {Trustworthy Proxies - Virtualizing Objects with Invariants},
+	Year = {2013}}
+
 @article{Vand01a,
 	Author = {Michael L. Van De Vanter},
 	Journal = {Information and Software Technology},
@@ -72042,6 +73694,15 @@ java compiled to native},
 	Title = {The documentary structure of source code},
 	Volume = {44},
 	Year = {2002}}
+
+@article{Vand07a,
+	Author = {Yves Vandewoude and Peter Ebraert and Yolande Berbers and Theo D'Hondt},
+	Journal = {Transactions On Software Engineering},
+	Number = 12,
+	Publisher = {IEEE Computer Society},
+	Title = {Tranquility: a low disruptive alternative to quiescence for ensuring safe dynamic updates},
+	Volume = 33,
+	Year = {2007}}
 
 @inproceedings{Vand91a,
 	Author = {B. Vander Zanden and B.A. Myers and D. Giuse and P. Szeleky},
@@ -72461,10 +74122,20 @@ java compiled to native},
 	Bdsk-Url-1 = {ftp://ftp.cs.keio.ac.jp/pub/keio-cs-papers/mt/theory/1994/vasco-ecoop94.dvi.gz}}
 
 @inproceedings{Vasi10a,
-	Author = {Bogdan Vasilescu and Alexander Serebrenik and Mark van den Brand},
-	Booktitle = {Proceedings of the International Worskhop Benevol 2010},
-	Title = {Comparative Study of Software Metrics' Aggregation Techniques},
+	Address = {Lille},
+	Author = {B. Vasilescu and A. Serebrenik and M. G. J. van den Brand},
+	Booktitle = {9th Belgian-Netherlands Softw. Evolution Seminar},
+	Editor = {S. Ducasse and L. Duchien and L. Seinturier},
+	Pages = {1--5},
+	Title = {Comparative study of software metrics' aggregation techniques},
 	Year = {2010}}
+
+@inproceedings{Vasi11a,
+	Author = {Vasilescu, B. and Serebrenik, A. and van den Brand, M. G. J.},
+	Booktitle = {Int. Conf. on Software Maintenance},
+	Publisher = {IEEE},
+	Title = {You can't control the unfamiliar: {A} study on the relations between aggregation techniques for software metrics},
+	Year = {2011}}
 
 @mastersthesis{Vauc03a,
 	Author = {Sebastien Vauclair},
@@ -72699,6 +74370,31 @@ java compiled to native},
 	Year = {2009},
 	Bdsk-Url-1 = {http://scg.unibe.ch/archive/papers/Verw09aSafeReflectionThroughPolymorphism.pdf},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1145/1595768.1595776}}
+
+@inproceedings{Verw11b,
+	Abstract = {Dynamic updates in object-oriented
+languages require high-level changes to be translated
+ to low-level changes. For example, removing an unused
+instance variable from a class may shift the
+indices of other instance variables. The shift needs
+to be translated to a change of the bytecodes accessing
+these instance variables. Current languages do not
+ offer a bridge between the two levels of abstraction.
+ We outline such a model, and demonstrate its usefulness
+ by discussing a prototype implementation in Pharo
+Smalltalk. In addition to simplifying the implementation
+ of dynamic updates, our model enables easy experiments
+ in modifying the language semantics.},
+	Annote = {internationalworkshop},
+	Author = {Toon Verwaest and Niko Schwarz and Erwann Wernli},
+	Booktitle = {Proceedings of the TOOLS 2011 8th Workshop on Reflection, AOP and Meta-Data for Software Evolution (RAM-SE'11)},
+	Keywords = {scg11 scg-pub tverwaes nes snf11 jb11 missing-doi},
+	Medium = {1},
+	Peerreview = {yes},
+	Title = {Runtime Class Updates using Modification Models},
+	Url = {http://scg.unibe.ch/archive/papers/Verw11aRuntimeUpdates.pdf},
+	Year = {2011},
+	Bdsk-Url-1 = {http://scg.unibe.ch/archive/papers/Verw11aRuntimeUpdates.pdf}}
 
 @phdthesis{Verw12a,
 	Abstract = {High-performance virtual machines (VMs) are increasingly reused for programming languages for which they were not initially designed. Unfortunately, VMs are usually tailored to specific languages, offer only a very limited interface to running applications, and are closed to extensions. As a consequence, extensions required to support new languages often entail the construction of custom VMs, thus impacting reuse, compatibility and performance. Short of building a custom VM, the language designer has to choose between the expressiveness and the performance of the language. In this dissertation we argue that the best way to open the VM is to eliminate it. We present Pinocchio, a natively compiled Smalltalk, in which we identify and reify three basic building blocks for object-oriented languages.  First we define a protocol for message passing similar to calling conventions, independent of the actual message lookup mechanism. The lookup is provided by a self-supporting runtime library written in Smalltalk and compiled to native code. Since it unifies the meta- and base-level we obtain a metaobject protocol (MOP).  Then we decouple the language-level manipulation of state from the machine-level implementation by extending the structural reflective model of the language with object layouts, layout scopes and slots.  Finally we reify behavior using AST nodes and first-class interpreters separate from the low-level language implementation. We describe the implementations of all three first-class building blocks. For each of the blocks we provide a series of examples illustrating how they enable typical extensions to the runtime, and we provide benchmarks validating the practicality of the approaches.},
@@ -72942,6 +74638,12 @@ java compiled to native},
 	Volume = 8,
 	Year = {1996}}
 
+@article{Voa92,
+	Author = {Voas, J.M.},
+	Journal = {Software Engineering, IEEE Transactions on},
+	Title = {PIE: a dynamic failure-based technique},
+	Year = {1992}}
+
 @techreport{Voge02a,
 	Author = {David Vogel},
 	Institution = {University of Bern},
@@ -73109,6 +74811,13 @@ java compiled to native},
 	Title = {Monads for functional programming},
 	Volume = 925,
 	Year = {1995}}
+
+@inproceedings{Wagn08a,
+	Author = {Wagner, Stefan and Deissenboeck, Florian and Aichner, Michael and Wimmer, Johann and Schwalb, Markus},
+	Booktitle = {International Conference on Software Testing, Verification, and Validation},
+	Pages = {248--257},
+	Title = {{An Evaluation of Two Bug Pattern Tools for Java}},
+	Year = {2008}}
 
 @inproceedings{Wahb93a,
 	Author = {R. Wahbe and S. Lucco and T. E. Anderson and S. L. Graham},
@@ -73997,6 +75706,13 @@ java compiled to native},
 	Type = {Computation Structures Group Memo},
 	Year = {1982}}
 
+@book{Wein81,
+	Address = {Cambridge, Massachusetts},
+	Author = {Daniel Weinreb, David Moon},
+	Publisher = {Symbolic Inc.},
+	Title = {Lisp Machine Manual},
+	Year = {1981}}
+
 @book{Wein81a,
 	Author = {D. Weinreb and David Moon},
 	Publisher = {Symbolics Inc.},
@@ -74820,6 +76536,26 @@ java compiled to native},
 	Title = {Maxine: An Approachable Virtual Machine For, and In, Java},
 	Year = {2012}}
 
+@article{Wimm13a,
+	Abstract = {A highly productive platform accelerates the production of research results. The design of a Virtual Machine ({VM}) written in the Java{\texttrademark} programming language can be simplified through exploitation of interfaces, type and memory safety, automated memory management (garbage collection), exception handling, and reflection. Moreover, modern Java {IDEs} offer time-saving features such as refactoring, auto-completion, and code navigation. Finally, Java annotations enable compiler extensions for low-level  '' systems programming'' while retaining {IDE} compatibility. These techniques collectively make complex system software more  '' approachable'' than has been typical in the past. The Maxine {VM}, a metacircular Java {VM} implementation, has aggressively used these features since its inception. A co-designed companion tool, the Maxine Inspector, offers integrated debugging and visualization of all aspects of the {VM}'s runtime state. The Inspector's implementation exploits advanced Java language features, embodies intimate knowledge of the {VM}'s design, and even reuses a significant amount of {VM} code directly. These characteristics make Maxine a highly approachable {VM} research platform and a productive basis for research and teaching.},
+	Address = {New York, NY, USA},
+	Author = {Wimmer, Christian and Haupt, Michael and Van De Vanter, Michael L. and Jordan, Mick and Dayn\`{e}s, Laurent and Simon, Douglas},
+	Doi = {10.1145/2400682.2400689},
+	Issn = {1544-3566},
+	Journal = {ACM Trans. Archit. Code Optim.},
+	Month = jan,
+	Number = {4},
+	Posted-At = {2013-02-25 13:28:26},
+	Priority = {2},
+	Publisher = {ACM},
+	Rating = {4},
+	Read = {1},
+	Title = {Maxine: An approachable virtual machine for, and in, java},
+	Url = {http://dx.doi.org/10.1145/2400682.2400689},
+	Volume = {9},
+	Year = {2013},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1145/2400682.2400689}}
+
 @inproceedings{Win03a,
 	Address = {Portland, Oregon},
 	Author = {Joel Winstead and David Evans},
@@ -75125,6 +76861,7 @@ java compiled to native},
 @article{Wise99a,
 	Address = {New York, NY, USA},
 	Author = {James A. Wise},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1002/(SICI)1097-4571(1999)50:13<1224::AID-ASI8>3.0.CO;2-4},
 	Doi = {10.1002/(SICI)1097-4571(1999)50:13<1224::AID-ASI8>3.0.CO;2-4},
 	Issn = {0002-8231},
 	Journal = {J. Am. Soc. Inf. Sci.},
@@ -75135,8 +76872,7 @@ java compiled to native},
 	Url = {http://www.geog.ucsb.edu/~sara/teaching/geo234_02/papers/wise.pdf},
 	Volume = {50},
 	Year = {1999},
-	Bdsk-Url-1 = {http://www.geog.ucsb.edu/~sara/teaching/geo234_02/papers/wise.pdf},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1002/(SICI)1097-4571(1999)50:13<1224::AID-ASI8>3.0.CO;2-4}}
+	Bdsk-Url-2 = {http://www.geog.ucsb.edu/~sara/teaching/geo234_02/papers/wise.pdf}}
 
 @article{Wish69a,
 	Author = {David Wishart},
@@ -75530,6 +77266,14 @@ java compiled to native},
 	Volume = {17},
 	Year = {1974}}
 
+@inproceedings{Wur10,
+	Author = {W\"{u}rthinger, Thomas and Wimmer, Christian and Stadler, Lukas},
+	Booktitle = {Proceedings of the 8th International Conference on the Principles and Practice of Programming in Java},
+	Publisher = {ACM},
+	Series = {PPPJ '10},
+	Title = {Dynamic code evolution for Java},
+	Year = {2010}}
+
 @phdthesis{Wuyt01b,
 	Author = {Wuyts, Roel},
 	School = {Vrije Universiteit Brussel},
@@ -75772,6 +77516,22 @@ java compiled to native},
 	Booktitle = {Proceedings of FESMA'00},
 	Title = {Object-Oriented Metrics --- a Survey},
 	Year = {2000}}
+
+@inproceedings{Xiao04a,
+	Acmid = {1032739},
+	Address = {Washington, DC, USA},
+	Author = {Xiao, Shu and Pham, Christopher},
+	Booktitle = {Proceedings of the 11th Asia-Pacific Software Engineering Conference},
+	Doi = {10.1109/APSEC.2004.72},
+	Isbn = {0-7695-2245-9},
+	Numpages = {10},
+	Pages = {346--355},
+	Publisher = {IEEE Computer Society},
+	Series = {APSEC '04},
+	Title = {Performing High Efficiency Source Code Static Analysis with Intelligent Extensions},
+	Url = {http://dx.doi.org/10.1109/APSEC.2004.72},
+	Year = {2004},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1109/APSEC.2004.72}}
 
 @inproceedings{Xie02a,
 	Author = {Yichen Xie and Dawson Engler},
@@ -76721,6 +78481,12 @@ java compiled to native},
 	Title = {Program analysis: A hierarchy},
 	Year = {2003}}
 
+@misc{Zell04,
+	Author = {Andreas Zeller},
+	Howpublished = {\url{http://www.gnu.org/software/ddd/manual/}},
+	Title = {DDD - Data Display Debugger},
+	Year = {2004}}
+
 @book{Zell05a,
 	Author = {Andreas Zeller},
 	Isbn = {1558608664},
@@ -76901,6 +78667,17 @@ java compiled to native},
 	Year = {2004},
 	Bdsk-Url-1 = {http://jiangxi.cs.uwm.edu/publication/drafts/scoped04.pdf%20http://jiangxi.cs.uwm.edu/publication/rtss04.pdf},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1109/REAL.2004.51}}
+
+@article{Zhen06a,
+	Author = {Zheng, Jiang and Williams, Laurie and Nagappan, Nachiappan and Snipes, Will and Hudepohl, John P. and Vouk, Mladen A.},
+	Journal = {Transactions on Software Engineering},
+	Month = {apr},
+	Number = {4},
+	Pages = {240--253},
+	Publisher = {IEEE Press},
+	Title = {On the Value of Static Analysis for Fault Detection in Software},
+	Volume = {32},
+	Year = {2006}}
 
 @inproceedings{Zhou08a,
 	Author = {Tianlin Zhou and Baowen Xu and Liang Shi and Yuming Zhou and Lin Chen},
@@ -77335,6 +79112,16 @@ java compiled to native},
 	Url = {http://www.json.org},
 	Bdsk-Url-1 = {http://www.json.org}}
 
+@misc{kicz94,
+	Author = {Gregor Kiczales and Andreas Paepcke},
+	Entered-By = {Andreas Paepcke},
+	Howpublished = {Expanded tutorial notes},
+	Keywords = {metaobject protocol},
+	Links = {(title:www:http://db.stanford.edu/~paepcke/shared-documents/Tutorial.ps)},
+	Note = {At http://db.stanford.edu/~paepcke/shared-documents/Tutorial.ps},
+	Title = {Open Implementations and Metaobject Protocols},
+	Year = {1994}}
+
 @misc{linfuProxies,
 	Howpublished = {\url{http://www.codeproject.com/KB/cs/LinFuPart1.aspx}},
 	Key = {linfuProxies},
@@ -77443,313 +79230,250 @@ java compiled to native},
 	Url = {http://www.mars.dti.ne.jp/~umejava/smalltalk/sixx/index.html},
 	Bdsk-Url-1 = {http://www.mars.dti.ne.jp/~umejava/smalltalk/sixx/index.html}}
 
-@inproceedings{Mogu02a,
-	Acmid = {511450},
+@inproceedings{Baco96a,
+	Acmid = {236371},
 	Address = {New York, NY, USA},
-	Author = {Mogul, Jeffery C.},
-	Booktitle = {Proceedings of the 11th international conference on World Wide Web},
-	Doi = {10.1145/511446.511450},
-	Isbn = {1-58113-449-5},
-	Keywords = {HTTP, protocol design},
-	Location = {Honolulu, Hawaii, USA},
-	Numpages = {12},
-	Pages = {25--36},
-	Publisher = {ACM},
-	Series = {WWW '02},
-	Title = {Clarifying the fundamentals of HTTP},
-	Url = {http://doi.acm.org/10.1145/511446.511450},
-	Year = {2002},
-	Bdsk-Url-1 = {http://doi.acm.org/10.1145/511446.511450},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1145/511446.511450}}
-
-@inproceedings{Mill01c,
-	Acmid = {365034},
-	Address = {New York, NY, USA},
-	Author = {Millett, Lynette I. and Friedman, Batya and Felten, Edward},
-	Booktitle = {Proceedings of the SIGCHI conference on Human factors in computing systems},
-	Doi = {10.1145/365024.365034},
-	Isbn = {1-58113-327-8},
-	Keywords = {Internet Explorer, Netscape Navigator, Value-Sensitive Design, Web browsers, World Wide Web, computer ethics, cookies, e-business, e-commerce, ethics, human values, human-computer interaction, informed consent, interface design, locus of control, online interactions, personalization, privacy, security, social computing, social impact, tracking},
-	Location = {Seattle, Washington, United States},
-	Numpages = {7},
-	Pages = {46--52},
-	Publisher = {ACM},
-	Series = {CHI '01},
-	Title = {Cookies and Web browser design: toward realizing informed consent online},
-	Url = {http://doi.acm.org/10.1145/365024.365034},
-	Year = {2001},
-	Bdsk-Url-1 = {http://doi.acm.org/10.1145/365024.365034},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1145/365024.365034}}
-
-@inproceedings{Mesb07a,
-	Acmid = {1252784},
-	Address = {Washington, DC, USA},
-	Author = {Mesbah, Ali and van Deursen, Arie},
-	Booktitle = {Proceedings of the 11th European Conference on Software Maintenance and Reengineering},
-	Doi = {10.1109/CSMR.2007.33},
-	Isbn = {0-7695-2802-3},
-	Numpages = {10},
-	Pages = {181--190},
-	Publisher = {IEEE Computer Society},
-	Series = {CSMR '07},
-	Title = {Migrating Multi-page Web Applications to Single-page AJAX Interfaces},
-	Url = {http://dx.doi.org/10.1109/CSMR.2007.33},
-	Year = {2007},
-	Bdsk-Url-1 = {http://dx.doi.org/10.1109/CSMR.2007.33}}
-
-@inproceedings{Guha10a,
-	Acmid = {1883988},
-	Address = {Berlin, Heidelberg},
-	Author = {Guha, Arjun and Saftoiu, Claudiu and Krishnamurthi, Shriram},
-	Booktitle = {Proceedings of the 24th European conference on Object-oriented programming},
-	Isbn = {3-642-14106-4, 978-3-642-14106-5},
-	Location = {Maribor, Slovenia},
-	Numpages = {25},
-	Pages = {126--150},
-	Publisher = {Springer-Verlag},
-	Series = {ECOOP'10},
-	Title = {The essence of javascript},
-	Url = {http://dl.acm.org/citation.cfm?id=1883978.1883988},
-	Year = {2010},
-	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=1883978.1883988}}
-
-@inproceedings{Arba97a,
-	Acmid = {884371},
-	Address = {Washington, DC, USA},
-	Author = {Arbaugh, W. A. and Farber, D. J. and Smith, J. M.},
-	Booktitle = {Proceedings of the 1997 IEEE Symposium on Security and Privacy},
-	Keywords = {AEGIS architecture, Internet commerce, active networks, bootstrap architecture, computer bootstrapping, hardware validity, initialization, integrity chain, integrity check failures, lower-layer integrity, recovery process, reliability, robust systems, security, system integrity guarantees, transitions},
-	Pages = {65--},
-	Publisher = {IEEE Computer Society},
-	Series = {SP '97},
-	Title = {A secure and reliable bootstrap architecture},
-	Url = {http://dl.acm.org/citation.cfm?id=882493.884371},
-	Year = {1997},
-	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=882493.884371}}
-
-@misc{kicz94,
-	Author = {Gregor Kiczales and Andreas Paepcke},
-	Entered-By = {Andreas Paepcke},
-	Howpublished = {Expanded tutorial notes},
-	Keywords = {metaobject protocol},
-	Links = {(title:www:http://db.stanford.edu/~paepcke/shared-documents/Tutorial.ps)},
-	Note = {At http://db.stanford.edu/~paepcke/shared-documents/Tutorial.ps},
-	Title = {Open Implementations and Metaobject Protocols},
-	Year = {1994}}
-
-@article{Chel02a,
-	Author = {Chelf, Benjamin and Engler, Dawson and Hallem, Seth},
-	Journal = {SIGSOFT Software Engineering Notes},
-	Month = {nov},
-	Number = {1},
-	Pages = {51--60},
-	Publisher = {ACM},
-	Title = {{How to Write System-specific, Static Checkers in Metal}},
-	Volume = {28},
-	Year = {2002}}
-
-@article{Reim04a,
-	Author = {Reimer, Darrell and Schonberg, Edith and Srinivas, Kavitha and Srinivasan, Harini and Alpern, Bowen and Johnson, Robert D. and Kershenbaum, Aaron and Koved, Larry},
-	Journal = {SIGSOFT Software Engineering Notes},
-	Month = {jul},
-	Number = {4},
-	Pages = {243--251},
-	Publisher = {ACM},
-	Title = {{SABER: Smart Analysis Based Error Reduction}},
-	Volume = {29},
-	Year = {2004}}
-
-@inproceedings{Kong07a,
-	Author = {Kong, Deguang and Zheng, Quan and Chen, Chao and Shuai, Jianmei and Zhu, Ming},
-	Booktitle = {International Conference on Scalable Information Systems},
-	Pages = {1--7},
-	Title = {ISA: a Source Code Static Vulnerability Detection System Based on Data Fusion},
-	Year = {2007}}
-
-@inproceedings{Xiao04a,
-	Acmid = {1032739},
-	Address = {Washington, DC, USA},
-	Author = {Xiao, Shu and Pham, Christopher},
-	Booktitle = {Proceedings of the 11th Asia-Pacific Software Engineering Conference},
-	Doi = {10.1109/APSEC.2004.72},
-	Isbn = {0-7695-2245-9},
-	Numpages = {10},
-	Pages = {346--355},
-	Publisher = {IEEE Computer Society},
-	Series = {APSEC '04},
-	Title = {Performing High Efficiency Source Code Static Analysis with Intelligent Extensions},
-	Url = {http://dx.doi.org/10.1109/APSEC.2004.72},
-	Year = {2004},
-	Bdsk-Url-1 = {http://dx.doi.org/10.1109/APSEC.2004.72}}
-
-@article{Zhen06a,
-	Author = {Zheng, Jiang and Williams, Laurie and Nagappan, Nachiappan and Snipes, Will and Hudepohl, John P. and Vouk, Mladen A.},
-	Journal = {Transactions on Software Engineering},
-	Month = {apr},
-	Number = {4},
-	Pages = {240--253},
-	Publisher = {IEEE Press},
-	Title = {On the Value of Static Analysis for Fault Detection in Software},
-	Volume = {32},
-	Year = {2006}}
-
-@inproceedings{Lu05a,
-	Author = {Shan Lu and Zhenmin Li and Feng Qin and Lin Tan and Pin Zhou and Yuanyuan Zhou},
-	Booktitle = {Workshop on the Evaluation of Software Defect Detection Tools},
-	Title = {Bugbench: Benchmarks for evaluating bug detection tools},
-	Year = {2005}}
-
-@techreport{Boet07a,
-	Author = {G. Boetticher and T. Menzies and T. Ostrand},
-	Booktitle = {Workshop on the Evaluation of Software Defect Detection Tools},
-	Institution = {West Virginia University, Department of Computer Science},
-	Title = {PROMISE Repository of Empirical Software Engineering Data},
-	Year = {2007}}
-
-@inproceedings{Boog09a,
-	Author = {Boogerd, Cathal and Moonen, Leon},
-	Booktitle = {{Working Conference on Mining Software Repositories}},
-	Pages = {41--50},
-	Title = {{Evaluating the Relation Between Coding Standard Violations and Faults Within and Across Software Versions}},
-	Year = {2009}}
-
-@techreport{Basa06a,
-	Author = {Wojciech Basalaj and Frank van den Beuken},
-	Institution = {Programming Research},
-	Title = {{Correlation Between Coding Standards Compliance and Software Quality}},
-	Year = {2006}}
-
-@inproceedings{Boog08a,
-	Author = {Boogerd, C. and Moonen, L.},
-	Booktitle = {International Conference on Software Maintenance},
-	Pages = {277 -286},
-	Title = {{Assessing the Value of Coding Standards: An Empirical Study}},
-	Year = {2008}}
-
-@article{Cout12a,
-	Author = {Cesar Couto and Joao Eduardo Montandon and Christofer Silva and Marco Tulio Valente},
-	Journal = {Software Quality Journal},
-	Pages = {1--17},
-	Title = {{Static Correspondence and Correlation Between Field Defects and Warnings Reported by a Bug Finding Tool}},
-	Year = {2012}}
-
-@inproceedings{Wagn08a,
-	Author = {Wagner, Stefan and Deissenboeck, Florian and Aichner, Michael and Wimmer, Johann and Schwalb, Markus},
-	Booktitle = {International Conference on Software Testing, Verification, and Validation},
-	Pages = {248--257},
-	Title = {{An Evaluation of Two Bug Pattern Tools for Java}},
-	Year = {2008}}
-
-@inproceedings{Naga05a,
-	Author = {Nagappan, Nachiappan and Ball, Thomas},
-	Booktitle = {International Conference on Software Engineering},
-	Pages = {580--586},
-	Title = {Static Analysis Tools as Early Indicators of Pre-release Defect Density},
-	Year = {2005}}
-
-@article{Filh11a,
-	Author = {Joao Araujo Filho, Silvio Souza and Marco Tulio Valente},
-	Journal = {Software, IET},
-	Month = {aug},
-	Number = {4},
-	Pages = {366 --374},
-	Title = {{Study on the Relevance of the Warnings Reported by Java Bug-finding Tools}},
-	Volume = {5},
-	Year = {2011}}
-
-@inproceedings{Agga06a,
-	Author = {Aggarwal, Ashish and Jalote, Pankaj},
-	Booktitle = {International Computer Software and Applications Conference},
-	Pages = {343--350},
-	Title = {Integrating Static and Dynamic Analysis for Detecting Vulnerabilities},
-	Year = {2006}}
-
-@article{Csal08a,
-	Author = {Csallner, Christoph and Smaragdakis, Yannis and Xie, Tao},
-	Journal = {Transactions on Software Engineering and Methodology},
-	Month = {may},
-	Number = {2},
-	Pages = {1--37},
-	Publisher = {ACM},
-	Title = {DSD-Crasher: A Hybrid Analysis Tool for Bug Finding},
-	Volume = {17},
-	Year = {2008}}
-
-@inproceedings{Meng08a,
-	Author = {Meng, Na and Wang, Qianxiang and Wu, Qian and Mei, Hong},
-	Booktitle = {International Conference on Quality Software},
-	Pages = {169--174},
-	Title = {An Approach to Merge Results of Multiple Static Analysis Tools (Short Paper)},
-	Year = {2008}}
-
-@inproceedings{Aust11a,
-	Acmid = {2048136},
-	Address = {New York, NY, USA},
-	Author = {Austin, Thomas H. and Disney, Tim and Flanagan, Cormac},
-	Booktitle = {Proceedings of the 2011 ACM international conference on object oriented programming systems languages and applications},
-	Doi = {10.1145/2048066.2048136},
-	Isbn = {978-1-4503-0940-0},
-	Keywords = {behavioral intercession, metaobject protocols, proxies},
-	Location = {Portland, Oregon, USA},
+	Author = {Bacon, David F. and Sweeney, Peter F.},
+	Booktitle = {Proceedings of the 11th ACM SIGPLAN Conference on Object-oriented Programming, Systems, Languages, and Applications},
+	Doi = {10.1145/236337.236371},
+	Isbn = {0-89791-788-X},
+	Location = {San Jose, California, USA},
 	Numpages = {18},
-	Pages = {921--938},
+	Pages = {324--341},
 	Publisher = {ACM},
-	Series = {OOPSLA '11},
-	Title = {Virtual values for language extension},
-	Url = {http://doi.acm.org/10.1145/2048066.2048136},
-	Year = {2011},
-	Bdsk-Url-1 = {http://doi.acm.org/10.1145/2048066.2048136},
-	Bdsk-Url-2 = {http://dx.doi.org/10.1145/2048066.2048136}}
+	Series = {OOPSLA '96},
+	Title = {Fast Static Analysis of C++ Virtual Function Calls},
+	Url = {http://doi.acm.org/10.1145/236337.236371},
+	Year = {1996},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/236337.236371},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/236337.236371}}
 
-@misc{Sope02a,
-	Author = {Soper, P.},
-	Title = {JSR 121: Application Isolation API Specification. Java Specification Requests},
-	Year = {2002}}
+@inproceedings{Titz07a,
+	Acmid = {1250775},
+	Address = {New York, NY, USA},
+	Author = {Titzer, Ben L. and Auerbach, Joshua and Bacon, David F. and Palsberg, Jens},
+	Booktitle = {Proceedings of the 2007 ACM SIGPLAN Conference on Programming Language Design and Implementation},
+	Doi = {10.1145/1250734.1250775},
+	Isbn = {978-1-59593-633-2},
+	Keywords = {VM design, VM modularity, dead code elimination, embedded systems, feature analysis, persistence, pre-initialization, static analysis, static compilation},
+	Location = {San Diego, California, USA},
+	Numpages = {11},
+	Pages = {352--362},
+	Publisher = {ACM},
+	Series = {PLDI '07},
+	Title = {The ExoVM System for Automatic VM and Application Reduction},
+	Url = {http://doi.acm.org/10.1145/1250734.1250775},
+	Year = {2007},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/1250734.1250775},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/1250734.1250775}}
 
-@article{Czaj01a,
-	Author = {Czajkowski, G. and Dayn{\'e}s, L.},
-	Journal = {ACM SIGPLAN Notices},
+@inproceedings{Sall10a,
+	Acmid = {1925804},
+	Address = {New York, NY, USA},
+	Articleno = {3},
+	Author = {Sallenave, Olivier and Ducournau, Roland},
+	Booktitle = {Proceedings of the Workshop on the Implementation, Compilation, Optimization of Object-Oriented Languages, Programs and Systems},
+	Doi = {10.1145/1925801.1925804},
+	Isbn = {978-1-4503-0537-2},
+	Keywords = {closed-world assumption, embedded systems, late binding, subtype test},
+	Location = {Maribor, Slovenia},
+	Numpages = {8},
+	Pages = {3:1--3:8},
+	Publisher = {ACM},
+	Series = {ICOOOLPS '10},
+	Title = {Efficient Compilation of .NET Programs for Embedded Systems},
+	Url = {http://doi.acm.org/10.1145/1925801.1925804},
+	Year = {2010},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/1925801.1925804},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/1925801.1925804}}
+
+@inproceedings{Bour14a,
+	Acmid = {2616711},
+	Address = {3001 Leuven, Belgium, Belgium},
+	Articleno = {85},
+	Author = {Bournoutian, Garo and Orailoglu, Alex},
+	Booktitle = {Proceedings of the Conference on Design, Automation \& Test in Europe},
+	Isbn = {978-3-9815370-2-4},
+	Location = {Dresden, Germany},
+	Numpages = {6},
+	Pages = {85:1--85:6},
+	Publisher = {European Design and Automation Association},
+	Series = {DATE '14},
+	Title = {On-device objective-C Application Optimization Framework for High-performance Mobile Processors},
+	Url = {http://dl.acm.org/citation.cfm?id=2616606.2616711},
+	Year = {2014},
+	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=2616606.2616711}}
+
+@inproceedings{Gu03a,
+	Acmid = {826367},
+	Address = {Washington, DC, USA},
+	Author = {Gu, Xiaohui and Nahrstedt, Klara and Messer, Alan and Greenberg, Ira and Milojicic, Dejan},
+	Booktitle = {Proceedings of the First IEEE International Conference on Pervasive Computing and Communications},
+	Isbn = {0-7695-1893-1},
+	Pages = {107--},
+	Publisher = {IEEE Computer Society},
+	Series = {PERCOM '03},
+	Title = {Adaptive Offloading Inference for Delivering Applications in Pervasive Computing Environments},
+	Url = {http://dl.acm.org/citation.cfm?id=826025.826367},
+	Year = {2003},
+	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=826025.826367}}
+
+@article{Wagn11a,
+	Acmid = {1998908},
+	Address = {Amsterdam, The Netherlands, The Netherlands},
+	Author = {Wagner, Gregor and Gal, Andreas and Franz, Michael},
+	Doi = {10.1016/j.scico.2010.04.008},
+	Issn = {0167-6423},
+	Issue_Date = {November, 2011},
+	Journal = {Sci. Comput. Program.},
+	Keywords = {Cold code removal, Embedded connected devices, Java virtual machine, Just-in-time compilation},
+	Month = nov,
 	Number = {11},
-	Pages = {125--138},
+	Numpages = {17},
+	Pages = {1037--1053},
+	Publisher = {Elsevier North-Holland, Inc.},
+	Title = {\&\#8220;Slimming\&\#8221; a Java Virtual Machine by Way of Cold Code Removal and Optimistic Partial Program Loading},
+	Url = {http://dx.doi.org/10.1016/j.scico.2010.04.008},
+	Volume = {76},
+	Year = {2011},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.scico.2010.04.008}}
+
+@inproceedings{Kers09a,
+	Acmid = {1596678},
+	Address = {New York, NY, USA},
+	Author = {Kerschbaumer, Christoph and Wagner, Gregor and Wimmer, Christian and Gal, Andreas and Steger, Christian and Franz, Michael},
+	Booktitle = {Proceedings of the 7th International Conference on Principles and Practice of Programming in Java},
+	Doi = {10.1145/1596655.1596678},
+	Isbn = {978-1-60558-598-7},
+	Keywords = {Java virtual machine, code-size reduction, connected embedded systems, just-in-time compilation, optimization},
+	Location = {Calgary, Alberta, Canada},
+	Numpages = {10},
+	Pages = {133--142},
 	Publisher = {ACM},
-	Title = {Multitasking without comprimise: a virtual machine evolution},
-	Volume = {36},
-	Year = {2001}}
+	Series = {PPPJ '09},
+	Title = {SlimVM: A Small Footprint Java Virtual Machine for Connected Embedded Systems},
+	Url = {http://doi.acm.org/10.1145/1596655.1596678},
+	Year = {2009},
+	Bdsk-Url-1 = {http://doi.acm.org/10.1145/1596655.1596678},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1145/1596655.1596678}}
 
-@inproceedings{Back20a,
-	Author = {Back, G. and Hsieh, W.C. and Lepreau, J.},
-	Booktitle = {Proceedings of the 4th conference on Symposium on Operating System Design \& Implementation-Volume 4},
-	Organization = {USENIX Association},
-	Pages = {23--23},
-	Title = {Processes in KaffeOS: Isolation, resource management, and sharing in Java},
-	Year = {2000}}
+@inproceedings{Herz13a,
+	Acmid = {2487113},
+	Address = {Piscataway, NJ, USA},
+	Author = {Herzig, Kim and Zeller, Andreas},
+	Booktitle = {Proceedings of the 10th Working Conference on Mining Software Repositories},
+	Isbn = {978-1-4673-2936-1},
+	Location = {San Francisco, CA, USA},
+	Numpages = {10},
+	Pages = {121--130},
+	Publisher = {IEEE Press},
+	Series = {MSR '13},
+	Title = {The Impact of Tangled Code Changes},
+	Url = {http://dl.acm.org/citation.cfm?id=2487085.2487113},
+	Year = {2013},
+	Bdsk-Url-1 = {http://dl.acm.org/citation.cfm?id=2487085.2487113}}
 
-@inproceedings{Golm01a,
-	Author = {Golm, M. and Kleinder, E. and Bellosa, F.},
-	Booktitle = {Hot Topics in Operating Systems, 2001. Proceedings of the Eighth Workshop on},
-	Organization = {IEEE},
-	Pages = {3--8},
-	Title = {Beyond Address Spaces-Flexibility, Performance, Protection, and Resource Management in the Type-Safe JX Operating System},
-	Year = {2001}}
+@article{Alpe00a,
+	Abstract = {Jalape\~{n}o is a virtual machine for Java{\texttrademark} servers written in the Java language. To be able to address the requirements of servers (performance and scalability in particular), Jalape\~{n}o was designed  '' from scratch ''  to be as self-sufficient as possible. Jalape\~{n}o's unique object model and memory layout allows a hardware null-pointer check as well as fast access to array elements, fields, and methods. Run-time services conventionally provided in native code are implemented primarily in Java. Java threads are multiplexed by virtual processors (implemented as operating system threads). A family of concurrent object allocators and parallel type-accurate garbage collectors is supported. Jalape\~{n}o's interoperable compilers enable quasi-preemptive thread switching and precise location of object references. Jalape\~{n}o's dynamic optimizing compiler is designed to obtain high quality code for methods that are observed to be frequently executed or computationally intensive.},
+	Author = {Alpern, B. and Attanasio, C. R. and Barton, J. J. and Burke, M. G. and Cheng, P. and Choi, J. D. and Cocchi, A. and Fink, S. J. and Grove, D. and Hind, M. and Hummel, S. F. and Lieber, D. and Litvinov, V. and Mergen, M. F. and Ngo, T. and Russell, J. R. and Sarkar, V. and Serrano, M. J. and Shepherd, J. C. and Smith, S. E. and Sreedhar, V. C. and Srinivasan, H. and Whaley, J.},
+	Citeulike-Article-Id = {10085693},
+	Citeulike-Linkout-0 = {http://dx.doi.org/10.1147/sj.391.0211},
+	Citeulike-Linkout-1 = {http://ieeexplore.ieee.org/xpls/abs\_all.jsp?arnumber=5387060},
+	Date-Added = {2014-02-12 14:20:58 +0000},
+	Date-Modified = {2014-02-12 14:20:58 +0000},
+	Doi = {10.1147/sj.391.0211},
+	Institution = {IBM Research Division, Thomas J. Watson Research Center, P.O. Box 218, Yorktown Heights, New York 10598, USA},
+	Issn = {0018-8670},
+	Journal = {IBM Systems Journal},
+	Number = {1},
+	Pages = {211--238},
+	Posted-At = {2011-12-01 10:59:59},
+	Priority = {2},
+	Publisher = {IBM},
+	Read = {1},
+	Title = {The {Jalape\~{n}o} virtual machine},
+	Url = {http://dx.doi.org/10.1147/sj.391.0211},
+	Volume = {39},
+	Year = {2000},
+	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QNC4uLy4uL3BhcGVyL0FscGUwMGEgVGhlIEphbGFwZW5vIHZpcnR1YWwgbWFjaGluZS5wZGbSFwsYGVdOUy5kYXRhTxECGgAAAAACGgACAAAPU2Ftc3VuZyBTU0QgODQwAAAAAAAAAAAAAAAAz2HXFEgrAAAAC86bH0FscGUwMGEgVGhlIEphbGFwZW5vICNCQ0Y4MS5wZGYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALz4HLeqAOAAAAAAAAAAAAAgACAAAJIAAAAAAAAAAAAAAAAAAAAAVwYXBlcgAAEAAIAADPYbr0AAAAEQAIAADLepH+AAAAAQAUAAvOmwAGKDAABiS/AAYkggACZa8AAgBhU2Ftc3VuZyBTU0QgODQwOlVzZXJzOgBjYW1pbGxvYnJ1bmk6AERvY3VtZW50czoAZWR1Y2F0aW9uOgBwYXBlcjoAQWxwZTAwYSBUaGUgSmFsYXBlbm8gI0JDRjgxLnBkZgAADgBSACgAQQBsAHAAZQAwADAAYQAgAFQAaABlACAASgBhAGwAYQBwAGUAbgBvACAAdgBpAHIAdAB1AGEAbAAgAG0AYQBjAGgAaQBuAGUALgBwAGQAZgAPACAADwBTAGEAbQBzAHUAbgBnACAAUwBTAEQAIAA4ADQAMAASAFVVc2Vycy9jYW1pbGxvYnJ1bmkvRG9jdW1lbnRzL2VkdWNhdGlvbi9wYXBlci9BbHBlMDBhIFRoZSBKYWxhcGVubyB2aXJ0dWFsIG1hY2hpbmUucGRmAAATAAEvAAAVAAIAE///AACABtIbHB0eWiRjbGFzc25hbWVYJGNsYXNzZXNdTlNNdXRhYmxlRGF0YaMdHyBWTlNEYXRhWE5TT2JqZWN00hscIiNcTlNEaWN0aW9uYXJ5oiIgXxAPTlNLZXllZEFyY2hpdmVy0SYnVHJvb3SAAQAIABEAGgAjAC0AMgA3AEAARgBNAFUAYABnAGoAbABuAHEAcwB1AHcAhACOAMUAygDSAvAC8gL3AwIDCwMZAx0DJAMtAzIDPwNCA1QDVwNcAAAAAAAAAgEAAAAAAAAAKAAAAAAAAAAAAAAAAAAAA14=},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1147/sj.391.0211}}
 
-@article{Hawb02a,
-	title={Luna: a flexible Java protection system},
-	author={Hawblitzel, C. and von Eicken, T.},
-	journal={ACM SIGOPS Operating Systems Review},
-	volume={36},
-	number={SI},
-	pages={391--403},
-	year={2002},
-	publisher={ACM}
+@inproceedings{Kell11a,
+	Annote = {internationalworkshop},
+	Author = {Stephen Kell and Conrad Irwin},
+	Booktitle = {VMIL '11: Proceedings of the 5th workshop on Virtual machines and intermediate languages for emerging modularization mechanisms},
+	Date-Added = {2013-12-04 16:53:26 +0000},
+	Date-Modified = {2013-12-04 16:53:26 +0000},
+	Location = {Portland, Oregon, U.S.A.},
+	Pages = {6},
+	Publisher = {ACM},
+	Rating = {4},
+	Read = {1},
+	Title = {Virtual machines should be invisible},
+	Url = {http://www.cs.iastate.edu/~design/vmil/2011/papers/p02-kell.pdf},
+	Year = {2011},
+	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QPC4uLy4uL3BhcGVyL0tlbGwxMWEgVmlydHVhbCBtYWNoaW5lcyBzaG91bGQgYmUgaW52aXNpYmxlLnBkZtIXCxgZV05TLmRhdGFPEQIyAAAAAAIyAAIAAA9TYW1zdW5nIFNTRCA4NDAAAAAAAAAAAAAAAADPYdcUSCsAAAALzpsfS2VsbDExYSBWaXJ0dWFsIG1hY2hpI0JEMEY3LnBkZgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAvQ98sOZjAAAAAAAAAAAAACAAIAAAkgAAAAAAAAAAAAAAAAAAAABXBhcGVyAAAQAAgAAM9huvQAAAARAAgAAMsOWCAAAAABABQAC86bAAYoMAAGJL8ABiSCAAJlrwACAGFTYW1zdW5nIFNTRCA4NDA6VXNlcnM6AGNhbWlsbG9icnVuaToARG9jdW1lbnRzOgBlZHVjYXRpb246AHBhcGVyOgBLZWxsMTFhIFZpcnR1YWwgbWFjaGkjQkQwRjcucGRmAAAOAGIAMABLAGUAbABsADEAMQBhACAAVgBpAHIAdAB1AGEAbAAgAG0AYQBjAGgAaQBuAGUAcwAgAHMAaABvAHUAbABkACAAYgBlACAAaQBuAHYAaQBzAGkAYgBsAGUALgBwAGQAZgAPACAADwBTAGEAbQBzAHUAbgBnACAAUwBTAEQAIAA4ADQAMAASAF1Vc2Vycy9jYW1pbGxvYnJ1bmkvRG9jdW1lbnRzL2VkdWNhdGlvbi9wYXBlci9LZWxsMTFhIFZpcnR1YWwgbWFjaGluZXMgc2hvdWxkIGJlIGludmlzaWJsZS5wZGYAABMAAS8AABUAAgAT//8AAIAG0hscHR5aJGNsYXNzbmFtZVgkY2xhc3Nlc11OU011dGFibGVEYXRhox0fIFZOU0RhdGFYTlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVkQXJjaGl2ZXLRJidUcm9vdIABAAgAEQAaACMALQAyADcAQABGAE0AVQBgAGcAagBsAG4AcQBzAHUAdwCEAI4AzQDSANoDEAMSAxcDIgMrAzkDPQNEA00DUgNfA2IDdAN3A3wAAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAAAAADfg==},
+	Bdsk-Url-1 = {http://www.cs.iastate.edu/~design/vmil/2011/papers/p02-kell.pdf}}
+
+@article{Lin12a,
+ author = {Lin, Yi and Blackburn, Stephen M. and Frampton, Daniel},
+ title = {Unpicking the Knot: Teasing Apart VM/Application Interdependencies},
+ journal = {SIGPLAN Not.},
+ issue_date = {July 2012},
+ volume = {47},
+ number = {7},
+ month = mar,
+ year = {2012},
+ issn = {0362-1340},
+ pages = {181--190},
+ numpages = {10},
+ url = {http://doi.acm.org/10.1145/2365864.2151048},
+ doi = {10.1145/2365864.2151048},
+ acmid = {2151048},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {dependency, isolation, metacircular, virtual machine}
 }
 
-@book{Gutt95a,
-	Author = {Guttman, B. and Guttman, B. and Roback, E.A.},
-	Isbn = {9780788128301},
-	Publisher = {Diane Publishing Company},
-	Title = {An Introduction to Computer Security: The Nist Handbook},
-	Url = {http://csrc.nist.gov/publications/nistpubs/800-12/},
-	Year = {1995},
-	Bdsk-Url-1 = {http://csrc.nist.gov/publications/nistpubs/800-12/}
+@article{Titz10a,
+ author = {Titzer, Ben L. and W\"{u}rthinger, Thomas and Simon, Doug and Cintra, Marcelo},
+ title = {Improving Compiler-runtime Separation with XIR},
+ journal = {SIGPLAN Not.},
+ issue_date = {July 2010},
+ volume = {45},
+ number = {7},
+ month = mar,
+ year = {2010},
+ issn = {0362-1340},
+ pages = {39--50},
+ numpages = {12},
+ url = {http://doi.acm.org/10.1145/1837854.1736005},
+ doi = {10.1145/1837854.1736005},
+ acmid = {1736005},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {JIT, compilers, intermediate representations, java, lowering, object model, register allocation, runtime interface, software architecture, virtual machines}
 }
 
+@techreport{Levy97a,
+ author = {Levy, Jacob Y. and Ousterhout, John K. and Welch, Brent B.},
+ title = {The Safe-Tcl Security Model},
+ year = {1997},
+ institution = {Sun Microsystems, Inc.},
+ publisher = {Sun Microsystems, Inc.},
+ address = {Mountain View, CA, USA}
+}
+
+@inproceedings{Bore94a,
+ author = {Borenstein, Nathaniel S.},
+ title = {EMail With A Mind of Its Own: The Safe-Tcl Language for Enabled Mail},
+ booktitle = {Proceedings of the IFIP TC6/WG6.5 International Conference on Upper Layer Protocols, Architectures and Applications},
+ year = {1994},
+ isbn = {0-444-82047-7},
+ pages = {389--402},
+ numpages = {14},
+ url = {http://dl.acm.org/citation.cfm?id=646533.695545},
+ acmid = {695545},
+ publisher = {Elsevier Science Inc.},
+ address = {New York, NY, USA}
+}

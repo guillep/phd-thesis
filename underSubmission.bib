@@ -1,22 +1,43 @@
-
-
-@article{Poli12a,
-	Abstract = {Bootstrapping is a technique commonly known by its usage in language definition by the introduction of a compiler
-written in the same language it compiles. This process is important to understand and modify the definition of a given
-language using the same language, taking benefit of the abstractions and expression power it provides. A bootstrap,
-then, supports the evolution of a language. However, the infrastructure of reflective systems like Smalltalk includes,
-in addition to a compiler, an environment with several self-references. A reflective system bootstrap should consider
-all its infrastructural components. In this paper, we propose a definition of bootstrap for object-oriented reflective
-systems, we describe the architecture and components it should contain and we analyze the challenges it has to
-overcome. Finally, we present a reference bootstrap process for a reflective system and Hazelnut, its implementation
-for bootstrapping the Pharo Smalltalk-inspired system.},
-	Journal = {Journal on Science of Computer Programming - Special Issue: Smalltalk Based Systems},
-	Author = {Guillermo Polito and St\'ephane Ducasse and Luc Fabresse and Noury Bouraqadi and Benjamin Van Ryseghem},
+@article{Mart12X,
+	Abstract = {A proxy object is a surrogate or placeholder that controls access to another target object. Proxy objects are a widely used solution for different scenarios such as remote method invocation, future objects, behavioral reflection, object databases, inter-languages communications and bindings, access control, lazy or parallel evaluation, security, among others.
+Most proxy implementations support proxies for regular objects but are unable to create proxies for objects with an important role in the runtime infrastructure such as classes or methods. Proxies can be complex to install, they can have a significant overhead, they can be limited to certain kind of classes, etc. Moreover, proxy implementations are often not stratified and they do not have a clear separation between proxies (the objects intercepting messages) and handlers (the objects handling interceptions).
+In this paper, we present Ghost: a uniform and general-purpose proxy implementation for the Pharo programming language. Ghost provides low memory consuming proxies for regular objects as well as for classes and methods.
+When a proxy takes the place of a class, it intercepts both the messages received by the class and the lookup of methods for messages received by its instances. Similarly, if a proxy takes the place of a method, then the method execution is intercepted too.},
+	Aeres = {ACL},
+	Aeresstatus = {},
+	Annote = {internationaljournal insubmission},
+	Author = {Martinez Peck, Mariano and Noury Bouraqadi and St\'ephane Ducasse and Luc Fabresse and Marcus Denker},
 	Inria = {RMOD},
-	Keywords = {Object-Oriented Programming and Design, Bootstrap, Smalltalk, Software Evolution},
-	Description = {Under publication},
-	Title = {Bootstrapping Reflective Systems: The Case of Pharo},
-	Year = {2012, under submission}
+	Journal = {Journal of Science of Computer Programming (SCP)},
+	Publisher    = {Elsevier},
+	Keywords = {lse-sub pharo pharo-sub kzLanguageDesign insubmission},
+	Labo = {dans},
+	Month = oct,
+	Hal-Id = {hal-00877757},
+	Selectif = {oui},
+	Title = {Ghost: A Uniform and General-Purpose Proxy Implementation (submitted + passed first review round)},
+	X-Editorial-Board = {yes},
+	X-International-Audience = {yes},
+	X-Language = {EN},
+	X-Proceedings = {yes},
+	X-Scientific-Popularization = {no},
+	Year = {2012}}
+
+@inproceedings{Auth12a,
+	Abstract = {Information systems are more and more often based on aggregation of other systems that must be maintained and evolved in an agile way and with no entropy creation. This is not without interoperability problems! Among others, the aim of Model-Driven Engineering (MDE) is to provide solutions for interoperability issues between systems. This paper summarizes thoughts that have come up from the specific action Interoperability of information systems and model-driven engineering: What challenges? What solutions? supported by inforsid. We propose a summary of approaches that are based on MDE and knowledge engineering and that tackle interoperability issues in the industry. Open questions and limitations that raised during the meetings are also reported.},
+	Aeres = {ACT},
+	Aeresstatus = {aeres12},
+	Annote = {nationalconference},
+	Author = {Authosserre-Cavarero, Annie and  Bertrand, Frederic and  Blay-Fornarino, Mireille and  Collet, Philippe and  Dubois, Hubert and  Ducasse, St\'ephane and  Dupuy-Chessa, Sophie and Faron-Zucker, Catherine and  Faucher, Cyril and  Lafaye, Jean-Yves and  Lahire, Philippe and  Le Goaer, Olivier and  Montagnat, Johan and  Pinna-Dery, Anne-Marie},
+	Booktitle = {INFORSID},
+	Hal = {},
+	Hal-Id = {},
+	Inria = {RMOD},
+	Keywords = {moose lse-pub kzReengineerig},
+	Selectif = {non},
+	Title = {Interop\'erabilit\'e des syst\`emes d'information : approches dirig\'ees par les mod\`eles},
+	Url = {http://rmod.lille.inria.fr/archives/papers/Auth12a-interop-si-2012.pdf},
+	Year = {2012}
 	}
 
 

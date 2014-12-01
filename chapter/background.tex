@@ -25,7 +25,7 @@ This chapter finishes by presenting a detailed description of the problem statem
 
 Modifying a runtime system can be a cumbersome task. On one side, we recognize that virtual machines and the languages that run on top of then are very interrelated and interdependent software components. For example, a language must comply to the execution model provided by its \VM~(\eg a bytecode set or an object model), and the \VM may understand the language's internals to manipulate it~(\eg run it, optimize it or manage its memory).
 
-On the other side, reflective runtimes have a circular dependency on themselves: they rely on the concept of causal connection. When we make a change in a reflective runtime, we should ensure these causal connections still hold at any point of the runtime's life. In case a causal connection is broken, the runtime may become unusable as there is no means for it to keep reflecting upon itself correctly.
+On the other side, reflective runtimes have a circular dependency on themselves: they rely on the concept of causal connection\gp{this is actually only true for reflective architectures}. When we make a change in a reflective runtime, we should ensure these causal connections still hold at any point of the runtime's life. In case a causal connection is broken, the runtime may become unusable as there is no means for it to keep reflecting upon itself correctly.
 
 The related work we present in this section presents two main topics of interest for us. First, we present those works that target the modification of a language's semantics by safe means~(\ie avoiding crashes). We follow by looking at the field of metacircular runtimes and \VMs, to study how they ease the modification of a runtime by means of simplifying the language-\VM relation for development.
 
@@ -37,31 +37,52 @@ The original model of reflection as defined by Smith~\cite{Smit82c} is based on 
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=.4\linewidth]{tower_of_interpreters}
-\caption{\textbf{Roles of a reflective language kernel bootstrap.}\label{fig:tower_of_interpreters}
+\includegraphics[width=.5\linewidth]{tower_of_interpreters}
+\caption{\textbf{The theoretical tower of interpreters model. Each floor interprets the floor below itself.}\label{fig:tower_of_interpreters}
 % (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
  }
 \end{center}
 \end{figure}
 
-The tower of interpreters presents a model where one can define and redefine the semantics of the program it is executing. We can modify the behavior of our program~(in the floor zero) by jumping one level above it in the tower and modifying the interpreter running in that floor. In the same sense, we can jump one level above this interpreter to change also its behavior and so on. Smith's tower of interpreters model is flexible and coherent regarding the manipulation of the reflective behavior of a program.
+The tower of interpreters presents a model where one can define and redefine the semantics of the program it is executing. We can modify the behavior of our program~(in the floor zero) by jumping one level above it in the tower and modifying the interpreter running in that floor. In the same sense, we can jump one level above this interpreter to change also its behavior and so on. This allows the \emph{indirect modification} of a program's behavior \ie a change in an interpreter in a level \emph{n} changes the behavior of the interpreter level \emph{n - 1}, which impacts in the interpreter below it and so on, up to the base level.
 
-The tower does not present a limit on the amount of interpreters we can stack, presenting a problematic infinite potential. This idea collides with the non-infinite amount resources in current machines. On one side, limited memory prevents us to have a tower of infinite interpreters running at the same time. On the other side, above certain limit of interpreters, this approach becomes too slow and impractical. We will show in the following subsections other reflective models that try to overcome these deficiencies while trying to keep some of the good properties of this model.
-
-\subsection*{Reflectivity}One problem meta-circular architectures is that meta-objects rely on the same code they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon.
-In \cite{Denk08b}, Denker et al solve this problem by tracking the degree of metaness of the execution context. Meta-objects can only reflect on objects of a lower metaness, thus simulating the semantics of an infinite tower of distinct meta-interpreters. The existing work on Meta-context is only concerned with scoping behavioral changes. More work is needed to extend this work to structure. We plan to explore how ObjectSpaces can be used to provide a way to control structural reflective change.
+Smith's tower of interpreters model is flexible and coherent regarding the manipulation of the reflective behavior of a program. The tower does not present a limit on the amount of interpreters we can stack, presenting a problematic infinite potential. This idea collides with the non-infinite amount resources in current machines. On one side, limited memory prevents us to have a tower of infinite interpreters running at the same time. On the other side, above certain limit of interpreters, this approach becomes too slow and impractical. We will show in the following subsections other reflective models that try to overcome these deficiencies while trying to keep some of the good properties of this model.
 
 \subsubsection*{Black}
 
-It has a meta-level interpreter which it can modify from the meta-level. Kind of the tower of interpreters but only one level.
+Black is a reflective language based on Scheme that mimics the infinite tower of interpreters with the goal to make it practical. Its model is based on the same idea as the reflective tower: the base level is interpreted by an interpreter, which is interpreted by a meta-interpreter and so on. The main difference between the original tower of interpreters and the model presented by Black is that the latter avoids the infinite regression, making the model practical in finite resource machines.
 
-\subsubsection*{SafeTcl}
-SafeTcl \cite{Oust-97a} allows one to execute code inside a safe interpreter which execute a safe subset of
-Tcl commands. A security policy can be given to the safe interpreter to grant or remove
-privileges. Commands can be aliased so the untrusted interpreter call an aliased method and
-the command is fully implemented by a trusted interpreter. An untrusted script is
-isolated in its interpreter given a few extra commands. Unfortunately SafeTcl, has no memory limit
-support and some color specifications can crash the interpreter.
+Black avoids the infinite regression by limiting the real levels of interpretation: there is only one level of interpretation. For the rest of the levels, Black  introduces a difference between directly-executed code in contrast with interpreted code. Directly-executed code is code that is executed by the machine, where no interpretation steps are involved. Then, the base-level application is the only interpreted code in the application. The rest of the tower, including the first interpreter, is implemented and executed directly in machine code~(Figure \ref{fig:black_tower}).
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=.6\linewidth]{black_tower}
+\caption{\textbf{Black.}\label{fig:black_tower}
+% (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
+ }
+\end{center}
+\end{figure}
+
+By limiting the levels of interpretation, the model presented by Black forbids \emph{indirect modification}. Changing the interpreter in a level \emph{n} above the first level does not impact any more the interpreters below it, as they are directly-executed in the machine and not by the modified interpreter. Black supports, however, the modification of the first level of interpretation with the introduction of hooks inside the machine code. A hook detects wether a function in the interpreter~(written in directly-executed code) is changed, and interprets it by a meta-level interpreter written also in directly executed code. Hooks degrade the performance in comparison of a non-hooked interpreter, but it allows in exchange to change and specialize the behavior of the directly-executed code.
+
+\subsubsection*{Safe-Tcl}
+Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke and configure specialized interpreters that run isolated from the master interpreter~(Figure \ref{fig:safetcl_twin_interpreters}).
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=.6\linewidth]{safetcl_twin_interpreters}
+\caption{\textbf{Black.}\label{fig:safetcl_twin_interpreters}
+% (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
+ }
+\end{center}
+\end{figure}
+
+The master interpreter modifies the behavior of a safe interpreter by providing a security policy. A security policy grants or removes privileges to the scripts executed on an interpreter. Commands can be aliased so the untrusted interpreter call an aliased method and the command is fully implemented by a trusted interpreter.
+
+Safe-Tcl twin interpretation allows us to change the behavior of a program running on a specialized interpreter, without the limitations of the infinite tower of interpreters. However, in contrast with the solutions we already presented, Safe-Tcl does not provide with the ability to change completely the semantics of the language but just to override or provide new commands, with a focus on security.
+
+\subsection*{Reflectivity}One problem meta-circular architectures is that meta-objects rely on the same code they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon.
+In \cite{Denk08b}, Denker et al solve this problem by tracking the degree of metaness of the execution context. Meta-objects can only reflect on objects of a lower metaness, thus simulating the semantics of an infinite tower of distinct meta-interpreters. The existing work on Meta-context is only concerned with scoping behavioral changes. More work is needed to extend this work to structure. We plan to explore how ObjectSpaces can be used to provide a way to control structural reflective change.
 
 \subsection{Metacircular Runtimes}
 
