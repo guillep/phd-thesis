@@ -31,7 +31,22 @@ The related work we present in this section presents two main topics of interest
 
 \subsection{Safe modification of language semantics}
 
-\subsubsection*{Tower of Interpreters}
+\subsubsection*{Tower of Interpreters Model}
+
+The original model of reflection as defined by Smith~\cite{Smit82c} is based on meta-level interpretation. A program is interpreted by an interpreter, such interpreter is interpreted by a meta-interpreter and so on, possibly ad-infinitum. This leads to a tower of interpreters, where each floor defines the semantics of the program~(interpreter of application) it interprets~(Figure \ref{fig:tower_of_interpreters}).
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=.4\linewidth]{tower_of_interpreters}
+\caption{\textbf{Roles of a reflective language kernel bootstrap.}\label{fig:tower_of_interpreters}
+% (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
+ }
+\end{center}
+\end{figure}
+
+The tower of interpreters presents a model where one can define and redefine the semantics of the program it is executing. We can modify the behavior of our program~(in the floor zero) by jumping one level above it in the tower and modifying the interpreter running in that floor. In the same sense, we can jump one level above this interpreter to change also its behavior and so on. Smith's tower of interpreters model is flexible and coherent regarding the manipulation of the reflective behavior of a program.
+
+The tower does not present a limit on the amount of interpreters we can stack, presenting a problematic infinite potential. This idea collides with the non-infinite amount resources in current machines. On one side, limited memory prevents us to have a tower of infinite interpreters running at the same time. On the other side, above certain limit of interpreters, this approach becomes too slow and impractical. We will show in the following subsections other reflective models that try to overcome these deficiencies while trying to keep some of the good properties of this model.
 
 \subsection*{Reflectivity}One problem meta-circular architectures is that meta-objects rely on the same code they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon.
 In \cite{Denk08b}, Denker et al solve this problem by tracking the degree of metaness of the execution context. Meta-objects can only reflect on objects of a lower metaness, thus simulating the semantics of an infinite tower of distinct meta-interpreters. The existing work on Meta-context is only concerned with scoping behavioral changes. More work is needed to extend this work to structure. We plan to explore how ObjectSpaces can be used to provide a way to control structural reflective change.
@@ -292,9 +307,11 @@ From the literature presented about the \Klein project we see a strong focus on 
 The fact that the language-runtime allows \VM-level reflection to change the \VM dynamically is not directly mentioned in the literature.
 While we see the practical limitations of changing the \VM at runtime we would like to open the doors to this new form of reflection.
 
-\section{Virtualization}
+\section{Virtualization Techniques}
 
-\subsection{Application Co-existence Techniques}
+\gp{introduction}
+
+\subsection{Application Co-existence}
 
 \subsubsection*{\textsc{Class Loaders}}
 In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A class loader is a first-class entity responsible of loading classes: create their runtime representation, loading their methods and linking their class references. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load different classes with the same name. These classes will be isolated in the sense that they will not be visible to the others.
