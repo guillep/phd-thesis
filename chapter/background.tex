@@ -29,7 +29,7 @@ On the other side, reflective runtimes have a circular dependency on themselves:
 
 The related work we present in this section presents two main topics of interest for us. First, we present those works that target the modification of a language's semantics by safe means~(\ie avoiding crashes). We follow by looking at the field of metacircular runtimes and \VMs, to study how they ease the modification of a runtime by means of simplifying the language-\VM relation for development.
 
-\subsection{Safe modification of language semantics}
+\subsection{Modification of language semantics}
 
 \subsubsection*{Tower of Interpreters Model}
 
@@ -81,8 +81,38 @@ The master interpreter modifies the behavior of a safe interpreter by providing 
 
 Safe-Tcl twin interpretation allows us to change the behavior of a program running on a specialized interpreter, without the limitations of the infinite tower of interpreters. However, in contrast with the solutions we already presented, Safe-Tcl does not provide with the ability to change completely the semantics of the language but just to override or provide new commands, with a focus on security.
 
-\subsection*{Reflectivity}One problem meta-circular architectures is that meta-objects rely on the same code they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon.
-In \cite{Denk08b}, Denker et al solve this problem by tracking the degree of metaness of the execution context. Meta-objects can only reflect on objects of a lower metaness, thus simulating the semantics of an infinite tower of distinct meta-interpreters. The existing work on Meta-context is only concerned with scoping behavioral changes. More work is needed to extend this work to structure. We plan to explore how ObjectSpaces can be used to provide a way to control structural reflective change.
+\subsection*{Reflective Architectures and Reflectivity}
+
+To enable reflection in mainstream languages such as Java, Ruby or JavaScript, the tower of interpreters is replaced by a reflective architecture~\cite{Maes87a}. Instead of relying on a stack of interpreters interpreting each the level below it, a reflective architecture relies on the idea of \emph{causal connection} \ie the programming language incorporates structures that represents aspects of itself~(\eg classes, objects), in such a way that if one structure changes the aspect it represents is updated accordingly, and vice-versa.
+
+
+In languages presenting reflective architectures, reflection is controlled by a meta-object that lives in the same environment of the object it reflects upon.
+One problematic corollary of this is that meta-objects rely on the same code and infrastructure than the objects they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=.6\linewidth]{reflectivity_meta_recursion}
+\caption{\textbf{Black.}\label{fig:reflectivity_meta_recursion}
+% (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
+ }
+\end{center}
+\end{figure}
+
+Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is a reflective framework avoids meta-recursions by tracking the degree of metaness of the execution context. Meta-objects can only reflect on objects of a lower metaness, thus simulating the semantics of an infinite tower of distinct interpreters while there is only one of them. Reflectivity scopes only behavioral changes and not structural ones.
+
+\begin{figure}[ht]
+\begin{center}
+\begin{subfigure}{.45\textwidth}
+\includegraphics[width=1\linewidth]{reflectivity_metaness_accounting}
+\end{subfigure}
+\begin{subfigure}{.45\textwidth}
+\includegraphics[width=1\linewidth]{reflectivity_avoid_recursion}
+\end{subfigure}
+\caption{\textbf{Meta level jump using reflectivity.}\label{fig:reflectivity_meta_recursion}
+% (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
+ }
+\end{center}
+\end{figure}
 
 \subsection{Metacircular Runtimes}
 
