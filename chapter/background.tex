@@ -87,18 +87,18 @@ To enable reflection in mainstream languages such as Java, Ruby or JavaScript, t
 
 
 In languages presenting reflective architectures, reflection is controlled by a meta-object that lives in the same environment of the object it reflects upon.
-One problematic corollary of this is that meta-objects rely on the same code and infrastructure than the objects they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon.
+One problematic corollary of this is that meta-objects rely on the same code and infrastructure than the objects they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon~(Figure \ref{fig:reflectivity_meta_recursion}).
 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.6\linewidth]{reflectivity_meta_recursion}
-\caption{\textbf{Black.}\label{fig:reflectivity_meta_recursion}
+\caption{\textbf{Meta level recursion in reflective architectures.}\label{fig:reflectivity_meta_recursion}
 % (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
  }
 \end{center}
 \end{figure}
 
-Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is a reflective framework avoids meta-recursions by tracking the degree of metaness of the execution context. Meta-objects can only reflect on objects of a lower metaness, thus simulating the semantics of an infinite tower of distinct interpreters while there is only one of them. Reflectivity scopes only behavioral changes and not structural ones.
+Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is a reflective framework that avoids meta-recursions by tracking the degree of metaness of the execution context. In each reflective call, the \ct{MetaContext} object is activated and it accounts the meta-level jump. Likewise, when the reflective call returns, the \ct{MetaContext} is deactivated. Using the accounted meta-level jumps of the \ct{MetaContext}, meta-objects do only reflect on objects of a lower metaness~(and not greater or equal metaness). Thus, it simulates the semantics of an infinite tower of distinct interpreters while there is only one of them~(Figure \ref{fig:reflectivity_meta_recursion}).
 
 \begin{figure}[ht]
 \begin{center}
@@ -113,6 +113,8 @@ Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is
  }
 \end{center}
 \end{figure}
+
+Reflectivity succeeds to modify and scope behavioral changes for different meta-levels inside the same reflective architecture. However, it does not provide with support for structural changes of the code the reflective framework depends upon.
 
 \subsection{Metacircular Runtimes}
 
