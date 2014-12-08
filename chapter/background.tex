@@ -204,64 +204,64 @@ We identify this as crucial, as most of the time is spent debugging, notably on 
 Hence having a specific debuggers and inspectors greatly improve the interaction with the \VM artifact.
 
 
-\subsubsection*{\PyPy Toolchain}
+\subsubsection*{PyPy Toolchain}
 \seclabel{background-pypy}
 % ---------------------------------------------------------------------------
-\urlfootnote{\PyPy}{http://pypy.org/} is a \Python-based high-level \VM framework \cite{Rigo06a}.
-\PyPy's major focus lies on an efficient \Python interpreter.
-However, it has been successfully used to build \VMs for other languages including \ST \cite{Bolz08a}.
-Interpreters are written in a type-inferable subset of \Python called \RPython.
-The underlying \PyPy infrastructure automatically provides memory management and \JIT compilation.
-Instead of explicitly providing these features, a \VM developer hints certain information to the \PyPy framework to improve the generation of a \GC or \JIT.
+\urlfootnote{PyPy}{http://pypy.org/} is a Python-based high-level \VM framework~\cite{Rigo06a}.
+PyPy's major focus lies on an efficient Python interpreter.
+However, it has been successfully used to build \VMs for other languages including Smalltalk~\cite{Bolz08a}.
+Interpreters are written in a type-inferable subset of Python called RPython.
+The underlying PyPy infrastructure automatically provides memory management and JIT compilation.
+Instead of explicitly providing these features, a \VM developer hints certain information to the PyPy framework to improve the generation of a GC or JIT.
 
-\PyPy follows a different approach from the previously presented \VM generation frameworks.
-For instance, in Squeak and \Jikes the final \VM implementation is not much different from an implementation done directly in a low-level language.
+PyPy follows a different approach from the previously presented \VM generation frameworks.
+For instance, in Squeak and Jikes the final \VM implementation is not much different from an implementation done directly in a low-level language.
 The programmer specifies all the components of the \VM explicitly, either by implementing them directly or using a provided library.
-Compared to the more static C ans C++ these \VM generation frameworks make the compilation phase more tangible.
-\ST in \Squeak or \Java in \Jikes or \Maxine fulfill the purpose of the template system in C++ or the restricted macro system in C.
-For the explicit implementation part \PyPy is no different.
-However, certain features for the final \VM are directly absorbed from the underlying \PyPy infrastructure.
-For instance, the \JIT support or the \GC are not explicitly implemented but provided by the \PyPy framework itself.
+Compared to the more static C and C++ these \VM generation frameworks make the compilation phase more tangible.
+Smalltalk in Squeak or Java in Jikes or Maxine fulfill the purpose of the template system in C++ or the restricted macro system in C.
+For the explicit implementation part PyPy is no different.
+However, certain features for the final \VM are directly absorbed from the underlying PyPy infrastructure.
+For instance, the JIT support or the GC are not explicitly implemented but provided by the PyPy framework itself.
 This is a big difference to the other \VM frameworks as it allows programmers to write the \VM in a more high-level fashion.
-For instance in \Squeak memory allocation, even for \VM-level objects, has to be performed explicitly.
-Whereas in \PyPy the garbage collection is left to the underlying \VM building infrastructure.
-This approach allows \RPython \VMs to behave like standard \Python programs.
+For instance in Squeak memory allocation, even for \VM-level objects, has to be performed explicitly.
+Whereas in PyPy the garbage collection is left to the underlying \VM building infrastructure.
+This approach allows RPython \VMs to behave like standard Python programs.
 
-Much like the automatic memory management, \PyPy provides a tracing \JIT generator \cite{Bolz09a}.
-By default the \VM programmer does not write an explicit \JIT in \PyPy.
-Instead the \VM code is annotated to guide the underlying tracing \JIT generator.
-This means a \VM compilation time a specific tracing \JIT is created for the given meta information.
-As a result, the \JIT can track high-level loops in the final interpreted language.
-Again, this is similar to \PyPy's \GC, both are provided as a service and do not have to be programmed explicitly.
-Instead, the \VM programmer tweaks parameters of the \JIT or \GC.
+Much like the automatic memory management, PyPy provides a tracing JIT generator~\cite{Bolz09a}.
+By default the \VM programmer does not write an explicit JIT in PyPy.
+Instead the \VM code is annotated to guide the underlying tracing JIT generator.
+This means a \VM compilation time a specific tracing JIT is created for the given meta information.
+As a result, the JIT can track high-level loops in the final interpreted language.
+Again, this is similar to PyPy's GC, both are provided as a service and do not have to be programmed explicitly.
+Instead, the \VM programmer tweaks parameters of the JIT or GC.
 
 % ------------------------------------------------------------------------------
-\subsubsection*{\Pinocchio \VM}
-\seclabel{background-pinocchio}
+\subsubsection*{Pinocchio \VM}
+\seclabel{background-Pinocchio }
 
-\P \cite{Verw11a} is a research \ST environment that directly uses native code instead of bytecodes.
+Pinocchio~\cite{Verw11a} is a research Smalltalk environment that directly uses native code instead of bytecodes.
 The only execution base is native code which is directly generated by the language-side compiler.
 
-\P is built from a kernel derived originally from a \PH image.
+Pinocchio is built from a kernel derived originally from a \PH image.
 For the bootstrap classes, objects and methods are exported into binary, native images and linked together with a standard C linker to a final executable.
-For simplicity we also rely on a very small part of C code to provide essential primitive, for instance used for file handling.
-Additionally we specified part of the bootstrap for the \ST object model in plain C code.
-However, besides that, all the other code is written and developed directly in \ST.
+For simplicity it relies on a very small part of C code to provide essential primitives, for instance used for file handling.
+Additionally it specifies part of the bootstrap for the Smalltalk object model in plain C code.
+However, besides that, all the other code is written and developed directly in Smalltalk.
 
-An important aspect of \P is that the method lookup is expressed in terms of normal \ST code.
+An important aspect of Pinocchio is that the method lookup is expressed in terms of normal Smalltalk code.
 Typically this code statically resides in the \VM, thus at a different meta-level.
 Hence this implies for most systems that the lookup can not be modified without altering the \VM itself.
-However, expressing the lookup in terms for normal language-side code introduces a recursive dependencies during the bootstrap.
-In order to run the lookup code expressed in \ST code, we have to perform message sends.
+However, expressing the lookup in terms for normal language-side code introduces a recursive dependency during the bootstrap.
+In order to run the lookup code expressed in Smalltalk code, we have to perform message sends.
 These, in return, require an already working lookup mechanism.
-Hence, without a taking special care, a language-side lookup method will lead to infinite recursion during startup.
-We resolved this problem in \P by directly interacting with the low-level execution format which among other things relies on inline caches to improve performance.
+Hence, without taking special care, a language-side lookup method will lead to infinite recursion during startup.
+Pinocchio resolves this problem by directly interacting with the low-level execution format which among other things relies on inline caches to improve performance.
 The important property of inline caches is that they bypass the slow language-side lookup by directly jumping to the last activated method at a send-site.
 This is exactly the behavior we need to prevent recursion during the startup.
-Hence, when generating the native code for the bootstrap, we prefill all the inline caches of the methods required to perform a full method lookup.
-As a result, when running requiring the first real method lookup, the lookup code itself is running perfectly on the prefilled inline caches.
-What we achieve is a flexible connection between the low-level world and the high-level language-side.
-During execution the \VM jumps freely between what previously was native \VM-level code and interpretation of language-side code.
+Hence, when generating the native code for the bootstrap, it prefills all the inline caches of the methods required to perform a full method lookup.
+As a result, when at runtime it is required the first real method lookup, the lookup code itself is running perfectly on the prefilled inline caches.
+Pinocchio achieves a flexible connection between the low-level world and the high-level language-side.
+During execution, the \VM jumps freely between what previously was native \VM-level code and interpretation of language-side code.
 
 % ------------------------------------------------------------------------------
 \subsubsection*{\Klein \VM}
@@ -277,7 +277,7 @@ Which is unlike for instance the \Squeak \VM where a full \VM bootstrap takes an
 \Klein also supports advanced mirror-based debugging tools to inspect and modify a remote \VM.
 
 Development on the \Klein \VM stopped in 2009 and left the \Klein \VM in fairly usable state.
-Like \P it currently lacks a dedicated \GC.
+Like Pinocchio it currently lacks a dedicated \GC.
 Yet, it proved that it is possible and build a language-runtime without the classical separation of the language-side and the \VM.
 From the literature presented about the \Klein project we see a strong focus on the improvements of the development tools.
 The fact that the language-runtime allows \VM-level reflection to change the \VM dynamically is not directly mentioned in the literature.
