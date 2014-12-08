@@ -31,7 +31,7 @@ The related work we present in this section presents two main topics of interest
 
 \subsection{Modification of language semantics}
 
-\subsubsection*{Tower of Interpreters Model}
+\subsubsection*{\textsc{Tower of Interpreters Model}}
 
 The original model of reflection as defined by Smith~\cite{Smit82c} is based on meta-level interpretation. A program is interpreted by an interpreter, such interpreter is interpreted by a meta-interpreter and so on, possibly ad-infinitum. This leads to a tower of interpreters, where each floor defines the semantics of the program~(interpreter of application) it interprets~(Figure \ref{fig:tower_of_interpreters}).
 
@@ -48,7 +48,7 @@ The tower of interpreters presents a model where one can define and redefine the
 
 Smith's tower of interpreters model is flexible and coherent regarding the manipulation of the reflective behavior of a program. The tower does not present a limit on the amount of interpreters we can stack, presenting a problematic infinite potential. This idea collides with the non-infinite amount resources in current machines. On one side, limited memory prevents us to have a tower of infinite interpreters running at the same time. On the other side, above certain limit of interpreters, this approach becomes too slow and impractical. We will show in the following subsections other reflective models that try to overcome these deficiencies while trying to keep some of the good properties of this model.
 
-\subsubsection*{Black}
+\subsubsection*{\textsc{Black}}
 
 Black is a reflective language based on Scheme that mimics the infinite tower of interpreters with the goal to make it practical. Its model is based on the same idea as the reflective tower: the base level is interpreted by an interpreter, which is interpreted by a meta-interpreter and so on. The main difference between the original tower of interpreters and the model presented by Black is that the latter avoids the infinite regression, making the model practical in finite resource machines.
 
@@ -65,7 +65,7 @@ Black avoids the infinite regression by limiting the real levels of interpretati
 
 By limiting the levels of interpretation, the model presented by Black forbids \emph{indirect modification}. Changing the interpreter in a level \emph{n} above the first level does not impact any more the interpreters below it, as they are directly-executed in the machine and not by the modified interpreter. Black supports, however, the modification of the first level of interpretation with the introduction of hooks inside the machine code. A hook detects wether a function in the interpreter~(written in directly-executed code) is changed, and interprets it by a meta-level interpreter written also in directly executed code. Hooks degrade the performance in comparison of a non-hooked interpreter, but it allows in exchange to change and specialize the behavior of the directly-executed code.
 
-\subsubsection*{Safe-Tcl}
+\subsubsection*{\textsc{Safe-Tcl}}
 Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke and configure specialized interpreters that run isolated from the master interpreter~(Figure \ref{fig:safetcl_twin_interpreters}).
 
 \begin{figure}[ht]
@@ -81,7 +81,7 @@ The master interpreter modifies the behavior of a safe interpreter by providing 
 
 Safe-Tcl twin interpretation allows us to change the behavior of a program running on a specialized interpreter, without the limitations of the infinite tower of interpreters. However, in contrast with the solutions we already presented, Safe-Tcl does not provide with the ability to change completely the semantics of the language but just to override or provide new commands, with a focus on security.
 
-\subsection*{Reflective Architectures and Reflectivity}
+\subsection*{\textsc{Reflectivity: scoping reflection in Reflective Architectures}}
 
 To enable reflection in mainstream languages such as Java, Ruby or JavaScript, the tower of interpreters is replaced by a reflective architecture~\cite{Maes87a}. Instead of relying on a stack of interpreters interpreting each the level below it, a reflective architecture relies on the idea of \emph{causal connection} \ie the programming language incorporates structures that represents aspects of itself~(\eg classes, objects), in such a way that if one structure changes the aspect it represents is updated accordingly, and vice-versa.
 
@@ -142,7 +142,7 @@ However, there are more high-level approaches that try to simplify creating \VMs
 In the following sections we are shedding light on metacircular \VMs which are programmed in the same language they in the end support.
 
 
-\subsubsection*{Squeak Smalltalk \VM}
+\subsubsection*{\textsc{Squeak Smalltalk \VM}}
 \seclabel{background-squeak}
 % ---------------------------------------------------------------------------
 The Squeak \VM~\cite{Inga97a} is of importance in the context of this work.
@@ -167,7 +167,7 @@ The simulator itself works by setting up a byte array which servers as native me
 Then the \VM sources written in Slang are interpreted by the \VM of the development environment.
 
 % ---------------------------------------------------------------------------
-\subsubsection*{\Jikes: High-level low-level Programming with \MMTK}
+\subsubsection*{\textsc{Jikes: High-level low-level Programming with MMTK}}
 \seclabel{background-jikes}
 % ---------------------------------------------------------------------------
 Jikes (former Jalapeño) is an early metacircular research \VM for Java written in Java~\cite{Alpe00a}.
@@ -186,7 +186,7 @@ Additionally their framework is successfully used in a separate project, the mem
 
 
 % ---------------------------------------------------------------------------
-\subsubsection*{Maxine Java \VM}
+\subsubsection*{\textsc{Maxine Java \VM}}
 \seclabel{background-maxine}
 % ---------------------------------------------------------------------------
 Maxine is a metacircular Java \VM~\cite{Wimm13a} focused on an efficient developer experience.
@@ -204,7 +204,7 @@ We identify this as crucial, as most of the time is spent debugging, notably on 
 Hence having a specific debuggers and inspectors greatly improve the interaction with the \VM artifact.
 
 
-\subsubsection*{PyPy Toolchain}
+\subsubsection*{\textsc{PyPy Toolchain}}
 \seclabel{background-pypy}
 % ---------------------------------------------------------------------------
 \urlfootnote{PyPy}{http://pypy.org/} is a Python-based high-level \VM framework~\cite{Rigo06a}.
@@ -236,7 +236,7 @@ Again, this is similar to PyPy's GC, both are provided as a service and do not h
 Instead, the \VM programmer tweaks parameters of the JIT or GC.
 
 % ------------------------------------------------------------------------------
-\subsubsection*{Pinocchio \VM}
+\subsubsection*{\textsc{Pinocchio \VM}}
 \seclabel{background-Pinocchio }
 
 Pinocchio~\cite{Verw11a} is a research Smalltalk environment that directly uses native code instead of bytecodes.
@@ -264,7 +264,7 @@ Pinocchio achieves a flexible connection between the low-level world and the hig
 During execution, the \VM jumps freely between what previously was native \VM-level code and interpretation of language-side code.
 
 % ------------------------------------------------------------------------------
-\subsubsection*{Klein \VM}
+\subsubsection*{\textsc{Klein \VM}}
 \seclabel{background-klein}
 
 \urlfootnote{Klein}{http://kleinvm.sourceforge.net/} is a metacircular \VM for the Self programming language that has no separation into \VM and language \cite{Unga05a}.
