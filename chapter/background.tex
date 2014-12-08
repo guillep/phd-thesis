@@ -284,7 +284,18 @@ While we see the practical limitations of changing the \VM runtime system at run
 
 \section{Virtualization Techniques}
 
-\gp{introduction}
+High-level languages abstract the developer from the complexities of the underlying machine by running on top of a Virtual Machine~(\VM). A \VM provides a language with an execution model closer to its semantics as well as several services such as automatic memory management or cross-cutting optimizations. \VMs also provide with portability \ie a program can run on different operating systems and hardware architectures because the \VM abstracts it from the underlying particular details.
+
+Although these language \VMs are indeed \emph{Virtual}, state of the art production-ready \VMs do not provide by themselves with the typical advantages of virtualized operating systems. Thus, we can see the lacking of the following features:
+
+\begin{description}
+\item[Co-location.] Co-location is the ability to have co-existing applications on top of the same virtual machine. With co-location, a single \VM has information about all the applications running on top of itself and can integrate that information in its decision process. Additionally, it gives to co-located applications a cheap communication mechanism as they are in the same process.
+\item[Resource consumption.] \VMs should control how the different resources of their applications are used. However, state of the art \VMs do only control their consumed memory with the usage of a memory manager. They do not perform in general any control in other kind of resources such as CPU or energy consumption.
+\item[Security.] \VMs should control how applications access sensible information such as files and network connections or execute potentially dangerous operations such as system calls.
+\item[Application mobility.] As applications are portable, they should be easily migrated between different \VMs. Application mobility provides support for resource re-allocation.
+\end{description}
+
+With the objective of doing runtime manipulation, we study in the following sections virtualization-related techniques applied to programming languages runtimes. We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present those works that target the co-existence of language runtimes on the same infrastructure. We continue this section by presenting related work on the subject of runtime control.
 
 \subsection{Application Co-existence}
 
