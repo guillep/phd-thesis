@@ -303,9 +303,9 @@ With the objective of doing runtime manipulation, we study in the following sect
 In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A class loader is a first-class entity responsible of loading classes: create their runtime representation, loading their methods and linking their class references. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load different classes with the same name. These classes will be isolated in the sense that they will not be visible to the others.
 
 Class loaders can be specialized and extended to provide custom behavior. For example, Fong et. al.~\cite{Fong10a} use the class loading mechanism to enforce scoping rules and determine the visibility of names in various region of the program. They allow the user to control untrusted
-namespaces and classes, they have defined a language to define security policy. Jensen et. al.~\cite{Jens98a} provide a formalization of the class loader with the means to enforce security. They also use a bytecode verifier on class loading to check if a class' bytecode doesn't try to perform overflow or underflow operations.
+namespaces and classes and they have defined a language to define security policy. Jensen et. al.~\cite{Jens98a} provide a formalization of the class loader with the means to enforce security. They also use a bytecode verifier on class loading to check if a class' bytecode doesn't try to perform overflow or underflow operations.
 
-The isolating mechanism of class loaders is useful in the scoping context. New versions of code can be loaded in a different class loader and coexist at runtime. However, its basic mechanism does not support a way to manage changes, or update an application.
+The class loader isolation mechanism can be used for application co-existence. Different versions of the same application can be loaded by different class loaders and be running at the same time. A class loader does however, only provide this basic mechanism.  This mechanism does not support a way to manage changes, or update an application.\gp{name OSGI that uses it} 
 
 \subsubsection*{\textsc{Changeboxes}}
 
