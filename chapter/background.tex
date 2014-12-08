@@ -118,15 +118,33 @@ Reflectivity succeeds to modify and scope behavioral changes for different meta-
 
 \subsection{Metacircular Runtimes}
 
-% ---------------------------------------------------------------------------
-After presented the technical background of metacircular \VMs we are presenting several concrete implementations in more detail.
-In this first part present \VMs that focus on compile-time reflection.
-In \secref{background-reified-vms} we will then focus on a list of \VMs that reify their components and allow for a more close interaction with the language-side.
+High-level language \VMs are inherent complex pieces of software.
+They have to combine two rather extreme goals: abstraction and performance.
+We have seen that the required abstraction for the running high-level language has a strong influence on the \VM design.
+At the same time the hard performance requirement requires precise interaction with the underlying hardware.
+This goes even so far that specialized hardware is conceived to match the performance requirements \cite{Unga84a,Stef84a,McGh98a,Clic05a}.
+
+The early \VMs focused on interpreting an abstract instruction set (bytecodes).
+The benefits are twofold.
+On the one hand the bytecodes guarantee certain platform independence by abstracting away from the \CPU specific instruction set.
+On the other hand bytecodes allow to encode complex operations into little space both serving the hard memory constraints of the hardware and simplifying the design of a compiler.
+Obviously this abstraction gain comes at a cost and ever since the first \VMs were built research and industry strive to reduce the interpretation overhead.
+An efficient way to improve performance is to use a just in time compiler (\JIT) that dynamically generates native code from the bytecode \cite{Deut84a}.
+In this case the bytecode becomes an intermediate representation (\IR) for a bigger compiler infrastructure.
+However, \JIT compilers are notoriously complex as they crosscut many \VM components.
+At the same time they crosscut all abstraction layers; they have to access high-level information from the running bytecodes and manage native code at the same time.
+Similar complexity applies to the automatic memory management present in most high-level language \VMs.
+Garbage Collectors (\GC) evolved from simple helpers to complex software artifacts that for instance support concurrent garbage collection \cite{Clic05a}.
+
+The increased complexity of the \VMs lead to more novel approaches on how to build \VMs.
+\VMs are still build for a big part in C or C++ for performance reasons.
+However, there are more high-level approaches that try to simplify creating \VMs by using building blocks \cite{Geof10a}.
+In the following sections we are shedding light on metacircular \VMs which are programmed in the same language they in the end support.
+
 
 \subsubsection*{\Squeak \ST \VM}
 \seclabel{background-squeak}
 % ---------------------------------------------------------------------------
-\sm{I still don't take squeak as metacircular in the strict sense. For me, that means  implemented in itself. Java with java, lisp with lisp, smalltalk with small talk, squeak is implemented in slang, that's C with smalltalk syntax, which is barely executable as smalltalk, PyPy is implemented with RPython, also restricted subset, and with its type system, I would say, a very different language. You can however make the point that RPython is a strict subset of Python, and thus, without changes directly executable. That's not true for Slang...}
 The \Squeak \VM\cite{Inga97a} is of importance in the context of this work.
 Its core building system is still in active use for the \urlfootnote{\Cog \VM}{http://www.mirandabanda.org/cogblog/} which extends \Squeak with a \JIT.
 The \Cog \VM is used as default by the \urlfootnote{\PH}{http://pharo.org/} programming language.
@@ -148,15 +166,11 @@ This means that programmers can change the sources of the running \VM and see th
 The simulator itself works by setting up a byte array which servers as native memory.
 Then the \VM sources written in \Slang are interpreted by the \VM of the development environment.
 
-We see that \Squeak is a pseudo metacircular \VM that uses an indirect bootstrap process.
-The newly created \VM does not absorb any features from the host environment.
-Yet according to long-time \VM programmers the \Squeak infrastructure is more productive than a comparable C++ or pure C project.
-
 % ---------------------------------------------------------------------------
 \subsubsection*{\Jikes: High-level low-level Programming in with \MMTK}
 \seclabel{background-jikes}
 % ---------------------------------------------------------------------------
-\Jikes (former \textsc{Jalapeño})is an early metacircular research \VM for \Java \cite{Alpe00a}.
+\Jikes (former \textsc{Jalapeño}) is an early metacircular research \VM for \Java \cite{Alpe00a}.
 The \Jikes \VM features several different garbage collectors and does not execute bytecodes but directly compiles to native code.
 With metacircularity in mind \Jikes does not resort to a low-level programming language such as C for these typically low-level \VM components.
 Instead they are written in \Java as well using a high-level low-level programming framework.
@@ -166,10 +180,10 @@ High-level low-level programming \cite{Fram09a} is mentioned the first time in t
 The goal of high-level low-level programming is to provide high-level abstractions to simplify low-level programming.
 Essentially this is the same motivation that drives the metacircular \VM community.
 
-Frampton et al. present a low-level framework packaged as \ttt{org.vmmagic}, which is used as system interface for \Jikes, an experimental \Java \VM.
-Additionally their framework is successfully used in a separate project, the memory management toolkit (\MMTK) \cite{Blac04a} which is used independently in several other projects.
-The \ttt{org.vmmagic} package introduces highly controlled low-level interaction in a statically type context.
+Frampton et al. present a low-level framework packaged as \ttt{org.vmmagic}, which is used as system interface for \Jikes. This package introduces highly controlled low-level interaction in a statically type context.
 In their framework, methods have to be annotated to enable the use of low-level functionality.
+Additionally their framework is successfully used in a separate project, the memory management toolkit (\MMTK) \cite{Blac04a} which is used independently in several other projects.
+
 
 % ---------------------------------------------------------------------------
 \subsubsection*{\Maxine \Java \VM}
@@ -185,9 +199,8 @@ Inspectors at multiple abstraction levels are readily available while debugging,
 
 Even though the \Maxine projects follows an approach where reflection is only used at compile-time, the development tools themselves provide a live interaction with the running \VM artifact.
 However, the \VM itself is not reflective as it is not directly built to reason about itself.
-This means that when debugging the \VM it behaves almost like a life \ST image where a complete interaction with the underlying system is possible.
+This means that when debugging the \VM it behaves almost like a living \ST image where a complete interaction with the underlying system is possible.
 We identify this as crucial, as most of the time is spent debugging, notably on inadequate tools like \ttt{gdb} due to lack of alternatives.
-\sm{Connect this to your problem statement (back reference) and, make sure your problem statement does not mix up reflection and observability/interactivity }
 Hence having a specific debuggers and inspectors greatly improve the interaction with the \VM artifact.
 
 
@@ -222,54 +235,6 @@ As a result, the \JIT can track high-level loops in the final interpreted langua
 Again, this is similar to \PyPy's \GC, both are provided as a service and do not have to be programmed explicitly.
 Instead, the \VM programmer tweaks parameters of the \JIT or \GC.
 
-% ---------------------------------------------------------------------------
-\gp{Runtime Reified or Self-aware \VMs}
-\seclabel{background-reified-vms}
-% ---------------------------------------------------------------------------
-
-The \VMs presented so far have little or no self-awareness.
-\VM generation frameworks allow a high amount of reflection at \VM compile time.
-This meta information is typically compiled away.
-This is somewhat similar to what happens with templates in a C++-based \VM.
-The \VM frameworks themselves behave like a static language on their own.
-As a result, the final \VM artifact has no access to the underlying definition anymore.
-
-As an example we might have several \VM components represented as high-level objects at compile or \VM generation time.
-These objects have a class and methods attached, information that is reflectively accessible.
-However, once the \VM is compiled down to native code, most of this information is lost.
-What is left is native code with low-level instructions that allow little or no reasoning about the original high-level structure.
-\sm{This is way to general and unspecific, and  I am not sure why that's discussed here}
-
-We have shown in \secref{background-vm-reflection} how a potential evolution of reflection in a high-level language looks.
-We concluded that the evolution of language-side reflection implies a similar evolution at \VM-level.
-More behavioral reflection at language-side requires more concepts to be reified in the \VM itself.
-This requirement is conflicting with the previously described loss of reification at \VM-level.
-
-We are now going to present \VMs that behave significantly different.
-Unlike the previous ones, they no longer make a clear distinction between the static \VM and the dynamic language-side.
-
-
-% ------------------------------------------------------------------------------
-\subsubsection*{\DwarfPython}
-
-\DwarfPython \cite{Kell11a} is a \Python implementation that aims at a barrier-free low-level interaction.
-It emerged from an earlier \textsc{Parathon} which used \Dwarf debugging information from external libraries to facilitate foreign function interfaces.
-\DwarfPython takes this idea further.
-Additionally to describe low-level code, \DwarfPython uses the \Dwarf metamodel to describe \Python code and data.
-This is depicted in \figref{background-dwarf-python}.
-%
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=\imagescale]{vm-dwarf-python}
-	\caption[\DwarfPython Low-level Reification]{
-		\DwarfPython reifies the low-level \VM by using the \Dwarf Debugging at runtime.
-		The \Dwarf information is generated by the default C compiler (\texttt{CC}) for C debuggers.}
-	\figlabel{background-dwarf-python}
-\end{figure}
-%
-This approach has the advantage that the very same debugging mechanism applies for low-level code, for instance written in C, and for high-level \Python code.
-Thus \DwarfPython essentially unifies the previously decoupled \VM with the language-side.
-
 % ------------------------------------------------------------------------------
 \subsubsection*{\Pinocchio \VM}
 \seclabel{background-pinocchio}
@@ -282,14 +247,6 @@ For the bootstrap classes, objects and methods are exported into binary, native 
 For simplicity we also rely on a very small part of C code to provide essential primitive, for instance used for file handling.
 Additionally we specified part of the bootstrap for the \ST object model in plain C code.
 However, besides that, all the other code is written and developed directly in \ST.
-%
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=\imagescale]{vm-pinocchio-bootstrap}
-	\caption[\P Bootstrap]{
-	\P's Bootstrap directly generates binary images (\texttt{.o}) and combines them with a simple kernel compile from C sources using a standard C linker (\texttt{LD}).}
-	\figlabel{background-pinocchio-bootstrap}
-\end{figure}
 
 An important aspect of \P is that the method lookup is expressed in terms of normal \ST code.
 Typically this code statically resides in the \VM, thus at a different meta-level.
@@ -306,45 +263,11 @@ As a result, when running requiring the first real method lookup, the lookup cod
 What we achieve is a flexible connection between the low-level world and the high-level language-side.
 During execution the \VM jumps freely between what previously was native \VM-level code and interpretation of language-side code.
 
-From an architectural point of view, \P is performing almost a direct bootstrap.
-Besides the small C kernel, the language-side code is directly compiled to native code.
-As a result, \P only requires a single compiler for native code, during bootstrap and at runtime.
-Hence, a separate \JIT implementation is not required.
-
-The most obvious shortcoming of \P is the lack of its own garbage collector.
-Instead of investing time into a separate well-defined \GC \P relies on the conservative \urlfootnote{Boehm \GC}{http://www.hpl.hp.com/personal/Hans_Boehm/gc/} built for C programs.
-The Boehm \GC is sufficiently fast to run \P as a prototype.
-\P lacks the necessary reification at level of the object layout to properly implement a \GC.
-All the notion about the object layout in memory are hard-coded in the compiler in several places.
-Work was undertaken to put first-class object layouts in place and delegate memory allocation and field access to these meta objects.
-Yet, at the current state \P has not incorporated this in the compiler core.
-
-\P is self-aware in the sense that it controls  native code generation and lookup at a single abstraction level.
-There is no distinction between \VM-level code and language-side code.
-
-
-% ------------------------------------------------------------------------------
-\subsubsection*{\MIST a C-less \ST Implementation}
-\urlfootnote{\MIST}{http://mist-project.org/} is another prototype \ST \VM that follows similar goals as the \P \VM.
-As well, it no longer uses a bytecode interpreter but only relies on native code.
-However, it goes one step further than \P by not relying on any C-based infrastructure.
-\MIST implements its own linker to build the final executable.
-Hence unlike \P it does not require kernel primitives written in C.
-\MIST brings its own implementation to directly perform system calls from within the language.
-\todo{along the track: less dependency to existing wrapped/hidden infrastrcture => more self-aware}
-\sm{Why is it relevant? It is barely a paragraph, feels like it doesn't fit in or is underrepresented here. Also, instead of being indirect about the goals, it would help to restate them}
-
 % ------------------------------------------------------------------------------
 \subsubsection*{\Klein \VM}
 \seclabel{background-klein}
 
 \urlfootnote{\Klein}{http://kleinvm.sourceforge.net/} is a metacircular \VM for the \Self programming language that has no separation into \VM and language \cite{Unga05a}.
-\Klein performs a direct bootstrap (see \figref{background-metacircular-bootstrap}) much like the aforementioned \P or \MIST \VM.
-Hence \Klein does not use an intermediate low-level language to bootstrap the system.
-\sm{I still don't get the point about the low-level IR/byte code being one of the hints you pick on.
-
-It is an exchange format, a serialization, what ever, I think you want to make the point that it is not being executed? Well, I am not to sure about that for Klein...}
-
 It is important to point out that the reification of the \VM-level survives the code generation or compilation time.
 Instead the \VM structures are represented as real \Self objects.
 Hence the \Klein \VM supports true \VM-level reflection since there is only a single code base.
