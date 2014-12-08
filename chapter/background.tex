@@ -21,8 +21,8 @@ This chapter finishes by presenting a detailed description of the problem statem
 \newpage
 % ===========================================================================
 
-\section{Runtime modification}
-
+\section{Modifying the Runtime}
+\gp{should really expand this part and say why it is relevant}
 Modifying a runtime system can be a cumbersome task. On one side, we recognize that virtual machines and the languages that run on top of then are very interrelated and interdependent software components. For example, a language must comply to the execution model provided by its \VM~(\eg a bytecode set or an object model), and the \VM may understand the language's internals to manipulate it~(\eg run it, optimize it or manage its memory).
 
 On the other side, reflective runtimes have a circular dependency on themselves: they rely on the concept of causal connection\gp{this is actually only true for reflective architectures}. When we make a change in a reflective runtime, we should ensure these causal connections still hold at any point of the runtime's life. In case a causal connection is broken, the runtime may become unusable as there is no means for it to keep reflecting upon itself correctly.
@@ -149,15 +149,15 @@ The Squeak \VM~\cite{Inga97a} is of importance in the context of this work.
 Its core building system is still in active use for the \urlfootnote{Cog \VM}{http://www.mirandabanda.org/cogblog/} which extends Squeak with a JIT compiler.
 The Cog \VM is used as default by the \urlfootnote{Pharo}{http://pharo.org/} programming language.
 Squeak is built around a Smalltalk dialect called Slang that is exported to C to be compiled to the final \VM binary.
-Additionally the Slang sources can be interpreted to provide an interactive simulator of the \VM, including full graphical support.
+Additionally, the Slang sources can be interpreted to provide an interactive simulator of the \VM, including full graphical support.
 
 Slang is limited to the functionality that can be expressed with standard C code.
 Slang in this case is mostly a high-level C preprocessor.
 Even though Slang basically has the same syntax as Smalltalk it is semantically constrained to expressions that can be resolved statically at compilation or code generation time and are compatible with C.
-Hence Slang's semantics are closer to C than to Smalltalk.
-Unlike later metacircular frameworks Squeak uses little or no compile-time reflection to simplify the \VM designs.
+Hence Slang's semantics are closer to C's than to Smalltalk's.
+Unlike later metacircular frameworks, Squeak uses little or no compile-time reflection to simplify the \VM designs.
 However, class composition help structuring the sources.
-Next to the Slang source which account for the biggest part of the interpreter code some os-related code and plugins are written in C.
+Next to the Slang source which account for the biggest part of the interpreter code some operating system related code and plugins are written in C.
 To facilitate the interaction with the pure C part Slang supports inline C expressions and type annotations.
 
 A great achievement of the Squeak \VM is a simulator environment that enables programmers to interact dynamically with the running \VM sources.
