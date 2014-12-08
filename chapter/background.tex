@@ -264,24 +264,23 @@ Pinocchio achieves a flexible connection between the low-level world and the hig
 During execution, the \VM jumps freely between what previously was native \VM-level code and interpretation of language-side code.
 
 % ------------------------------------------------------------------------------
-\subsubsection*{\Klein \VM}
+\subsubsection*{Klein \VM}
 \seclabel{background-klein}
 
-\urlfootnote{\Klein}{http://kleinvm.sourceforge.net/} is a metacircular \VM for the \Self programming language that has no separation into \VM and language \cite{Unga05a}.
+\urlfootnote{Klein}{http://kleinvm.sourceforge.net/} is a metacircular \VM for the Self programming language that has no separation into \VM and language \cite{Unga05a}.
 It is important to point out that the reification of the \VM-level survives the code generation or compilation time.
-Instead the \VM structures are represented as real \Self objects.
-Hence the \Klein \VM supports true \VM-level reflection since there is only a single code base.
+Instead the \VM structures are represented as real Self objects.
+Hence the Klein \VM supports true \VM-level reflection since there is only a single code base.
 
-Additionally to the advances in reflection and metacircularity, \Klein focuses on fast compilation turnarounds to allow for a responsive development process.
-Which is unlike for instance the \Squeak \VM where a full \VM bootstrap takes an order of minutes on modern hardware.
-\Klein also supports advanced mirror-based debugging tools to inspect and modify a remote \VM.
+Additionally to the advances in reflection and metacircularity, Klein focuses on fast compilation turnarounds to allow for a responsive development process.
+Which is unlike for instance the Squeak \VM where a full \VM bootstrap takes an order of minutes on modern hardware.
+Klein also supports advanced mirror-based debugging tools to inspect and modify a remote \VM.
 
-Development on the \Klein \VM stopped in 2009 and left the \Klein \VM in fairly usable state.
-Like Pinocchio it currently lacks a dedicated \GC.
+Development on the Klein \VM stopped in 2009 and left the Klein \VM in fairly usable state.
 Yet, it proved that it is possible and build a language-runtime without the classical separation of the language-side and the \VM.
-From the literature presented about the \Klein project we see a strong focus on the improvements of the development tools.
+From the literature presented about the Klein project we see a strong focus on the improvements of the development tools.
 The fact that the language-runtime allows \VM-level reflection to change the \VM dynamically is not directly mentioned in the literature.
-While we see the practical limitations of changing the \VM at runtime we would like to open the doors to this new form of reflection.
+While we see the practical limitations of changing the \VM runtime system at runtime we would like to open the doors to this new form of reflection.
 
 \section{Virtualization Techniques}
 
