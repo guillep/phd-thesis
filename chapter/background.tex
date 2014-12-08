@@ -167,7 +167,7 @@ The simulator itself works by setting up a byte array which servers as native me
 Then the \VM sources written in Slang are interpreted by the \VM of the development environment.
 
 % ---------------------------------------------------------------------------
-\subsubsection*{\Jikes: High-level low-level Programming in with \MMTK}
+\subsubsection*{\Jikes: High-level low-level Programming with \MMTK}
 \seclabel{background-jikes}
 % ---------------------------------------------------------------------------
 Jikes (former Jalapeño) is an early metacircular research \VM for Java written in Java~\cite{Alpe00a}.
@@ -186,20 +186,20 @@ Additionally their framework is successfully used in a separate project, the mem
 
 
 % ---------------------------------------------------------------------------
-\subsubsection*{\Maxine \Java \VM}
+\subsubsection*{Maxine Java \VM}
 \seclabel{background-maxine}
 % ---------------------------------------------------------------------------
-\Maxine is a metacircular \Java \VM \cite{Wimm13a} focused on an efficient developer experience.
+Maxine is a metacircular Java \VM~\cite{Wimm13a} focused on an efficient developer experience.
 Typically \VM frameworks focus on abstraction at the code-level which should yield simpler code and thus help reducing development efforts.
 However, in most situations the programmer is still forced to use existing unspecific tools for instance to debug the \VM.
-In contrast to that, the \Maxine \VM provides dedicated tools to interact with the \VM in development.
-\Maxine uses abstract and high-level representations of \VM-level concepts and consistently exposes them throughout the development process.
+In contrast to that, the Maxine \VM provides dedicated tools to interact with the \VM in development.
+Maxine uses abstract and high-level representations of \VM-level concepts and consistently exposes them throughout the development process.
 Inspectors at multiple abstraction levels are readily available while debugging, giving insights to the complete \VM state.
-\Maxine provides and excellent navigation for generated native code by providing links back to language-side objects as well as other native code and symbols.
+Maxine provides and excellent navigation for generated native code by providing links back to language-side objects as well as other native code and symbols.
 
-Even though the \Maxine projects follows an approach where reflection is only used at compile-time, the development tools themselves provide a live interaction with the running \VM artifact.
+Even though the Maxine projects follows an approach where reflection is only used at compile-time, the development tools themselves provide a live interaction with the running \VM artifact.
 However, the \VM itself is not reflective as it is not directly built to reason about itself.
-This means that when debugging the \VM it behaves almost like a living \ST image where a complete interaction with the underlying system is possible.
+This means that when debugging the \VM it behaves almost like a living Smalltalk image where a complete interaction with the underlying system is possible.
 We identify this as crucial, as most of the time is spent debugging, notably on inadequate tools like \ttt{gdb} due to lack of alternatives.
 Hence having a specific debuggers and inspectors greatly improve the interaction with the \VM artifact.
 
