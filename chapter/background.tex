@@ -305,7 +305,7 @@ In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A
 Class loaders can be specialized and extended to provide custom behavior. For example, Fong et. al.~\cite{Fong10a} use the class loading mechanism to enforce scoping rules and determine the visibility of names in various region of the program. They allow the user to control untrusted
 namespaces and classes and they have defined a language to define security policy. Jensen et. al.~\cite{Jens98a} provide a formalization of the class loader with the means to enforce security. They also use a bytecode verifier on class loading to check if a class' bytecode doesn't try to perform overflow or underflow operations.
 
-The class loader isolation mechanism can be used for application co-existence. Different versions of the same application can be loaded by different class loaders and be running at the same time. A class loader does however, only provide this basic mechanism.  This mechanism does not support a way to manage changes, or update an application.\gp{name OSGI that uses it} 
+The class loader isolation mechanism can be used for application co-existence. Different versions of the same application can be loaded by different class loaders and be running at the same time. A class loader does however, only provide this basic mechanism.  This mechanism does not support a way to manage changes, or update an application. In this regard, the OSGI~\cite{OSGI} architecture implementations do often make use of class loaders to load classes into separately isolated components.
 
 \subsubsection*{\textsc{Changeboxes}}
 
