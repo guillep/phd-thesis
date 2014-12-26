@@ -25,8 +25,8 @@ This chapter finishes by presenting a detailed description of the problem statem
 
 Software inevitable changes and we need to provide with the tools and methodologies that support such changes~\cite{Nier08b}. However, production-ready applications are not usually change-aware. These applications should be either engineered from scratch with change in mind, or a lot of reengineering effort should be invested in them to support change. Making deep modifications to a runtime system at runtime can be a cumbersome task.
 
-A first problem arises as a VM and the languages that run on top of them are very interrelated and interdependent software components. 
-This language must comply at runtime to the execution model imposed by its VM~(\eg an object format denoting how objects are represented in memory and a set of instructions for execution such as bytecode or assembly). This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions. These hardcoded VM assumptions fix and limits the changes we can do: a VM may prevent us to change the initial language class hierarchy or some object structure. To illustrate, Figure~\ref{code:logic_dup} shows the code that creates a \ct{Dictionary} or hashmap in Smalltalk. A VM that manipulates Dictionary objects~(either by creating them or iterating them) enforces the same invariants as the Smalltalk code at the VM level~(Figure \ref{code:logic_dup2}). However, as these invariants are now fixed in the VM, we cannot easily change them.
+A first problem arises as a \VM and the languages that run on top of them are very interrelated and interdependent software components. 
+This language must comply at runtime to the execution model imposed by its \VM~(\eg an object format denoting how objects are represented in memory and a set of instructions for execution such as bytecode or assembly). This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions. These hardcoded \VM assumptions fix and limits the changes we can do: a \VM may prevent us to change the initial language class hierarchy or some object structure. To illustrate, Figure~\ref{code:logic_dup} shows the code that creates a \ct{Dictionary} or hashmap in Smalltalk. A \VM that manipulates Dictionary objects~(either by creating them or iterating them) enforces the same invariants as the Smalltalk code at the \VM level~(Figure \ref{code:logic_dup2}). However, as these invariants are now fixed in the \VM, we cannot easily change them.
 
 \begin{figure}[ht]
 \small
@@ -70,7 +70,7 @@ The original model of reflection as defined by Smith~\cite{Smit82c} is based on 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.5\linewidth]{tower_of_interpreters}
-\caption{\textbf{The theoretical tower of interpreters model. Each floor interprets the floor below itself.}\label{fig:tower_of_interpreters}
+\caption{\textbf{The theoretical tower of interpreters model.} Each floor interprets the floor below itself.\label{fig:tower_of_interpreters}
 % (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
  }
 \end{center}
@@ -78,7 +78,7 @@ The original model of reflection as defined by Smith~\cite{Smit82c} is based on 
 
 The tower of interpreters presents a model where one can define and redefine the semantics of the program it is executing. We can modify the behavior of our program~(in the floor zero) by jumping one level above it in the tower and modifying the interpreter running in that floor. In the same sense, we can jump one level above this interpreter to change also its behavior and so on. This allows the \emph{indirect modification} of a program's behavior \ie a change in an interpreter in a level \emph{n} changes the behavior of the interpreter level \emph{n - 1}, which impacts in the interpreter below it and so on, up to the base level.
 
-Smith's tower of interpreters model is flexible and coherent regarding the manipulation of the reflective behavior of a program. The tower does not present a limit on the amount of interpreters we can stack, presenting a problematic infinite potential. This idea collides with the non-infinite amount resources in current machines. On one side, limited memory prevents us to have a tower of infinite interpreters running at the same time. On the other side, above certain limit of interpreters, this approach becomes too slow and impractical. We will show in the following subsections other reflective models that try to overcome these deficiencies while trying to keep some of the good properties of this model.
+Smith's tower of interpreters model is flexible and coherent regarding the manipulation of the reflective behavior of a program. The tower does not present a limit on the amount of interpreters we can stack, presenting a problematic infinite potential. This idea collides with the non-infinite amount resources in current hardware. On one side, limited memory prevents us to have a tower of infinite interpreters running at the same time. On the other side, above certain limit of interpreters, this approach becomes too slow and impractical. We will show in the following subsections other reflective models that try to overcome these deficiencies while trying to keep some of the good properties of this model.
 
 \subsubsection*{\textsc{Black}}
 
@@ -98,7 +98,7 @@ Black avoids the infinite regression by limiting the real levels of interpretati
 By limiting the levels of interpretation, the model presented by Black forbids \emph{indirect modification}. Changing the interpreter in a level \emph{n} above the first level does not impact any more the interpreters below it, as they are directly-executed in the machine and not by the modified interpreter. Black supports, however, the modification of the first level of interpretation with the introduction of hooks inside the machine code. A hook detects wether a function in the interpreter~(written in directly-executed code) is changed, and interprets it by a meta-level interpreter written also in directly executed code. Hooks degrade the performance in comparison of a non-hooked interpreter, but it allows in exchange to change and specialize the behavior of the directly-executed code.
 
 \subsubsection*{\textsc{Safe-Tcl}}
-Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke and configure specialized interpreters that run isolated from the master interpreter~(Figure \ref{fig:safetcl_twin_interpreters}).
+Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke another interpreter and specialize its behavior. Both the master child interpreters run isolated from each other~(Figure \ref{fig:safetcl_twin_interpreters}).
 
 \begin{figure}[ht]
 \begin{center}
@@ -118,7 +118,7 @@ Safe-Tcl twin interpretation allows us to change the behavior of a program runni
 To enable reflection in mainstream languages such as Java, Ruby or JavaScript, the tower of interpreters is replaced by a reflective architecture~\cite{Maes87a}. Instead of relying on a stack of interpreters interpreting each the level below it, a reflective architecture relies on the idea of \emph{causal connection} \ie the programming language incorporates structures that represents aspects of itself~(\eg classes, objects), in such a way that if one structure changes the aspect it represents is updated accordingly, and vice-versa.
 
 
-In languages presenting reflective architectures, reflection is controlled by a meta-object that lives in the same environment of the object it reflects upon.
+In languages presenting reflective architectures, reflection is controlled by meta-objects that live in the same environment of the object it reflects upon.
 One problematic corollary of this is that meta-objects rely on the same code and infrastructure than the objects they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon~(Figure \ref{fig:reflectivity_meta_recursion}).
 
 \begin{figure}[ht]
@@ -130,7 +130,7 @@ One problematic corollary of this is that meta-objects rely on the same code and
 \end{center}
 \end{figure}
 
-Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is a reflective framework that avoids meta-recursions by tracking the degree of metaness of the execution context. In each reflective call, the \ct{MetaContext} object is activated and it accounts the meta-level jump. Likewise, when the reflective call returns, the \ct{MetaContext} is deactivated. Using the accounted meta-level jumps of the \ct{MetaContext}, meta-objects do only reflect on objects of a lower metaness~(and not greater or equal metaness). Thus, it simulates the semantics of an infinite tower of distinct interpreters while there is only one of them~(Figure \ref{fig:reflectivity_meta_recursion}).
+Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is a reflective framework that avoids meta-recursions by tracking the degree of metaness of the execution context. In each reflective call, the \ct{MetaContext} object is activated and it accounts the meta-level jump. Likewise, when the reflective call returns, the \ct{MetaContext} is deactivated. Using the accounted meta-level jumps of the \ct{MetaContext}, meta-objects do only reflect on objects of a lower metaness~(and not greater or equal metaness). Thus, it simulates the semantics of an infinite tower of distinct interpreters while there is only one of them~(Figure \ref{fig:reflectivity_avoid_meta_recursion}).
 
 \begin{figure}[ht]
 \begin{center}
@@ -140,13 +140,13 @@ Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is
 \begin{subfigure}{.45\textwidth}
 \includegraphics[width=1\linewidth]{reflectivity_avoid_recursion}
 \end{subfigure}
-\caption{\textbf{Meta level jump using reflectivity.}\label{fig:reflectivity_meta_recursion}
+\caption{\textbf{Meta level jump using reflectivity.}\label{fig:reflectivity_avoid_meta_recursion}
 % (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
  }
 \end{center}
 \end{figure}
 
-Reflectivity succeeds to modify and scope behavioral changes for different meta-levels inside the same reflective architecture. However, it does not provide with support for structural changes of the code the reflective framework depends upon.
+Reflectivity succeeds to modify and scope behavioral reflection for different meta-levels inside the same reflective architecture. However, it does not provide with support to fully change the language semantics~(residing in the \VM) or to perform structural reflection.
 
 \subsection{Metacircular Runtimes}
 
@@ -167,6 +167,7 @@ However, JIT compilers are notoriously complex as they crosscut many \VM compone
 At the same time they crosscut all abstraction layers; they have to access high-level information from the running bytecodes and manage native code at the same time.
 Similar complexity applies to the automatic memory management present in most high-level language \VMs.
 Garbage Collectors (GC) evolved from simple helpers to complex software artifacts that for instance support concurrent garbage collection~\cite{Clic05a}.
+Moreover, this complexity impacts the language running on top of these \VMs. The unclear interface between the language and the VM makes difficult to recognize whether a piece of code belongs to a VM or language concern.
 
 The increased complexity of the \VMs lead to more novel approaches on how to build \VMs.
 \VMs are still build for a big part in C or C++ for performance reasons.
@@ -180,7 +181,7 @@ In the following sections we are shedding light on metacircular \VMs which are p
 The Squeak \VM~\cite{Inga97a} is of importance in the context of this work.
 Its core building system is still in active use for the \urlfootnote{Cog \VM}{http://www.mirandabanda.org/cogblog/} which extends Squeak with a JIT compiler.
 The Cog \VM is used as default by the \urlfootnote{Pharo}{http://pharo.org/} programming language.
-Squeak is built around a Smalltalk dialect called Slang that is exported to C to be compiled to the final \VM binary.
+The Squeak \VM is built around a Smalltalk dialect called Slang that is exported to C to be compiled to the final \VM binary.
 Additionally, the Slang sources can be interpreted to provide an interactive simulator of the \VM, including full graphical support.
 
 Slang is limited to the functionality that can be expressed with standard C code.
@@ -316,18 +317,16 @@ While we see the practical limitations of changing the \VM runtime system at run
 
 \section{Virtualization Techniques}
 
-High-level languages abstract the developer from the complexities of the underlying machine by running on top of a Virtual Machine~(\VM). A \VM provides a language with an execution model closer to its semantics as well as several services such as automatic memory management or cross-cutting optimizations. \VMs also provide with portability \ie a program can run on different operating systems and hardware architectures because the \VM abstracts it from the underlying particular details.
-
-Although these language \VMs are indeed \emph{Virtual}, state of the art production-ready \VMs do not provide by themselves with the typical advantages of virtualized operating systems. Thus, we can see the lacking of the following features:
+High-level languages abstract the developer from the complexities of the underlying machine by running on top of a Virtual Machine~(\VM). A \VM provides a language with an execution model closer to its semantics as well as several services such as automatic memory management or cross-cutting optimizations. \VMs also provide with portability \ie a program can run on different operating systems and hardware architectures because the \VM abstracts it from the underlying particular details. Although these language \VMs are indeed \emph{Virtual}, state of the art production-ready \VMs do not provide by themselves with the typical advantages of virtualized operating systems. Thus, we can see a lack of the following features:
 
 \begin{description}
-\item[Co-location.] Co-location is the ability to have co-existing applications on top of the same virtual machine. With co-location, a single \VM has information about all the applications running on top of itself and can integrate that information in its decision process. Additionally, it gives to co-located applications a cheap communication mechanism as they are in the same process.
+\item[Co-location.] Co-location is the ability to have co-existing applications on top of the same virtual machine. With co-location, a single \VM has information about all the applications running on top of itself and can integrate that information in its decision process. Additionally, it gives to co-located applications a cheap communication mechanism as they reside in the same operating system process.
 \item[Resource consumption.] \VMs should control how the different resources of their applications are used. However, state of the art \VMs do only control their consumed memory with the usage of a memory manager. They do not perform in general any control in other kind of resources such as CPU or energy consumption.
 \item[Security.] \VMs should control how applications access sensible information such as files and network connections or execute potentially dangerous operations such as system calls.
-\item[Application mobility.] As applications are portable, they should be easily migrated between different \VMs. Application mobility provides support for resource re-allocation.
+\item[Application mobility.] As applications are portable, they should be easily migrated between different \VMs also at runtime. Application mobility provides support for resource re-allocation.
 \end{description}
 
-With the objective of doing runtime manipulation, we study in the following sections virtualization-related techniques applied to programming languages runtimes. We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present those works that target the co-existence of language runtimes on the same infrastructure. We continue this section by presenting related work on the subject of runtime control.
+With the objective of doing runtime manipulation, we study in the following sections virtualization-related techniques applied to programming languages runtimes. We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present related work that targets co-location of language runtimes on the same \VM. We continue this section by presenting related work on the subject of runtime control.
 
 \subsection{Application Co-existence}
 
@@ -337,7 +336,9 @@ In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A
 Class loaders can be specialized and extended to provide custom behavior. For example, Fong et. al.~\cite{Fong10a} use the class loading mechanism to enforce scoping rules and determine the visibility of names in various region of the program. They allow the user to control untrusted
 namespaces and classes and they have defined a language to define security policy. Jensen et. al.~\cite{Jens98a} provide a formalization of the class loader with the means to enforce security. They also use a bytecode verifier on class loading to check if a class' bytecode doesn't try to perform overflow or underflow operations.
 
-The class loader isolation mechanism can be used for application co-existence. Different versions of the same application can be loaded by different class loaders and be running at the same time. A class loader does however, only provide this basic mechanism.  This mechanism does not support a way to manage changes, or update an application. In this regard, the OSGI~\cite{OSGI} architecture implementations do often make use of class loaders to load classes into separately isolated components.
+The class loader isolation mechanism can be used for application co-existence. Different versions of the same application can be loaded by different class loaders and be running at the same time. Class loaders present however a main limitation on the so called \emph{bootstrap class loader}: the literature does not explore the means to load~(and use) different versions of the main runtime classes of the language. More over, Java's bootstrap class loader is often implemented natively, and as such, we have no control on it from the language. 
+
+Notice additionally that class loaders provide only a load mechanism. Once we loaded several versions of the same application, it does not support the means to manage changes or updates of these applications. In this regard, the OSGI~\cite{OSGI} architecture implementations do often make use of class loaders to load classes into separately isolated components and manage them in a higher level way.
 
 \subsubsection*{\textsc{Changeboxes}}
 
