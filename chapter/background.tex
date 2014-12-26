@@ -315,7 +315,8 @@ From the literature presented about the Klein project we see a strong focus on t
 The fact that the language-runtime allows \VM-level reflection to change the \VM dynamically is not directly mentioned in the literature.
 While we see the practical limitations of changing the \VM runtime system at runtime we would like to open the doors to this new form of reflection.
 
-\section{Virtualization Techniques}
+\newpage
+\section{Language Virtualization Techniques}
 
 High-level languages abstract the developer from the complexities of the underlying machine by running on top of a Virtual Machine~(\VM). A \VM provides a language with an execution model closer to its semantics as well as several services such as automatic memory management or cross-cutting optimizations. \VMs also provide with portability \ie a program can run on different operating systems and hardware architectures because the \VM abstracts it from the underlying particular details. Although these language \VMs are indeed \emph{Virtual}, state of the art production-ready \VMs do not provide by themselves with the typical advantages of virtualized operating systems. Thus, we can see a lack of the following features:
 
@@ -342,7 +343,7 @@ Notice additionally that class loaders provide only a load mechanism. Once we lo
 
 \subsubsection*{\textsc{Changeboxes}}
 
-Changeboxes~\cite{Denk07c} is a change model designed to encapsulate and scope changes. Its main purpose is to allow several versions of a system to coexist at runtime \ie the existence in the same environment of different versions of the same classes and methods. In changeboxes, a \emph{changebox} is a first-class entity that encapsulates changes made on elements~(classes and methods) and an executable version of the system with its changes applied. The system can contain many changeboxes at the same time, and applications can be scoped to run within different changeboxes. This notion of dynamically scoping an application to a changebox allows one to have co-existing environments~(\eg testing, development, production), increasing the developer's efficiency. Furthermore, it eases application update and migration to new versions, and reduces its update down-time as the application does not have to be stopped to be updated.
+Changeboxes~\cite{Denk07c} is a change model designed to encapsulate and scope changes. Its main purpose is to allow several versions of a system to coexist at runtime \ie the existence in the same environment of different versions of the same classes and methods. In changeboxes, a \emph{changebox} is a first-class entity that encapsulates changes made on the language elements~(\eg classes and methods) and an executable version of the system with its changes applied. The system can contain many changeboxes at the same time, and applications can be scoped to run within different changeboxes. This notion of dynamically scoping an application to a changebox allows one to have co-existing environments~(\eg testing, development, production), increasing the developer's efficiency. Furthermore, it eases application update and migration to new versions, and reduces its update down-time as the application does not have to be stopped to be updated.
 
 A Changeboxes prototype was developed in Smalltalk and its scoping mechanisms were implemented as follows:
 
