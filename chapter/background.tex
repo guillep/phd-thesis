@@ -22,12 +22,44 @@ This chapter finishes by presenting a detailed description of the problem statem
 % ===========================================================================
 
 \section{Modifying the Runtime}
-\gp{should really expand this part and say why it is relevant}
-Modifying a runtime system can be a cumbersome task. On one side, we recognize that virtual machines and the languages that run on top of then are very interrelated and interdependent software components. For example, a language must comply to the execution model provided by its \VM~(\eg a bytecode set or an object model), and the \VM may understand the language's internals to manipulate it~(\eg run it, optimize it or manage its memory).
 
-On the other side, reflective runtimes have a circular dependency on themselves: they rely on the concept of causal connection\gp{this is actually only true for reflective architectures}. When we make a change in a reflective runtime, we should ensure these causal connections still hold at any point of the runtime's life. In case a causal connection is broken, the runtime may become unusable as there is no means for it to keep reflecting upon itself correctly.
+Software inevitable changes and we need to provide with the tools and methodologies that support such changes~\cite{Nier08b}. However, production-ready applications are not usually change-aware. These applications should be either engineered from scratch with change in mind, or a lot of reengineering effort should be invested in them to support change. Making deep modifications to a runtime system at runtime can be a cumbersome task.
 
-The related work we present in this section presents two main topics of interest for us. First, we present those works that target the modification of a language's semantics by safe means~(\ie avoiding crashes). We follow by looking at the field of metacircular runtimes and \VMs, to study how they ease the modification of a runtime by means of simplifying the language-\VM relation for development.
+A first problem arises as a VM and the languages that run on top of them are very interrelated and interdependent software components. 
+This language must comply at runtime to the execution model imposed by its VM~(\eg an object format denoting how objects are represented in memory and a set of instructions for execution such as bytecode or assembly). This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions. These hardcoded VM assumptions fix and limits the changes we can do: a VM may prevent us to change the initial language class hierarchy or some object structure. To illustrate, Figure~\ref{code:logic_dup} shows the code that creates a \ct{Dictionary} or hashmap in Smalltalk. A VM that manipulates Dictionary objects~(either by creating them or iterating them) enforces the same invariants as the Smalltalk code at the VM level~(Figure \ref{code:logic_dup2}). However, as these invariants are now fixed in the VM, we cannot easily change them.
+
+\begin{figure}[ht]
+\small
+\begin{code}
+Dictionary class>>new: n
+    ^ self new initialize: n
+
+Dictionary>>initialize: n
+    "Initialize array to an array size of n"
+    array := Array new: n.
+    tally := 0
+\end{code}
+\caption{\textbf{Code to create a \ct{Dictionary} object in Smalltalk.}\label{code:logic_dup}}
+\end{figure}
+
+\begin{figure}[ht]
+\small
+\begin{code}
+void* createDictionaryWithSize(int n){
+    void* dictionary, internalArray;
+    dictionary = instantiateClass("Dictionary");
+    internalArray := instantiateClass("Array", n);
+    setInstanceVariable(dictionary, 1, internalArray);
+    setInstanceVariableInt(dictionary, 2, 0);
+    return dictionary;
+}
+\end{code}
+\caption{\textbf{Code to create the same \ct{Dictionary} object from C.}\label{code:logic_dup2}}
+\end{figure}
+
+At the same time we take a look at reflective languages~\cite{Smit84a} such as LISP or Smalltalk. Reflective languages provide the means to modify themselves at runtime. These languages are based on a reflective architecture presenting the notion of causal connection~\cite{Maes87a}: a link between a programming element and its representation that keeps both in synchronization. However, as these languages contain meta-circular definitions in their kernel~\cite{Chib96a}, this can result in a Metastability problem~\cite{Kicz91a} \ie a change in the language kernel may introduce a meta-call recursion and turn the system unusable.
+
+In the following sections we present related work that aim to modify a language runtime, sorted in two main categories. First, we present related work that targets the modification of a language's semantics at runtime by safe means~(\ie avoiding crashes). We follow by looking at the field of metacircular runtimes and \VMs, to study how they ease the modification of a runtime by means of simplifying the language-\VM relation for development.
 
 \subsection{Modification of language semantics}
 
