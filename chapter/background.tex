@@ -355,32 +355,39 @@ A Changeboxes prototype was developed in Smalltalk and its scoping mechanisms we
 
 Changeboxes model proves sound to update and migrate application and framework classes. However, it has the main drawback of not affecting critical classes in the system. Changeboxes prototype does not work on classes such as \ct{Array} or \ct{CompiledMethod} as the underlying infrastructure~(the VM) restricts the system to the existence of only one of them at the same time. The changes model does not provide neither a solution for this problem, as it focuses on application code update, leaving this as an open problem.
 
-\subsubsection*{\textsc{Caja\textbackslash Cajita}}
+\subsubsection*{\textsc{Caja\textbackslash Cajita} - Object Capability Languages}
 
-\subsubsection*{\textsc{Worlds}}
-Worlds~\cite{Wart08a} provide a way to control and scope side-effects in Javascript. Side-effects are limited to a first-class environment.
+Caja~\cite{Mill08a} is an object-capability language~\cite{Levy84a,Mill03a,Spoo00a} subset of Javascript. Caja was thought in the context of the web, where untrusted scripts can be loaded in any webpage and profit from our data. Caja defines a safe Javascript subset that removes elements from the language such as \ct{with} or \ct{eval} because their semantics are strange and in some cases unpredictable. Caja includes Cajita, a subset of Caja without the \ct{this} keyword. Caja is meant for transforming and migrating already existing Javascript code, while Cajita is meant for newly written code.
 
-\subsubsection*{\textsc{Gemstone}}
-Gemstone \cite{Otis91a} provides the concept of class versions. Classes are
-automatically versioned, but existing instances keep the class (shape and
-behavior) of the original definition. Instances can be migrated at any time.
-Gemstone provides (database) transaction semantics, thus state can be rolled
-back should the migration fail.
-Gemstone's class versions extend the usual Smalltalk class evolution mechanism for robustness, 
-large datasets, and domain-specific migration policies. In contrast, ObjectSpaces target general 
-reflective access and bootstrap-like evolutions of code that is critical to the environment.
+Caja works by adding a static verifier that checks and transforms Caja code into sanitized Javascript. The sanitized Javascript contains runtime checks meant to avoid exploits and vulnerabilities from untrusted sources. Caja also adds support for frozen objects which cannot be changed once freezed even in the same environment. 
 
-\subsubsection*{KaffeOS}
-KaffeOS \cite{Back00a} makes an explicit domain separation in memory by using different memory heaps in the virtual machine. They enforce domain separation by using memory write barriers. Cross-domain references become cross-heap references, and thus, they need special virtual machine support.
-KaffeOS presents a model where resource accounting is handled at the level of the virtual machine.
 
-\subsubsection*{J-Kernel}
-J-Kernel \cite{Hawb98a}
+Caja removes the Javascript global environment is removed and replaces it by modules. Modules are isolated from other modules and allow scripts from different sources co-exist transparently and without disturbing each other. Thus, Caja allows several applications~(in form of scripts) to co-exist isolated inside the same Javascript environment. 
+%
+%\subsubsection*{\textsc{Worlds}}
+%Worlds~\cite{Wart08a} provide a way to control and scope side-effects in Javascript. Side-effects are limited to a first-class environment.
 
-\subsubsection*{Luna}
- and Luna \cite{Hawb02a} present a solution similar to ours regarding the memory usage. They are Java solution for isolating object graphs with security purposes. In them, each object graph is called a \emph{protection domain}. All protection domains loaded in a system, and their objects, share the same memory space. 
+%\subsubsection*{\textsc{Gemstone}}
+%Gemstone \cite{Otis91a} provides the concept of class versions. Classes are
+%automatically versioned, but existing instances keep the class (shape and
+%behavior) of the original definition. Instances can be migrated at any time.
+%Gemstone provides (database) transaction semantics, thus state can be rolled
+%back should the migration fail.
+%Gemstone's class versions extend the usual Smalltalk class evolution mechanism for robustness, 
+%large datasets, and domain-specific migration policies. In contrast, ObjectSpaces target general 
+%reflective access and bootstrap-like evolutions of code that is critical to the environment.
 
-The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept.
+\subsubsection*{KaffeOS - Language Process Isolation}
+
+KaffeOS~\cite{Back00a} is a multi-application Java Runtime System centered in application isolation and resource accounting. The KaffeOS runtime allows the isolated coexistence of Java applications so they cannot access each other's data, nor interfere in their execution. To avoid the latter, the KaffeOS \VM accounts the application's consumption of CPU and memory.
+
+KaffeOS adds the process abstraction in Java, as in the sense of a process for an operating system. Each KaffeOS process owns a separate memory region~(a process heap) where its object's are allocated. Shared objects reside in special memory regions. A \emph{kernel heap} makes a distinction between code that is run in user mode or kernel mode. Regarding process communication, cross-process references become cross-heap references and are handled specially by the \VM. Resources are accounted and controlled at the \VM level for each process, so no process starves other processes.
+
+KaffeOS succeeds to make several Java applications to run side by side. However, it is still limited with respect to base language classes. For example, the class \ct{java.lang.Object} must be shared between different processes to allow their communication.
+
+%J-Kernel \cite{Hawb98a} and Luna \cite{Hawb02a} present a solution similar to ours regarding the memory usage. They are Java solution for isolating object graphs with security purposes. In them, each object graph is called a \emph{protection domain}. All protection domains loaded in a system, and their objects, share the same memory space. 
+%
+%The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept.
 
 \subsection{Application Control}
 
@@ -388,6 +395,8 @@ The J-Kernel enforces the separation between domains by using the Java type syst
 Java also provides JPDA, a remote debugging architecture that specifies a native interface on the debuggee VM, and a matching API for the debugger front-end, running in a separate VM. However, JDPA only supports introspection features like  inspection and monitoring, and very limited intercession \cite{jdpa}.
 
 \subsection*{Xen and Operating System Virtualization techniques}
+The most related family of work is virtualization approaches like Xen \cite{Chis07xen}. Virtualization makes it possible to run several operating systems at once on a single physical machine. As these approaches target full operating systems, they rely on support from the hardware platform, and in some cases from the guest OS; they also concentrate on performance and production features, and consider the guest system mostly as a black box. In contrast, ObjectSpaces provide full control and reflective access to their contents.
+
 Amongst the most important works on virtualization,we can found approaches like Xen~\cite{Chis07xen}. Xen is a Virtual Machine Monitor~(VMM) that allows to control and manage Virtual Machines in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. Virtualization, in these terms, enables the following applications:
 
 \begin{description}
