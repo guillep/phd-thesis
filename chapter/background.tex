@@ -316,28 +316,29 @@ The fact that the language-runtime allows \VM-level reflection to change the \VM
 While we see the practical limitations of changing the \VM runtime system at runtime we would like to open the doors to this new form of reflection.
 
 \newpage
-\section{Language Virtualization Techniques}
+\section{Application/Runtime Virtualization Techniques}
 
-High-level languages abstract the developer from the complexities of the underlying machine by running on top of a Virtual Machine~(\VM). A \VM provides a language with an execution model closer to its semantics as well as several services such as automatic memory management or cross-cutting optimizations. \VMs also provide with portability \ie a program can run on different operating systems and hardware architectures because the \VM abstracts it from the underlying particular details. Although these language \VMs are indeed \emph{Virtual}, state of the art production-ready \VMs do not provide by themselves with the typical advantages of virtualized operating systems. Thus, we can see a lack of the following features:
+The most related family of work in virtualization are approaches like Xen~\cite{Chis07xen}. Xen is a Virtual Machine Monitor~(VMM) that allows to control and manage \VM in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. They rely on support from the hardware platform, and in some cases from the guest OS, concentrating themselves on performance and production features.
+
+Operating System virtualization technology is characterized by the existence of an \emph{hypervisor}~(named after the Operating System \emph{supervisor} that controls the OS processes\gp{check well that}). The hypervisor is the \VM component that allows one to observe or control the internals of one or many \VMs. A \VM hypervisor gives us, amongst others, the following services:
 
 \begin{description}
 \item[Co-location.] Co-location is the ability to have co-existing applications on top of the same virtual machine. With co-location, a single \VM has information about all the applications running on top of itself and can integrate that information in its decision process. Additionally, it gives to co-located applications a cheap communication mechanism as they reside in the same operating system process.
-\item[Resource consumption.] \VMs should control how the different resources of their applications are used. However, state of the art \VMs do only control their consumed memory with the usage of a memory manager. They do not perform in general any control in other kind of resources such as CPU or energy consumption.
+\item[Resource control.] \VMs should control how the different resources of their applications are used. However, state of the art \VMs do only control their consumed memory with the usage of a memory manager. They do not perform in general any control in other kind of resources such as CPU or energy consumption.
 \item[Security.] \VMs should control how applications access sensible information such as files and network connections or execute potentially dangerous operations such as system calls.
 \item[Application mobility.] As applications are portable, they should be easily migrated between different \VMs also at runtime. Application mobility provides support for resource re-allocation.
 \end{description}
 
-With the objective of doing runtime manipulation, we study in the following sections virtualization-related techniques applied to programming languages runtimes. We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present related work that targets co-location of language runtimes on the same \VM. We continue this section by presenting related work on the subject of runtime control.
-
-\subsection{Application Co-existence}
+High-level languages abstract the developer from the complexities of the underlying machine by running on top of a language \VM. A language \VM provides a language with an execution model closer to its semantics as well as several services such as automatic memory management or cross-cutting optimizations. Language \VMs also provide with portability \ie a program can run on different operating systems and hardware architectures because the \VM abstracts it from the underlying particular details. Although these language \VMs are indeed \emph{Virtual}, state of the art production-ready \VMs do not provide by themselves with the typical advantages of virtualized operating systems such as co-location, resource control, mature security or application mobility support.
+With the objective of doing runtime manipulation, we study in the following sections techniques that to our understanding are virtualization-related techniques applied to programming languages runtimes.%We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present related work that targets co-location of language runtimes on the same \VM. We continue this section by presenting related work on the subject of runtime control.
 
 \subsubsection*{\textsc{Class Loaders}}
-In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A class loader is a first-class entity responsible of loading classes: create their runtime representation, loading their methods and linking their class references. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load different classes with the same name. These classes will be isolated in the sense that they will not be visible to the others.
+In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A class loader is a first-class entity responsible of loading classes: create their runtime representation, loading their methods and linking their class references. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load classes with the same name. These classes will be isolated in the sense that they will not be visible to the others statically.
 
 Class loaders can be specialized and extended to provide custom behavior. For example, Fong et. al.~\cite{Fong10a} use the class loading mechanism to enforce scoping rules and determine the visibility of names in various region of the program. They allow the user to control untrusted
 namespaces and classes and they have defined a language to define security policy. Jensen et. al.~\cite{Jens98a} provide a formalization of the class loader with the means to enforce security. They also use a bytecode verifier on class loading to check if a class' bytecode doesn't try to perform overflow or underflow operations.
 
-The class loader isolation mechanism can be used for application co-existence. Different versions of the same application can be loaded by different class loaders and be running at the same time. Class loaders present however a main limitation on the so called \emph{bootstrap class loader}: the literature does not explore the means to load~(and use) different versions of the main runtime classes of the language. More over, Java's bootstrap class loader is often implemented natively, and as such, we have no control on it from the language. 
+In the context of this thesis, we consider the class loader isolation mechanism as it can be used for application co-existence. Different versions of the same application can be loaded by different class loaders and be running at the same time. Class loaders present however a main limitation on the so called \emph{bootstrap class loader}: the literature does not explore the means to load~(and use) different versions of the main runtime classes of the language. Moreover, Java's bootstrap class loader is often implemented natively, and as such, we have no control on it from the language.
 
 Notice additionally that class loaders provide only a load mechanism. Once we loaded several versions of the same application, it does not support the means to manage changes or updates of these applications. In this regard, the OSGI~\cite{OSGI} architecture implementations do often make use of class loaders to load classes into separately isolated components and manage them in a higher level way.
 
@@ -377,7 +378,7 @@ Caja removes the Javascript global environment is removed and replaces it by mod
 %large datasets, and domain-specific migration policies. In contrast, ObjectSpaces target general 
 %reflective access and bootstrap-like evolutions of code that is critical to the environment.
 
-\subsubsection*{KaffeOS - Language Process Isolation}
+\subsubsection*{KaffeOS}
 
 KaffeOS~\cite{Back00a} is a multi-application Java Runtime System centered in application isolation and resource accounting. The KaffeOS runtime allows the isolated coexistence of Java applications so they cannot access each other's data, nor interfere in their execution. To avoid the latter, the KaffeOS \VM accounts the application's consumption of CPU and memory.
 
@@ -389,27 +390,9 @@ KaffeOS succeeds to make several Java applications to run side by side. However,
 %
 %The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept.
 
-\subsection{Application Control}
 
 \subsubsection*{JVMTI}
 Java also provides JPDA, a remote debugging architecture that specifies a native interface on the debuggee VM, and a matching API for the debugger front-end, running in a separate VM. However, JDPA only supports introspection features like  inspection and monitoring, and very limited intercession \cite{jdpa}.
-
-\subsection*{Xen and Operating System Virtualization techniques}
-The most related family of work is virtualization approaches like Xen \cite{Chis07xen}. Virtualization makes it possible to run several operating systems at once on a single physical machine. As these approaches target full operating systems, they rely on support from the hardware platform, and in some cases from the guest OS; they also concentrate on performance and production features, and consider the guest system mostly as a black box. In contrast, ObjectSpaces provide full control and reflective access to their contents.
-
-Amongst the most important works on virtualization,we can found approaches like Xen~\cite{Chis07xen}. Xen is a Virtual Machine Monitor~(VMM) that allows to control and manage Virtual Machines in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. Virtualization, in these terms, enables the following applications:
-
-\begin{description}
-
-\item[Server Consolidation.]
-\item[Co-located hosting facilities.]
-\item[Distributed web services.]
-\item[Secure computing platforms.]
-\item[Application Mobility.]
-
-\end{description}
-
-This virtualization approach has another main characteristic: it considers its guest systems as a black box, and it does not allow one to observe or modify its internals.
 
 \subsubsection*{MVM: a Multi User Virtual Machine}
 The Multi-user Virtual Machine~\cite{Czaj03a,Czaj01a} is a general purpose virtual machine for the Java language that allows the co-existence of different applications, potentially from different users. Each application running on top of the MVM is an \emph{isolate} based on the Java Application Isolation API specification~\cite{JSR121}.
