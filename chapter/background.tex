@@ -89,7 +89,7 @@ Black avoids the infinite regression by limiting the real levels of interpretati
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.6\linewidth]{black_tower}
-\caption{\textbf{Black.}\label{fig:black_tower}
+\caption{\textbf{Black model of interpreters.} Only the application level is interpreted. The levels above are directly executed on the machine.\label{fig:black_tower}
 % (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
  }
 \end{center}
@@ -103,7 +103,7 @@ Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.6\linewidth]{safetcl_twin_interpreters}
-\caption{\textbf{Black.}\label{fig:safetcl_twin_interpreters}
+\caption{\textbf{SafeTcl Twin Interpretation.} The Master interpreter creates and configures a safe interpreter. The safe interpreter, with modified commands, will run the sandboxed Tcl application.\label{fig:safetcl_twin_interpreters}
 % (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
  }
 \end{center}
@@ -344,7 +344,7 @@ Notice additionally that class loaders provide only a load mechanism. Once we lo
 
 \subsubsection*{\textsc{Changeboxes}}
 
-Changeboxes~\cite{Denk07c} is a change model designed to encapsulate and scope changes. Its main purpose is to allow several versions of a system to coexist at runtime \ie the existence in the same environment of different versions of the same classes and methods. In changeboxes, a \emph{changebox} is a first-class entity that encapsulates changes made on the language elements~(\eg classes and methods) and an executable version of the system with its changes applied. The system can contain many changeboxes at the same time, and applications can be scoped to run within different changeboxes. This notion of dynamically scoping an application to a changebox allows one to have co-existing environments~(\eg testing, development, production), increasing the developer's efficiency. Furthermore, it eases application update and migration to new versions, and reduces its update down-time as the application does not have to be stopped to be updated.
+Changeboxes~\cite{Denk07c} is a change model designed to encapsulate and scope changes. Its main purpose is to allow several versions of a system to co-exist at runtime \ie the existence in the same environment of different versions of the same classes and methods. In changeboxes, a \emph{changebox} is a first-class entity that encapsulates changes made on the language elements~(\eg classes and methods) and an executable version of the system with its changes applied. The system can contain many changeboxes at the same time, and applications can be scoped to run within different changeboxes. This notion of dynamically scoping an application to a changebox allows one to have co-existing environments~(\eg testing, development, production), increasing the developer's efficiency. Furthermore, it eases application update and migration to new versions, and reduces its update down-time as the application does not have to be stopped to be updated.
 
 A Changeboxes prototype was developed in Smalltalk and its scoping mechanisms were implemented as follows:
 
@@ -358,12 +358,11 @@ Changeboxes model proves sound to update and migrate application and framework c
 
 \subsubsection*{\textsc{Caja\textbackslash Cajita} - Object Capability Languages}
 
-Caja~\cite{Mill08a} is an object-capability language~\cite{Levy84a,Mill03a,Spoo00a} subset of Javascript. Caja was thought in the context of the web, where untrusted scripts can be loaded in any webpage and profit from our data. Caja defines a safe Javascript subset that removes elements from the language such as \ct{with} or \ct{eval} because their semantics are strange and in some cases unpredictable. Caja includes Cajita, a subset of Caja without the \ct{this} keyword. Caja is meant for transforming and migrating already existing Javascript code, while Cajita is meant for newly written code.
+Caja~\cite{Mill08a} is an object-capability language~\cite{Levy84a,Mill03a,Spoo00a} subset of Javascript with the objective of bringing script isolation in Javascript. Caja was thought in the context of the web, where untrusted scripts can be loaded in any webpage and profit from any data available in the webpage. Caja defines a safe Javascript subset that removes elements from the language such as \ct{with} or \ct{eval} because their semantics are strange and in some cases unpredictable. Caja includes Cajita, a subset of Caja without the \ct{this} keyword. Caja is meant for transforming and migrating already existing Javascript code, while Cajita is meant for newly written code.
 
-Caja works by adding a static verifier that checks and transforms Caja code into sanitized Javascript. The sanitized Javascript contains runtime checks meant to avoid exploits and vulnerabilities from untrusted sources. Caja also adds support for frozen objects which cannot be changed once freezed even in the same environment. 
+Caja works with a combination of static and dynamic techniques. First, a static verifier checks and transforms Caja code into sanitized Javascript. This sanitized Javascript contains runtime checks that complements the static verifications. All thee changes are meant to avoid exploits and vulnerabilities from untrusted sources. Caja also adds some new features to the Javascript libraries with support to freeze objects and turn them immutable. 
 
-
-Caja removes the Javascript global environment is removed and replaces it by modules. Modules are isolated from other modules and allow scripts from different sources co-exist transparently and without disturbing each other. Thus, Caja allows several applications~(in form of scripts) to co-exist isolated inside the same Javascript environment. 
+To allow the safe co-existence of several scripts, Caja removes the Javascript global environment and replaces it by modules. Caja Modules co-exist transparently and can only access each other's data through an explicit and verified interface.
 %
 %\subsubsection*{\textsc{Worlds}}
 %Worlds~\cite{Wart08a} provide a way to control and scope side-effects in Javascript. Side-effects are limited to a first-class environment.
@@ -380,11 +379,11 @@ Caja removes the Javascript global environment is removed and replaces it by mod
 
 \subsubsection*{KaffeOS}
 
-KaffeOS~\cite{Back00a} is a multi-application Java Runtime System centered in application isolation and resource accounting. The KaffeOS runtime allows the isolated coexistence of Java applications so they cannot access each other's data, nor interfere in their execution. To avoid the latter, the KaffeOS \VM accounts the application's consumption of CPU and memory.
+KaffeOS~\cite{Back00a} is a multi-application Java Runtime System centered in application isolation and resource accounting. The KaffeOS runtime allows the isolated co-existence of Java applications so they cannot access each other's data, nor interfere in their execution. To avoid the latter, the KaffeOS \VM accounts the application's consumption of CPU and memory.
 
-KaffeOS adds the process abstraction in Java, as in the sense of a process for an operating system. Each KaffeOS process owns a separate memory region~(a process heap) where its object's are allocated. Shared objects reside in special memory regions. A \emph{kernel heap} makes a distinction between code that is run in user mode or kernel mode. Regarding process communication, cross-process references become cross-heap references and are handled specially by the \VM. Resources are accounted and controlled at the \VM level for each process, so no process starves other processes.
+KaffeOS adds the process abstraction in the Java language, as in the sense of a process for an operating system. Each KaffeOS process owns a separate memory region~(a process heap) where its object's are allocated. Shared objects reside in special shared memory regions. A \emph{kernel heap} makes a distinction between code that runs in user mode or kernel mode. Regarding process communication, cross-process references become cross-heap references and are handled specially by the \VM. Resources are accounted and controlled at the \VM level for each process, so no process starves other processes.
 
-KaffeOS succeeds to make several Java applications to run side by side. However, it is still limited with respect to base language classes. For example, the class \ct{java.lang.Object} must be shared between different processes to allow their communication.
+KaffeOS succeeds to make several Java applications to run side by side taking care on hardware resource consumption in addition of application's data. However, this solution is still limited with respect to base language classes. For example, the class \ct{java.lang.Object} must be shared between different processes to allow their communication.
 
 %J-Kernel \cite{Hawb98a} and Luna \cite{Hawb02a} present a solution similar to ours regarding the memory usage. They are Java solution for isolating object graphs with security purposes. In them, each object graph is called a \emph{protection domain}. All protection domains loaded in a system, and their objects, share the same memory space. 
 %
@@ -392,7 +391,20 @@ KaffeOS succeeds to make several Java applications to run side by side. However,
 
 
 \subsubsection*{JVMTI}
-Java also provides JPDA, a remote debugging architecture that specifies a native interface on the debuggee VM, and a matching API for the debugger front-end, running in a separate VM. However, JDPA only supports introspection features like  inspection and monitoring, and very limited intercession \cite{jdpa}.
+The Java Virtual Machine Tool Interface~(JVMTI)~\cite{JVMPI} is the interface offered by the Java \VM for its manipulation and control. Originally called Java Platform Debugger Architecture~(JPDA) and used in the context of debugging, it was extended to support other use cases such as monitoring and profiling.
+
+JVMTI exposes C functions to manipulate a Java VM~(Figure \ref{fig:jvmti}). The JVMTI client, so called an \emph{Agent}, queries and controls the given JVM through this interface. The manipulated JVM and an agent share the same operating system process. JVMTI agents are meant to be written in C, to be as compact as possible and allow maximal control with minimal intrusion.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=.7\linewidth]{jvmti}
+\caption{\textbf{JVMTI Architecture.} An agent controls a JVM though JVMTI. Both share the same operating system process.\label{fig:jvmti}}
+\end{center}
+\end{figure}
+
+JVMTI provides with introspection and some limited intercession facilities at VM and language level. In particular it provides with memory and heap management, thread control, execution stack manipulation, object and class manipulation and breakpoint support. JVMTI is used mainly with the purpose of debugging, monitoring and analysis, particularly profiling and thread analysis.
+
+In the context of this thesis, we identify in JVMTI's architecture a similarity to a virtualization system. While the Java \VM takes the place of a the virtualized operating system and the agent is its hypervisor and can control.
 
 \subsubsection*{MVM: a Multi User Virtual Machine}
 The Multi-user Virtual Machine~\cite{Czaj03a,Czaj01a} is a general purpose virtual machine for the Java language that allows the co-existence of different applications, potentially from different users. Each application running on top of the MVM is an \emph{isolate} based on the Java Application Isolation API specification~\cite{JSR121}.
