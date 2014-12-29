@@ -407,11 +407,11 @@ JVMTI provides with introspection and some limited intercession facilities at VM
 In the context of this thesis, we identify in JVMTI's architecture a similarity to a virtualization system. While the Java \VM takes the place of a the virtualized operating system and the agent is its hypervisor and can control.
 
 \subsubsection*{MVM: a Multi User Virtual Machine}
-The Multi-user Virtual Machine~\cite{Czaj03a,Czaj01a} is a general purpose virtual machine for the Java language that allows the co-existence of different applications, potentially from different users. Each application running on top of the MVM is an \emph{isolate} based on the Java Application Isolation API specification~\cite{JSR121}.
+The Multi-user Virtual Machine~\cite{Czaj03a,Czaj01a} is a general purpose virtual machine for the Java language that allows the co-existence of different applications, potentially from different users. Each application running on top of the MVM is an \emph{isolate} based on the Java Application Isolation API specification~\cite{JSR121}. This Java Application Isolation API defines a uniform mechanism to control the life-cycle of Java applications.
 
 Many isolates co-exist not inteferring each other, as they believe they own their private JVM: the runtime is modified, so state is not shared between them by default. MVM allows several communication mechanisms to securely communicate isolates: from standard mechanisms such as sockets, up to \emph{links}, a low-level isolate-to-isolate mechanism introduced by the Isolate API.
 
-MVM can run any normal Java application. Additionally, MVM-aware applications can use the API it provides to control the life-cycle~(\eg creation, suspension, resuming and and termination) and the available resources of other isolates.
+MVM can run unmodified Java applications. Additionally, MVM-aware applications can use the API it provides to control the life-cycle~(\eg creation, suspension, resuming and and termination) and the available resources of other isolates. Notice that differently from JVMTI, this control API is available to the applications running on the JVM and not only to native agents.
 
 %\subsection*{Java Isolates}
 %Java Isolates \cite{JSR121} allow multiple applications to run inside the same Java virtual machine.
