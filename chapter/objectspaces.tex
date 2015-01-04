@@ -1,29 +1,44 @@
 \input{chapter-header.tex}
+\newcommand{\VTT}{Mulero\xspace}
+\newcommand{\Vtt}{\VTT}
+\newcommand{\VT}{\VTT}
+\newcommand{\Vt}{\VTT}
 
 % ===========================================================================
-\chapter{VirtuaTalk: An Infrastructure for Language Runtime Evolution}
+\chapter{\VTT: Virtual Language Runtimes}
 \minitoc
 % ===========================================================================
 \introduction
 % ===========================================================================
 
-This chapter presents the core contribution of this dissertation: our Virtual Language Runtime solution, namely VirtuaTalk\gp{beurk}. VirtuaTalk is based on the manipulation of a language runtime through a language hypervisor~(cf. Figure \ref{fig:objectSpaceOverview}). For that, it includes a first-class representation of a language runtime, namely an \emph{object space}, that encapsulates a language runtime and provides a high-level API to query and manipulate it~(cf. Section \ref{sec:object_space}).
+This chapter presents the core contribution of this dissertation: our Virtual Language Runtime infrastructure, namely \VTT~(cf. Section \ref{sec:virtualization_overview}). \VTT allows the monitoring and manipulation of a language runtime through a language hypervisor~(cf. Figure \ref{fig:virtualization_introduction}). In \VTT, both the virtualized runtime and the language hypervisor are first class objects. A first-class representation of a language runtime, namely an \emph{object space}, encapsulates the language runtime and provides a high-level API to query and manipulate it~(cf. Section \ref{sec:object_space}). A first-class \emph{language hypervisor} is a client of an object space~(cf. Section\ref{sec:hypervisor}).
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.8\linewidth]{virtualization_introduction}
+\caption{\textbf{\VTT Overview.} A language hypervisor monitors and manipulates a virtualized runtime. Both the virtualized runtime and the language hypervisor share the same process.\label{fig:virtualization_introduction}}
+\end{center}
+\end{figure}
+
+A language hypervisor runs in the same process than the virtualized runtime to monitor and manipulate it directly. However, the language hypervisor and the virtualized runtime run on different language runtimes: basic objects, classes and VM structures are not shared between the language hypervisor and the virtualized runtime. This has the main purpose of allowing the hypervisor to change any part of the virtualized runtime without affecting itself.
+
+In the rest of this chapter we present in detail these two elements and how they relate to each other. Section \ref{sec:isolation} presents how communication is dealt between an object space and its hypervisor with the no-sharing strategy. Section \ref{sec:execution} explains how we achieve the control of the virtualized runtime through two different strategies: VM execution with safe control points and simulation for a fully managed execution. Finally, Section \ref{sec:virtualization_benchmarks} shows the benchmarks we did on our \Vtt prototype, showing the feasibility of our solution.
+
+%On one side, this means that the hypervisor can freely manipulate the virtualized language runtime without affecting itself. On the other side, this no-sharing strategy poses an extra effort in communication~(cf. Section \emph{sec:isolation}) mainly in object marshaling.
+
+%A language hypervisor is a first-class object in \VTT, meaning that we can easily modify it and replace it by another object. Additionally, a simulation mode allows a fully-managed execution mode.
+
+%We do not require any changes in existing applications to import them inside an object space. We introduce minimal modifications at the \VM level to ensure their control and manipulation is transparent. Regarding execution, an object space provides with different means for controlling the execution of the language runtime it owns~(cf. Section \ref{sec:execution}). It can safely start, pause and resume its execution, create new threads or finalize existing ones.  
+
+
+\section{\Vtt Overview} \label{sec:virtualization_overview}
 
 \begin{figure}[htb]
 \begin{center}
 \includegraphics[width=.9\linewidth]{object_space_overview3}
-\caption{\textbf{VirtuaTalk Overview.} A language hypervisor in the runtime I (left) manipulates the runtime II (right) through an object space. The object space object resides in a different runtime than the one it manipulates.\label{fig:objectSpaceOverview}}
+\caption{\textbf{\VTT Overview.} A language hypervisor in the runtime I (left) manipulates the runtime II (right) through an object space. The object space object resides in a different runtime than the one it manipulates.\label{fig:objectSpaceOverview}}
 \end{center}
 \end{figure}
-
-An object space inhabits a different language runtime than the one it manipulates. Basic objects and classes of the language runtime are not shared between the hypervisor runtime system and the virtualized one. On one side, this means that the hypervisor can freely manipulate the virtualized language runtime without affecting itself. On the other side, this no-sharing strategy poses an extra effort in communication~(cf. Section \emph{sec:isolation}) mainly in object marshaling.
-
-We do not require any changes in existing applications to import them inside an object space. We introduce minimal modifications at the \VM level to ensure their control and manipulation is transparent. Regarding execution, an object space provides with different means for controlling the execution of the language runtime it owns~(cf. Section \ref{sec:execution}). It can safely start, pause and resume its execution, create new threads or finalize existing ones.  
-
-
-The application client of an object space is a \emph{language hypervisor}~(cf. Section\ref{sec:hypervisor}). A language hypervisor is a first-class object in VirtuaTalk, meaning that we can easily modify it and replace it by another object. Additionally, a simulation mode allows a fully-managed execution mode.
-
-
 
 \section{Object Spaces: First-class Language Runtimes} \label{sec:object_space}
 
@@ -90,6 +105,68 @@ Our object space provides also specific kinds of mirrors with higher level APIs 
 
 % ===========================================================================
 
+\section{Flexible First-Class Hypervisors}\label{sec:hypervisor}
+
+A first-class hypervisor decides wether to make an update or not between execution cycles. As a first-class citizen, we can easily replace it or prototype new hypervisors. Figure \ref{fig:hypervisors} shows our basic hypervisor class hierarchy. A \ct{NullHypervisor} allows the virtualized runtime to run without any intervention. The \ct{UpdateHypervisor} instead checks the existence of a file with updates on every cycle. Following, there is an excerpt of the code of these hypervisors implementations.
+
+\begin{figure}[ht]
+\center
+\includegraphics[width=.9\linewidth]{hypervisors}
+\caption{\textbf{First-class Hypervisors.} .\label{fig:hypervisors}}
+\end{figure}
+
+\begin{code}
+Hypervisor>>run [
+    self before.
+    self basicRun.
+    self after.
+]
+
+Hypervisor>>basicRun [
+    objectSpace runFor: 200.
+]
+
+UpdateHypervisor>>before [
+    self checkForUpdate.
+]
+
+UpdateHypervisor>>checkForUpdate [
+    "We check if a given file exists"
+    'update.txt' asFile exists.
+    ...
+]
+\end{code}
+
+\section{Communication and Isolation} \label{sec:communication}\label{sec:isolation}
+
+\gp{rewrite: cross message sends, literal translation, and boundary checks}
+
+As explained in Section \ref{sec:isolation}, an objectspace is an isolated object graph in the sense that from the guest image there is no way to reach host objects. However, the opposite relation is possible: the host can manipulate completely the \objectspace.
+
+The communication mechanism between host and guest images is based on the \emph{injection of objects} into the \objectspace. The host may install from simple literal objects such as strings or numbers, up to more complex objects like classes, methods. An \objectspace permits to \emph{send messages to objects} inside itself by injecting process with the specified code. Injected processes may have any arbitrary expression. The membrane objects can retrieve the result from the process' context once the execution is finished.
+
+The \objectspace membrane ensures that object injection honors the transitive closure property. On one side, literal objects from the host are automatically translated to their representation in the \objectspace. An \objectspace implements the operations to transform literal objects (numbers, strings, symbols, some arrays and byte arrays) \emph{from and to} its internal representation.
+
+On the other side, non literal objects are actually not created in the host and injected in the \objectspace. Non literal objects are directly created in the \objectspace, so the task of injecting the new object inside a graph is safe.
+
+\gp{example!}
+
+
+Note from the signatures presented that all mirror operations will return a mirror in exchange, and so, interaction with other objects inside the object space is mediated by Oz. Mirrors could give and revoke permissions on the wrapped object and enforce invariants to keep the model consistent~\cite{Teru13a}.
+Oz provides also specific kinds of mirrors with high level APIs to manipulate objects with a specific format and/or behavior such as classes, methods, activation records or processes. We do not cover high level mirrors in this paper because they are not relevant to the bootstrap process.
+
+\gp{next is old, see how to merge}
+
+The manipulation of objects inside the \objectspace image cannot be achieved with a traditional message send mechanism. In the normal case, when a message send is performed, the virtual machine takes the selector symbol of the message and lookups in the class hierarchy method dictionaries of the receiver until it finds a method with the \emph{same}~(identical) selector. In our scenario, both host and guest images contain their own \ct{Symbol} class and symbol table. Then, when performing a \emph{cross image-message send} the method lookup mechanism takes a selector symbol from the host, lookups into the guest receiver's hierarchy, and finally fails because  the selector in the guest is (while maybe equals) not identical to the selector in the host. Also, forcing a \emph{cross image-message send} by using a guest's selector can leak host references to the guest: activating a guest method from the host gives the guest complete access to the host through the \ct{thisContext} special variable which reifies the stack on-demand.
+
+To encapsulate and control the basic object manipulation, the object space fa\c{c}ade object provides mirrors~\cite{Brac04b}. Mirrors hide the internal representation of the objects inside the objectspace and expose reflective behavior. The guest is not aware of the existence of these mirrors.
+
+All objects inside an \objectspace and reachable by reference can be retrieved by host's objects through the \objectspace facade and mirrors. 
+There is no limitation nor restriction for object access. 
+The host manipulates all objects in a homogeneous way through their mirrors. 
+
+Additionally, specific mirrors are provided to manipulate objects with a specific format and/or behavior such as \ct{Class}, \ct{Metaclass}, \ct{MethodDictionary}, \ct{CompiledMethod}, \ct{MethodContext}, and \ct{Process}.
+
 \section{Managing Runtime Execution} \label{sec:execution}
 
 An \objectspace's execution is fully controllable from the host. The host can introspect and modify an \objectspace processes via mirrors to obtain information such as the method currently on execution, the values on the stack or the current program counter. Besides from those reflective operations, an \objectspace provides also operations to suspend, resume or terminate existing processes, and to install new ones.
@@ -142,69 +219,7 @@ The bootstrapping interpreter is a code interpreter, potentially written in lang
 \item[Automatic class stubs.] The bootstrapping interpreter does also solve most of the well known bootstrapping issues~(\eg how to create a class before a class exists) in a generic way by using class stubs. When an inexistent class is needed during the bootstrap process, the interpreter creates an empty class to take it place respecting the VM format for it. The interpreter will be able to create instances of this class and map it to its corresponding definition to perform the method lookup. This class cannot, however, initially perform reflective operations as it does not contain any reflective information. When the real class is created later on in the process, it replaces the stub.
 \end{description}
 
-\section{Communication and Isolation} \label{sec:communication}\label{sec:isolation}
-
-\gp{rewrite: cross message sends, literal translation, and boundary checks}
-
-As explained in Section \ref{sec:isolation}, an objectspace is an isolated object graph in the sense that from the guest image there is no way to reach host objects. However, the opposite relation is possible: the host can manipulate completely the \objectspace.
-
-The communication mechanism between host and guest images is based on the \emph{injection of objects} into the \objectspace. The host may install from simple literal objects such as strings or numbers, up to more complex objects like classes, methods. An \objectspace permits to \emph{send messages to objects} inside itself by injecting process with the specified code. Injected processes may have any arbitrary expression. The membrane objects can retrieve the result from the process' context once the execution is finished.
-
-The \objectspace membrane ensures that object injection honors the transitive closure property. On one side, literal objects from the host are automatically translated to their representation in the \objectspace. An \objectspace implements the operations to transform literal objects (numbers, strings, symbols, some arrays and byte arrays) \emph{from and to} its internal representation.
-
-On the other side, non literal objects are actually not created in the host and injected in the \objectspace. Non literal objects are directly created in the \objectspace, so the task of injecting the new object inside a graph is safe.
-
-\gp{example!}
-
-
-Note from the signatures presented that all mirror operations will return a mirror in exchange, and so, interaction with other objects inside the object space is mediated by Oz. Mirrors could give and revoke permissions on the wrapped object and enforce invariants to keep the model consistent~\cite{Teru13a}.
-Oz provides also specific kinds of mirrors with high level APIs to manipulate objects with a specific format and/or behavior such as classes, methods, activation records or processes. We do not cover high level mirrors in this paper because they are not relevant to the bootstrap process.
-
-\gp{next is old, see how to merge}
-
-The manipulation of objects inside the \objectspace image cannot be achieved with a traditional message send mechanism. In the normal case, when a message send is performed, the virtual machine takes the selector symbol of the message and lookups in the class hierarchy method dictionaries of the receiver until it finds a method with the \emph{same}~(identical) selector. In our scenario, both host and guest images contain their own \ct{Symbol} class and symbol table. Then, when performing a \emph{cross image-message send} the method lookup mechanism takes a selector symbol from the host, lookups into the guest receiver's hierarchy, and finally fails because  the selector in the guest is (while maybe equals) not identical to the selector in the host. Also, forcing a \emph{cross image-message send} by using a guest's selector can leak host references to the guest: activating a guest method from the host gives the guest complete access to the host through the \ct{thisContext} special variable which reifies the stack on-demand.
-
-To encapsulate and control the basic object manipulation, the object space fa\c{c}ade object provides mirrors~\cite{Brac04b}. Mirrors hide the internal representation of the objects inside the objectspace and expose reflective behavior. The guest is not aware of the existence of these mirrors.
-
-All objects inside an \objectspace and reachable by reference can be retrieved by host's objects through the \objectspace facade and mirrors. 
-There is no limitation nor restriction for object access. 
-The host manipulates all objects in a homogeneous way through their mirrors. 
-
-Additionally, specific mirrors are provided to manipulate objects with a specific format and/or behavior such as \ct{Class}, \ct{Metaclass}, \ct{MethodDictionary}, \ct{CompiledMethod}, \ct{MethodContext}, and \ct{Process}.
-
-\section{Flexible First-Class Hypervisors}\label{sec:hypervisor}
-
-A first-class hypervisor decides wether to make an update or not between execution cycles. As a first-class citizen, we can easily replace it or prototype new hypervisors. Figure \ref{fig:hypervisors} shows our basic hypervisor class hierarchy. A \ct{NullHypervisor} allows the virtualized runtime to run without any intervention. The \ct{UpdateHypervisor} instead checks the existence of a file with updates on every cycle. Following, there is an excerpt of the code of these hypervisors implementations.
-
-\begin{figure}[ht]
-\center
-\includegraphics[width=.9\linewidth]{hypervisors}
-\caption{\textbf{First-class Hypervisors.} .\label{fig:hypervisors}}
-\end{figure}
-
-\begin{code}
-Hypervisor>>run [
-    self before.
-    self basicRun.
-    self after.
-]
-
-Hypervisor>>basicRun [
-    objectSpace runFor: 200.
-]
-
-UpdateHypervisor>>before [
-    self checkForUpdate.
-]
-
-UpdateHypervisor>>checkForUpdate [
-    "We check if a given file exists"
-    'update.txt' asFile exists.
-    ...
-]
-\end{code}
-
-\section{Virtualization Overhead Benchmarks} \label{sec:solution}
+\section{Virtualization Overhead Benchmarks} \label{sec:virtualization_benchmarks}
 
 We benchmarked our prototype implementation using a subset of the computer language benchmarks game\footnote{\url{http://benchmarksgame.alioth.debian.org/}}. We executed our benchmarks in four different setups, in Table \ref{tb:benchmarks}. We first benchmarked the Vanilla Pharo VM without any of our changes, to make it our base of comparison. Afterwards, we benchmarked our solution in three different setups:
 
