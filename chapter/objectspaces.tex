@@ -16,7 +16,7 @@ This chapter presents the core contribution of this dissertation: our Virtual La
 \begin{figure}[htb]
 \begin{center}
 \includegraphics[width=.8\linewidth]{virtualization_introduction}
-\caption{\textbf{\VTT Overview.} A language hypervisor monitors and manipulates a virtualized runtime. Both the virtualized runtime and the language hypervisor share the same process.\label{fig:virtualization_introduction}}
+\caption{\textbf{Virtualization concepts with \Vtt.} A language hypervisor monitors and manipulates a virtualized runtime. Both the virtualized runtime and the language hypervisor share the same process.\label{fig:virtualization_introduction}}
 \end{center}
 \end{figure}
 
@@ -31,7 +31,9 @@ In the rest of this chapter we present in detail these two elements and how they
 %We do not require any changes in existing applications to import them inside an object space. We introduce minimal modifications at the \VM level to ensure their control and manipulation is transparent. Regarding execution, an object space provides with different means for controlling the execution of the language runtime it owns~(cf. Section \ref{sec:execution}). It can safely start, pause and resume its execution, create new threads or finalize existing ones.  
 
 
-\section{\Vtt Overview} \label{sec:virtualization_overview}
+\section{\Vtt Architecture} \label{sec:virtualization_overview}
+
+\Vtt presents an architecture where multiple runtime systems can run on the same process independently. They do not share any \VM or language state \ie each one has its own interpreter, stack, classes and objects. A virtualized runtime is a runtime system that is monitored by another runtime system. The runtime system that controls the virtualized runtime is the hypervisor runtime. The hypervisor runtime is a full-fledged object runtime, providing us with the expression power and abstractions of our high level language to express our language hypervisor. To control the virutalized runtime, a hypervisor runtime contains an object space and language hypervisor objects that we use for virtualization purposes. An object space is a first-class object that represents the virtualized runtime and provides operations for its manipulation. A language hypervisor object is the client of such object space implementing a particular manipulation on it \eg runtime update or failure detection.
 
 \begin{figure}[htb]
 \begin{center}
@@ -39,6 +41,13 @@ In the rest of this chapter we present in detail these two elements and how they
 \caption{\textbf{\VTT Overview.} A language hypervisor in the runtime I (left) manipulates the runtime II (right) through an object space. The object space object resides in a different runtime than the one it manipulates.\label{fig:objectSpaceOverview}}
 \end{center}
 \end{figure}
+
+An object space manipulates the virtualized runtime through directly manipulating the \VM. Doing so at \VM level provides \Vtt with the following properties:
+
+\begin{description}
+\item[Transparency.] Our solution does not require any changes in the applications residing inside the virtualized runtime. Thus, we can virtualize existing applications without modifications.
+\item[Application independence.] Our solution does not depend on the particular application inside the virtualized runtime. It does depend however on its underlying model imposed by the \VM.
+\end{description}
 
 \section{Object Spaces: First-class Language Runtimes} \label{sec:object_space}
 
