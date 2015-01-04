@@ -20,9 +20,9 @@ This chapter presents the core contribution of this dissertation: our Virtual La
 \end{center}
 \end{figure}
 
-A language hypervisor runs in the same process than the virtualized runtime to monitor and manipulate it directly. However, the language hypervisor and the virtualized runtime run on different language runtimes: basic objects, classes and VM structures are not shared between the language hypervisor and the virtualized runtime. This has the main purpose of allowing the hypervisor to change any part of the virtualized runtime without affecting itself.
+A language hypervisor runs in the same process than the virtualized runtime to monitor and manipulate it directly. However, the language hypervisor and the virtualized runtime run on different language runtimes: basic objects, classes and \VM structures are not shared between the language hypervisor and the virtualized runtime. This has the main purpose of allowing the hypervisor to change any part of the virtualized runtime without affecting itself.
 
-In the rest of this chapter we present in detail these two elements and how they relate to each other. Section \ref{sec:isolation} presents how communication is dealt between an object space and its hypervisor with the no-sharing strategy. Section \ref{sec:execution} explains how we achieve the control of the virtualized runtime through two different strategies: VM execution with safe control points and simulation for a fully managed execution. Finally, Section \ref{sec:virtualization_benchmarks} shows the benchmarks we did on our \Vtt prototype, showing the feasibility of our solution.
+In the rest of this chapter we present in detail these two elements and how they relate to each other. Section \ref{sec:isolation} presents how communication is dealt between an object space and its hypervisor with the no-sharing strategy. Section \ref{sec:execution} explains how we achieve the control of the virtualized runtime through two different strategies: \VM execution with safe control points and simulation for a fully managed execution. Finally, Section \ref{sec:virtualization_benchmarks} shows the benchmarks we did on our \Vtt prototype, showing the feasibility of our solution.
 
 %On one side, this means that the hypervisor can freely manipulate the virtualized language runtime without affecting itself. On the other side, this no-sharing strategy poses an extra effort in communication~(cf. Section \emph{sec:isolation}) mainly in object marshaling.
 
@@ -51,16 +51,28 @@ An object space manipulates the virtualized runtime through directly manipulatin
 
 \section{Object Spaces: First-class Language Runtimes} \label{sec:object_space}
 
-An object space is a first-class representation of an object runtime system, meant for its manipulation and control. An object space encapsulates a language runtime and provides with a clear and explicit interface to manipulate it. The object space interface is divided in two different groups of operations: first, operations for the configuration of a VM before it can run; second, operations for the manipulation of the runtime structures at runtime~(objects, classes, threads, the execution stack). This operation is present in two different kind of objects: an \ct{objectSpace} object provides with general operations and mirror objects~\cite{Brac04b} provide with operations to manipulate individual objects.
+An object space is a first-class representation of an object runtime system, meant for its manipulation and control. An object space encapsulates a language runtime and provides with a clear and explicit interface to manipulate it. This interface is splitted in two different objects: an \ct{objectSpace} object provides with general runtime operations while mirror objects~\cite{Brac04b} provide with operations to manipulate individual objects. On one side, it makes explicit what are the elements of the language that should be initialized so the \VM can run a program. On the other side, it makes explicit those operations that take part at runtime to manipulate runtime structures such as objects, classes, threads, the execution stack.
 
-Object spaces clarify the interface between the language and the VM. On one side, they make explicit what are the elements of the language that should be initialized so the VM can run. On the other side, they also makes explicit which kind of runtime manipulation operations are responsibility of the \VM and which are responsibility of the language.\gp{put an example}
+\subsection{\VM Setup Interface}
 
-\subsection{VM Setup Interface}
+The \VM setup is the configuration the \VM needs to run.
+For example, a \VM may need the boolean objects \ct{true} and \ct{false} to push them as the result of a boolean operation at runtime.
+This configuration is usually done only during the language initialization, before execution, as the \VM cannot anticipate the usage of such elements in a program from beforehand.
+The \VM setup interface allows us to configure the following kind of elements:
 
-The VM setup is the configuration the VM needs to start running. It is generally composed of the well-known objects of the language such as \ct{nil}, \ct{true} or \ct{false}, special classes that the VM may invoke at runtime, and special messages that the VM will send to the language to notify events ~(\eg the \ct{doesNotUnderstand:} of Smalltalk or \ct{methodMissing} of Ruby). This configuration is usually done only during the language initialisation and not modified afterwards. In particular for bootstrapping, we define the following as the VM setup interface:
+\begin{description}
+\item[Well-known objects of the language.] Objects such as \ct{nil}, \ct{true} or \ct{false} may be needed at runtime for different purposes. The garbage collection can insert a reference to \ct{nil} in a weak reference. Particular objects may be held by the \VM as prototypes for improve instantiation time of commonly used objects.
+\item[Special classes.] Special classes are those needed by the \VM at runtime to make safety checks, create instances or handle special cases such as immediate objects. For example, when mutating a \ct{String} object the Pharo \VM checks that the introduced object is a \ct{Character} object, to avoid putting the \ct{String} into an invalid state. The \VM instantiates some classes that are not directly instantiated through the \ct{new} message inside a program. For example, the \VM instantiates a \ct{Block} object when it founds a block expression at runtime. Immediate objects are objects that are encoded inside an object reference instead of occupying a place inside the heap. Immediate objects do not include a reference to their class and therefore the \VM needs to know how to map each particular reference encoding to its corresponding class to perform the message lookup. 
+\item[Special messages.] Special messages are callbacks that the \VM will invoke into the language to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(the equivalent to Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will replace that message-send by the \ct{doesNotUnderstand} selector and let the user program decide what to do in such a case.
+\end{description}
+
+This \VM setup interface avoids to hardcode particular knowledge of a language inside the \VM. This gives us the possibility to easily change particular language internals such as renaming special messages or changing the class hierarchy of special classes without. In the extreme, we could port another language to this VM, as long as they share similar execution semantics \ie the \VM execution model is compatible with the language. \gp{this maybe go up}
+
+Following, we present an example of such an interface for the Pharo language. The \ct{objectSpace} object is the object containing the \VM setup interface.
 
 \begin{code}
-objectSpace\{
+objectSpace{
+    "Well-known objects"
     mirror getNil();
     mirror getTrue();
     mirror getFalse();
@@ -69,28 +81,34 @@ objectSpace\{
     void setTrue(mirror aTrueObject);
     void setFalse(mirror aFalseObject);
     
-    mirror getArrayClass();
-    void setArrayClass(classMirror anArrayClassMirror);
+    "Special Classes"
+    void setArrayClass(classMirror anArrayClass);
+    void setBlockClass(classMirror aBlockClass);
     ...
     ...
-\}
+    
+    "Special Messages"
+    void setDoesNotUnderstandSelector(mirror aSelector);
+    ...
+}
 \end{code}
 
-In our particular implementation the list of classes exposed through this interface are those of literal objects and those related with the internal VM execution model. For the sake of completeness the list of classes is the following: \ct{Array}, \ct{Association}, \ct{BlockClosure}, \ct{ByteArray}, \ct{ByteString}, \ct{ByteSymbol}, \ct{Character}, \ct{Context}, \ct{Float}, \ct{SmallInteger}, \ct{LargePositiveInteger}, \ct{LargeNegativeInteger}, \ct{Message}, \ct{CompiledMethod}, \ct{MethodDictionary}, \ct{Semaphore}, \ct{WeakFinalizationList}.
 
-\subsection{Runtime Manipulation Interface} he runtime manipulation interface is composed by operations that the VM uses to manipulate objects at runtime. It contains operations such as reading and writing into a field, set and change and object's class. The bootstrapping interpreter uses this interface to manipulate the objects inside the object space and bootstrap the language kernel. An object space provides also specific kinds of mirrors with higher level APIs to manipulate objects with a specific format and/or behaviour such as classes, methods, activation records or processes. We do not cover these high-level mirrors in this paper as they are not relevant to the bootstrap process.
+%In our particular implementation the list of classes exposed through this interface are those of literal objects and those related with the internal \VM execution model. For the sake of completeness the list of classes is the following: \ct{Array}, \ct{Association}, \ct{BlockClosure}, \ct{ByteArray}, \ct{ByteString}, \ct{ByteSymbol}, \ct{Character}, \ct{Context}, \ct{Float}, \ct{SmallInteger}, \ct{LargePositiveInteger}, \ct{LargeNegativeInteger}, \ct{Message}, \ct{CompiledMethod}, \ct{MethodDictionary}, \ct{Semaphore}, \ct{WeakFinalizationList}.
+
+\subsection{Runtime Manipulation Interface} he runtime manipulation interface is composed by operations that the \VM uses to manipulate objects at runtime. It contains operations such as reading and writing into a field, set and change and object's class. The bootstrapping interpreter uses this interface to manipulate the objects inside the object space and bootstrap the language kernel. An object space provides also specific kinds of mirrors with higher level APIs to manipulate objects with a specific format and/or behaviour such as classes, methods, activation records or processes. We do not cover these high-level mirrors in this paper as they are not relevant to the bootstrap process.
 
 \begin{code}
-objectSpace\{
+objectSpace{
     mirror createClass(String name, int formatOfInstances);
     mirror getClass(String name);
     void removeClass(String name);
     
     List<mirror> getThreads();
     mirror getContextStackFrame(mirror aThread);
-\}
+}
 
-mirror\{
+mirror{
     classMirror getClass().
     void setClass(classMirror aClass).
 
@@ -98,15 +116,15 @@ mirror\{
     void setInstanceVariable(String variableName, mirror anObject).
     
     void replaceWithObject(mirror object);
-\}
+}
 
-classMirror\{
+classMirror{
     mirror instantiate();
     mirror instantiate(int aSize);
     
     void compileMethod(String sourceCode);
     void removeMethod(String selector);
-\}
+}
 \end{code}
 
 Note that from the signatures presented that all mirror operations will return a mirror in exchange. Second, note that a \ct{classMirror} object is also a \ct{mirror} and it shares its operations.
@@ -180,11 +198,11 @@ Additionally, specific mirrors are provided to manipulate objects with a specifi
 
 An \objectspace's execution is fully controllable from the host. The host can introspect and modify an \objectspace processes via mirrors to obtain information such as the method currently on execution, the values on the stack or the current program counter. Besides from those reflective operations, an \objectspace provides also operations to suspend, resume or terminate existing processes, and to install new ones.
 
-\subsection{Direct VM Execution: Controlled cycles}
+\subsection{Direct \VM Execution: Controlled cycles}
 
 Pharo applications can be virtualized transparently, as no changes are required on them. They are, however, interrupted periodically in safe control points in which the hypervisor can check if an update is eventually necessary. A first-class hypervisor object allows us to have a flexible update mechanism: we can dynamically change it and easily prototype them.
 
-To allow the hypervisor to control the virtualized runtime, we split the virtualized runtime execution in cycles. During each execution cycle, the virtualized runtime runs unmanaged using the full capacity of the VM. When the cycle finishes the virtualized runtime is suspended in the next suspension point if finds, and the control is returned to the hypervisor runtime. The hypervisor runtime will act~(check if there are pending updates, install updates or nothing) and then resume the execution of the application from the last suspension point.
+To allow the hypervisor to control the virtualized runtime, we split the virtualized runtime execution in cycles. During each execution cycle, the virtualized runtime runs unmanaged using the full capacity of the \VM. When the cycle finishes the virtualized runtime is suspended in the next suspension point if finds, and the control is returned to the hypervisor runtime. The hypervisor runtime will act~(check if there are pending updates, install updates or nothing) and then resume the execution of the application from the last suspension point.
 
 Our implementation presents an execution cycle of 200ms that allows us to have fine grained control while the virtualized application has still place to run. We use as suspension points backjumps found in the executed bytecode and message sends. In such a way, we ensure that the execution stack is in a consistent state after it is interrupted.
 
@@ -197,7 +215,7 @@ Our implementation presents an execution cycle of 200ms that allows us to have f
 The \objectspace provides fine-grained control on the guest execution. An \objectspace controls the amount of CPU used by the guest image. \sd{can you do that for real? CPU control?}\gp{We can give an objectspace a window of 20ms to run and then we get back control so It's our decision if we give it 20 more or not :)}This way, a virtual image can be customized for scenarios like for example testing, CPU usage analysis, or old hardware simulation. For example, it may restrict its processes to run during only 300 milliseconds every second for either.
 
 \begin{description}
-\item[Code execution.] Oz provides with operations to manipulate the processes/threads of the guest language kernel. In particular, the \ct{runForTime()} operation will execute the guest language kernel with whichever processes it has installed, directly on the VM.
+\item[Code execution.] Oz provides with operations to manipulate the processes/threads of the guest language kernel. In particular, the \ct{runForTime()} operation will execute the guest language kernel with whichever processes it has installed, directly on the \VM.
 \begin{code}
 List<mirror> getProcesses();
 mirror createProcessDoing(String expression);
@@ -207,7 +225,7 @@ void runForTime(int milliseconds);
 %\end{figure}
 \end{description}
 
-The language primitives are those operations that the VM exposes to the language. The interpreter uses this interface to execute primitive operations that appear in the language definition.
+The language primitives are those operations that the \VM exposes to the language. The interpreter uses this interface to execute primitive operations that appear in the language definition.
 
 \begin{code}
 objectSpace\{
@@ -225,12 +243,12 @@ The bootstrapping interpreter is a code interpreter, potentially written in lang
 \begin{description}
 \item[Alternative method lookup.] Before reaching the execution point, the class hierarchy of the language kernel is incomplete, or part of its methods is not yet installed. An alternative method lookup mechanism is put in place in the bootstrapping interpreter to allow message sending before we reach the execution point: methods are looked up in the definition of the language instead of the hierarchy in the language kernel; a mapping is kept between classes created in the language kernel and their definitions in the language definition to know where the lookup should start.
 
-\item[Automatic class stubs.] The bootstrapping interpreter does also solve most of the well known bootstrapping issues~(\eg how to create a class before a class exists) in a generic way by using class stubs. When an inexistent class is needed during the bootstrap process, the interpreter creates an empty class to take it place respecting the VM format for it. The interpreter will be able to create instances of this class and map it to its corresponding definition to perform the method lookup. This class cannot, however, initially perform reflective operations as it does not contain any reflective information. When the real class is created later on in the process, it replaces the stub.
+\item[Automatic class stubs.] The bootstrapping interpreter does also solve most of the well known bootstrapping issues~(\eg how to create a class before a class exists) in a generic way by using class stubs. When an inexistent class is needed during the bootstrap process, the interpreter creates an empty class to take it place respecting the \VM format for it. The interpreter will be able to create instances of this class and map it to its corresponding definition to perform the method lookup. This class cannot, however, initially perform reflective operations as it does not contain any reflective information. When the real class is created later on in the process, it replaces the stub.
 \end{description}
 
 \section{Virtualization Overhead Benchmarks} \label{sec:virtualization_benchmarks}
 
-We benchmarked our prototype implementation using a subset of the computer language benchmarks game\footnote{\url{http://benchmarksgame.alioth.debian.org/}}. We executed our benchmarks in four different setups, in Table \ref{tb:benchmarks}. We first benchmarked the Vanilla Pharo VM without any of our changes, to make it our base of comparison. Afterwards, we benchmarked our solution in three different setups:
+We benchmarked our prototype implementation using a subset of the computer language benchmarks game\footnote{\url{http://benchmarksgame.alioth.debian.org/}}. We executed our benchmarks in four different setups, in Table \ref{tb:benchmarks}. We first benchmarked the Vanilla Pharo \VM without any of our changes, to make it our base of comparison. Afterwards, we benchmarked our solution in three different setups:
 
 \begin{description}
 \item[Null Hypervisor.] A hypervisor performing no particular action.
@@ -245,7 +263,7 @@ We benchmarked our prototype implementation using a subset of the computer langu
  	\begin{tabular}{|l|c|c|c|c|}
 			\hline
 			\textbf{Benchmark}
- 			& \textbf{Vanilla VM (1x)}
+ 			& \textbf{Vanilla \VM (1x)}
 			& \textbf{Null Hypervisor}
 			& \textbf{File Checking Hypervisor}
 			& \textbf{Stack Checking Hypervisor}\\
