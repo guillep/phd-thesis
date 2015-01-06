@@ -71,8 +71,8 @@
 			<real>-1</real>
 			<key>Points</key>
 			<array>
-				<string>{262.58714990293549, 298.78750092379789}</string>
-				<string>{165.14728393676947, 270.00000005962255}</string>
+				<string>{262.58715021446864, 298.78750092030384}</string>
+				<string>{165.14728393676947, 269.99999958278539}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -262,8 +262,8 @@ checkForUpdate()}</string>
 			<integer>48</integer>
 			<key>Points</key>
 			<array>
-				<string>{261.75, 212.99998123687197}</string>
-				<string>{309.25, 212.99998123687197}</string>
+				<string>{261.74999664308694, 212.77905325345475}</string>
+				<string>{309.25000910472323, 212.63674852542817}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -519,7 +519,7 @@ after()
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{310, 185}, {146, 14}}</string>
+					<string>{{310, 192}, {146, 14}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -565,7 +565,7 @@ after()
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{310, 199}, {146, 28}}</string>
+					<string>{{310, 206}, {146, 14}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -604,8 +604,7 @@ after()
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
 
-\f0\fs24 \cf0 getClass(Sting name)\
-runFor(int milliseconds)}</string>
+\f0\fs24 \cf0 runFor(int milliseconds)}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -670,7 +669,7 @@ runFor(int milliseconds)}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2014-12-22 15:35:10 +0000</string>
+	<string>2015-01-05 17:00:20 +0000</string>
 	<key>Modifier</key>
 	<string>Guille</string>
 	<key>NotesVisible</key>
