@@ -6,21 +6,889 @@
 \introduction
 % ===========================================================================
 
+Deployed object-oriented applications often contain \emph{code units}~(e.g. packages, classes, methods) that the running application never uses. 
+This problem shows itself more evident and harder to control under the usage of third party software. 
+Third party libraries and frameworks are designed in a generic fashion that allows multiple usages and functionalities, while applications use only few of them. 
+Examples are logging libraries, web application frameworks or object-relational mappers.
+
+Unused deployed code units have an undesired impact when targeting a constrained infrastructure. 
+Constrained devices may have restrictive hardware such as low primary or secondary memory, or even software impositions such as the Android's Dalvik VM restriction to deploy only 65536 methods\footnote{According to dalvik's bytecode documentation~(\url{http://source.android.com/devices/tech/dalvik/dalvik-bytecode.html}), the source register accepts values between 0 and 65535.}. Big JavaScript mashup applications have an impact on loading time due to network speed and parsing time.
+These limitations may forbid the deployment of applications that contain lots of code units, or limit the amount of applications and content a user can have in its device.
+
+Existing solutions to this problem propose to eliminate dead code by extracting used code units of an application, and thus reduce their size and memory footprint. The majority of the solutions in the field propose to automatically detect and extract used code units, so called \emph{tailoring}, with static call graph construction as the most dominant technique~\cite{Grov97a}. 
+These static approaches present limitations in the presence of dynamic features such as reflection~\cite{Livs05a}, or in the absence of static type annotations. Additionally, they do not allow the user to customize the process of selection to cover different levels of an application's code \ie a user may want to extract only the used application specific code and let third-party and base-language libraries untouched; another user may want apply the process to the whole of the application.
+
+This paper describes the \emph{run-fail-grow} (RFG) technique: an alternative solution to dead code elimination that identifies at runtime those code units that are actually used in an application.
+For such a task, in RFG we launch a \emph{reference} application containing all code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application containing a minimal set of code units we want to ensure in our application, so called a \emph{seed}.
+RFG consists in ``growing'' the nurtured application into a deployable specialized version of the reference application. 
+RFG runs the nurtured version of the application and feeds it with the code units that were detected as missing with a failure.
+
+The resulting deployable application only embeds the seed and used code.
+By carefully choosing the seed, the user customizes the scope of the tailoring process making possible different levels of tailoring.
+For example, a seed that includes all base libraries makes the tailoring process to only select used code in the application-specific part; whereas an empty seed makes the tailoring process to select used code in all parts: base libraries, application libraries and application-specific part.
+% For example, if the seed includes the language base libraries, it ensures that the deployed application will have it all whereas an empty seed will result that only part of the base libs 
+% Afterwards, deployment units are created from this shrank application to only contain the used code units.
+% Using these compacted deployment units leverages the targeted device limitations. 
+The dynamic nature of our solution allows its usage in dynamically-typed languages, and applications using reflection. Our solution does not need to modify the original application thanks to its run-fail-grow approach.
+It also successfully deals with applications that make use of programming language features such as reflection or open classes.
+
+In summary, this paper \emph{contribution} is two-fold. We contribute our run-fail-grow technique which is applicable to dynamic languages with no type annotations, has natural support for reflection, and is customizable by specifying a seed. Our second contribution is the description of its implementation, detailing those elements that should be available in a programming environment for it, for those interested in implementing such a solution.
+
+\paragraph{Outline.}
+Section~\ref{sec:problem} illustrates the problem of having unused code in application deployment units, it then describes the challenges of application tailoring and finally it presents a list of criteria for evaluating tailoring techniques.
+Section~\ref{sec:model} thoroughly describes our \emph{run-fail-grow} approach to tailor applications.
+Section~\ref{sec:implementation} presents Tornado, our run-fail-grow implementation in the Pharo programming language.
+Section~\ref{sec:results} reports on results of experiments we conducted on two different applications. 
+Section~\ref{sec:related_work} presents an evaluation of our solution and compares it to related work.
+Section~\ref{sec:discussion} discusses some aspects and trade-offs of the run-fail-grow approach and our implementation.
+Finally, Section~\ref{sec:conclusion} concludes this paper and presents some future work.
+
 
 % ===========================================================================
-\section{Background}
+\section{Problem of Unused Code Units}\label{sec:problem}
+Deployed applications contain a set of code units such as classes and methods.
+At run-time, required code units are loaded into RAM according to some \emph{loading strategy}.
+Scripting languages such as JavaScript, Ruby, Python or PHP have an explicit loading strategy: they load and run a script file and all its declarations when an explicit import statement is found. 
+Java uses a transparent code unit loading strategy based on class loaders~\cite{Lian98a}: a class loader loads classes on demand in a transparent way for the application code.
+Besides the loading strategy, an application may load a code unit that is only partially used, such as a class with some methods that are never executed.
+Additionally, in both situations the deployed application tends to occupy more secondary memory than necessary since the code units should be available to be loaded.
+
+
+%Figure~\ref{fig:unusedCodeUnits} shows a typical deployment scenario with unused code units.
+%
+%This problem becomes more evident with the inclusion of third party libraries~(and frameworks). 
+%Third party libraries provide often a great variety of code units, usually designed in a generic fashion. 
+%They allow multiple usages, while applications tend to use only some of them. 
+%Additionally, application developers do not often modify and customize third party libraries to fit their needs but use them as black boxes. 
+%Modifying them would mean to lose compatibility with the original development branch of the library and having deep knowledge on the library.
+%
+%\begin{figure}[ht]
+%\begin{center}
+%\includegraphics[width=1\linewidth]{components}
+%\caption{\textbf{Unused Code Units.} Package P1 contains class A which is used during runtime and class B which is never needed and thus, not loaded. Package P2 contains class C which is partially used~(it contains methods that are never invoked) though it's completely loaded. Class D is loaded because an instance of it is created, but it is never used.\label{fig:unusedCodeUnits}}
+%\end{center}
+%\end{figure}
+
+Unused code units represent serious drawbacks in constrained devices. 
+First, unused code units may forbid the deployment into a constrained resource device.
+It may also interfere with the deployment and usage of other applications, because of large memory footprints in both secondary~(disk storage) and primary~(RAM) memory~\cite{Mart12a} or the presence of slow networks in the case of rich web applications.
+Second, some deployment targets may have an infrastructure designed in such a manner that forbids the deployment of large applications. For example, the Android's Dalvik VM restricts an application to deploy only 65536 methods per application.
+
+% \noury{I would remove this paragraph}\lf{I rewrote it but yes we can discard it}
+% The rest of this section is organized as follows. 
+% Section~\ref{sec:example_intro} illustrates these problems through an example and shows what the ideal case would be. 
+% Section~\ref{sec:challenges} shows the challenges involved in controlling unused code units in object-oriented applications. 
+% Finally, Section~\ref{sec:criteria} defines evaluation criteria that an ideal solution should fulfill.
+
+%\begin{description}
+%\item[Wasting storage space.] A deployment unit or some of the code units it contains may be never loaded by the runtime environment. Those unused code units stay in secondary memory wasting storage space that could be used for other applications.
+%
+%\item[Large memory footprints.] Big loading granularities produce the load of several code units at the same time. When that is the case, the runtime environment may load code units which will never be used. These unused code units produce larger memory footprints unnecessarily.
+%
+%\item[Mismatch with the runtime representation.] The deployment units contain code units that usually describe the structural~(\eg packages, classes) and behavioral~(\eg methods, scripts) parts of an application. However, the main code units in charge of code execution during an application's runtime are objects, in turn organized in graphs. Objects and object graphs are not directly represented in the deployment units, but through the code that creates them inside scripts and methods. This mismatch between the deployment code units and the code units existing in runtime poses the problem of unused objects: an application may create, store or cache objects that it may not use, and thus, waste memory in them\gp{cite mariano?}.
+%\end{description}
+
+\subsection{A Motivating Example} \label{sec:example_intro}
+
+To clearly show the problem, consider the application using a logging library in Figure~\ref{fig:example_dead_code}. In this figure, we emphasize in gray the unused code units that can safely be removed.
+%An interface is present in the diagram to show polymorphism between two classes that do not share a class inheritance hierarchy. 
+%However, some languages, such as the dynamically typed ones, may not need to represent it in the source code.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=.7\linewidth]{example_dead_code}
+\caption{\small\textbf{Example of unused code units.} In gray, the unused code units that can safely be removed.\label{fig:example_dead_code}}
+\end{center}
+\end{figure}
+
+Figure~\ref{fig:code_example1} shows the code of this application, written in the Pharo Smalltalk language\footnote{To those not versed in Smalltalk-like syntax, these are the equivalents to Java that are required for this example:\\
+\ct{new SomeClass();} -> \ct{SomeClass new.}\\
+\ct{this.simpleMethod();} -> \ct{self simpleMethod.}\\
+\ct{other.methodWithArg(arg);} -> \ct{other methodWithArg: arg.}\\
+\ct{/*a comment*/} -> \ct{"a comment"}\\
+\ct{"a string"} -> \ct{'a string'}
+}. This application contains a \ct{MainApp} class with a \ct{start} method, which is the entry point of our application. The \ct{start} method creates an instance of \ct{Stdout\-Logger} and logs the application's start and end. In turn, the \ct{StdoutLogger} uses the \ct{stdout} global instance to log in the standard output the current time and the message. To print the time, the \ct{StdoutLogger} makes use of the \ct{Time} class from the base libraries of the language. Note that for the sake of clarity, we didn't include in the example all base libraries, though, in modern programming languages they represent a large codebase with several features going from networking to multithreading. For example, Java 8 SE contains 4240 classes\footnote{according to the javadoc API}, and the development edition of Pharo 3.0~\cite{Blac09a} contains 4115 classes and traits.
+
+\begin{figure}[ht]
+\begin{code}
+MainApp>>start (
+    logger := StdoutLogger new.
+    logger log: 'Application has started'.
+    "do something"
+    logger log: 'Application has finished'. )
+
+!\unusedcode{StdoutLogger>>newLine (}!
+!\unusedcode{~~~stdout newLine. )}!
+
+StdoutLogger>>log: aMessage (
+    stdout nextPutAll: Time now printString.
+    stdout nextPutAll: aMessage.
+    stdout newLine. )
+    
+!\unusedcode{RemoteLogger>>log: aMessage (}!
+!\unusedcode{~~~| socket |}!
+!\unusedcode{~~~socket := self newSocket.}!
+!\unusedcode{~~~socket nextPutAll: Time now printString.}!
+!\unusedcode{~~~socket nextPutAll: aMessage.}!
+!\unusedcode{~~~socket newLine. )}!
+
+!\unusedcode{RemoteLogger>>newSocket (}!
+!\unusedcode{~~~"...."}!
+!\unusedcode{~~~"creates an instance of socket given some configuration" )}!
+\end{code}
+
+\caption{ \small\textbf{Code of the example logging application.} In gray, methods not used by the application.\label{fig:code_example1}}
+\end{figure}
+
+In this example we can detect the following unused code units, shown in grey in Figure~\ref{fig:example_dead_code} and Figure~\ref{fig:code_example1}:
+\begin{enumerate}
+\item The logger library includes two logging classes~(\ct{Stdout\-Logger} and \ct{RemoteLogger}). Only the \ct{StdoutLogger} is used and thus, the \ct{RemoteLogger} class can be discarded.
+\item Since the \ct{MainApp} class does not use the \ct{Socket} class nor the \ct{RemoteLogger} class~(the only user of the \ct{Socket} class), the \ct{Socket} class can be discarded.
+\item No class in the application makes use of the \ct{Date} class, according that it is not used in the base libs either. Then, this class can be safely removed.
+\item The method \ct{newLine}~(lines 7-8 of Figure~\ref{fig:code_example1}) of the \ct{StdoutLogger} class is not used and can be also removed.
+\item The \ct{StdoutLogger} class uses the \ct{Time} class to print the current time. Then, all code units that are not related to the \ct{Time now} resolution or printing~(\ie time arithmetic) could be considered as unused.
+\end{enumerate}
+
+We would like to generate a new version of this application not containing these unused code units while keeping the application's behavior. We call this technique \emph{application tailoring}.
+
+\subsection{Challenges of Application Tailoring} \label{sec:challenges}
+
+A lot of work exists on the tailoring of statically-typed applications~\cite{Cour10a,Rays02a,Tip03a,Popa04a,Teod01a}, where type annotations aid in the resolution of which piece of code will be used at runtime. 
+However, static analysis is not an option in the context of dynamically-typed languages or in the presence of meta-programming and reflection~\cite{Livs05a}.
+%~\cite{Mart12a}
+In this context of dynamically-typed and object-oriented programs that may use reflection, we identify the following main challenges for detecting unused code units:
+
+\begin{description}
+
+\item[Dynamic typing.] Dynamically-typed languages cannot benefit from the most powerful static analysis due to the absence of type annotations. Name-based static analyses~(static analyses that build a simpler call graph based only on method names) can be used on them, but are not as efficient. Static techniques to detect code unit usage, such as call-graph analysis, need the support of more dynamic techniques \eg tracking runtime information, following the application's execution flow, or performing symbolic execution.
+
+\item[Polymorphism and inheritance.] Polymorphism in object-oriented languages allows a code unit to treat objects of different concrete types in the same way as soon as they share a common interface. Inheritance plays a similar role: any class can extend another class and provide different behavior while sharing a common API.
+As a consequence, both polymorphism and inheritance make the behavior of a program more difficult to predict by just statically analyzing its code units~\cite{Taen89a}.
+
+\item[Application runtime configuration.] Modern applications often contain libraries and frameworks besides their proper code. 
+To make these different code units fit together, applications rely on heavy configurations. 
+These configurations are usually present in configuration files looked up dynamically by the application. 
+Based on these configurations, the dependency injection pattern is usually used to dynamically set up the application. 
+This recurrent and standard process for configuring applications implies that static analysis will be inefficient to detect used code units without library-specific knowledge.
+ % The configuration code unit adds another dynamic element to the application, making its behavior more complex to predict with static approaches.
+
+%\item[Application configuration granularity.] An application's configuration is not often granular. Libraries and frameworks may initialize during their startup lots of objects that are not used during the application's life cycle. These configuration objects may remain in static/class fields cached until the application is stopped, impacting in the memory footprint \gp{this is a problem, not a challenge. The challenge is to be able to detect unused objects in addition to methods}.
+
+\item[Reflection.] Reflection makes static analysis inoperative by allowing an application to execute unanticipated pieces of code. 
+Any \ct{String} resulting from a program execution or program configuration can denote a message send\footnote{We refer method invocations as message sends because they represent better from our understanding the dynamic property of the invocation.}, the name of a class to be instantiated, or even a script to be executed. Reflection is indeed important to cover, since it is a broadly used tool in industrial applications with object relational mappers such as Hibernate or Glorp and web frameworks such as Ruby On Rails, Struts or Seaside.
+\end{description}
+
+\subsection{Evaluation Criteria for Application Tailoring} \label{sec:criteria}
+
+
+This section presents properties that we consider the most relevant to evaluate techniques addressing the issue of unused deployment code units.
+
+\begin{description}
+
+\item[Reflection.] An ideal tailoring solution should handle correctly reflective code and resolve the unanticipated code executions in the same way as the application would do during runtime.
+
+\item[Base Library Specialization.] A programming language contains several base libraries covering very common and generic tasks. Not all the code units in these libraries are used in an application. An ideal tailoring solution should tailor base libraries of the language to reduce an application's deployment memory footprint.
+
+\item[Third Party Libraries Specialization.] Applications use several third-party libraries and frameworks covering several aspects of application development such as user interfaces, persistence or publication of services. Third party libraries contain large code bases and many dependencies. Thus, an ideal tailoring solution should consider the existence of third-party software.
+
+\item[Legacy Code.] An ideal tailoring solution should be applicable on already existing applications and not require modifications on them.
+
+\item[Dedicated Infrastructure for Deployment.] An ideal tailoring solution should produce a version of the application that is able to run on the official production infrastructure~(such as the VM) without overhead.
+
+\item[Flexibility.] An ideal solution for tailoring an application should support many different levels of application. Some applications may not need to tailor base libraries because they are shared with other applications. However, tailoring base libraries may be useful on those applications residing alone in constrained devices.
+
+\item[Applicable without type annotations.] An ideal tailoring solution should be applicable to dynamic languages with no type annotations.
+
+\item[Full Coverage.] An ideal tailoring solution will guarantee that all code units selected as part of the deployable application are those needed. That is, it does not contain extra code units, nor it misses code units.
+
+\end{description}
+
 
 % ===========================================================================
-\section{Reducing an Application's Memory Footprint}
+\section{Run-Fail-Grow: a Dynamic Approach} \label{sec:model}
+
+\subsection{Run-Fail-Grow in a Nutshell}
+
+We propose run-fail-grow (RFG) for tailoring. Briefly, RFG works by launching a \emph{reference} application encompassing the full application with all its code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application that has only part of its required code units installed. The nurtured application is run, and when a failure is detected because it misses a code unit, we install into it the corresponding code unit from the reference application. Thus, the nurtured application grows progressively as missing code units are found and solved.
+Once finished, the nurtured application is ready to be deployed on target devices. Figure~\ref{fig:runfail} depicts the basics of our run-fail-grow approach.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=.7\linewidth]{runfail}
+\caption{\small \textbf{Application tailoring with a run-fail-grow approach.} We~(1) run the nurtured application and~(2) detect the missing units on failure. For each failure,~(3) we copy missing code units from the reference application and then~(4) the execution is resumed (just before the failure point) until the process finishes. \label{fig:runfail}}
+\end{center}
+\end{figure}
+
+On one side, we start the reference application and pause it at the point where either it contains all its collection of code units, either we can load them dynamically~(under a lazy loading strategy). The reference application remains paused to avoid to mutate its state during the tailoring process. Pausing consists in suspending all processes and threads from the application.
+
+On the other side, we fill initially the nurtured application with those code units we want to ensure in the final application \ie the seed. This seed allows us to specify the level of specialization of our deployable application.
+By using a seed that contains all base libraries, RFG will only affect the application specific code units and third-party libraries.
+However, by using an empty seed, it will also tailor base libraries~(cf. Section \ref{sec:seeds}).
+
+Running the nurtured application consists in two main steps. We first install in the nurtured application one or more \emph{application's entry points} in the form of threads, and then we start to run it.
+The execution of these entry points results into sending messages to those objects that start the application. These messages will produce \emph{missing code failures} when the respective classes and methods to resolve the message are not available.
+We detect the missing code failures and solve them by fetching the needed code units from the reference application and install them into the nurtured application. RFG installs only code units on demand \ie the content of installed classes and objects is not installed with them but deferred until it is actually needed; methods are not installed until they are invoked.
+The process repeats until we end it explicitly, so we can interact with the application as part of the process. Ideally, the nurtured application reaches a stable point where it needs no more code units.
+The nurtured application is then ready for deployment.
+
+The dynamic nature of RFG tackles all our challenges. Missing code units are detected and resolved at runtime, where two main elements are available: the exact messages that are sent with their corresponding receiver and arguments, and their concrete types\footnote{We consider the exact class of an object its concrete type}. The methods and classes to install can be easily deduced from the available concrete types, \emph{without depending on type declarations} nor \emph{guessing in case of polymorphism or inheritance}. \emph{Application configurations are honored} since the code that reads and interprets them is actually executed, without the need of custom code for them. \emph{Reflection is supported for free} since reflection invocations are treated as simple message sends and executed as any other code, and strings composed dynamically by the application are available at runtime. 
+
+
+%%%%%%%%%% 
+
+
+\subsection{Run-Fail-Grow through an example}
+We illustrate in this section the ideas behind RFG with the example introduced in Section~\ref{sec:example_intro}. For the sake of clarity, in this example we will tailor the application's code units and not the base libraries \ie the seed includes the base libraries.
+
+\paragraph{Setup of the Environment.} First, we launch the reference application~(cf. Figure~\ref{fig:example_reference}) and the nurtured application~(cf. Figure~\ref{fig:example_all} Step 0). We fill the nurtured application with a seed containing the language base libraries. Thus, each application has its own copy of the base libraries, as shown in this case with the \ct{Date} and \ct{Time} classes and the \ct{stdout} object.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=.5\linewidth]{example_reference}
+\caption{\small\textbf{Reference application with all code units.}\label{fig:example_reference}}
+\end{center}
+\end{figure}
+
+
+\begin{figure*}[ht]
+\begin{center}
+\includegraphics[width=.244\linewidth]{example_before}
+\includegraphics[width=.25\linewidth]{example_starting_point}
+\includegraphics[width=.25\linewidth]{example_dnu_trap_start}
+\includegraphics[width=.25\linewidth]{example_shadow_trap}
+\includegraphics[width=.246\linewidth]{example_dnu_trap}
+\includegraphics[width=.25\linewidth]{example_finished}
+\caption{\small\textbf{The nurtured application at different steps of tailoring.} \label{fig:example_all}}
+\end{center}
+\end{figure*}
+
+\paragraph{Install the application's entry point.} We install into the nurtured application our application's entry point \ie a \ct{MainApp} instance~(\ct{aMainApp}) and a process that will execute the statement \ct{"aMainApp start"}~(cf. Figure~\ref{fig:example_all} Step 1). Note that although we are referencing an instance of the class \ct{MainApp}, the \ct{MainApp} class is not installed yet.
+
+%\begin{figure}[ht]
+%\begin{center}
+%\includegraphics[width=.8\linewidth]{example_starting_point}
+%\caption{\textbf{Installing an entry point.} The nurturer installs the entry point of the application and starts its execution sending it the \ct{start} message.\label{fig:example_starting_point}}
+%\end{center}
+%\end{figure}
+
+When the execution starts, the \ct{mainApp} instance receives the \ct{start} message, and we detect the \ct{MainApp} class and its \ct{start} method as a missing code unit failure. We install these two missing code units~(cf. Figure~\ref{fig:example_all} Step 2) and finally the \ct{MainApp>>start} method is activated and starts running.
+
+%\begin{figure}[ht]
+%\begin{center}
+%\includegraphics[width=.8\linewidth]{example_dnu_trap_start}
+%\caption{\textbf{Activating the entry point.} The nurturer installs the \ct{MainApp} class and the \ct{start} method on demand.\label{fig:example_dnu_trap_start}}
+%\end{center}
+%\end{figure}
+
+\paragraph{Activating the start method.}
+The method \ct{start} defined in Figure~\ref{fig:code_example1} is executed, as we can see in Figure~\ref{fig:example_all} Step 2. During the execution of its first statement~(line 2 Figure~\ref{fig:code_example1}) we detect a missing code unit failure: The \ct{StdoutLogger} class does not exist. Thus, before continuing, we install a \ct{StdoutLogger} class with the same shape as its reference counterpart~(cf. Figure~\ref{fig:example_all} Step 3). This class does not contain, however, all the methods nor the meta-data (\eg superclass, package, subclasses) from the reference class since they may not be necessary.
+
+%a \emph{shadow} of the \ct{Formatter} class~(Figure~\ref{fig:example_shadow}).\gp{I don't like the word shadow here, since it does not go with the tailor metaphor} The \ct{Formatter} shadow is a proxy object the tailor will use to know if and when the \ct{Formatter} class is used.
+
+%\begin{figure}[ht]
+%\begin{center}
+%\includegraphics[width=.8\linewidth]{example_shadow_trap}
+%\caption{\textbf{Activating the \ct{new} method.} The nurturer installs a the \ct{StdoutLogger} class and sends it the \ct{new} message.\label{fig:example_shadow_trap}}
+%\end{center}
+%\end{figure}
+
+%Once the \ct{Formatter} shadow is available, the tailor can continue the execution and send the message \ct{new} to the shadow object. At this point, the tailor finds out that the receiver of the \ct{new} message is a shadow object, and thus, it replaces the shadow object by
+
+%Note that copies of classes are treated specially: they contain a method dictionary where methods are installed, but since no instance of \ct{Formatter} received yet a message, its method dictionary is empty.
+
+Once we install the \ct{StdoutLogger} class, we resume the execution. The first statement results into a new \ct{StdoutLogger} instance. Not that the \ct{new} method is not installed because this method is part of the language base library, already available in the seed. 
+% The next expression of the \ct{start} method is now ready to be executed.
+
+During the second statement's execution~(line 3 Figure~\ref{fig:code_example1}), we detect a missing code unit failure on the \ct{log:} message~(cf. Figure~\ref{fig:example_all} Step 4): the corresponding method is not installed in the \ct{StdoutLogger} class. We install the method inside the corresponding class and resume the execution. This time the method is found, and the \ct{log:} method is activated.
+
+%\begin{figure*}[ht]
+%\begin{center}
+%\includegraphics[width=0.65\linewidth]{example_dnu_trap}
+%\caption{\textbf{Activating the \ct{log:} method.} The message \ct{log: 'Application has started'} is sent to the \ct{logger} object. \label{fig:example_dnu_trap}}
+%\end{center}
+%\end{figure*}
+
+
+Once the \ct{log:} method finishes, the execution returns to the \ct{start} method. There, the third statement~(line 5 Figure~\ref{fig:code_example1}) is executed with no intervention of our technique, since the \ct{log:} method is already available. Figure~\ref{fig:example_all} Step 5 shows the final state of the nurtured application: it contains only the methods and classes that are actually used by the application. Leaf objects used during the process have been garbage collected.
+
+%\begin{figure}[ht]
+%\begin{center}
+%\includegraphics[width=.8\linewidth]{example_finished}
+%\caption{\textbf{Final state of the nurtured application.} The nurturing has finished and the resulting application is tailored.\label{fig:example_finished}}
+%\end{center}
+%\end{figure}
+
+\subsection{Detecting Missing Code Units}\label{sec:model_detail}
+
+
+RFG depends on getting notified when a missing code unit failure appears. RFG's algorithm is based on traps to achieve this task, as shown in Algorithm~\ref{alg:tailoring_process}. Traps are placeholders that are installed in the nurtured application in the place of real elements. They are triggered whenever the application tries to access them. In case a trap is triggered, we stop the nurtured application execution, we install the missing code units replacing their corresponding traps, and finally resume the execution from the moment immediately before the trap was triggered. Traps are installed dynamically in the nurtured application following the information flow of the application \eg when a method \ct{A} is installed some traps are installed on it to capture possible missing code unit failures it may cause.
+
+We identified the following as the basic traps that are necessary to tailor an application:
+
+\begin{description}
+\item[Missing object trap.] A \emph{missing object} trap captures messages sent to objects that do not yet exist inside the nurtured application such as classes. When RFG finds one of these traps, its responsibility is to install the corresponding object. The object installed is a \emph{partial} clone of the original object \ie not all of its state is installed, instead it contains traps to capture the access to its class and fields. When a method refers to a static variable, we install one of this traps for it.
+
+\item[Missing method trap.] A \emph{missing method} trap captures me\-thod invocations whose methods are not defined in the nurtured application yet. When the application execution triggers one of these traps, RFG installs the corresponding method in the class hierarchy of the object. In case of missing classes, RFG installs them too. Missing method traps capture also overridden methods. If an overridden method is not trapped, the method lookup may find a superclass implementation and execute it, resulting into an unexpected behavior. Figure~\ref{fig:need_override} illustrates this problem: the class \ct{B} from the reference application contains an override, while it is not present in the nurtured application. If no trap is placed to capture the override, the method \ct{doSomething} from class \ct{A} would be executed, thus changing the semantics of our application.
+
+\end{description}
+
+\begin{algorithm}[ht]
+ %\KwData{this text}
+ %\KwResult{how to write algorithm with \LaTeX2e }
+ Initialize reference application\;
+ Initialize nurturing application with the seed\;
+ Install entry point(s)\;
+ \While{not finished}{
+  run the nurtured application\;
+  \If{trap was activated}{
+   install missing code units\;
+   restart message send;
+  }
+ }
+ \caption{\small An abstract view of the run-fail-grow process \label{alg:tailoring_process}}
+\end{algorithm}
+
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.7\linewidth]{need_override}
+\caption{\small\textbf{The need of overriding traps.} \small Method traps should capture the overridden \ct{doSomething} message-send to avoid the superclass method to be executed wrongly.\label{fig:need_override}}
+\end{center}
+\end{figure}
+
+
+
+\subsection{Customizing Dead Code Elimination with Seeds}\label{sec:seeds}
+
+The level of tailoring of RFG can be specified using seeds. A seed is a collection of code units whose installation is forced into the nurtured application. These code units are available for the nurtured application and thus, accessing them does not trigger missing code unit failures.
+
+A seed can contain any arbitrary code unit, including package, classes, methods and even already initialized objects. Seeds are useful to cover different tailoring scenarios. Let's take as a first example a smartphone where the base libraries of the language are already available, so they are shared amongst the many applications installed in it. When targeting such a smartphone, base libraries are already present and we do not need to produce an specialized version of them, but specialize only third part libraries and application code. In this case, we use a seed providing the language base libraries. Let's take as a second example a constrained device robot-like which will contain only our application. When targeting this robot as deployment scenario, we want to specialize all the code to deploy including base libraries. In such a case, the seed is empty to allow the RFG algorithm to work on every code unit.
+
+Figure \ref{fig:nurturing_map_model} presents the tailoring map showing two examples of usage of seeds. Each application contains code units corresponding for the base libraries, third party libraries and application code. In the left the seed covers base and third party libraries, thus RFG applies and selects a subset of the application code units only. In the right, the seed covers only the base libraries, thus RFG applies and select a subset of the code units from the third party libraries and application code.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=.7\linewidth]{nurture_map}
+\caption{\small\textbf{Tailoring Map.} A tailoring map describes which code units of an application are included in the seed~(in gray), which ones are subject to the RFG technique~(in white) and the amount of them that are finally selected~(within the thick area).
+\label{fig:nurturing_map_model}}
+\end{center}
+\end{figure}
+
 
 %============================================================================
-\section{Tailoring}
+\section{Tornado: RFG in \Vtt} \label{sec:implementation}
 
-% ===========================================================================
-\section{Tornado}
+\subsection{RFG's Implementation Requirements}\label{sec:requirements}
+
+We identify the following requirements for a development platform to implement RFG. Some platforms present all of these elements while some others present only part of them. In the latter case, the missing elements should be developed as part of the solution. In this and the following sections we explain how we fulfilled each of these requirements and how we put them together to implement our solution. Note that these features are only needed to implement RFG and prepare an application for deployment. Once RFG is applied, we must be able to deploy our application on the standard platform infrastructure~(virtual machine, operating system), without special support.
+
+\begin{description}
+\item[Control application's execution.] RFG requires full control on an application's execution. It needs to be able to suspend all threads of an application when a trap is triggered, and to resume them once the trap is handled.
+
+\item[Capture message-sends.] RFG requires to intercept an application's execution at runtime to detect missing code unit failures, and thus, to implement traps. In particular, it needs the ability to intercept all message sends of the application, and in particular method invocations.
+
+\item[Install and Query Code at Runtime.] RFG requires a platform where it is possible to install code and query the installed code at runtime. Classes, methods and objects have to be installed at any moment of the execution, including the modification of classes that already contain instances, or objects that are already cloned. Also, we need to fetch the code units installed in the reference application 
+\end{description}
+
+\subsection{Tornado's Overview}\label{sec:infrastructure}
+
+We implemented our RFG technique as a tool called \emph{Tornado}. Tornado is implemented using the Pharo programming language, to tailor applications written in this same language. Pharo is a reflective and dynamic programming language inspired from Smalltalk. Tornado's architecture is based two main components: Oz object spaces~(cf. Section \ref{sec:oz}) and Ghost proxies~(cf. Section \ref{sec:proxies}). A Tornado environment is illustrated in Figure \ref{fig:tornado_code units}. Tornado initiates and pauses the reference and nurtured applications and controls them \emph{remotely}. It installs traps on the nurtured application using Ghost proxies, and uses Oz to control execution and query and install code units into them. Following, we detail how we fulfilled each of RFG's requirements in our solution:
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.6\linewidth]{tornado_components2}
+\caption{\small\textbf{Tornado's architecture overview.} Tornado controls both the reference and nurtured applications through Oz. Traps are installed into the nurtured application with the Ghost library.\label{fig:tornado_code units}}
+\end{center}
+\end{figure}
+
+\begin{description}
+\item[Process reification provides execution control.] Pharo provides already support for execution control in its runtime. It reifies processes and method activations~(\ie instances of \ct{Process} and \ct{MethodContext} respectively) allowing one to manipulate them as simple objects. However, by itself Pharo does not provide the ability to control its execution remotely as it is needed by Tornado. We developed Oz object spaces to cover this missing feature.
+
+\item[Advanced proxies.] Pharo's libraries includes Ghost~\cite{Mart11a}, an advanced proxy implementation. Ghost allows one to capture all kind of message sends, intercept particular method executions, and even to proxy classes and special objects. We use Ghost to implement execution traps.
+
+\item[Install and query code at runtime.] Pharo is a dynamic language inspired in Smalltalk, and as such, it allows one to install code at runtime naturally. However, it lacks the ability to install code remotely. We cover also this missing feature with our Oz implementation.
+
+\end{description}
+
+\subsection{Oz object spaces: An object runtime manipulation interface} \label{sec:oz}
+
+Tornado controls the execution of the nurtured application and manipulates it at runtime using Oz\footnote{Not related to the Oz programming language. The name Oz for Pharo is inspired on the metaphor of multiple world manipulation.} object spaces~\cite{Poli13a}. Oz is an \emph{object runtime manipulation interface} we developed for the Pharo programming language \ie a library that allows the manipulation of the object runtime system of a Pharo application: control its execution, install code on demand and query it. Using Oz, a Pharo application is confined within a \emph{protection domain} so called \emph{object space}. The Oz library presents a first class representation of an object space which serves as a high level API to manipulate those protection domains.
+
+In our Tornado implementation, the reference and nurtured applications are contained each in a different object space. Tornado places traps inside the nurtured object space and starts its execution. This execution is performed directly on a Pharo Virtual Machine, and thus, there is no speed overhead as soon as traps are not involved. Whenever the nurtured object space's execution founds a trap, it pauses and returns the control to Tornado. Tornado inspects the classes and methods in the reference object space through mirrors~\cite{Brac04b} and installs the needed code units from the reference object space on demand, either by creating new objects or compiling new methods. Then, it restarts the nurtured object space's execution from the message send that activated the trap.
+
+\subsection{Execution Traps with Ghost Proxies} \label{sec:proxies}
+
+Implementing execution traps such as the ones described in Section~\ref{sec:model_detail} requires a powerful intercession module or library. Traps must capture \emph{all} message sends to objects provided by the language runtime as well as the application objects, including classes~(for example for the case of class messages or static methods). They must capture \emph{self} and \emph{super} message sends, as well as overrides and particular method invocations.
+
+To achieve this, we implemented a set of proxies following the Ghost model~\cite{Mart11a}~(similar to JavaScript proxies~\cite{Vanc10a}). Ghost proposes a low-memory footprint, general purpose proxy implementation for the Smalltalk language supporting the creation of proxies for normal objects as well as classes and methods. 
+% These proxies allow the interception of all message sends.
+% When a Ghost proxy captures an invocation, it triggers the behavior of a \emph{handler}. 
+% The Ghost proxy library provides already several kinds of handlers including for example message forwarding or logging.
+Ghost proxies allow the detection of all situations corresponding to our traps.
+Tornado handles a table relating each proxy to the code unit or object it represents in the reference application.
+%Ghost proxies capture all messages.
+Additionally, each proxy is attached to a \emph{handler} that may perform some action when the proxy receives a message.
+We rely on this concept to perform the right action for each trap.
+We discuss below the different kinds of proxies and handlers we use and how they support RFG.
+
+\begin{description}
+\item[Missing object trap.] This trap is implemented as a proxy taking the place of a normal object. This trap is triggered when the proxy receives a message.
+Its handler replaces the proxy by a copy of the original object from the reference application.
+The copy is created, and all references to the proxy are replaced by references to this new object, which is achieved through the \ct{become:} facility of the Pharo language that dynamically swaps object references.
+Each field and the class of this new installed object are installed as new missing object traps.
+
+\item[Missing method trap.]  We implemented the missing method trap in Tornado as a class proxy located at the top of the class hierarchy. Whenever a message is sent to an object, the VM looks up the method in the object's class hierarchy. This trap is triggered whether a message arrives to the top of the hierarchy, meaning that there was no method for it in the hierarchy. When triggered, the handler installs the classes part of the hierarchy of this method and the missing method in its corresponding class. If no method is found to install, Tornado sends the \ct{doesNotUnderstand:} message~(an equivalent to \eg Ruby's \ct{method\_missing} and Python's \ct{\_\_getattr\_\_}) to honor the dynamic semantics of Pharo.
+
+\item[Missing override trap.] We implemented missing override traps in Tornado using method proxies. Method proxies are placed in the method dictionaries of classes containing overriden methods, taking the place of the original method.  When Tornado installs a class into the nurtured application that contains overridden methods in the reference object space, it installs into this class a method proxy for each of its overridden methods. This trap is triggered whenever the method proxy it is about to be executed. The handler of this trap compiles a new method with the same source as the corresponding method from the reference application and installs it inside the nurtured object space.
+
+\item[Primitive methods trap.] Primitive method traps are implementation specific related to the Pharo language. Pharo's primitive operations such as number arithmetic are implemented through primitive methods. Primitive methods are implemented in the Virtual Machine and do often access directly the fields of its receiver and arguments by forging references and manipulating directly the memory, bypassing our traps. Thus, we face an issue when a \emph{missing object trap} proxy is the argument of such a method: the VM can modify this proxy without activating the trap. Primitive method traps are method proxies that decorate Pharo's primitive methods. When they are triggered because one of these methods is about to be executed this trap's handler triggers each of the missing object traps received as arguments, if any. In this way, Tornado forces the installation of the arguments and the primitive is executed with actual objects instead of proxies, as expected.
+
+\end{description}
+
+% \subsection{Traps and Proxies}\label{sec:traps}
+% Tornado traps notify the nurturer when some object is missing. In such case, the tailor installs the missing object and continues the execution from the point where it was trapped. Traps are implemented in Tornado through Ghost like proxies. Each trap in tornado is a Ghost proxy. Tornado implements a custom interception handler: every time a trap is activated, the object space where the trap is located gets paused and the control is returned to the tailor to treat the trap. Following, we explain each of the traps implementations and how they are treated by the tailor:
+% 
+% \begin{description}
+% \item[Not-installed trap.] A trap for an object or class not yet installed in the system is a simple proxy. If the proxy receives a message, the tailor installs the object the proxy represents and replaces the proxy by the new object. If the new object has fields, these fields will be propagated as proxies or installed depending on its particular mapping~(cf. section~\ref{sec:mappings}). In our particular implementation, the replacement of the proxy by its new counterpart is done through the \ct{become:} facility of the Pharo language that allows pointer swapping.
+% \item[Does not understand trap.] We implemented the does not understand trap in tornado as a class proxy situated on the top of the class hierarchy. Whenever a message is sent to an object, the method lookup mechanism searches a method with the same firm in the object's class hierarchy, starting from the object's class up to the top. Our does not understand trap captures whether a message arrives to the top of the hierarchy, meaning that there was no method for it in the hierarchy. When this trap is activated, the tailor looks in the model application for the method to install, installs it in the nurtured application and finally restarts the execution from the call-site that activated the trap.
+% 
+% \item[Override trap.] We implemented override traps in tornado using method proxies. Method proxies are activated whenever the proxified method is about to be executed. When Tornado installs a class that contains overridden methods in the reference object space, it also installs into it one method proxy for each of its overridden methods. In such a way, the method lookup mechanism finds the overridden traps and returns the control to the tailor. In turn, the tailor installs the method corresponding to the trap and restarts the execution from the call-site that activated the trap.
+% 
+% \item[Primitive methods trap.] \gp{il faut l'ecrire}
+% 
+% \end{description}
+% 
+% \gp{Traps are placed in the tailoring application so they get activated only when the special cases are given. They do not represent a penalty on runtime during the tailoring process.}
+% 
+% Note that every time a trap is captured and treated, restarting the execution must handle correctly self and super message-sends\footnote{A super message-send starts the method lookup from the superclass of the class where the actual method in execution is located, instead of the class of the message receiver}. Thus, Tornado always restarts the execution respecting the call-site and the class where the method lookup mechanism started to maintain the program's semantics, regardless the kind of trap that was activated.
+
+
+\subsection{Object Installation and Propagation Rules} \label{sec:mappings}
+
+As we explained before, Tornado installs all objects inside the nurtured application on demand, as \emph{partial copies}, \ie the objects referenced by the original object will not be copied along with it by default, but traps are placed instead of them. %That is, no object, class or method is installed unless it is needed by the application to run. The need for installing some element is detected by means of traps~(cf. Section~\ref{sec:model_detail}).
+%The tailored application contains during the tailored process two kind of objects: application objects that are copies of the model application objects, and proxy objects representing traps.
+When Tornado installs an object inside the nurtured application, this new object has the same format and size as its original counterpart. \emph{Propagation rules} determine how each of the object's fields are propagated on installation. Tornado provides the following propagation rules to customize installation:
+
+\begin{description}
+\item[Missing object trap.] This is the \emph{default propagation rule} and end user applications can usually be tailored with just them. This propagation rule installs a missing object trap in each field of the object that is being installed.
+\item[Materialization.] This propagation rule forces the installation of the object referenced by the field. This is used for those cases where some structure should be guaranteed to the Virtual Machine \eg The first three fields of class objects~(superclass, format and method dictionary) cannot be proxified because they are used by the VM for the method lookup. The same happens with other objects reifying low level concepts such as activation records or semaphores.
+\item[Swapping.] This propagation rule forces the reference of the object installed be swapped to another object's reference. The usual use case of this rule is replacing some object reference by \ct{nil}, and so, to force lazy initializations.
+\end{description}
+
+% Figure \ref{fig:character_mapping} shows an example of the mapping of the \ct{Character} class which forces the materialization of the character and digit tables class variables.
+%
+%\begin{figure}[ht]
+%\small
+%\begin{code}
+%Character >> tornadoMappingFor: aTornado
+%	^ (super tornadoMappingFor: aTornado)
+%			mapClassPoolWith: { 
+%				#CharacterTable -> ToMaterializationPropagationStrategy new.
+%				#DigitValues -> ToMaterializationPropagationStrategy new
+%			}; yourself
+%\end{code}
+%\caption{\small\textbf{Mapping for class \ct{Character}.} Mapping forcing the installation of the character and digit tables needed by the VM. \label{fig:character_mapping}}
+%\end{figure}
+
+\subsection{Object Identity and Proxies}
+
+Tornado takes care of the identity of objects with an identity table. The identity table is important because Tornado works at the object granularity. Due to the inherent graph nature of object-oriented programs, an object being installed may reference another object that is already installed inside the nurtured application.
+
+Identity is also important to preserve in the presence of proxies. Tornado guarantees that identity checks always preserve object identity by following the following invariant: \emph{An object and its proxy do not exist concurrently in the nurtured application.} That is, the nurtured application contains either the object, either its proxy, but not both at the same point in time. When the proxy is replaced by the actual object's copy, all references to the proxy are swapped to references to the new object. The proxy is no longer referenced and thus, garbage collected. This invariant guarantees that identity checks that should be \ct{true} will indeed be \ct{true} because either the compared references point both to the same proxy, or both to the same copy.
+
+\subsection{Implementing Seeds in Pharo}
+
+Tornado's seeds specify the level of tailoring. The seeds are in charge of initializing the nurtured application's object space with the elements we want to ensure on it. Our current prototype supports two ways of describing and building seeds: 
+
+\begin{description}
+\item[Loading an already existing memory snapshot.] The nurtured application's object space is initialized by loading an already existing snapshot or image~(\ie this is an image in the same sense as Smalltalk or Lisp). This technique consists in using a memory dump from an object heap containing all the classes and objects desired in the seed. This memory snapshot should follow Pharo's object format. 
+\item[Creating all seed code units from scratch.] The nurtured application's object space is initialized with objects built from scratch. This technique uses a bootstrapping process~\cite{Poli13b}. With bootstrapping, we describe declaratively the contents we want in the seed and we build it automatically.
+\end{description}
+
+%Note that a seed can indeed contain any arbitrary code units and objects. They are not restricted to have only base or third party libraries. The selection or extraction of what is included as part of a seed is application dependent and orthogonal to the run-fail-grow process. We show an example of it in Section \ref{sec:results}.
+
+\subsection{Preparing the Application for Deployment}\label{sec:deploy}
+
+Once Tornado is stopped, the nurtured application contains all the code units needed to run. Tornado procceeds to prepare the application for deployment \ie it removes all trap leftovers and extracts the nurtured application. Tornado identifies the traps by the presence of proxies and replaces the references to those proxies by references to another object, defaulting to the \ct{nil} object. Proxy objects do not then represent a drawback in space consumption because they are garbage collected. Once the traps are removed, the nurtured application keeps no dependencies to Tornado nor its infrastructure. Thus, the application can run outside the Oz infrastructure with no performance penalties.
+
+Finally, Tornado extracts the application code units using one of two different techniques: (a) the creation of a snapshot file containing all code units and already initialized objects; or (b) build a static description of the application containing the code for all classes and methods that should be part of it.
+
+
+\section{Experiments and Results}\label{sec:results}
+
+\subsection{Experiment's Methodology}
+We evaluate Tornado by conducting five experiments that tailor different Pharo applications, with increasing requirements. We chose our experiments under the objectives of (a) understand how minimal are the applications we can tailor, (b) explore how successfully we address the challenges we stated in Section \ref{sec:challenges} and (c) exercise those cases that push to the limit the interaction between the language and the VM. Each of our experiments is detailed in the following sections.
+
+Our experiment methodology consists in the following steps:
+
+\begin{enumerate}
+\item \textbf{Setting up a seed for the application.} Most of our experiments use what we already called an \emph{empty seed}. This seed is, however, not completely empty. The empty seed we used contains some minimal infrastructural objects that are needed for language-VM interaction, and is therefore 10KB large. Our last experiment, the largest one, uses both this empty seed and an additional seed containing the base libraries. 
+\item \textbf{Preparing the application entry points.} This step consists in the installation of the one or more processes that will run our application.
+\item \textbf{Run the application.} The application is run, its threads executed. In particular in our last experiment~(an interactive web application), we interact with our application through a web browser. 
+\item \textbf{Stop and extract the application.} Once the tailoring process finishes, we stop Tornado and extract the resulting application by making a snapshot of it in a Pharo image file. We test the generated snapshots to verify they work properly, either by using the application or debugging them when they involve no I/O. We evaluate the behavior of the tailored application under the assumption that only the features we used during the tailoring should work.
+\item \textbf{Perform measurements.} Finally, to present our results we measure the size of the generated snapshots files and compare them against two different Pharo distributions prepared for production, as we present in Section \ref{sec:results_discussion}.
+\end{enumerate}
+
+\subsection{Experiment I: Adding Two Numbers}
+
+The smallest~(in terms of size) interesting program to tailor is adding two numbers, without the involvement of any I/O \ie an application just executing the \ct{"2 + 3"} statement as entry point. Tailoring this program is challenging because it stresses the infrastructure by installing only the minimal elements an application needs to run. It makes evident how small a tailored application can be. Additionally, it is interesting since it makes use of the following features of the Pharo language and infrastructure:
+
+\begin{description}
+\item[Immediate objects.] Immediate objects are objects encoded in the object reference instead of being allocated in the heap. Immediate objects do not contain a reference to their class in the object header, as there is no object header. Instead, the object reference where the object is encoded contains a bit tag that the VM uses to identify the immediate object. This means that the Pharo VM must acknowledge the immediate object classes~(or their proxies) in order to send messages to these immediate objects. In this experiment we use immediate small integers, instances of \ct{SmallInteger}.
+\item[Special selectors.] The method selector \ct{+} is a special selector for the Pharo VM. Special selectors are optimized as they are broadly used messages, for example for arithmetics. First, they are implemented as special bytecodes to avoid method lookup. If the special bytecode cannot be executed because some VM assertions are not valid~(\eg class and object format assumptions), the VM performs the default method lookup. In this experiment the VM should take care of small integer arithmetic \ie it should fulfill all VM assumptions and not perform a method lookup; Tornado should install no extra methods nor classes.
+\end{description}
+
+\subsection{Experiment II: Factorial of a little number}
+
+The following experiment in incremental complexity is the factorial of a small number, again without the involvement of any I/O \ie an application executing the \ct{"10 factorial"} statement as its entry point. Factorial uses arithmetic as the latter experiment~(sums and multiplications), while it also adds the following interesting cases:
+
+\begin{description}
+\item[Method lookup.] The \ct{factorial} message is sent to a small integer but not optimized as it is not a special selector. Thus, the VM look ups the corresponding method up in its class hierarchy. The method \ct{factorial} is defined in its superclass~(\ct{Integer}).
+\item[Recursion.] The factorial implementation in Pharo base libraries is recursive. Additionally, this recursion activates the \ct{factorial} method many times, creating many activation records in the VM. Activation records are reified lazily whenever it is accessed reflectively, or the stack depth is deeper than the maximum supported.
+\end{description}
+
+\subsection{Experiment III: Factorial of a large number}
+
+Following, we experimented with an application whose entry point was the \ct{"100 factorial"} statement. This application does not either make use of any I/O. The factorial of a large integer creates eventually integers that exceed 32 bits, and thus, do not fit as immediate small integers. This experiment adds the following interesting cases:
+\begin{description}
+\item[Large integers.] Large integers in Pharo are represented, in contrast to immediate small integers, as objects allocated in the heap with their own object header and arbitrary length. Large integers are created automatically by the VM when the result of some integer calculation produces a number that overflows 31 bits. That is, the LargeInteger class (or its proxy) should be available to the VM in order to instantiate the correct object.  Additionally, large integers implement their arithmetic methods by calling primitives from external plugins~(the large integers plugin).
+\item[Polymorphism.] The introduction of large integers introduces also \emph{polymorphism} between them and the immediate small integers. They share the same class hierarchy~(\ct{Integer} is the superclass of \ct{SmallInteger} and \ct{LargePositiveInteger}), being the method \ct{factorial} implemented in the superclass and having each of the subclasses their own implementation of the arithmetic methods for adding and multiplying.
+\end{description}
+
+\subsection{Experiment IV: Reflective invocations} \label{sec:results_helloworld}
+
+The fourth experiment introduces reflective invocations. Figure \ref{fig:reflective_invocations} introduces the code we used for this experiment. The \ct{User} class in our example has two fields (\ct{name} and \ct{age}), and four methods. Two of these methods (\ct{age} and \ct{name}) return directly the field with the same name, the method \ct{hasWritePermissions} is annotated with the \ct{property} annotation (a pragma in Pharo's terminology) and the method \ct{isMinor} is a normal method. We introduce also \ct{PropertyExtractor} class with the responsibility of returning the name of those methods that are properties of an object \ie all methods that only return a field, and all those methods annotated with the \ct{property} annotation. The statement we introduced as the entry point for this experiment is \ct{"PropertyExtractor new extractPropertiesFrom: User new"}.
+
+\begin{figure}[ht]
+\small
+\begin{code}
+Object subclass: #User
+	instanceVariableNames: 'name age'.
+
+User>>age (
+	^ age )
+
+User>>hasWritePermissions (
+	<property>
+	^ true )
+
+User>>name (
+	^ name )
+
+PropertyExtractor>>extractPropertiesFrom: anObject (
+	^ anObject class methods
+		select: [ :each | each isReturnField or: [ each pragmas anySatisfy: [ :pragma | pragma keyword = #property ] ] ]
+		thenCollect: [ :each | each selector ] )
+
+\end{code}
+\caption{\small \textbf{Code of the reflective invocations experiment.} The \ct{PropertyExtractor} class does the reflective invocations, the \ct{User} is the class we will be reflecting on.\label{fig:reflective_invocations}}
+\end{figure}
+
+This experiment evaluates how do we handle the reflective abilities of Tornado's RFG. The \ct{PropertyExtractor} queries the methods from the \ct{User} class, that are included as part of the tailored application~(since they receive the messages \ct{isReturnField} and \ct{pragmas}). These reflective invocations include: (a) access to an object's class, (b) access class methods and (c) query those methods to know if they correspond to the criteria of the \ct{PropertyExtractor}.
+
+\subsection{Experiment V: Adding I/O} \label{sec:results_helloworld}
+
+A fifth experiment introduces I/O to each of the previous experiments, adding a statement printing to the standard output the obtained results. Figure~\ref{fig:hello_world_entry_point} shows the code from our entry point in the case of summing up two numbers. The entry points for the other experiments have the same structure, differing only on the expression that is printed~(the \ct{"1+2"} expression in this case). Notice that the \ct{FileStream} class needs to be initialized before the proper printing into the stdout stream because the code needed for class initialization is not installed by default in the empty seed.
+
+\begin{figure}[ht]
+\small
+\begin{code}
+FileStream startUp: true.
+FileStream stdout 
+	nextPutAll: (1 + 2) asString;
+	crlf.
+\end{code}
+\caption{\small \textbf{Entry point of the experiment that sums two numbers and prints the result in the standard output stream.}\label{fig:hello_world_entry_point}}
+\end{figure}
+
+In this experiment, besides testing the proper usage of I/O streams such as the standard output stream, we evaluate the ability of Tornado to handle \textbf{platform identification}. The \ct{stdout} stream initialization for Pharo is done by the File package written in Pharo, and it depends on which is the current operating system. This experiment shows that Tornado prepares tailored versions of applications to run on a single operating system or platform.
+
+\subsection{Experiment VI: Seaside Web Application}
+
+
+
+Our last experiment consists is tailoring a web application using Seaside application framework~\cite{Duca07a}. Seaside is a web application framework featuring continuations thanks to stack reification. We configured it with its default values, without making any customizations. The web application under tailoring has a single webpage that allows one to send requests to the web server to increase or decrease a counter. This experience shows that Tornado works in presence of \textbf{threading}. The Seaside application framework makes use of Pharo processes. One process listens incoming connections and opens new processes to handle requests. Seaside uses semaphores to synchronize processes and wait for incoming data from sockets.
+
+For this case, we proceeded to do two different experiences, with two different seeds. We first used the empty seed~(\emph{Seaside Web Application A}), as in the previous experiments, and then used a seed containing all Pharo base libraries~(\emph{Seaside Web Application B}). For reasons of space, the details of how the entry points are initialized for these both seeds can be found in our technical report~\cite{Poli14a}.
+
+\subsection{Results} \label{sec:results_discussion}
+
+We gathered our experiments' results into Table \ref{tb:results}. This table shows:
+\begin{description}
+\item[Experiment.] The name of the experiment under evaluation, followed by our measurements.
+\item[Reference Application.] The size of the reference application containing all of its code units, in KB. We present in here two different sizes: the size of an experimental shrunk version of the Pharo distribution called \emph{PharoKernel}, which was developed independently from us by Pavel Krivanek; and between parenthesis the size of the official Pharo distribution prepared for production: Pharo allows one to prepare a snapshot for production. This option cleans some caches and removes some well known objects and classes from the system, thus, freeing space.
+\item[Seed.] The size in KB of the chosen seed for the experiment.
+\item[Nurtured Application.] The final size of the nurtured application once Tornado finishes its process and the application is extracted.
+\item[Saved.] The percentage of space saved using the smallest reference application size. We chose the smallest reference application to avoid biased results in our favor. We calculated this percentage using the following equation:
+
+\begin{equation*}
+saved = 100 - \frac{100*(nurtured - seed)}{reference - seed}
+\end{equation*}
+
+\begin{table}[ht]
+ \small
+ 	\centering
+ 	\begin{tabular}{|l|cccc>{\columncolor[gray]{0.8}}c|}
+		\hline
+			Experiment
+ 			& \textbf{Reference App}
+			& \textbf{Seed}
+			& \textbf{Nurtured}
+			& \textbf{Installed}
+			& \textbf{Saved(\%)}\\
+			
+ 			& \textbf{\emph{Shrunk(Production)}}
+			& \textbf{Size}
+			& \textbf{App}
+			& \textbf{Code}
+			& \textbf{}\\
+		\hline
+		Sum Two Numbers (I)
+ 			&  3799 (12873) & 10 & 11 & 1 & \textbf{99.97\%}\\
+		\hline
+		Factorial 10 (II)
+ 			& 3799 (12873) & 10 & 15 & 5 & \textbf{99.87\%}\\
+		\hline
+		Factorial 100 (III)
+ 			& 3799 (12873) & 10 & 18 & 8 & \textbf{99.79\%}\\
+		\hline
+		Reflective App (IV)
+ 			& 3799 (12873) & 10 & 32 & 22 & \textbf{99.42\%}\\
+		\hline
+		(I) + I/O
+ 			& 3799 (12873) & 10 & 81 & 71 & \textbf{98.13\%}\\
+		\hline
+		(II) + I/O
+ 			& 3799 (12873) & 10 & 82 & 72 & \textbf{98.10\%}\\
+		\hline
+		(III) + I/O
+ 			& 3799 (12873) & 10 & 89 & 79 & \textbf{97.92\%}\\
+		\hline
+		(IV) + I/O
+ 			& 3799 (12873) & 10 & 95 & 85 & \textbf{97.76\%}\\
+		\hline
+		Seaside Web App A
+ 			& 20254 (17250) & 10 & 573 & 563 & \textbf{96.73\%}\\
+		\hline
+		Seaside Web App B
+ 			& 20254 (17250) & 12872 & 13090 & 218 & \textbf{95.02\%}\\
+		\hline
+ 	\end{tabular}
+ 	\caption{\small\textbf{Results of the tailored experiments.} Sizes are displayed in KB. The percentage of saved space does not take into account the seed, as it is not subject of Tornado and it is shared by both the reference and nurtured application.}
+ 	\label{tb:results}
+ \end{table}
+
+
+Note that we subtract the size of the seed from both the nurtured and reference applications sizes, since the seed is shared between both. That way, we compare only those parts of the application that were subject of the RFG algorithm.
+
+\end{description}
+
+ \begin{table}[ht]
+ \small
+ 	\centering
+ 	\begin{tabular}{|lc|}
+			\hline
+			\textbf{Component}
+ 			& \textbf{Size~(KB)}\\
+		\hline
+		Pharo Base Libraries & 12872\\\hline
+		Seaside Application Framework Libraries & 4378\\\hline
+		Seaside Web App & 47\\\hline
+		Reflective Invocations App & 104\\\hline
+ 	\end{tabular}
+ 	\caption{\small\textbf{Component sizes in our experiments. Size presented in KB.} \label{tb:tailored_components}}
+ 	\label{tb:basic_sizes}
+ \end{table}
+
+Table \ref{tb:tailored_components} shows the size in KB of the code units from we used in our experiments. This table details the size of the Pharo base libraries, third party libraries such as Seaside and our particular experiments, which aid in the understanding of the results. We obtained this sizes by measuring the size of the code units once loaded in memory.
+
+\paragraph{Discussion of Results.}
+Our experiments show that Tornado aggressively reduces the size of code units required for an application. Our examples save from 95\% to 99\% of space, compared with their reference application~(which contains all base libraries and third party libraries in case of Seaside). Our first three experiments (the sum of two numbers, and the factorial of 10 and 100) show that Tornado succeeds to create minimal deployment versions of our applications, having into account that our seed forces a minimal of 10KB in each of them. The reflective application is indeed also minimal, but bigger than the other three, as Tornado installs inside the nurtured application (a) all the code that is accessed by reflection and (b) code from the collections package to iterate the methods of a class.
+
+We detect a notorious grow in size when adding I/O to our experiments, which varies from 63KB to 71KB extra. According to the list of installed code units, we identity a problem in the design of the I/O streams library from Pharo: a set of character tables meant for character encoding and conversion are initialized, even if not all of them are later on used by the application. This problem shows that this part of Pharo base libraries should be rethought.
+
+The Seaside experiments show that Tornado can be used in a complex setting such as a web application that runs a web server, while still achieving good results. It is interesting to note, from the comparison of both experiments, that more of half of the size of the final nurtured application in \emph{Seaside Web Application A} seems to be in the base libraries, as the amount of installed code is reduced when introducing the base libraries seed.
+
+\paragraph{Comparison with a Dedicated Platform.}
+
+To have a broader view of our results, we compare them to MicroSqueak~\cite{Malo11a}. MicroSqueak is a dedicated platform that runs on the Pharo platform \ie a specialized platform containing an alternative implementation of base libraries, as Java Micro Edition~(J2ME)~\cite{JavaME} is for Java. MicroSqueak was designed with the explicit goal to be the smallest practical Squeak kernel. It contains a total of 49 classes with a reduced set of methods. It offers a minimal core of the language, a basic collection library and basic file IO support. MicroSqueak presents a minimal memory footprint of 80KB, when we build an application that performs no computation.
+
+On one side, Tornado ensures smaller memory footprints when working on small applications. On the other side, MicroSqueak presents crucial differences with Pharo base libraries: it does not provide the same libraries~(\eg it does not contain socket support) and it does not ensure the same API of those libraries that it contains. Thus, applications such as the one in our Seaside experiment cannot run on top of MicroSqueak without a dedicated version of the Seaside framework.
+
+\section{Comparison of Tornado with Related Work} \label{sec:related_work}
+
+
+
+\subsection{Evaluation of Tornado}
+
+We start this section evaluating Tornado according to the criteria we defined in Section \ref{sec:criteria}, so we can in the following sections discuss it and compare it with other approaches. Table~\ref{tb:comparison} shows an overview of the criteria defined in Section~\ref{sec:criteria} and their possible values to evaluate tailoring solutions.
+In this section we focus on the evaluation of Tornado that is summarized in the latest column of Table~\ref{tb:comparison}.
+
+\begin{table}[ht]
+ \small
+ 	\centering
+ 	\begin{tabular}{|c|cccc>{\columncolor[gray]{0.8}}c|}
+	
+\hline
+ 			& \textbf{Dedicated}
+ 			& \textbf{Static}
+			& \textbf{Hybrid}
+ 			& \textbf{Dynamic}
+ 			& \textbf{Tornado} \\
+ 			& \textbf{platforms}
+ 			& \textbf{Analysis}
+			& \textbf{Analysis}
+ 			& \textbf{Analysis}
+ 			& \\
+  \cmidrule(r){2-6}
+% \midrule
+
+		Base Library Support
+ 			& + & + & + & + & +\\
+		\hline
+		Third-Party Library Support
+ 			& - & + & + & + & +\\
+		\hline
+		Legacy Code Support
+ 			& - & + & + & + & + \\
+		\hline
+		Reflection Support
+ 			& + & - & - & + & + \\
+		\hline
+		Dedicated Infrastructure
+			& & & & & \\
+		for Deployment
+ 			& - & + & - & - & + \\
+		\hline
+		Flexibility
+ 			& - & - & - & - & +  \\
+		\hline
+		Ensures Completeness
+ 			& - & - & - & - & -  \\
+ 	 \hline
+ 	\end{tabular}
+	\includegraphics[width=.9\linewidth]{criteria_overview}
+ 	\caption{Evaluation criteria applied to related work on deployment code unit tailoring techniques}
+ 	\label{tb:comparison}
+ \end{table}
+
+Tornado's model and implementation show themselves as a complete solution in the area of application tailoring. It tailors code units written by the application's developer as well as those from the base language and third-party libraries. There is no special code for managing such cases since Tornado's infrastructure allows the inspection of loaded classes, regardless their origin. This approach, based on runtime execution, offers two main advantages: (a) it does not require modifications in the nurtured application's code allowing its usage on legacy code and libraries in a transparent way, and (b) it supports reflection naturally since the code exercised during the tailoring is the same that will be executed once deployed.
+
+Tornado requires a dedicated infrastructure only during the tailoring: tools to monitor and manipulate the tailoring application. However, once the tailoring is finished and the application reaches a stable point, Tornado extracts and prepares the application to run in the deployment-ready unmodified infrastructure.
+
+Finally, Tornado is a flexible solution in the sense that it allows one to configure the level of tailoring by means of a seed. The seed contains a pre-selection of code units available in the tailoring application before the tailoring starts. In such a way, we can use the seed to specify whether, for example, the base or third-party libraries should be tailored or not.
+ 
+The reduction of the deployment footprint of object-oriented applications has been subject of interest both in industry and research since many years. In such regard, we identified four different families of solutions for dead code elimination: dedicated platforms~(cf. Section \ref{section:static_selection_rw}), static analyses~(cf. Section \ref{section:static_rw}), dynamic analyses~(cf. Section \ref{section:dynamic_rw}) and hybrid analyses~(cf. Section \ref{section:hybrid_rw}). Table~\ref{tb:comparison} presents a comparison of these techniques, given the criteria defined in section~\ref{sec:criteria}.
+
+\subsection{Dedicated platforms}%Pre-conceived specialized application-independent platforms}
+\label{section:static_selection_rw}
+
+Dedicated platforms are platforms containing frameworks and/or libraries prepared to run under specific circumstances. For example, Java Micro Edition~(J2ME)~\cite{JavaME} as the dedicated version of the Java platform, or Cocoa Touch as the one of Cocoa. These specialized platforms are reduced platforms to run applications inside mobile and constrained devices. These platforms provide a reduced and fixed set of base libraries defined a priori and in a not customizable way. Applications have to be written especially for them, and thus legacy code and third-party libraries not written especially for it are not compatible. Reflection is available since the statically tailored base libraries are built in a not automatic fashion, and the application code is not tailored.
+
+\subsection{Static Analysis-Based Techniques}\label{section:static_rw}
+
+Static analysis approaches for dead code elimination make use of the static information of a program to select the minimal subset of used elements. The bibliography describes four different algorithms to achieve this goal: unique name, class hierarchy analysis~(CHA), rapid type analysis~(RTA) and reachable members analysis~(RMA) \cite{Baco96a, Titz06a}. These techniques share a common approach, selecting an entry point method of an application and following from it the execution flow using the available static information \ie type annotations, and class and method names, building a call-graph~\cite{Grov97a}.
+
+These techniques have been studied and applied in many environments and languages. Rayside et al.~\cite{Rays02a}, Jax~\cite{Tip03a} and the ExoVM System~\cite{Titz06a} propose application extraction tools using these techniques for Java applications. Sallenave et al.~\cite{Sall10a} apply RTA to produce smaller .NET assemblies for embedded systems. Bournoutian et al.~\cite{Bour14a} use CHA to optimize on-device Objective-C applications. Ole Agesen~\cite{Ages96a} presents in his thesis a static technique applied to Self, a dynamically-typed language. Ole Agesen uses type inference to obtain type information and use it to select which objects to extract.
+
+In summary, these approaches are based on the static types found either in the source code or byte code. Thus, they are not applicable \emph{efficiently} in dynamic languages with no static type declarations. These solutions are valuable as they allow one to tailor base and third-party libraries, and legacy code. Their tailoring approach generates new deployment units that can run on the standard runtime infrastructure. The main drawback of this approach appears in the presence of reflection and configuration files, which will only work with a subset of reflective invocations through complementary analyses on the strings found in the source code. Also, existing solutions in this family lack the flexibility to declare and identify levels of tailoring, making it an "all or nothing".
+
+\subsection{Dynamic Analysis-Based Techniques}\label{section:dynamic_rw}
+
+Dynamic analysis techniques use exclusively runtime information~(\ie execution flow, alive objects, execution statistics) to perform dead code elimination. Amongst these, we identify two different approaches: \emph{load on demand} and \emph{code collection}. Load on demand approaches detect during runtime whenever a class or method needs to be installed and request it to a server application. Code collection approaches deploy the full application  and garbage collect unused code based on usage statistics. Related work in this family share a common characteristic: these techniques are used inside ubiquitous systems \ie systems meant to be always connected. Ubiquitous systems, as they are always connected, have a possibility to fallback and recover in the case of incompleteness. However, to focus here on the dead code elimination techniques, we will discuss the incompleteness recovery techniques in section \ref{sec:discussion}.
+
+\begin{description}
+\item[JUCE \cite{Popa04a,Teod01a}.] It is a platform for ubiquitous devices supporting code load on demand and code collection. Its approach for building up an application is similar to Tornado. First, it initializes a minimal running application and code is loaded, with a method granularity, from a server located in a different machine. Unused code is collected following usage statistics, and loaded back again on demand if needed.
+
+\item[OLIE~\cite{Gu03a}.] It is an engine that intelligently partitions and offloads objects during runtime to minimize memory consumption. It is part of the adaptive infrastructure for distributed loading (AIDE). In OLIE, offloaded objects are indeed migrated to nearby remote devices. Migrated objects can be accessed later through proxies that perform remote invocations on them.
+
+\item[SlimVM~\cite{Kers09a, Wagn11a}.] It is an ubiquitous system where all code resides on a remote server and is loaded only on demand on small devices. Some static analysis is performed only on the server to reduce the size of the transported code, by identifying most likely needed code. SlimVM changes the class format. However, on the client side, every code load is done dynamically.
+
+\end{description}
+
+All solutions inside this category share one main property: they require to run the application inside a dedicated infrastructure to apply their techniques \eg dedicated VMs implementing remote lazy loading, code collection or new bytecode sets. The main challenge of these solutions resides on applying these techniques while minimizing their impact on performance during the runtime. Additionally, these solutions require their applications to run exclusively inside their infrastructure. Tornado works in the same way as these solutions: it uses a dedicated infrastructure to run the desired application and select the used elements.  However, Tornado provides also with the ability to extract this application and run in \emph{offline} mode, using the non-modified infrastructure.
+
+Regarding dynamic features such as reflection, these solutions are the ones that can, potentially, handle it in the best way since they have in runtime all the information needed to resolve it. JUCE and OLIE, as Tornado, handle naturally reflection as they do not change the runtime representation (which programs make assumptions of, when they use metaprogramming). SlimVM on the other side, had to change the reflection support because they changed the object and class representation on their VM.
+
+Regarding its applicability, SlimVM needs to recompile the whole application into its own format, while OLIE and JUCE, as Tornado, can tailor base and third party libraries without any modifications on it. Thus, the latter two can be applied to legacy code also for free. None of these solutions provide with the ability to select the level of tailoring always working on the full application. In contrast, Tornado uses seeds to force a minimal subset of elements to be part of the application.
+
+
+\subsection{Hybrid Analysis-Based Techniques}\label{section:hybrid_rw}
+
+Hybrid analysis techniques mix static and dynamic~(\ie runtime) information to provide better results. The common approach of these is to start an application, such as Tornado does, and pause it after some minimal runtime information is available \ie call stacks are created, some classes are loaded and initialized, and some objects are instantiated. Then, it uses the built stack of alive objects to perform a static analysis, as described in Section \ref{section:static_rw}, with concrete type information.
+
+Java in The Small (JITS)~\cite{Cour10a} uses a hybrid approach to select the used parts of a program, and then loads them inside a binary image. A dedicated VM loads the binary image at startup. JITS's approach tailors base and third-party libraries as well as application specific code. It does not require modifications on the existent application to tailor it, so a legacy application could theoretically be tailored with this approach. JITS does not offer the possibility to configure the tailoring level, since it was designed to be used only in embedded devices where no more than one application would be running. Regarding reflection, JITS presents the same drawbacks as the other static call graph analysis approaches since not all the runtime information about the reflective invocations can be deduced.
+
+\section{Discussions on the run-fail-grow approach} \label{sec:discussion}
+
+\subsection{Ensuring Completeness} \label{section:safety}
+
+Dead code elimination techniques do never ensure completeness by themselves. Static approaches cannot efficiently predict the need of those elements used by reflection, or configured in external files/resources. Dynamic approaches depend on the code coverage of the application during runtime, \ie if the parts of the application that are not used will be not available afterwards. Hybrid approaches share both weaknesses. Orthogonal to the dead code elimination techniques, two complementary mechanisms are used by existing solutions to guarantee \emph{completeness} and avoid runtime errors due to missing code.
+
+\begin{description}
+\item[Lazy Loading.] JUCE~\cite{Popa04a,Teod01a} and SlimVM~\cite{Kers09a, Wagn11a}, as well as Tornado, load missing code from remote servers on demand, Marea\cite{Mart12a} implements application-level virtual memory with lazy loading of unloaded unused objects. These different solutions differ on their lazy loading approaches by the granularity they use. JUCE loads code with a method granularity to control memory consumption. SlimVM uses as its main loading granularity, a \emph{basic block} granularity, but they can work at the class and method level also. Marea uses an object-cluster granularity. It loads object graphs containing not only classes but also individual objects, which were unloaded to reduce the application's memory footprint.
+\item[Remote Invocations.] OLIE~\cite{Gu03a} uses remote invocations to invoke methods from those objects that where offloaded and migrated to other devices. This approach may introduce several latency problems due to network communications. OLIE tries to minimize it by offloading those elements that degrade less the performance of the system. For that, it takes at runtime object and bandwidth usage statistics.
+\end{description}
+
+\subsection{Maximizing the Effectiveness of Run-fail-grow}\label{sec:maximize_effectiveness}
+
+Dynamic techniques, in particular Tornado, depend on the coverage of the application to ensure the code is loaded and available for execution. Application coverage must ensure that every code unit that is interesting to be deployed is covered, including special and boundary cases as well as the straightforward cases. We can enforce the coverage and installation of code with several techniques. 
+
+\begin{description}
+\item[Manual Testing.] Manual testing provides a simple but inefficient way to cover an application's code. Its main benefit is that the code units selection is based on user interactions. Its main drawback is the possibility of human omission during the testing, which impacts directly the detection of used code. 
+\item[Automated Testing.] Automated testing counters the human omissions by adding repeatability in the generation of the deployment unit. Different levels of testing have different impacts on the coverage and will produce different results. For example, using unit test to cover the application and libraries' code may exercise more code than the one that is actually needed, since they use to test smaller units and tend to cover the whole code. Acceptance tests may not exercise enough parts of the application. UI tests should be considered as part of the solution for maximizing coverage.
+\end{description}
+
+%\subsection{Dynamic Code Coverage} \gp{It deserves to be compared with the trace-copy approach I think}
+
+\subsection{Application Designs that get along with Tornado} As show in Section 5.2, the design of the tailored application directly impacts on the results obtained by Tornado. A series of issues appear regarding global state~(\eg class variables and global variables). A first issue is related to the initialization of such a global state~\cite{Unga95a}. Since Tornado follows the application's execution flow, eager initializations force Tornado to install objects and methods that may not be used later by the application. In contrast, lazy initializations will only be triggered on usage. Thus, better results could be obtained if a lazy initialization strategy is adopted for the global state.
+
+A second issue appears with residual side-effects. Our tailoring technique builds the deployment application by running it. Thus, those executed global side-effects may reside in the tailored application. For example, a web application framework may hold a cache of HTTP sessions in a class variable. When the tailoring process finishes, the application will keep this cache if we do not handle the case. Solving this problem in Tornado may require either minimizing global state in an application, or either installing a new entry point to reinitialize such global state when the tailoring is finished \eg clean caches and session dependent state such as file and socket descriptors.
+
+%\paragraph{Handling Reflection.}
+\subsection{Modern Language Features}
+
+Tornado handles modern programming language features such as reflection, open classes and class extensions~\cite{Berg03a}~(\ie a package can define methods to classes from other packages) and traits~\cite{Scha03a}, out of the box. Reflective invocations contain all the information they need to be tailored correctly as Tornado works at the runtime of the application. Tornado installs methods from other packages or behavior units such as traits seamlessly because during runtime it knows the exact concrete type of each object involved in the execution. Thus, no extra static or string analysis is needed. This is possible thanks to Ghost proxies~\cite{Mart11a}, which can capture all message sends and specific method invocations.
+
+%\sd{below, fuzzy paragraph}
+%In addition, as reflection works with a closed universe assumption \eg asking for all methods of a class will result into all methods that \emph{exist} in the class and will not retrieve those that are not installed or loaded. For those cases in which an application uses such reflective invocations, tornado allows the installation of missing object traps for each method. Then, methods are found by reflective invocations and installed on demand by Tornado if needed.
+
+%\paragraph{Open-Classes and Class Extensions.}
+%
+%Pharo supports, as other languages such as Ruby, the concept of open classes and class extensions~\cite{Berg03a} \ie a package can define methods to classes from other packages. Tornado needs no special support to manage class extensions. The \emph{missing method} and \emph{override method} traps detect these cases and Tornado installs extension methods on demand as any other method.
+
+%\subsection{Shrinking VMMMMM}
+
+%\subsection{Shrinking program meta-data}
+%
+%The Pharo programming language has first class representations of classes and methods. This property and Tornado's lazy installation approach provide out of the box the elimination of unused program meta-data \eg unused class variables, literals and symbols are never installed.
+
+%\subsection{The snapshot approach} \gp{maybe we should remove this discussion since it is orthogonal and not strong}Tornado prepares an application for deployment by extracting it in a snapshot file. A snapshot file allows one to deploy already initialized objects, avoiding the installation of the code needed to create them. Additionally, having a snapshot file speeds up the application's startup. Additionally, our tailoring model is not limited to snapshot/image based systems. Tornado can inspect the complete state of the nurtured application thanks to the object runtime manipulation interface~(Oz object spaces in our case). Thus, it can extract all the information it needs from it once the tailoring is finished: which are the classes installed, their methods, and their state. With such information, a static description of the system could be built. In our technical report~\cite{Poli14a} we present a list of the code units installed in the applications from each of our experiments, obtained by inspecting the nurtured application.
+
+\subsection{Easily Managing Base libraries} Most applications do not use the whole base-library collection distributed along with a language. These libraries, representing big code code bases, are then potential candidates for removal. However, in most of the modern object-oriented languages, base language libraries are loaded and initialized by the language's Virtual Machine~(VM) as some times an order has to be ensured or those same code units are used internally by the VM. Thus, the application developer cannot easily manage and customize which of them he wants, since it often requires VM modifications.
+
+Pharo provides the developer with access to the base libraries in the language. Thanks to this ability, Tornado can manage Pharo's base libraries as it manages application code. There is, however, an exception: the code units that belong to the interface between the language kernel~(\ie the minimal language elements that should be available to run) and the VM must be installed and initialized in a particular order and be always ensured. Because of this, we guarantee that the minimal seed, the \emph{empty seed}, contains at least all these needed code units.
+
+%\subsection{Implementing RFG in other technologies}
+%
+%Tornado is based on an architecture that allows complex manipulations of both the nurtured and the reference applications. In order to implWe identify the following minimal components as part of Tornado's architecture~(cf. Figure~\ref{fig:tornado_code units}):
+%
+%\begin{description}
+%\item[Object runtime manipulation interface.] An object runtime manipulation interface allows one to act over an object runtime system by controlling its runtime execution~(\eg starting, pausing and restarting it, and installing new threads/processes) and perform introspection and intercession~(\eg installing classes and methods, retrieve the loaded classes) on it. Oz object spaces A well known example of such an interface is the JVM TI~(JVM tool interface)~\cite{JVMTI}.
+%We use this module to pause the reference application, suspend the execution of the nurtured application when a failure is detected, get the methods to install from the reference application, and install the necessary methods and classes into the nurtured application.
+%
+%\item[Advanced intercession module.] An advanced intercession module allows advanced reflective capabilities such as modifying an object's behavior during runtime. Tornado uses this module to capture message sends and so to be notified when it finds missing code units. JRebel~\cite{Jreb12a}, Reflectivity~\cite{Denk08a} or Bifrost~\cite{Res12} are examples of such intercession libraries.
+
+
 
 % ===========================================================================
 \section{Conclusion and Summary}
+
+In this paper we presented our run-fail-grow~(RFG) approach for application tailoring. RFG tailors an application by starting it and initializing it with a seed that contains the minimal set of code units we want to ensure. Then, we install and execute the application's entry points. As the application executes, missing code units are found and installed on demand, ensuring that only the needed code units are introduced. By following the runtime execution, it supports dynamic features such as reflection and meta-programming.
+
+We implemented RFG in a tool called Tornado, which succeeds to produce applications with minimal footprint for deployment. Our results show that we manage different extreme and challenging cases with flexibility.
+
+On one side, we would like to continue exploring in the future the usage of this approach in the context of dynamic adaptation. We believe that our model in conjunction with reflective language architectures are one more step closer of the runtime adaptation and distribution of applications with almost zero downtime. On the other side, to complement this work we plan also to experiment on the tailoring of virtual machines and system libraries.
 
 % =============================================================================
 \input{chapter-footer.tex}
