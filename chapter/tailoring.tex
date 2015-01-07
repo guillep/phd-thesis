@@ -382,7 +382,9 @@ Figure \ref{fig:nurturing_map_model} presents the tailoring map showing two exam
 
 \subsection{RFG's Implementation Requirements}\label{sec:requirements}
 
-We identify the following requirements for a development platform to implement RFG. Some platforms present all of these elements while some others present only part of them. In the latter case, the missing elements should be developed as part of the solution. In this and the following sections we explain how we fulfilled each of these requirements and how we put them together to implement our solution. Note that these features are only needed to implement RFG and prepare an application for deployment. Once RFG is applied, we must be able to deploy our application on the standard platform infrastructure~(virtual machine, operating system), without special support.
+We identify the following requirements for a development platform to implement RFG.
+%Some platforms present all of these elements while some others present only part of them. In the latter case, the missing elements should be developed as part of the solution.
+In this and the following sections we explain how we fulfilled each of these requirements and how we put them together to implement our solution. Note that these features are only needed to implement RFG and prepare an application for deployment. Once RFG is applied, we must be able to deploy our application on the standard platform infrastructure~(virtual machine, operating system), without special support.
 
 \begin{description}
 \item[Control application's execution.] RFG requires full control on an application's execution. It needs to be able to suspend all threads of an application when a trap is triggered, and to resume them once the trap is handled.
@@ -394,29 +396,25 @@ We identify the following requirements for a development platform to implement R
 
 \subsection{Tornado's Overview}\label{sec:infrastructure}
 
-We implemented our RFG technique as a tool called \emph{Tornado}. Tornado is implemented using the Pharo programming language, to tailor applications written in this same language. Pharo is a reflective and dynamic programming language inspired from Smalltalk. Tornado's architecture is based two main components: Oz object spaces~(cf. Section \ref{sec:oz}) and Ghost proxies~(cf. Section \ref{sec:proxies}). A Tornado environment is illustrated in Figure \ref{fig:tornado_code units}. Tornado initiates and pauses the reference and nurtured applications and controls them \emph{remotely}. It installs traps on the nurtured application using Ghost proxies, and uses Oz to control execution and query and install code units into them. Following, we detail how we fulfilled each of RFG's requirements in our solution:
+We implemented our RFG technique as a tool called \emph{Tornado}. Tornado is implemented using \Vtt, to tailor applications written in the Pharo programming language.
+%Pharo is a reflective and dynamic programming language inspired from Smalltalk.
+Tornado's architecture combines \Vtt~(cf. Section \ref{sec:oz}) and Ghost proxies~(cf. Section \ref{sec:proxies}) illustrated in Figure \ref{fig:tornado_code units}. The nurtured and reference applications application are hosted inside virtualized runtimes. Tornado provides with a hypervisor that initiates and pauses the reference and nurtured applications. Tornado's hypervisor runs and monitors the nurtured application. It installs traps on the nurtured application as Ghost proxies, and use the object space interface to query and install code units it. Following, we detail how we fulfilled each of RFG's requirements in our solution:
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=0.6\linewidth]{tornado_components2}
+\includegraphics[width=0.8\linewidth]{tornado_components2}
 \caption{\small\textbf{Tornado's architecture overview.} Tornado controls both the reference and nurtured applications through Oz. Traps are installed into the nurtured application with the Ghost library.\label{fig:tornado_code units}}
 \end{center}
 \end{figure}
 
 \begin{description}
-\item[Process reification provides execution control.] Pharo provides already support for execution control in its runtime. It reifies processes and method activations~(\ie instances of \ct{Process} and \ct{MethodContext} respectively) allowing one to manipulate them as simple objects. However, by itself Pharo does not provide the ability to control its execution remotely as it is needed by Tornado. We developed Oz object spaces to cover this missing feature.
+\item[Execution Cycles.] We use \Vtt execution cycles to monitor and control the execution of a nurtured application. When a cycle is finished the Tornado hypervisor checks if the virtualized runtime is suspended on a trap. In such case, it installs the corresponding code unit and resumes the execution with another cycle.
 
-\item[Advanced proxies.] Pharo's libraries includes Ghost~\cite{Mart11a}, an advanced proxy implementation. Ghost allows one to capture all kind of message sends, intercept particular method executions, and even to proxy classes and special objects. We use Ghost to implement execution traps.
+\item[Advanced proxies.] Pharo's libraries includes Ghost~\cite{Mart11a}, an advanced proxy implementation. Ghost allows one to capture all kind of message sends, intercept particular method executions, and even to proxy classes and special objects. We use the Ghost model to implement execution traps.
 
-\item[Install and query code at runtime.] Pharo is a dynamic language inspired in Smalltalk, and as such, it allows one to install code at runtime naturally. However, it lacks the ability to install code remotely. We cover also this missing feature with our Oz implementation.
+\item[Object Space Runtime Manipulation.] An object space provide already with operations to query and install the classes and methods in the virtualized runtime.
 
 \end{description}
-
-\subsection{Oz object spaces: An object runtime manipulation interface} \label{sec:oz}
-
-Tornado controls the execution of the nurtured application and manipulates it at runtime using Oz\footnote{Not related to the Oz programming language. The name Oz for Pharo is inspired on the metaphor of multiple world manipulation.} object spaces~\cite{Poli13a}. Oz is an \emph{object runtime manipulation interface} we developed for the Pharo programming language \ie a library that allows the manipulation of the object runtime system of a Pharo application: control its execution, install code on demand and query it. Using Oz, a Pharo application is confined within a \emph{protection domain} so called \emph{object space}. The Oz library presents a first class representation of an object space which serves as a high level API to manipulate those protection domains.
-
-In our Tornado implementation, the reference and nurtured applications are contained each in a different object space. Tornado places traps inside the nurtured object space and starts its execution. This execution is performed directly on a Pharo Virtual Machine, and thus, there is no speed overhead as soon as traps are not involved. Whenever the nurtured object space's execution founds a trap, it pauses and returns the control to Tornado. Tornado inspects the classes and methods in the reference object space through mirrors~\cite{Brac04b} and installs the needed code units from the reference object space on demand, either by creating new objects or compiling new methods. Then, it restarts the nurtured object space's execution from the message send that activated the trap.
 
 \subsection{Execution Traps with Ghost Proxies} \label{sec:proxies}
 
@@ -498,13 +496,13 @@ Tornado takes care of the identity of objects with an identity table. The identi
 
 Identity is also important to preserve in the presence of proxies. Tornado guarantees that identity checks always preserve object identity by following the following invariant: \emph{An object and its proxy do not exist concurrently in the nurtured application.} That is, the nurtured application contains either the object, either its proxy, but not both at the same point in time. When the proxy is replaced by the actual object's copy, all references to the proxy are swapped to references to the new object. The proxy is no longer referenced and thus, garbage collected. This invariant guarantees that identity checks that should be \ct{true} will indeed be \ct{true} because either the compared references point both to the same proxy, or both to the same copy.
 
-\subsection{Implementing Seeds in Pharo}
+\subsection{Implementing Seeds in Tornado}
 
-Tornado's seeds specify the level of tailoring. The seeds are in charge of initializing the nurtured application's object space with the elements we want to ensure on it. Our current prototype supports two ways of describing and building seeds: 
+Tornado's seeds specify the level of tailoring. The seeds are in charge of initializing the nurtured application's virtualized runtime with the elements we want to ensure on it. Our current prototype supports two ways of describing and building seeds: 
 
 \begin{description}
 \item[Loading an already existing memory snapshot.] The nurtured application's object space is initialized by loading an already existing snapshot or image~(\ie this is an image in the same sense as Smalltalk or Lisp). This technique consists in using a memory dump from an object heap containing all the classes and objects desired in the seed. This memory snapshot should follow Pharo's object format. 
-\item[Creating all seed code units from scratch.] The nurtured application's object space is initialized with objects built from scratch. This technique uses a bootstrapping process~\cite{Poli13b}. With bootstrapping, we describe declaratively the contents we want in the seed and we build it automatically.
+\item[Creating all seed code units from scratch.] The nurtured application's object space is initialized with objects built from scratch. This technique uses a bootstrapping process as described in \chapref{bootstrapping}.
 \end{description}
 
 %Note that a seed can indeed contain any arbitrary code units and objects. They are not restricted to have only base or third party libraries. The selection or extraction of what is included as part of a seed is application dependent and orthogonal to the run-fail-grow process. We show an example of it in Section \ref{sec:results}.
@@ -579,7 +577,8 @@ User>>name (
 
 PropertyExtractor>>extractPropertiesFrom: anObject (
 	^ anObject class methods
-		select: [ :each | each isReturnField or: [ each pragmas anySatisfy: [ :pragma | pragma keyword = #property ] ] ]
+		select: [ :each | each isReturnField
+			or: [ each pragmas anySatisfy: [ :pragma | pragma keyword = #property ] ] ]
 		thenCollect: [ :each | each selector ] )
 
 \end{code}
@@ -639,23 +638,26 @@ saved = 100 - \frac{100*(nurtured - seed)}{reference - seed}
 			& \textbf{Installed}
 			& \textbf{Saved(\%)}\\
 			
- 			& \textbf{\emph{Shrunk(Production)}}
+ 			& \textbf{\emph{Shrunk(Prod.)}}
 			& \textbf{Size}
 			& \textbf{App}
 			& \textbf{Code}
 			& \textbf{}\\
 		\hline
-		Sum Two Numbers (I)
+		Sum Two
  			&  3799 (12873) & 10 & 11 & 1 & \textbf{99.97\%}\\
+		Numbers (I)
+ 			& &&&&\\
 		\hline
-		Factorial 10 (II)
+		Fact 10 (II)
  			& 3799 (12873) & 10 & 15 & 5 & \textbf{99.87\%}\\
 		\hline
-		Factorial 100 (III)
+		Fact 100 (III)
  			& 3799 (12873) & 10 & 18 & 8 & \textbf{99.79\%}\\
 		\hline
-		Reflective App (IV)
+		Reflective
  			& 3799 (12873) & 10 & 32 & 22 & \textbf{99.42\%}\\
+		App (IV)&&&&&\\
 		\hline
 		(I) + I/O
  			& 3799 (12873) & 10 & 81 & 71 & \textbf{98.13\%}\\
@@ -669,11 +671,13 @@ saved = 100 - \frac{100*(nurtured - seed)}{reference - seed}
 		(IV) + I/O
  			& 3799 (12873) & 10 & 95 & 85 & \textbf{97.76\%}\\
 		\hline
-		Seaside Web App A
+		Seaside Web
  			& 20254 (17250) & 10 & 573 & 563 & \textbf{96.73\%}\\
+		App A&&&&&\\
 		\hline
-		Seaside Web App B
+		Seaside Web
  			& 20254 (17250) & 12872 & 13090 & 218 & \textbf{95.02\%}\\
+		App B&&&&&\\
 		\hline
  	\end{tabular}
  	\caption{\small\textbf{Results of the tailored experiments.} Sizes are displayed in KB. The percentage of saved space does not take into account the seed, as it is not subject of Tornado and it is shared by both the reference and nurtured application.}
@@ -726,6 +730,9 @@ On one side, Tornado ensures smaller memory footprints when working on small app
 We start this section evaluating Tornado according to the criteria we defined in Section \ref{sec:criteria}, so we can in the following sections discuss it and compare it with other approaches. Table~\ref{tb:comparison} shows an overview of the criteria defined in Section~\ref{sec:criteria} and their possible values to evaluate tailoring solutions.
 In this section we focus on the evaluation of Tornado that is summarized in the latest column of Table~\ref{tb:comparison}.
 
+\belowrulesep=0pt
+\aboverulesep=0pt
+
 \begin{table}[ht]
  \small
  	\centering
@@ -745,27 +752,30 @@ In this section we focus on the evaluation of Tornado that is summarized in the 
   \cmidrule(r){2-6}
 % \midrule
 
-		Base Library Support
+		Base Libraries
  			& + & + & + & + & +\\
 		\hline
-		Third-Party Library Support
+		Third-Party
+		& & & & & \\Libraries
  			& - & + & + & + & +\\
 		\hline
-		Legacy Code Support
+		Legacy Code
  			& - & + & + & + & + \\
 		\hline
 		Reflection Support
  			& + & - & - & + & + \\
 		\hline
-		Dedicated Infrastructure
+		Dedicated Deploy
 			& & & & & \\
-		for Deployment
+		Infrastructure
  			& - & + & - & - & + \\
 		\hline
 		Flexibility
  			& - & - & - & - & +  \\
 		\hline
-		Ensures Completeness
+		Ensures
+		& & & & & \\
+		Completeness
  			& - & - & - & - & -  \\
  	 \hline
  	\end{tabular}
@@ -886,11 +896,9 @@ Pharo provides the developer with access to the base libraries in the language. 
 % ===========================================================================
 \section{Conclusion and Summary}
 
-In this paper we presented our run-fail-grow~(RFG) approach for application tailoring. RFG tailors an application by starting it and initializing it with a seed that contains the minimal set of code units we want to ensure. Then, we install and execute the application's entry points. As the application executes, missing code units are found and installed on demand, ensuring that only the needed code units are introduced. By following the runtime execution, it supports dynamic features such as reflection and meta-programming.
+In this chapter we presented a run-fail-grow~(RFG) approach for application tailoring. RFG tailors an application by starting it and initializing it with a seed that contains the minimal set of code units we want to ensure. Then, we install and execute the application's entry points. As the application executes, missing code units are found and installed on demand, ensuring that only the needed code units are introduced. By following the runtime execution, it supports dynamic features such as reflection and meta-programming.
 
-We implemented RFG in a tool called Tornado, which succeeds to produce applications with minimal footprint for deployment. Our results show that we manage different extreme and challenging cases with flexibility.
-
-On one side, we would like to continue exploring in the future the usage of this approach in the context of dynamic adaptation. We believe that our model in conjunction with reflective language architectures are one more step closer of the runtime adaptation and distribution of applications with almost zero downtime. On the other side, to complement this work we plan also to experiment on the tailoring of virtual machines and system libraries.
+We implemented RFG in a tool called Tornado based in \Vtt. Tornado succeeds to produce applications with minimal footprint for deployment. Our results show that we manage different extreme and challenging cases with flexibility.
 
 % =============================================================================
 \input{chapter-footer.tex}
