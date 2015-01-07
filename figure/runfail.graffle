@@ -658,13 +658,20 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{265.00003051757812, 73.5}, {82, 11}}</string>
+			<string>{{278.29960632324219, 65.5}, {60, 20}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>Flow</key>
 			<string>Resize</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Font</key>
+				<string>Helvetica-Bold</string>
+				<key>Size</key>
+				<real>9</real>
+			</dict>
 			<key>ID</key>
 			<integer>131</integer>
 			<key>Shape</key>
@@ -693,11 +700,12 @@
 				<integer>0</integer>
 				<key>Text</key>
 				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\fonttbl\f0\fmodern\fcharset0 CourierNewPS-BoldMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs18 \cf0 Nurtured Application}</string>
+\f0\b\fs18 \cf0 Nurtured\
+Application}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
 			</dict>
@@ -706,13 +714,20 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{144.69291687011719, 73.5}, {88, 11}}</string>
+			<string>{{160.5, 65.5}, {60, 20}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>Flow</key>
 			<string>Resize</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Font</key>
+				<string>Helvetica-Bold</string>
+				<key>Size</key>
+				<real>9</real>
+			</dict>
 			<key>ID</key>
 			<integer>130</integer>
 			<key>Shape</key>
@@ -741,11 +756,12 @@
 				<integer>0</integer>
 				<key>Text</key>
 				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\fonttbl\f0\fmodern\fcharset0 CourierNewPS-BoldMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs18 \cf0 Reference Application}</string>
+\f0\b\fs18 \cf0 Reference\
+Application}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
 			</dict>
@@ -770,11 +786,6 @@
 					<key>Draws</key>
 					<string>NO</string>
 				</dict>
-				<key>stroke</key>
-				<dict>
-					<key>CornerRadius</key>
-					<real>3</real>
-				</dict>
 			</dict>
 		</dict>
 		<dict>
@@ -794,11 +805,6 @@
 				<dict>
 					<key>Draws</key>
 					<string>NO</string>
-				</dict>
-				<key>stroke</key>
-				<dict>
-					<key>CornerRadius</key>
-					<real>3</real>
 				</dict>
 			</dict>
 		</dict>
@@ -850,7 +856,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2014-10-23 14:08:48 +0000</string>
+	<string>2015-01-07 17:07:07 +0000</string>
 	<key>Modifier</key>
 	<string>Guille</string>
 	<key>NotesVisible</key>
@@ -936,7 +942,7 @@
 			</dict>
 		</array>
 		<key>Frame</key>
-		<string>{{42, 84}, {1638, 1028}}</string>
+		<string>{{0, 84}, {1638, 944}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>
@@ -950,7 +956,7 @@
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{0, 0}, {751.5, 444.5}}</string>
+		<string>{{0, 0}, {751.5, 402.5}}</string>
 		<key>Zoom</key>
 		<real>2</real>
 		<key>ZoomValues</key>
