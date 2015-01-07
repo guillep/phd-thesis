@@ -6,7 +6,7 @@
 \introduction
 % ===========================================================================
 
-Deployed object-oriented applications often contain \emph{code units}~(e.g. packages, classes, methods) that the running application never uses. 
+Deployed object-oriented applications often contain \emph{code units}~(e.g. packages, classes, methods) that the running application never uses~(Section~\ref{sec:problem}).
 This problem shows itself more evident and harder to control under the usage of third party software. 
 Third party libraries and frameworks are designed in a generic fashion that allows multiple usages and functionalities, while applications use only few of them. 
 Examples are logging libraries, web application frameworks or object-relational mappers.
@@ -18,7 +18,7 @@ These limitations may forbid the deployment of applications that contain lots of
 Existing solutions to this problem propose to eliminate dead code by extracting used code units of an application, and thus reduce their size and memory footprint. The majority of the solutions in the field propose to automatically detect and extract used code units, so called \emph{tailoring}, with static call graph construction as the most dominant technique~\cite{Grov97a}. 
 These static approaches present limitations in the presence of dynamic features such as reflection~\cite{Livs05a}, or in the absence of static type annotations. Additionally, they do not allow the user to customize the process of selection to cover different levels of an application's code \ie a user may want to extract only the used application specific code and let third-party and base-language libraries untouched; another user may want apply the process to the whole of the application.
 
-This paper describes the \emph{run-fail-grow} (RFG) technique: an alternative solution to dead code elimination that identifies at runtime those code units that are actually used in an application.
+This chapter describes the \emph{run-fail-grow} (RFG) technique: an alternative solution to dead code elimination that identifies at runtime those code units that are actually used in an application~(Section~\ref{sec:model}).
 For such a task, in RFG we launch a \emph{reference} application containing all code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application containing a minimal set of code units we want to ensure in our application, so called a \emph{seed}.
 RFG consists in ``growing'' the nurtured application into a deployable specialized version of the reference application. 
 RFG runs the nurtured version of the application and feeds it with the code units that were detected as missing with a failure.
@@ -32,16 +32,16 @@ For example, a seed that includes all base libraries makes the tailoring process
 The dynamic nature of our solution allows its usage in dynamically-typed languages, and applications using reflection. Our solution does not need to modify the original application thanks to its run-fail-grow approach.
 It also successfully deals with applications that make use of programming language features such as reflection or open classes.
 
-In summary, this paper \emph{contribution} is two-fold. We contribute our run-fail-grow technique which is applicable to dynamic languages with no type annotations, has natural support for reflection, and is customizable by specifying a seed. Our second contribution is the description of its implementation, detailing those elements that should be available in a programming environment for it, for those interested in implementing such a solution.
+We developed Tornado, an RFG implementation using \Vtt~(Section~\ref{sec:implementation}). In Tornado, the nurtured application resides inside a virtualized runtime. We use \Vtt to monitor the execution of the nurtured application to install code when we need to. We validate our work by conducting several experiments (Section~\ref{sec:results}) and comparing our solution to existing related work on application tailoring~(Section~\ref{sec:related_work}).
+Finally, we discuss some aspects and trade-offs of the run-fail-grow approach and our implementation~(Section~\ref{sec:discussion}).
 
-\paragraph{Outline.}
-Section~\ref{sec:problem} illustrates the problem of having unused code in application deployment units, it then describes the challenges of application tailoring and finally it presents a list of criteria for evaluating tailoring techniques.
-Section~\ref{sec:model} thoroughly describes our \emph{run-fail-grow} approach to tailor applications.
-Section~\ref{sec:implementation} presents Tornado, our run-fail-grow implementation in the Pharo programming language.
-Section~\ref{sec:results} reports on results of experiments we conducted on two different applications. 
-Section~\ref{sec:related_work} presents an evaluation of our solution and compares it to related work.
-Section~\ref{sec:discussion} discusses some aspects and trade-offs of the run-fail-grow approach and our implementation.
-Finally, Section~\ref{sec:conclusion} concludes this paper and presents some future work.
+%Section~\ref{sec:problem} illustrates the problem of having unused code in application deployment units, it then describes the challenges of application tailoring and finally it presents a list of criteria for evaluating tailoring techniques.
+%Section~\ref{sec:model} thoroughly describes our \emph{run-fail-grow} approach to tailor applications.
+%Section~\ref{sec:implementation} presents Tornado, our run-fail-grow implementation in the Pharo programming language.
+%Section~\ref{sec:results} reports on results of experiments we conducted on two different applications. 
+%Section~\ref{sec:related_work} presents an evaluation of our solution and compares it to related work.
+%Section~\ref{sec:discussion} discusses some aspects and trade-offs of the run-fail-grow approach and our implementation.
+%Finally, Section~\ref{sec:conclusion} concludes this paper and presents some future work.
 
 
 % ===========================================================================
