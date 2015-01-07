@@ -51,20 +51,22 @@ Finally, we validate our work by showing how our solution allows us to create an
 
 The idea of a \emph{bootstrap} is well known in the context of compilers, where a compiler is considered bootstrapped when it compiles itself. For example, a bootstrapped C compiler is a compiler that, by using its own source code written in C, can produce another compiler with its same behavior. Notice that the compiled source is not a direct description of the C language, but a description of the compiler itself \ie the description of a program that builds a program. Notice as well that the output of this bootstrap is an executable representation of that description \ie the machine code that will be loaded and run by the operating system.
 
-Bootstrapping an object-oriented language kernel does not have to be mistaken with just writing a compiler of the language in the same language. The compiler of a high-level object-oriented language uses to output  bytecode of a class, which is an incomplete view of it: it does not describe the relation of this class with other objects during runtime. However, following the idea of the C compiler we can then define the bootstrap process of an object-oriented language kernel as follows:
+Bootstrapping an object-oriented language kernel does not have to be mistaken with just writing a compiler of the language in the same language. The compiler of a high-level object-oriented language uses to output  bytecode of a class or method, which is an incomplete view of it: it does not describe the relation of this class with other objects during runtime. However, following the idea of the C compiler we can then define the bootstrap process of an object-oriented language kernel as follows:
 
 \begin{definition}[Object-Oriented Language Kernel Bootstrap]
 It is a process whose input is the definition of a language behavior written in the same language, and whose output is a runtime representation of this language: the language kernel. 
 \end{definition}
 
-The input definition of this bootstrap \textbf{must} include the knowledge to recreate itself: the basic operations to create classes and methods, and initialize the basic structures of the language kernel \eg the table of symbols of the language or threads. The runtime representation that outputs this process is made of a graph of objects \ie the classes, methods, threads and other objects that allow programs to run.
+The input definition of this bootstrap \textbf{must} include the knowledge to recreate itself: the basic operations to create classes and methods, and initialize the basic structures of the language kernel \eg the runtime table of symbols or its threads. The runtime representation that outputs this process is made of a graph of objects \ie the classes, methods, threads and other objects that allow programs to run.
 
-Following those principles, we developed a bootstrap process for an object-oriented language with the following elements~(Figure \ref{fig:bootstrapping_overview}). These three explicit components decouple the initialization of the language kernel from the \VM initialization so we can define different languages on top of the same \VM. Additionally we can modify the language kernel using the abstractions and tools of the high-level language.
+\subsection{Overview}
+
+Following those principles, we developed a bootstrap architecture for an object-oriented language based on \Vtt~(Figure \ref{fig:bootstrapping_overview}). This architecture presents three explicit components decouple the initialization of the language kernel from the \VM initialization so we can define different languages on top of the same \VM. Additionally we can modify the language kernel using the abstractions and tools of the high-level language.
 
 \begin{description}
-\item[Language self-description] The initialization of the language kernel is extracted and expressed in the same language it defines. This self-description~(from now on the \emph{language definition}) contains the collection of elements that will be created to define the language and how to build them. Thus, during the language initialization we can benefit from the abstractions and tools of the language we are defining.
-\item[First-class runtime.] A first-class runtime object provides a clear \VM-language interface for its manipulation. We can identify what are the \VM concerns during language initialization as those where our first-class runtime is used.
-\item[Specialized code interpreter.] A specialized code interpreter~(the \emph{bootstrapping interpreter}) executes the language definition on the runtime through its \VM-language interface. This interpreter allows the execution of the high-level code in the not-yet-built language kernel and avoids logic duplications for the manipulation of objects during bootstrap.
+\item[Language self-description] The code that defines the initialization of the language kernel is extracted and expressed in the same language it defines. This self-description~(from now on the \emph{language definition}) contains the collection of elements that will be created to define the language and how to build them. Thus, during the language initialization we can benefit from the abstractions and tools of the language we are defining.
+\item[Virtualized Bootstrapped Language Runtime.] The bootstrapped language is initialized inside a virtualized runtime. As such, we can use the object space clear \VM-language interface for its manipulation. This also serves the purpose of identifying what are the \VM and language concerns during language initialization to easily decouple them.
+\item[Bootstrapping Virtual Interpreter.] A specialized code interpreter~(the \emph{bootstrapping interpreter}) executes the language definition on the runtime through its \VM-language interface. This interpreter allows the execution of the high-level code in the not-yet-built language kernel and avoids logic duplications for the manipulation of objects during bootstrap.
 \end{description}
 
 \begin{figure}[ht]
@@ -86,7 +88,7 @@ Bootstrapping requires a language kernel to be self-described. That is, there sh
 \caption{\textbf{The language definition in the bootstrap process.} The bootstrapping interpreter uses the meta-level of the language to build the base-level of the language~(left-side). Afterwards, it may inject the meta-level to make it a reflective language~(right-side).\label{fig:language_definition}}
 \end{figure}
 
-Notice that although we use the language meta-level for bootstrapping purposes, it may just be needed at bootstrapping time and not at runtime. Our solution does not require to inject the self-representation of the language into the language kernel. We consider that as a special case: a language kernel that includes its self-description is a \emph{reflective language kernel}.
+Notice that although we use the language meta-level for bootstrapping purposes, it may just be needed at bootstrapping time and not at runtime. Bootstrapping does not require to inject the self-representation of the language into the language kernel. We consider that as a special case: a language kernel that includes its self-description is a \emph{reflective language kernel}.
 A language that contains both introspection and full intercession facilities is a fully reflective language. A fully reflective language does not only have the minimal set of elements to run, but also the minimal to be autonomous: it can create classes and methods without any external component~(compiler, class builder, interpreter).
 
 Thus, this language definition has direct impact on the design of the language we bootstrap. Figure \ref{fig:phases} shows the stages of a bootstrap process as it installs classes or packages inside the language kernel. When the bootstrap process starts, the language kernel is not yet able to execute code by itself \eg it cannot resolve the method lookup because the class hierarchy is not created. As we install packages or classes, we arrive at the point where the kernel contains already the minimal set of elements it needs for execution, the \emph{execution point}. Later on, we can install reflective features into the language to get inside the \emph{reflective spectrum} of languages. 
@@ -108,11 +110,11 @@ Thus, this language definition has direct impact on the design of the language w
 \subsection{The process to create the language kernel}
 The bootstrapping process requires a particular order as it sets up very interrelated dependencies~(sometimes meta-circular in the case of reflective languages~\cite{Stra14a,Chib96a,Maes87a,Smit84a}) amongst the language elements. The order and specifics to build the language must be described in the language definition so the bootstrapping interpreter can make use of it to orchestrate the process. This process presents also which are the elements that will be introduced into the built language: it is here where we decide if the output language kernel will be reflective or not.
 
-Following we describe a bootstrap process we developed based on the approach to bootstrap Pharo from Polito et al.~\cite{Poli14c}. While this process describes the specifics for bootstrapping the Pharo language, our process shows itself more abstract as we applied it to other two languages. Additionally, we describe in this paper the infrastructure that we use to support this process~(Section \ref{sec:infrastructure}). Figure \ref{code:process} shows an excerpt of our particular bootstrap process applied to the Pharo language.
+Following we describe a bootstrap process we developed to bootstrap the Pharo language. A bootstrap process may be different for different languages, as they may contain different meta-models and concepts. As an example, Figure \ref{code:process} shows an excerpt of our particular bootstrap process applied to the Pharo language.
 
 \begin{figure}[ht]
 \begin{code}
-Bootstrap bootstrap \{
+Bootstrap >> bootstrap [
     "Create the basic language structures"
     nilObject := UndefinedObject basicNew.
     trueObject := True basicNew.
@@ -139,7 +141,7 @@ Bootstrap bootstrap \{
         subclass: #Object
         instanceVariableNames: ''.
     ...
-\}
+]
 \end{code}
 \caption{\textbf{Code (excerpt) of the Pharo language definition.}\label{code:process}}
 \end{figure}
@@ -153,7 +155,7 @@ Bootstrap bootstrap \{
 %The builder takes as input the specification of the guest language, parses them and generates abstract syntax trees~(ASTs) of the new language's elements~(\eg classes and methods). 
 %These AST objects provide to the bootstrap process with (a) the format and shape of classes and objects, (b) the source code of methods to be compiled inside the object space and used by the AST interpreter and (c) compile-time information such as instance and class variable names.
 
-\paragraph{\textbf{Step 1: Create the first well-known objects.}}\label{sec:create_nil}
+\paragraph{\textbf{Step 1: Create the first well-known objects}}\label{sec:create_nil}
 
 When the bootstrap process starts, the bootstrapped language kernel is empty \ie there are no objects inside it. 
 The first step of the process is to create the \ct{nil}, \ct{true} and \ct{false} objects needed for execution. It is important to create the \ct{nil} object first as the rest of the objects will have their fields initialized to it. \ct{true} and \ct{false} are required for code execution.
@@ -172,7 +174,7 @@ The first step of the process is to create the \ct{nil}, \ct{true} and \ct{false
 %\end{figure}
 
 
-\paragraph{\textbf{Step 2: Create basic language structures.}}
+\paragraph{\textbf{Step 2: Create basic language structures}}
 
 The basic language structures of a language kernel is the minimal structure needed to create all the rest of the elements in the language. For example, the language may have a table of globally accessible objects, and a table of unique strings or symbols. These basic structures should be created from the very beginning, as the rest of the process can rely on them.
 %
@@ -188,7 +190,7 @@ The basic language structures of a language kernel is the minimal structure need
 %
 %The creation of the first \ct{Metaclass} class and \ct{Metaclass} metaclass is mutually dependent: each one is an instance of the other, and thus, each one needs the other to be created. To overcome this, we use again the same strategy as for the \ct{nil} object. The builder creates the corresponding \ct{Metaclass} class and metaclass, not linking them to each other. Once both of them are available, we update their class links.
 
-\paragraph{\textbf{Step 3: Create classes.}}
+\paragraph{\textbf{Step 3: Create classes}}
 We create all the classes that the language definition requires in the language kernel. The bootstrapping interpreter uses the corresponding class building mechanism in the meta-level of the language to create the corresponding classes from their descriptions. Methods are not yet installed in their classes.
 %Creating a class is a complex operation at this stage. For example, a class has a name which is a symbol\footnote{a Symbol is a string unique in the system}, which in turn cannot be created yet because the Symbol class does not exist yet. Another example is the usage of complex collections such as Dictionaries in the class definitions for class variables.
 %by taking each class' AST from the specification, instantiating a metaclass from the \ct{Metaclass} class and the corresponding class from the new metaclass.
@@ -241,7 +243,7 @@ We create all the classes that the language definition requires in the language 
 %\caption{\textbf{State of classes in the guest language after class initialization.}  Each class references to its corresponding superclass. The superclass of \ct{Object} is \ct{nil} as it is the root of the inheritance chain. Class state is initialized~(\eg their names initialized as symbols) except their methods. \label{fig:class_initialization}}
 %\end{figure}
 
-\paragraph{\textbf{Step 4: Installing methods.}}
+\paragraph{\textbf{Step 4: Installing methods}}
 
 We compile~(if needed) and install each of the methods present in the language definition into their respective classes. Method literals are bound to their corresponding literals or global objects (\eg classes).
 
@@ -251,7 +253,7 @@ We compile~(if needed) and install each of the methods present in the language d
 %\end{figure}
 
 
-\paragraph{\textbf{Step 5: initialization.}}
+\paragraph{\textbf{Step 5: initialization}}
 %With all the classes and methods from the language specification installed, the structural part of the language is already set up. 
 This last step consists in the execution of the class initialize methods to set up elements such as character tables, well-known float values~(\eg NaN or Infinity) and the thread machinery. This means that at this point, our language kernel should be able to execute code by itself.
 \newline
@@ -261,9 +263,7 @@ While such a bootstrap is not difficult to express per se, it raises the questio
 % ===========================================================================
 \section{Bootstrapping with \Vtt}\label{sec:bootstrapping_infrastructure}
 
-We implemented a bootstrapping infrastructure on the Pharo language. We show in Section \ref{sec:validation} how this infrastructure serves also for the purpose of bootstrapping other language kernels. Our infrastructure contains a \textbf{first class runtime} implementation that provides a clear \VM-language interface, namely object spaces. A specialised AST interpreter fulfills the role of the \emph{bootstrapping interpreter}, executing the language definition using an object space's interface~(Figure \ref{fig:objectSpaceOverview}).
-
-%To support the bootstrapping process in the time, our bootstrapping infrastructure supports also the idea of continuous bootstrapping \ie integrating the bootstrapping process in a continuous integration environment where changes are common and bootstrapping must be performed continuously.
+We implemented a bootstrapping infrastructure on \Vtt. In our solution, the bootstrapped language kernel will be created inside the virtualized runtime. This virtualized runtime is initially empty and a bootstrapping hypervisor will fill it with new objects before running the virtualized environment. The main component of the bootstrapping hypervisor is a \emph{bootstrapping interpreter}. The bootstrapping interpreter is a specialised AST interpreter that executes the code available in the language definition~(Figure \ref{fig:objectSpaceOverview}).
 
 %  on \emph{object spaces} and abstract interpretation~(cf. Figure \ref{fig:objectSpaceOverview}). An object space is a first class representation of an \emph{object runtime system}: it is an object that provide a high level API to manipulate an object runtime system. An object space \textbf{isolates} its represented object runtime system by using mirror objects~\cite{Brac04b}~(cf. Section \ref{sec:mirrors}). Abstract Syntax Tree~(AST) interpretation solves the remaining issues. First, the combination of object spaces and the AST interpreter allow multiple object runtime systems to co-exist and execute independently, overcoming the \textbf{unicity hyphotesis}~(cf. Section \ref{section:object_spaces} and Section \ref{sec:ast_interpreter}). Second, with AST interpretation we can execute code inside the guest language kernel, using the language specification as a source for both compilation and execution, \textbf{avoiding logic duplications}.
 %
@@ -275,117 +275,20 @@ We implemented a bootstrapping infrastructure on the Pharo language. We show in 
 \caption{\textbf{Solution overview.} An object space provides with a clear interface to manipulate the bootstrapped language kernel. The AST interpreter interprets the language definition and uses the object space interface to manipulate the language kernel.\label{fig:objectSpaceOverview}}
 \end{figure}
 
+To support the bootstrapping process in the time, our bootstrapping infrastructure supports also the idea of continuous bootstrapping \ie integrating the bootstrapping process in a continuous integration environment where changes are common and bootstrapping must be performed continuously.
 
-\subsection{First-class Runtimes: Object Spaces}\label{section:object_spaces}
+\subsection{Virtualized Runtime for Bootstrapping}\label{section:object_spaces}
 
 We based our infrastructure on the object space model~\cite{Poli13a}. Following this model, an object space is a first-class representation of an object runtime system, meant for its manipulation and control. The object space model provides a framework to encapsulate and manipulate the runtime system where our language kernel will be bootstrapped. When bootstrapping, this object space is initially empty and the bootstrapping interpreter fills it with classes as the bootstrap process advances.
 
 We use an object space with two main purposes: first, as a \VM interface with the bootstrapping interpreter, allowing us to bootstrap our language kernel directly inside a \VM heap; second, once the language kernel is bootstrapped we use it to initialize the \VM with it and run it. By introducing object spaces into the bootstrapping infrastructure, we clarify the interface between the language kernel and our \VM, allowing us to have different language models as long as they respect this interface. The object space model presents an \ct{objectSpace} interface that provides with general operations and mirror objects~\cite{Brac04b} with operations to manipulate individual objects. Following, we describe this interface, focusing on those operations used by the bootstrap process.
 
-\begin{description}
-\item[VM Setup interface.] The \VM setup is the configuration the \VM needs to start running. It is generally composed of the well-known objects of the language such as \ct{nil}, \ct{true} or \ct{false}, special classes that the \VM may invoke at runtime, and special messages that the \VM will send to the language to notify events ~(\eg the \ct{doesNotUnderstand:} of Smalltalk or \ct{methodMissing} of Ruby). This configuration is usually done only during the language initialization and not modified afterwards. In particular for bootstrapping, we define the following as the \VM setup interface:
-
 \begin{code}
-objectSpace\{
-    mirror getNil();
-    mirror getTrue();
-    mirror getFalse();
-
-    void setNil(mirror aNilObject);
-    void setTrue(mirror aTrueObject);
-    void setFalse(mirror aFalseObject);
-\}
-\end{code}
-
-\item[Runtime Manipulation.] The runtime manipulation interface is composed by operations that the \VM uses to manipulate objects at runtime. It contains operations such as reading and writing into a field, set and change and object's class. The bootstrapping interpreter uses this interface to manipulate the objects inside the object space and bootstrap the language kernel. An object space provides also specific kinds of mirrors with higher level APIs to manipulate objects with a specific format and/or behavior such as classes, methods, activation records or processes. We do not cover these high-level mirrors in this paper as they are not relevant to the bootstrap process.
-
-\begin{code}
-objectSpace\{
+objectSpace {
     /* For bootstrapping purposes when no class is available */
     mirror allocateObjectOfSize(int size);
-    mirror allocateClass(int formatOfInstances);
-\}
-
-mirror\{
-    mirror allocateObjectOfClass(mirror aClass);
-    mirror getClass().
-    void setClass(mirror aClass).
-
-    mirror getInstanceVariable(String variableName).
-    void setInstanceVariable(String variableName, mirror anObject).
-\}
+}
 \end{code}
-
-\item[Language Primitives.] The language primitives are those operations that the \VM exposes to the language. The interpreter uses this interface to execute primitive operations that appear in the language definition.
-
-\begin{code}
-objectSpace\{
-    /* For bootstrapping purposes when no class is available */
-    mirror executePrimitive(primitiveID aPrimitive, Array args); 
-\}
-\end{code}
-
-\end{description}
-
-%Note from the signatures presented that all mirror operations will return a mirror in exchange, and so, interaction with other objects inside the object space is always mediated by the object space. %Mirrors work also as proxies, and could grant and revoke permissions on the wrapped object and enforce invariants to keep the model consistent~\cite{Teru13a}.
-
-%An object space uses a cross compiler to generate methods for the guest language. %We based our cross compiler in the Opal compiler toolchain\cite{Bera13a}. 
-%The cross compiler receives as input the source code to compile and a \ct{binding-resolver} object that defines how names will be resolved during compilation. The output of the cross compiler is both the bytecode for the guest object space and a list of literals that belong to the method and will be afterwards translated into their guest representation. The literal objects resolved during compilation are classified in two different categories:
-%
-%\begin{description}
-%\item[Immediate Literal objects.]  These literal objects are translated from the host language to the guest language using the literal translation mechanism showed in Figure \ref{fig:cross_compiling}.
-%\item[Name bindings.] Those objects that are accessed though a name, such as classes or class variables. These literals are resolved during compilation as symbolic references \eg if a method contains a reference to the class \ct{String}, after compilation, the list of literals will contain a \ct{GlobalBinding} object with the name of the referenced class~(\ct{'String'} in this case). In our implementation, we consider three main binding objects: \ct{GlobalBinding}, \ct{ClassVariableBinding} and \ct{UndefinedBinding}, which is used when the name could not be resolved.
-%\end{description} 
-%
-%After compilation, the creation of a method takes place inside the guest language. The bytecodes are installed in this new method, and the literals are resolved inside the guest language. Figure \ref{fig:cross_compiling} shows the relationship between the source code, the binding objects and the final translated method.
-
-%\begin{figure*}[ht]
-%\begin{center}
-%\includegraphics[width=.70\linewidth]{cross-compiling}
-%\caption{\textbf{Mapping of literals from source code to their representation inside the guest language.} The cross compiler takes the original source code and outputs a list of bytecode and literals objects from the host language. Literal objects such as strings are resolved as normal string objects while class references are resolved as \ct{GlobalBinding} objects. Afterwards, the translation step transforms the host literal string to a guest literal string and the global binding is resolved into a reference to the class inside the guest language. \label{fig:cross_compiling}}
-%\end{center}
-%\end{figure*}
-
-
-%\begin{figure*}[ht]
-%\center
-%\includegraphics[width=1\linewidth]{AST_interaction}
-%\caption{\textbf{Illustrating the AST interpreter interaction with an object space and mirrors.} \label{fig:ast_interaction}}
-%\end{figure*}
-
-%%-------------------------------------- SOLUTION
-%\section{Implementation details} \label{sec:model}
-%%--------------------------------------
-%\subsection{Oz object spaces services} \label{sec:object_spaces_overview}
-%
-%The object space provides to the host the following services to manipulate and interact with its inner runtime system:
-%
-%\begin{description}
-%
-%\item[Object creation and manipulation.]  An Oz object space provides the ability to instantiate objects inside the guest language it encapsulates and to manipulate those objects. Object manipulation is achieved through mirrors~(cf. Section \ref{sec:mirrors_imple}). Mirrors~\cite{Brac04b} are objects that implement the reflective behavior of a programming language, decoupled from the base-level of it.
-%
-%\item[Literal object translation.] During the bootstrap process, a typical task is the translation of literal objects\footnote{Literal objects are objects that appear literally in a method (such as strings or numbers) and that are created at parsing time and stored in the method frame.} such as strings, numbers and literal arrays from their representation in the host runtime to their representation in the guest runtime. An Oz object space provides already a set of mappings to translate literals from one representation to the other. Figure \ref{fig:literal_mapping} shows an example of a mapping that translates a string object from the host to the guest representation.
-%
-%\item[Code execution.] An object space provides the ability to execute an expression on the guest language. This can be achieved in two different ways: (a) by delegating the complete execution to the guest runtime system itself and (b) by using a custom interpreter (cf. Section \ref{sec:ast_interpreter}). On the one side, method (a) relies on the guest language to receive and handle message-sends by itself, making it unsuitable for most of the steps of the bootstrap process. On the other side, method (b) allows one to execute an expression even while the guest language is not yet complete,  making it suitable during the early stages of the bootstrap.
-%
-%\end{description}
-%
-%
-%\subsection{The membrane: Mirrors}\label{sec:mirrors_imple}
-%
-%The membrane contains objects to manipulate both the guest runtime system as a whole and its inner objects individually. To encapsulate and control the basic object manipulation, the object space provides mirrors~\cite{Brac04b}. Mirrors hide the internal representation of the objects inside the object space and expose reflective behavior. The guest language is not aware of the existence of these mirrors.
-%
-%%In the normal case, when a message send is performed, the virtual machine takes the selector symbol of the message and lookups in the class hierarchy method dictionaries of the receiver until it finds a method with the \emph{same}~(identical) selector. In our scenario, both host and guest images contain their own \ct{Symbol} class and symbol table. Then, when performing a \emph{cross image-message send} the method lookup mechanism takes a selector symbol from the host, lookups into the guest receiver's hierarchy, and finally fails because  the selector in the guest is (while maybe equals) not identical to the selector in the host. Also, forcing a \emph{cross image-message send} by using a guest's selector can leak host references to the guest: activating a guest method from the host gives the guest complete access to the host through the \ct{thisContext} special variable which reifies the stack on-demand.
-%
-%
-%A basic object mirror provides the following operations:
-%\begin{description}
-%	\item[Field Manipulation.] Operations to get and set values in the instance variables or variable fields of an object \eg the messages \ct{at:}, \ct{at:put:}, \ct{instVarAt:} and \ct{instVarAt:put:}.
-%	\item[Size calculation.] Operations to get the size of an object~(expressed in the amount of instance variables and variable fields) \eg the messages \ct{fixedSize} and \ct{variableSize}.
-%	\item[Class access.] Operations to introspect and modify the behavior of an object \eg the messages \ct{getClass} and \ct{setClass:}.
-%	\item[Special Objects Tests and Conversions.] Operations to test if an object is a \emph{primitive object}\footnote{we mean by primitive objects those that represent the simplest elements in the language \ie \ct{nil}, the booleans, the integers and other literal objects} such as \ct{nil}, \ct{true} or \ct{false}, and to convert it to its equivalent in the host image.
-%\end{description}
-%
 
 \subsection{The Bootstrapping Interpreter}\label{sec:ast_interpreter}
 
@@ -400,7 +303,7 @@ The bootstrapping interpreter is a code interpreter, potentially written in lang
 
 \begin{figure}[!ht]
 \center
-\includegraphics[width=.7\linewidth]{interpretation}
+\includegraphics[width=.8\linewidth]{interpretation}
 \caption{\textbf{The Bootstrapping interpreter in action.} A stub class is created for a non existent class. Each class is mapped to its description in the language definition. The lookup is then performed inside the language definition. Once the method is found, it is executed inside the language kernel.\label{fig:interpretation}}
 \end{figure}
 
@@ -423,25 +326,25 @@ Bootstrap>>createDictionaryWith: n
 \end{figure}
 
 
-%\subsection{Continuous Bootstrapping}
-%
-%Building continuously a language kernel provides the language engineers with the same benefits of continuously building another application: automated integration and testing, quick and continuous feedback on the applied changes. This continuous feedback should give the language developer with the information and tools to resolve conflicts and problems: it should clearly show which was the \emph{impact} of such change in the process. A change introduced in the language impacts directly on the definition of the language~(Figure \ref{fig:impact}). The changed definition is used in turn by the bootstrap process to bootstrap the new version of the language kernel, thus the change has also an indirect impact on the bootstrapped language. 
-%
-%\begin{figure}[ht]
-%\center
-%\includegraphics[width=0.8\linewidth]{impact}
-%\caption{\textbf{How a change impacts the bootstrap process.} A change in the language may impact directly in the definition of the language, which in turn impacts in the bootstrapped language.\label{fig:impact}}
-%\end{figure}
-%
-%However, not every change in the language definition may impact the bootstrap process: not all the code in the language definition is used during the bootstrap~(\ie executed by the bootstrapping interpreter) and not every change impacts in the behavior of the process (\eg changing the set of final classes introduced by the bootstrap). With this purpose we introduced as a second output of our bootstrapping interpreter, an execution trace containing all the language elements that were used to bootstrap: any change on these elements may have an impact on the process. Then, to produce useful feedback for the changes made by a language developer, an \emph{impact resolver} measures the impact of a change in the bootstrap process by comparing the introduced change to the previous bootstrap execution~(Figure \ref{fig:resolving_impact}).
-%
-%Our bootstrapping infrastructure measures the impact by making a diff between the traced and changed language elements. In case a change breaks the bootstrap process, the language engineer has enough information to spot the problem and act on it.
+\subsection{Continuous Bootstrapping}
 
-%\begin{figure}[ht]
-%\center
-%\includegraphics[width=.9\linewidth]{resolving_impact}
-%\caption{\textbf{How a change impacts the bootstrap process.} The bootstrap process execution is traced. An impact resolver decides if the introduced change will impact in the bootstrap process or not.\label{fig:resolving_impact}}
-%\end{figure}
+Building continuously a language kernel provides the language engineers with the same benefits of continuously building another application: automated integration and testing, quick and continuous feedback on the applied changes. This continuous feedback should give the language developer with the information and tools to resolve conflicts and problems: it should clearly show which was the \emph{impact} of such change in the process. A change introduced in the language impacts directly on the definition of the language~(Figure \ref{fig:impact}). The changed definition is used in turn by the bootstrap process to bootstrap the new version of the language kernel, thus the change has also an indirect impact on the bootstrapped language. 
+
+\begin{figure}[ht]
+\center
+\includegraphics[width=0.7\linewidth]{impact}
+\caption{\textbf{How a change impacts the bootstrap process.} A change in the language may impact directly in the definition of the language, which in turn impacts in the bootstrapped language.\label{fig:impact}}
+\end{figure}
+
+However, not every change in the language definition may impact the bootstrap process: not all the code in the language definition is used during the bootstrap~(\ie executed by the bootstrapping interpreter) and not every change impacts in the behavior of the process (\eg changing the set of final classes introduced by the bootstrap). With this purpose we introduced as a second output of our bootstrapping interpreter, an execution trace containing all the language elements that were used to bootstrap: any change on these elements may have an impact on the process. Then, to produce useful feedback for the changes made by a language developer, an \emph{impact resolver} measures the impact of a change in the bootstrap process by comparing the introduced change to the previous bootstrap execution~(Figure \ref{fig:resolving_impact}).
+
+Our bootstrapping infrastructure measures the impact by making a diff between the traced and changed language elements. In case a change breaks the bootstrap process, the language engineer has enough information to spot the problem and act on it.
+
+\begin{figure}[ht]
+\center
+\includegraphics[width=.8\linewidth]{resolving_impact}
+\caption{\textbf{How a change impacts the bootstrap process.} The bootstrap process execution is traced. An impact resolver decides if the introduced change will impact in the bootstrap process or not.\label{fig:resolving_impact}}
+\end{figure}
 
 % ===========================================================================
 \section{Validation} \label{sec:bootstrapping_validation}
