@@ -277,27 +277,25 @@ We implemented a bootstrapping infrastructure on \Vtt. In our solution, the boot
 
 To support the bootstrapping process in the time our bootstrapping infrastructure provides with measurement of change impact in a scenario where changes are common and bootstrapping must be performed continuously~(Section \ref{sec:continuous_bootstrapping}). We achieve this by integrating the bootstrapping process in a continuous integration environment. The bootstrapping interpreter traces the execution of the bootstrap and can provide the language developer with feedback about the impact of his/her changes.
 
-\subsection{Virtualized Runtime for Bootstrapping}\label{section:object_spaces}
+%\subsection{Virtualized Runtime for Bootstrapping}\label{section:object_spaces}
+%
+%With \Vtt, an Object-Oriented language bootstrap generates the language elements~(objects, classes, methods, threads) inside a virtualized runtime. For bootstrapping purposes, this runtime is initially empty. 
 
-We based our infrastructure on the object space model~\cite{Poli13a}. Following this model, an object space is a first-class representation of an object runtime system, meant for its manipulation and control. The object space model provides a framework to encapsulate and manipulate the runtime system where our language kernel will be bootstrapped. When bootstrapping, this object space is initially empty and the bootstrapping interpreter fills it with classes as the bootstrap process advances.
-
-We use an object space with two main purposes: first, as a \VM interface with the bootstrapping interpreter, allowing us to bootstrap our language kernel directly inside a \VM heap; second, once the language kernel is bootstrapped we use it to initialize the \VM with it and run it. By introducing object spaces into the bootstrapping infrastructure, we clarify the interface between the language kernel and our \VM, allowing us to have different language models as long as they respect this interface. The object space model presents an \ct{objectSpace} interface that provides with general operations and mirror objects~\cite{Brac04b} with operations to manipulate individual objects. Following, we describe this interface, focusing on those operations used by the bootstrap process.
-
-\begin{code}
-objectSpace {
-    /* For bootstrapping purposes when no class is available */
-    mirror allocateObjectOfSize(int size);
-}
-\end{code}
 
 \subsection{The Bootstrapping Interpreter}\label{sec:ast_interpreter}
 
-The bootstrapping interpreter is a code interpreter, potentially written in language different from the bootstrapped one, that interprets code expressed in the bootstrapped language. Its design present the following important points that allow it to execute code inside the language kernel before it reaches the execution point:
+The bootstrapping interpreter is a virtual code interpreter that interprets code expressed in the bootstrapped language. The bootstrap process uses the bootstrap interpreter to execute the language definition inside the virtualized runtime before it reaches the execution point. Its design present the following important properties that allow it to achieve this:
 
 \begin{description}
-\item[Alternative method lookup.] Before reaching the execution point, the class hierarchy of the language kernel is incomplete, or part of its methods is not yet installed. An alternative method lookup mechanism is put in place in the bootstrapping interpreter to allow message sending before we reach the execution point: methods are looked up in the definition of the language instead of the hierarchy in the language kernel; a mapping is kept between classes created in the language kernel and their definitions in the language definition to know where the lookup should start.
+\item[Alternative method lookup.] Before reaching the execution point, the class hierarchy of the language kernel is incomplete, or part of its methods are not yet installed. The bootstrapping interpreter implements an alternative method lookup mechanism to allow message sending before we reach the execution point: methods are looked up in the definition of the language instead of the hierarchy in the language kernel; a mapping is kept between classes created in the language kernel and their definitions in the language definition to know where the lookup should start.
 
-\item[Automatic class stubs.] The bootstrapping interpreter does also solve most of the well known bootstrapping issues~(\eg how to create a class before a class exists) in a generic way by using class stubs. When an inexistent class is needed during the bootstrap process, the interpreter creates an empty class to take it place respecting the \VM format for it. The interpreter will be able to create instances of this class and map it to its corresponding definition to perform the method lookup. This class cannot, however, initially perform reflective operations as it does not contain any reflective information. When the real class is created later on in the process, it replaces the stub.
+\item[Automatic class stubs.] The bootstrapping interpreter does also solve most of the well known bootstrapping issues~(\eg how to create a class before a class exists) in a generic way by using class stubs. When an inexistent class is needed during the bootstrap process, the interpreter creates an empty class to take its place respecting the \VM format for it. The interpreter will be able to create instances of this class and map it to its corresponding definition to perform the method lookup. This class cannot, however, initially perform reflective operations as it does not contain any reflective information. When the real class is created later on in the process, it replaces the stub. For this purpose, we extended the object space interface with one operation that allows the creation of an object whose class pointer is not initialized.
+
+\begin{code}
+objectSpace {
+    mirror allocateObjectOfSize(int size);
+}
+\end{code}
 
 \end{description}
 
@@ -311,7 +309,7 @@ Figure \ref{fig:interpretation} illustrates with an example the behavior of the 
 
 
 
-By using the bootstrapping interpreter to bootstrap, all the executed logic comes from a single source: the language definition. This avoids  major code and logic duplications as the only one point for extension or modification of the bootstrapped language is its definition. Figure~\ref{code:logic_dup3} illustrates how we can use the interpreter to use the \ct{Dictionary} definition from the language and avoid duplications shown in Section \ref{sec:problems}.
+By using the bootstrapping interpreter to bootstrap, all the executed logic comes from a single source: the language definition. This avoids  major code and logic duplications between \VM and language, as the only one point for extension or modification of the bootstrapped language is its definition. Figure~\ref{code:logic_dup3} illustrates how we can use the interpreter to use the \ct{Dictionary} definition from the language and avoid duplications in native code as shown in \chapref{background}.
 
 
 \begin{figure}[ht]
@@ -469,10 +467,11 @@ Since the main purpose of the bootstrap process is to easily change the meta-lev
 			\textbf{Case}
  			& \textbf{AST Interpretation}
 			& \textbf{Dynamic Compilation}
-			& \textbf{Gain Factor}\\
+			& \textbf{Gain}\\
+			&&& \textbf{Factor}\\
 		\hline
 		Total Bootstrap & 9004756ms +/-621265 & 3158525ms +/-219334 & 2.85x\\\hline
- 		Initial Setup (Symbol table, etc.) & 247621ms +/-9875 & 319630ms +/-40333 & 0.77x\\\hline
+ 		Initial Setup& 247621ms +/-9875 & 319630ms +/-40333 & 0.77x\\\hline
 		Creation of one class & 17216ms +/-1401 & 432ms +/-189 & 39.85x\\\hline
  	\end{tabular}
 	\vspace*{0.2cm}
@@ -509,6 +508,16 @@ Implementation-wise, the snapshot we used is a memory dump of the \VM heap. This
 
 % ===========================================================================
 \section{Conclusion and Summary}
+
+Bootstrapping is commonly known by its usage on compiler building, where a compiler can compile itself.
+It can be generalized to the introduction of any software system to its own building process.
+A bootstrap process allows us to easily change this system as it is expressed in terms of itself, taking advantage of its abstractions and tools.
+
+In this chapter we explored the bootstrap of an object-oriented language using \Vtt. By using \Vtt we can easily modify the bootstrapped language runtime even when it is empty. A virtual code interpreter, the bootstrapping interpreter, allows the execution of the language definition in an initially empty virtual runtime. On one side, it overrides the method lookup mechanism to look for method ASTs inside the language definition instead of the half-built bootstrapped language. On the other side it solves the bootstrapping issues by automatically creating class stubs and replacing them once we create and install the real classes.
+
+We validated our bootstrap process by bootstrapping three different object-oriented languages. These three languages have key differences between them: a minimal small-talk with implicit metaclasses, the core of the Pharo language which is defined by traits, and finally Metatalk which decomposes reflection from the base level and stores meta information in the meta level of the language. These three languages run on top of the Pharo Virtual Machine. We showed also that bootstrapping can be applied in a real environment. A fast startup can be achieved by caching the language kernel and a fast development cycle can be obtained by optimizing the bootstrapping interpreter.
+
+The main limitation of our approach is that we don't address the co-evolution of language and VM. A co-evolution implies changing not only language and VM but also their interface. We expect to address these issues in future work and see what the introduction of a metacircular-programming framework implies in this regard.
 
 % =============================================================================
 \input{chapter-footer.tex}
