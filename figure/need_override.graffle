@@ -261,8 +261,8 @@
 			<integer>143</integer>
 			<key>Points</key>
 			<array>
-				<string>{457.25034197201808, 226.99999999920863}</string>
-				<string>{457.25177825449606, 195.49999994935197}</string>
+				<string>{457.25001052221592, 226.9999999999998}</string>
+				<string>{457.25005471552288, 195.49999999998764}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -858,11 +858,6 @@
 							<key>Draws</key>
 							<string>NO</string>
 						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>CornerRadius</key>
-							<real>4</real>
-						</dict>
 					</dict>
 				</dict>
 				<dict>
@@ -973,11 +968,11 @@
 					<dict>
 						<key>Text</key>
 						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\fonttbl\f0\fmodern\fcharset0 CourierNewPS-BoldMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs24 \cf0 Nurtured Application}</string>
+\f0\b\fs24 \cf0 Nurtured Application}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>0</integer>
@@ -1190,11 +1185,6 @@
 							<key>Draws</key>
 							<string>NO</string>
 						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>CornerRadius</key>
-							<real>4</real>
-						</dict>
 					</dict>
 				</dict>
 				<dict>
@@ -1305,11 +1295,11 @@
 					<dict>
 						<key>Text</key>
 						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\fonttbl\f0\fmodern\fcharset0 CourierNewPS-BoldMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs24 \cf0 Reference Application}</string>
+\f0\b\fs24 \cf0 Reference Application}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>0</integer>
@@ -1375,7 +1365,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2014-09-29 12:55:45 +0000</string>
+	<string>2015-01-07 17:18:29 +0000</string>
 	<key>Modifier</key>
 	<string>Guille</string>
 	<key>NotesVisible</key>
@@ -1475,7 +1465,7 @@
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{42, 59.5}, {525, 384}}</string>
+		<string>{{34.5, 48.5}, {532, 391.5}}</string>
 		<key>Zoom</key>
 		<real>2</real>
 		<key>ZoomValues</key>
