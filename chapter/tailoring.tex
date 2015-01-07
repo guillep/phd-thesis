@@ -51,7 +51,7 @@ At run-time, required code units are loaded into RAM according to some \emph{loa
 Scripting languages such as JavaScript, Ruby, Python or PHP have an explicit loading strategy: they load and run a script file and all its declarations when an explicit import statement is found. 
 Java uses a transparent code unit loading strategy based on class loaders~\cite{Lian98a}: a class loader loads classes on demand in a transparent way for the application code.
 Besides the loading strategy, an application may load a code unit that is only partially used, such as a class with some methods that are never executed.
-Additionally, in both situations the deployed application tends to occupy more secondary memory than necessary since the code units should be available to be loaded.
+Additionally, in both situations the deployed application tends to occupy more secondary memory than necessary since the full set of code units should be available to be loaded as we cannot anticipate their usage.
 
 
 %Figure~\ref{fig:unusedCodeUnits} shows a typical deployment scenario with unused code units.
@@ -156,9 +156,11 @@ We would like to generate a new version of this application not containing these
 A lot of work exists on the tailoring of statically-typed applications~\cite{Cour10a,Rays02a,Tip03a,Popa04a,Teod01a}, where type annotations aid in the resolution of which piece of code will be used at runtime. 
 However, static analysis is not an option in the context of dynamically-typed languages or in the presence of meta-programming and reflection~\cite{Livs05a}.
 %~\cite{Mart12a}
-In this context of dynamically-typed and object-oriented programs that may use reflection, we identify the following main challenges for detecting unused code units:
+In this context of dynamically-typed and object-oriented programs that may use reflection, we identify the following main challenges in creating tailored applications:
 
 \begin{description}
+
+\item[Language Runtime Unused Code Units.] As the core point of this thesis, we would like to extract not only application code but also code that belongs to the language base libraries, including its core meta-model. This presents the problems already stated in \chapref{background}.
 
 \item[Dynamic typing.] Dynamically-typed languages cannot benefit from the most powerful static analysis due to the absence of type annotations. Name-based static analyses~(static analyses that build a simpler call graph based only on method names) can be used on them, but are not as efficient. Static techniques to detect code unit usage, such as call-graph analysis, need the support of more dynamic techniques \eg tracking runtime information, following the application's execution flow, or performing symbolic execution.
 
