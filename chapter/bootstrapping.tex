@@ -263,7 +263,7 @@ While such a bootstrap is not difficult to express per se, it raises the questio
 % ===========================================================================
 \section{Bootstrapping with \Vtt}\label{sec:bootstrapping_infrastructure}
 
-We implemented a bootstrapping infrastructure on \Vtt. In our solution, the bootstrapped language kernel will be created inside the virtualized runtime. This virtualized runtime is initially empty and a bootstrapping hypervisor will fill it with new objects before running the virtualized environment. The main component of the bootstrapping hypervisor is a \emph{bootstrapping interpreter}. The bootstrapping interpreter is a specialised AST interpreter that executes the code available in the language definition~(Figure \ref{fig:objectSpaceOverview}).
+We implemented a bootstrapping infrastructure on \Vtt. In our solution, the bootstrapped language kernel will be created inside the virtualized runtime. This virtualized runtime is initially empty and a bootstrapping hypervisor will fill it with new objects before running the virtualized environment. The main component of the bootstrapping hypervisor is a \emph{bootstrapping interpreter}. The bootstrapping interpreter is a specialised AST interpreter that can execute the code available in the language definition under the initial absence of classes and objects~(Figure \ref{fig:objectSpaceOverview}).
 
 %  on \emph{object spaces} and abstract interpretation~(cf. Figure \ref{fig:objectSpaceOverview}). An object space is a first class representation of an \emph{object runtime system}: it is an object that provide a high level API to manipulate an object runtime system. An object space \textbf{isolates} its represented object runtime system by using mirror objects~\cite{Brac04b}~(cf. Section \ref{sec:mirrors}). Abstract Syntax Tree~(AST) interpretation solves the remaining issues. First, the combination of object spaces and the AST interpreter allow multiple object runtime systems to co-exist and execute independently, overcoming the \textbf{unicity hyphotesis}~(cf. Section \ref{section:object_spaces} and Section \ref{sec:ast_interpreter}). Second, with AST interpretation we can execute code inside the guest language kernel, using the language specification as a source for both compilation and execution, \textbf{avoiding logic duplications}.
 %
@@ -272,10 +272,10 @@ We implemented a bootstrapping infrastructure on \Vtt. In our solution, the boot
 \begin{figure}[ht]
 \center
 \includegraphics[width=.9\linewidth]{object_space_bootstrap_overview}
-\caption{\textbf{Solution overview.} An object space provides with a clear interface to manipulate the bootstrapped language kernel. The AST interpreter interprets the language definition and uses the object space interface to manipulate the language kernel.\label{fig:objectSpaceOverview}}
+\caption{\textbf{Solution overview in \Vtt.} The virtualized runtime will contain the bootstrapped language kernel. A \emph{bootstrapping interpreter} executes the language definition on the virtualized runtime using the object space interface.\label{fig:objectSpaceOverview}}
 \end{figure}
 
-To support the bootstrapping process in the time, our bootstrapping infrastructure supports also the idea of continuous bootstrapping \ie integrating the bootstrapping process in a continuous integration environment where changes are common and bootstrapping must be performed continuously.
+To support the bootstrapping process in the time our bootstrapping infrastructure provides with measurement of change impact in a scenario where changes are common and bootstrapping must be performed continuously~(Section \ref{sec:continuous_bootstrapping}). We achieve this by integrating the bootstrapping process in a continuous integration environment. The bootstrapping interpreter traces the execution of the bootstrap and can provide the language developer with feedback about the impact of his/her changes.
 
 \subsection{Virtualized Runtime for Bootstrapping}\label{section:object_spaces}
 
@@ -326,7 +326,7 @@ Bootstrap>>createDictionaryWith: n
 \end{figure}
 
 
-\subsection{Continuous Bootstrapping}
+\subsection{Continuous Bootstrapping}\label{sec:continuous_bootstrapping}
 
 Building continuously a language kernel provides the language engineers with the same benefits of continuously building another application: automated integration and testing, quick and continuous feedback on the applied changes. This continuous feedback should give the language developer with the information and tools to resolve conflicts and problems: it should clearly show which was the \emph{impact} of such change in the process. A change introduced in the language impacts directly on the definition of the language~(Figure \ref{fig:impact}). The changed definition is used in turn by the bootstrap process to bootstrap the new version of the language kernel, thus the change has also an indirect impact on the bootstrapped language. 
 
