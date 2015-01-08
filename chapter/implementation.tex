@@ -17,105 +17,44 @@ However, this solution forbids us to analyze the memory usage of the virtualized
 
 Finally, This chapter finishes, with means of completion, by presenting the non-implemented aspects of our solution~(Section \ref{sec:not_yet_implemented}).
 
-\section{VM-Setup Interface}\label{sec:setup_interface}
+\section{\VM-Setup Interface}\label{sec:setup_interface}
 
-Pharo virtual machine holds the state of the image running into the \emph{special objects array} object. The special objects array is a simple array object referencing special objects directly accessed and used by the virtual machine. For example, it references objects such as the boolean and numeric classes or the \ct{nil}, \ct{true} and \ct{false} instances. Particularly, the special objects array contains a process scheduler object and its corresponding process objects, implementing green threads. Pharo virtual machine has a single threaded nature and uses green threads to organize its execution.
-
-Section \ref{sec:model_contract} states the need for establishing a contract between an image and the \objectspace in order to build the \objectspace membrane. This contract has, in our understanding, two complementary parts: the services an image provides, and the format to access them.
+Pharo \VM holds the state of the \VM-setup interface inside a \emph{special objects array} object. Pharo's special objects array contains 56 entries whose indexes are well known by the \VM for their access at runtime. To implement our \VM-setup interface, we access and modify this special object array. Following, we detail the special objects array entries that we expose for our solution.
 
 \begin{description}
-	\item \textbf{Image services.} In order for the host to manipulate the image inside an \objectspace, the guest image must provide the required services. Those services are exposed as objects to the host, and their availability is given by how reachable they are in the object graph. For example, to get the list of classes inside an \objectspace or to manipulate its processes, its system dictionary and its processor should, respectively, be reachable in the image's object graph.
-		
-	Given a Pharo image from the current distribution, the reachability is constrained by its special objects array.
-	The special objects array is the only object directly accessible of an image, since an image file contains in its header an explicit reference to it. So far, we understand the objects served by an image are the ones in the special objects array, which we detail in appendix \ref{app:specialObjectsArray}.
-	
-	The special objects array contains references to many of the objects the membrane needs: \ct{nil}, \ct{true}, \ct{false}, the processor, the numeric classes, the System dictionary, the compact classes, and some but not all literal classes.
-	However, some elements in the special objects array are not mandatory in Pharo. For example, the System Dictionary may not available and then, there is no easy way to find all classes in the system. %The only way could be to assume the form of the graph and traverse it in an ad-hoc way.
-	
-	The current special objects array in Pharo does not provide all necessary services. It has to be extended to support, for example, the recovery of process objects suspended because of an error. These processes currently are only referenced by graphical debuggers, and thus not easily reachable from the special objects array. 
+\item[Special Instances.] Special instances such as \ct{nil}, \ct{true} and \ct{false} are directly pushed by the \VM interpreter at runtime instead of residing in a method literal list. A flyweight \ct{Character} table contains the first 256 character objects to ensure their identity and save memory.
 
-%	When built from scratch, an \objectspace can be configured at the image creation time because of the availability of the information needed by the membrane.
-		 
-	\item \textbf{The image format.} Given an object in the guest image, its enclosing \objectspace requires its internal representation and format to manipulate it correctly. We mean by internal representation its size, its amount of variable and fixed slots, the kind of and size of those slots, and in some cases their meaning.
-	
-	First, the semantics associated to the special objects array and its contents should be provided. That is, what does each index of the array mean.
-	
-	Second, the guest image may differ from the host Pharo image. Then, the \objectspace needs to make a correlation between the literal classes inside both host and guest to transform instances from and to the \objectspace format. The classes subject to this correlation in our current implementation are \ct{ByteString}, \ct{ByteSymbol}, \ct{Array}, \ct{SmallInteger}, \ct{Character} and \ct{Association}. Such correlation is done by providing the corresponding transformation methods.
-	
-	Finally, some mirrors must manipulate the internal state of special objects, and thus they must know their internal structure. The membrane configuration must provide the meaning of the instance variables of such special objects \ie the ProcessSchedulerMirror needs the index of the activeProcess and processList, and the ClassMirror needs the index of the superclass, method dictionary and name instance variables.
+\item[System Dictionary.] The system dictionary contains all installed classes in the system. An object space uses this entry to query the installed classes and to install new ones. The \VM does not make any special use of this object as it is managed directly from the language.
+
+\item[Process Scheduler.] The process scheduler contains all existing processes~(threads) in the runtime. We can install and remove process from the process scheduler. The \VM uses this same process scheduler to manage the runtime's execution.
+
+\item[Symbol Table.] The symbol table gathers is the set of \emph{unique} strings in the system. Symbols are mainly used to denote method signatures and ensure reference equality during the method lookup. An object space uses the symbol table to map symbols between runtimes and so it ensures no duplicate symbols are created. The \VM does not make any special use of this object as it is managed directly from the language.
+
+\item[Literal Classes.] Literal classes are the classes of literal objects. Literal objects are those present directly in a method's literal list~(\eg numbers, strings, literal arrays), or those objects that the \VM creates at runtime~(\eg BlockClosures). On one side, the \VM uses the classes available in this list to directly instantiate objects of these types or perform safety checks at runtime~(which cannot be performed at compile time because of reflection or the dynamically-typed nature of the language). On the other side, an object space uses these well-known classes to perform transformations between objects in one runtime to another \eg translate a string from the hypervisor runtime to a string in the virtualized runtime.
+
+\item[Special Selectors.] The special selectors denote those messages that the \VM will send to the image under special situations. This is the case of the \ct{doesNotUnderstand} selector that is sent to the receiver object when the method lookup fails finding a method under a message-send. Other selectors in this category are (a)\ct{cannotInterpret} which is sent when a class in the middle of the method lookup has no method dictionary, (b) \ct{mustBeBoolean} which is sent when a branch operation founds a non-boolean object, (c) \ct{cannotReturn} and \ct{aboutToReturn} are selectors used when contexts are finalized and (d)\ct{run:with:in:} is the message used to implement method wrappers.
+
 \end{description}
+
+
+
+%Particularly, the special objects array contains a process scheduler object and its corresponding process objects, implementing green threads. Pharo virtual machine has a single threaded nature and uses green threads to organize its execution.
 
 \section{Cycle Execution and Context Switch} \label{sec:context_switch}
 
-Regarding the threading model~(cf. Section \ref{sec:context_switch}), a Pharo virtual machine has single threaded execution. Only one operating system thread is used to execute Pharo code, so process scheduling is handled internally by the virtual machine. Processes scheduled using this approach are also called \emph{green threads}~\gp{cite green threads!!}. Green threads provide process scheduling without native operative system support while limiting the proper usage of modern multicore CPUs. In our implementation, their usage allowed us to reuse the current virtual machine scheduling. We also use a green thread approach to schedule image execution. All images are executed in the same single thread, one at a time. This model simplifies our implementation because it avoids concurrency problems between host and guest images.
+The Pharo \VM has single threaded execution. Only one operating system thread is used to execute Pharo code, so process scheduling is handled internally by the virtual machine. Processes scheduled using this approach are also called \emph{green threads}. Green threads provide process scheduling without native operative system support while limiting the proper usage of modern multicore CPUs. By using green threads only one process, the \emph{active process}, is executed at each instant in time. After the active process executes for a given window of time, if there are any waiting processes with greater or equal priority, the active process gets preempted \ie it is suspended and the process with the highest priority becomes the new active process.
+
+In \Vtt, we reused part of the green thread mechanism to schedule runtime execution, which we called \emph{context switch}. A virtualized language runtime runs for a window of time after which it gets preempted if another runtime with highest priority~(the language hypervisor runtime) is waiting. Internally, the \VM has a single bytecode interpreter shared amongst the different running runtimes. To perform the context switch, we exchange the special objects array of the \VM interpreter by the one in the language runtime to resume, and then resume the \VM execution. This solution keeps the single threaded nature of the \VM meaning that when a language runtime is running the others are suspended. On the good side, there are no concurrency problems between the different language runtimes, allowing us to focus on the language specialization features.
 
 
-An \objectspace has its own special objects array, and thus, the code execution inside the \objectspace must use its special objects and not the ones in the host. We modified the virtual machine to be able to perform a context switch between the host and the \objectspace, and making it sensitive to the corresponding special objects array. We kept the single threaded nature of the vm, so the context switch between images puts the running image to sleep and awakens the new one. There are no concurrency problems between the different images.
+\begin{figure*}[htb]
+\begin{center}
+\includegraphics[width=.8\linewidth]{object_space_context_switch}
+\caption{\textbf{Context Switch Internals.}To perform a context switch, we change the special objects array of the \VM's interpreter.\label{fig:context_switch}}
+\end{center}
+\end{figure*}
 
-Our modified VM has a special reference to the host's special objects array. To let an \objectspace run, we implemented a primitive to explicitly give control to the \objectspace by installing its special objects array. This primitive puts the current running process to sleep, changes the special objects array to the one request, and finally awakens the process installed as active in the \objectspace. Figure \ref{code:switch_to_objectspace} contains the VM code implementing this primitive.
-
-\begin{figure}[htb]
-\begin{code}
-\textbf{primitiveResumeFromASpecialObjectsArray:}
-                                                        aSpecialObjectsArray
-    | oldProc activeContext  newProc |
-
-    "we put to sleep the current running process"
-    oldProcess := self activeProcess.
-    statProcessSwitch := statProcessSwitch + 1.
-    self push: instructionPointer.
-    self externalWriteBackHeadFramePointers.
-    activeContext := self
-        ensureFrameIsMarried: framePointer
-        SP: stackPointer.
-    objectMemory
-        storePointer: SuspendedContextIndex
-        ofObject: oldProc
-        withValue: activeContext.
-	
-    "we replace the special objects array"
-    self replaceSpecialObjectsArrayWith: aSpecialObjectsArray.
-	
-    "we awake the process"
-    newProc := self activeProcess.
-    self externalSetStackPageAndPointersForSuspendedContextOfProcess: newProc.
-    instructionPointer := self popStack
-
-\textbf{replaceSpecialObjectsArrayWith:} newSpecialObjectsArray
-    objectMemory specialObjectsOop: newSpecialObjectsArray.
-    objectMemory nilObject:
-             (objectMemory splObj: NilObject).
-    objectMemory falseObject: 
-             (objectMemory splObj: FalseObject).
-    objectMemory trueObject:
-             (objectMemory splObj: TrueObject).
-
-    "Reinitialize VM state to point to the correct nil object"	
-    method := objectMemory nilObject.
-    messageSelector := objectMemory nilObject.
-    newMethod := objectMemory nilObject.
-    lkupClass := objectMemory nilObject.
-\end{code}
-\caption{VM functions written in Slang to transfer control to a virtualized image
-\label{code:switch_to_objectspace}}
-\end{figure}
-
-Our implementation also supports the possibility to provide a controlled window of execution to an \objectspace. The current VM possesses a heartbeat thread it uses to provoke a context switch every 20 milliseconds. Our implementation uses the heartbeat mechanism to pause the current \objectspace process and give the control back to the host. We changed the VM function \textbf{\ct{checkForEventsMayContextSwitch:}} adding the code in Figure \ref{code:heartbeat_contextswitch}, to use the behavior implemented in the \ct{primitiveResumeFromASpecialObjectsArray:} primitive.
-
-\begin{figure}[htb]
-\begin{code}
-((hostSpecialObjectArray ~~ objectMemory nilObject)
-    and:
-[objectMemory specialObjectsOop ~~ hostSpecialObjectArray])
-        ifTrue: [ 
-            self primitiveResumeFromASpecialObjectsArray:
-                       hostSpecialObjectArray.
-        ].
-\end{code}
-\caption{Additions to VM function \textbf{\ct{checkForEventsMayContextSwith:}} written in Slang to give back control to the host image.
-\label{code:heartbeat_contextswitch}}
-\end{figure}
-
+Finally, the window time control was implemented reusing the existing process preemption mechanism in the \VM. A separate thread, namely the \emph{heartbeat}, is awaken every 200 milliseconds and activating a flag that indicates a preemption can occur. When the \VM code interpreter arrives to one of the safe suspension points (\ie a point where suspending the current execution will not leave the current process in a incoherent state) such as a back jump or a message-send bytecode, the code interpreter preempts the active process if the corresponding flag was activated. In \Vtt we modified the preemption code to activate another language runtime if available.
 
 \section{Mirror Implementation}\label{sec:implementation_mirrors}
 
