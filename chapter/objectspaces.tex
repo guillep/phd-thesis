@@ -314,4 +314,12 @@ TracingCodeInterpreter >> writeInstanceVariableNumber: index with: aMirror
 % =============================================================================
 \section{Conclusion and Summary}
 
+\Vtt presents an architecture where several language runtimes can share the same process. A virtualized language runtime is subject of monitoring and manipulation of another language runtime, namely the hypervisor runtime. The hypervisor runtime contains a first class representation of the virtualized runtime, an object space. The object space exposes a clear interface to safely access and modify a language runtime. This interface includes operations to configure the virtualized language runtime and operations to modify particular objects from it. The latter is encapsulated in mirror objects.
+
+The execution of the virtualized runtime is organized in cycles. In between cycles, a first class language hypervisor can perform an operation and then resume the virtualized runtime's execution. We ensure that the state of the virtualized runtime keeps its coherence by only suspending it in safe suspension points.
+
+Besides the direct manipulation through mirrors, a language hypervisor can perform cross-runtime message-sends for a richer communication using process injection. Process injection prevents failures in the method lookup and avoids stack traversing techniques such as exception to leak cross-runtime references. Additionally, a virtual code interpreter allows us to execute code on the virtualized runtime with full intercession. A virtual code interpreter is a first class entity, allowing us to easily specialize and change it.
+
+In following chapters we will show how this infrastructure supports the evolution of a programming language runtime in two different scenarios. First, the recreation of a language runtime from scratch using a bootstrap process. Second, the extraction of the used parts of an application.
+
 \input{chapter-footer.tex}
