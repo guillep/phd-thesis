@@ -139,7 +139,7 @@ Mirror {
     void setInstVar(String varName, mirror anObject);
     
     "Primitive execution"
-    mirror executePrimitive(primitiveID id, Array args);
+    mirror executePrimitive(primitiveID id, mirror receiver, Array args);
 }
 
 ClassMirror {
@@ -259,9 +259,56 @@ This solution for cross-runtime communication solves both problems observed befo
 
 \section{Virtual Execution through Interpretation} \label{sec:interpretation}
 
-\Vtt allows a \emph{virtual execution} mode through interpretation. Virtual execution takes place by doing code interpretation of either abstract syntax trees~(ASTs) or bytecode. The virtual code interpreter has full control on the interpreted code. We can specialize the interpreter and instrument code execution in order to override normal behavior or trace the execution. The virtual interpreter comes in handy for those cases when the virtualized runtime is in an incoherent or buggy state and it cannot execute code by itself. In those cases, the virtual interpreter can be used to fix the problem in the virtualized runtime before it can continue its own execution.
+\Vtt allows a \emph{virtual execution} mode through interpretation. Virtual execution takes place by doing code interpretation of either abstract syntax trees~(ASTs) or bytecode. In \Vtt a virtual code interpreter is a first-class entity that interprets code inside a virtualized runtime and has full control on the interpreted code. The virtual interpreter comes in handy for those cases when the virtualized runtime is in an incoherent or buggy state and it cannot execute code by itself. In those cases, the virtual interpreter can be used to fix the problem in the virtualized runtime before it can continue its own execution.
 
-The virtual interpreter uses the object space mirrors to access and write object fields and execute primitives on objects. It accesses the virtualized runtime code during method-lookup.
+The virtual code interpreter has three main points of communication with an object space:
+
+\begin{description}
+\item[Instance Variable Access.] Accessing or writing an object's instance variable is mapped by the code interpreter to a field access or write in the mirror representing the receiver object.
+
+\begin{code}
+VirtualCodeInterpreter >> readInstanceVariableNumber: index
+    ^ self receiver instanceVariableAtIndex: index
+    
+VirtualCodeInterpreter >> writeInstanceVariableNumber: index with: aMirror
+    ^ self receiver instanceVariableAtIndex: index put: aMirror
+\end{code}
+
+\item[Method Lookup.] On a message-send, the virtual code interpreter performs the method lookup by inspecting the class hierarchy of the receiver object. The receiver object state is exposed to the interpreter by a mirror. Following, we illustrate this with a simplified method lookup:
+
+\begin{code}
+VirtualCodeInterpreter >> lookupSelector: selector
+    | classToLookup |
+    "classToLookup is a class mirror"
+    classToLookup := self receiver getClass.
+    [ classToLookup isNotNil ] whileTrue: [
+        (self class: classToLookup hasSelector: selector)
+        	    ifTrue: [ ^ classToLookup ].
+	classToLookup := classToLookup superclass.
+    ]
+\end{code}
+
+\item[Primitive Execution.] In the leafs of the execution, message-sends invoke the language primitives. These language primitives are executed through the object space interface.
+
+\begin{code}
+VirtualCodeInterpreter >> invokePrimitiveMethod: aMethod
+    ^ self objectSpace
+         executePrimitive: aMethod primitive
+         receiver: self receiver
+         arguments: self arguments
+\end{code}
+
+\end{description}
+
+Being a first-class entity, we can specialize the code interpreter to instrument code execution in order to override normal behavior or trace the execution. We can for example trace all instance variable writes by overwriting one of the methods above.
+
+\begin{code}
+TracingCodeInterpreter >> writeInstanceVariableNumber: index with: aMirror
+    | result |
+    result := super writeInstanceVariableNumber: index with: aMirror.
+    !\emph{self logWriteIn: self receiver atIndex: index with: aMirror.}!
+    ^ result
+\end{code}
 
 % =============================================================================
 \section{Conclusion and Summary}
