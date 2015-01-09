@@ -242,7 +242,7 @@ The dynamic nature of RFG tackles all our challenges. Missing code units are det
 \subsection{Run-Fail-Grow through an example}
 We illustrate in this section the ideas behind RFG with the example introduced in Section~\ref{sec:example_intro}. For the sake of clarity, in this example we will tailor the application's code units and not the base libraries \ie the seed includes the base libraries.
 
-\paragraph{Setup of the Environment.} First, we launch the reference application~(cf. Figure~\ref{fig:example_reference}) and the nurtured application~(cf. Figure~\ref{fig:example_all} Step 0). We fill the nurtured application with a seed containing the language base libraries. Thus, each application has its own copy of the base libraries, as shown in this case with the \ct{Date} and \ct{Time} classes and the \ct{stdout} object.
+\paragraph{Setup of the Environment} First, we launch the reference application~(cf. Figure~\ref{fig:example_reference}) and the nurtured application~(cf. Figure~\ref{fig:example_all} Step 0). We fill the nurtured application with a seed containing the language base libraries. Thus, each application has its own copy of the base libraries, as shown in this case with the \ct{Date} and \ct{Time} classes and the \ct{stdout} object.
 
 \begin{figure}[ht]
 \begin{center}
@@ -264,7 +264,7 @@ We illustrate in this section the ideas behind RFG with the example introduced i
 \end{center}
 \end{figure*}
 
-\paragraph{Install the application's entry point.} We install into the nurtured application our application's entry point \ie a \ct{MainApp} instance~(\ct{aMainApp}) and a process that will execute the statement \ct{"aMainApp start"}~(cf. Figure~\ref{fig:example_all} Step 1). Note that although we are referencing an instance of the class \ct{MainApp}, the \ct{MainApp} class is not installed yet.
+\paragraph{Install the application's entry point} We install into the nurtured application our application's entry point \ie a \ct{MainApp} instance~(\ct{aMainApp}) and a process that will execute the statement \ct{"aMainApp start"}~(cf. Figure~\ref{fig:example_all} Step 1). Note that although we are referencing an instance of the class \ct{MainApp}, the \ct{MainApp} class is not installed yet.
 
 %\begin{figure}[ht]
 %\begin{center}
@@ -282,7 +282,7 @@ When the execution starts, the \ct{mainApp} instance receives the \ct{start} mes
 %\end{center}
 %\end{figure}
 
-\paragraph{Activating the start method.}
+\paragraph{Activating the start method}
 The method \ct{start} defined in Figure~\ref{fig:code_example1} is executed, as we can see in Figure~\ref{fig:example_all} Step 2. During the execution of its first statement~(line 2 Figure~\ref{fig:code_example1}) we detect a missing code unit failure: The \ct{StdoutLogger} class does not exist. Thus, before continuing, we install a \ct{StdoutLogger} class with the same shape as its reference counterpart~(cf. Figure~\ref{fig:example_all} Step 3). This class does not contain, however, all the methods nor the meta-data (\eg superclass, package, subclasses) from the reference class since they may not be necessary.
 
 %a \emph{shadow} of the \ct{Formatter} class~(Figure~\ref{fig:example_shadow}).\gp{I don't like the word shadow here, since it does not go with the tailor metaphor} The \ct{Formatter} shadow is a proxy object the tailor will use to know if and when the \ct{Formatter} class is used.
@@ -708,14 +708,14 @@ Note that we subtract the size of the seed from both the nurtured and reference 
 
 Table \ref{tb:tailored_components} shows the size in KB of the code units from we used in our experiments. This table details the size of the Pharo base libraries, third party libraries such as Seaside and our particular experiments, which aid in the understanding of the results. We obtained this sizes by measuring the size of the code units once loaded in memory.
 
-\paragraph{Discussion of Results.}
+\paragraph{Discussion of Results}
 Our experiments show that Tornado aggressively reduces the size of code units required for an application. Our examples save from 95\% to 99\% of space, compared with their reference application~(which contains all base libraries and third party libraries in case of Seaside). Our first three experiments (the sum of two numbers, and the factorial of 10 and 100) show that Tornado succeeds to create minimal deployment versions of our applications, having into account that our seed forces a minimal of 10KB in each of them. The reflective application is indeed also minimal, but bigger than the other three, as Tornado installs inside the nurtured application (a) all the code that is accessed by reflection and (b) code from the collections package to iterate the methods of a class.
 
 We detect a notorious grow in size when adding I/O to our experiments, which varies from 63KB to 71KB extra. According to the list of installed code units, we identity a problem in the design of the I/O streams library from Pharo: a set of character tables meant for character encoding and conversion are initialized, even if not all of them are later on used by the application. This problem shows that this part of Pharo base libraries should be rethought.
 
 The Seaside experiments show that Tornado can be used in a complex setting such as a web application that runs a web server, while still achieving good results. It is interesting to note, from the comparison of both experiments, that more of half of the size of the final nurtured application in \emph{Seaside Web Application A} seems to be in the base libraries, as the amount of installed code is reduced when introducing the base libraries seed.
 
-\paragraph{Comparison with a Dedicated Platform.}
+\paragraph{Comparison with a Dedicated Platform}
 
 To have a broader view of our results, we compare them to MicroSqueak~\cite{Malo11a}. MicroSqueak is a dedicated platform that runs on the Pharo platform \ie a specialized platform containing an alternative implementation of base libraries, as Java Micro Edition~(J2ME)~\cite{JavaME} is for Java. MicroSqueak was designed with the explicit goal to be the smallest practical Squeak kernel. It contains a total of 49 classes with a reduced set of methods. It offers a minimal core of the language, a basic collection library and basic file IO support. MicroSqueak presents a minimal memory footprint of 80KB, when we build an application that performs no computation.
 
