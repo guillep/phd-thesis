@@ -233,18 +233,26 @@ There is however room for improvements due to the absence of a JIT compiler, sha
 
 \section{Non Implemented Aspects} \label{sec:not_yet_implemented}
  
- For the sake of completion, we document in this subsection the aspects that have not been yet implemented in our solution.
+For the sake of completion, we document in this subsection the aspects that have not been yet implemented in our prototype solution.
 
-\subsection{Just in Time Compilation}
+\subsection{JIT Compilation}
+
+Just In Time~(JIT) compilation is available in the production distribution of the Pharo \VM. The existing JIT compiler doubles the performance of Pharo Stack \VM while adding yet another complex component in the \VM machinery. To reach such performance, it makes assumptions on the memory layout of the running language runtime. For example, it requires highly accessed objects such as \ct{nil}, \ct{true} or \ct{false} to remain in the same memory position to optimize their access.
+
+However, these assumptions that are broken by \Vtt, as it introduces more than one language runtime in the same heap. Therefore, more than one version of special objects such as \ct{nil} are present in the same heap. Moreover, these objects can be moved in memory on GC compaction. Supporting JIT compilation in \Vtt would require a complete reengineering of the existing JIT compiler and possible the \VM.
 
 \subsection{Plugin and Native Libraries State}
 
-\subsection{External Resources}
-Our current implementation does not handle properly the release of resources such as files or network connections~(sockets). In Pharo, the finalization and release of such resources is made in the language side. Given the single-threaded nature of our solution, an image running can provoke the garbage collection of any object in the memory even if they belong to another image, since the object memory is shared by all images~(cf. Section \ref{sec:memory}). However, garbage collection only activates in the current implementation the finalization process that belongs to the running image. The finalization processes of other images are ignored. Then, resources may leak, since they can be garbage collected but not properly finalized and released.
+Pharo \VM allows to access resources from outside the language runtime through native libraries and \VM plugins. A \VM plugin is a native library that satisfies a particular interfaces to communicate with the \VM. A native library may keep its own state and may not be thought to be loaded several times in the same process. The same problem appears in \VM plugins, which are often developed assuming the existence of only one language runtime so their state is global for the whole \VM.
 
-Another yet not implemented aspect regarding resources are global limitations imposed by the virtual machine. For example, the virtual machine memory is accounted globally without distinguish the usage per image; the virtual machine network plugin accounts and limits the amount of open sockets in a global way. In this sense, an image can use resources indiscriminately and restricting their use to other images \ie if there is a total of 100 sockets and an image opens 70, the rest of the images in the system have to share the 30 left.  
+Our prototype was developed around the modification of the language runtime. As such, our \Vtt prototype does not modify each \VM plugins, nor it handles the case of loading multiple versions of the same native library from different runtimes. The usage of some of these elements in \Vtt may not be fully working.
+
+\subsection{Finalization of External Resources}
+
+Pharo \VM supports the concept of weak references. If an object is only referenced by a weak reference, this object will be garbage collected and this weak reference replaced by a reference to \ct{nil}. However, before garbage collecting the object, the \emph{finalization mechanism} will send the \ct{finalize} message to the object about to be collected to release any resources it may be holding. Finalization is useful to release resources external to the language runtime such as files or sockets. In Pharo, this finalization process is activated from the \VM but executed by the language runtime.
 
 
+In \Vtt and because of the shared garbage collection, it may happen that a GC activated by one language runtime (the active language runtime) collects an object from another suspended language runtime. In such case, the \VM will activate only the finalization of the active language runtime. Then, the collected object from the suspended language runtime does not have the possibility to finalize its resources. This may cause external resource leaks, since they can be garbage collected but not properly finalized and released.
 
 % ===========================================================================
 \section{Conclusion and Summary}
