@@ -101,26 +101,26 @@ We have one mirror per type of object supported by the Pharo \VM. Notice that as
 
 \section{Memory Layout} \label{sec:memory}
 
-We decided to make an \objectspace share the same memory space~(the object memory) used by the host. Then, objects from both host and guest are mixed in the object memory, and not necessarily contiguous, as shown in Figure \ref{fig:heap}. This decision is funded on minimizing the changes made to the virtual machine, because of its complex state of the art. Our decision, while easing the development of our solution, has the following impact on it:
+In \Vtt, all objects belonging to the different language runtimes share a unique object heap. Objects are mixed in this heap and are objects from the same language runtime not necessarily contiguous, as shown in Figure \ref{fig:heap}. Although they are mixed, they are logically separated as they conform different object graphs. Pharo being a safe-language~\cite{Hawb98a,Hawb02a} prevents us to forge references~(\ie creating references from numbers using pointer arithmetic) and isolates the object graphs of each runtime system.
 
-\begin{figure*}[htb]
+\begin{figure}[ht]
 \begin{center}
-\includegraphics[width=.63\linewidth]{object_spaces_heap}
-\caption{Objects from the host and guest are mixed in the object memory. In this figure, after the \ct{nil}, \ct{true} and \ct{false} host instances, follow the corresponding ones of the guest, which can in order be followed by objects of the host, like the string \textbf{`hi'}. \label{fig:heap}}
+\includegraphics[width=.9\linewidth]{object_spaces_heap}
+\caption{\textbf{A unique heap containing objects from different language runtimes.} Objects from the language runtime I and language runtime II are mixed in the heap. In this figure, after the \ct{nil}, \ct{true} and \ct{false} instances that belong to language runtime I, follow the corresponding ones of the language runtime II, which can in order be followed by objects of the former, like the string \textbf{`hi'}. \label{fig:heap}}
 \end{center}
-\end{figure*}
+\end{figure}
+
+This decision is funded on minimizing the changes made to the virtual machine, because of its complex state of the art. Our decision, while easing the development of our solution, has the following impact on it:
 
 \begin{description}
-	\item \textbf{Reuse memory handling mechanisms.} We use the same existing memory infrastructure as when no \objectspaces are used. Existing mechanisms for allocating objects or growing the object memory when a limit is reached can be reused transparently by our implementation. 
-	\item \textbf{Simplify the object reference mechanism.} References from the membrane objects to the guest image objects are handled as simple object references. No extra support from the virtual machine was developed in this regard.
-	\item \textbf{Shared garbage collection.} Since objects from the host and guest are mixed in the object memory, and their boundaries are not clear from the memory point of view, the garbage collector~(GC) is shared between them. Every GC run must iterate over all their objects, increasing its time to run.
-	
-	\item \textbf{Observer's effect on an \objectspace's memory.} Analyzing and controlling an \objectspace's memory still suffers from the \emph{observer's effect} in our solution: every action taken by the host on the \objectspace modifies the shared memory, and therefore alters the process. Because of this, an \objectspace's memory cannot be properly analyzed.
+	\item[Reuse memory handling mechanisms.] We use the same existing memory infrastructure as when \Vtt is not used. Existing mechanisms for allocating objects or growing the object memory when a limit is reached can be reused transparently by our implementation. 
+	\item[Simplify the object reference mechanism.] References from mirror objects are normal object references. No extra support from the virtual machine was developed in this regard.
+	\item[Shared garbage collection.] Since objects from the different runtimes are mixed in the object memory, and their boundaries are not clear from the memory point of view, the garbage collector~(GC) is shared between them. Every GC run must iterate over all their objects, increasing its time to run.
 \end{description}
 
-J-Kernel \cite{Hawb98a} and Luna \cite{Hawb02a} present a solution similar to ours regarding the memory usage. They are Java solution for isolating object graphs with security purposes. In them, each object graph is called a \emph{protection domain}. All protection domains loaded in a system, and their objects, share the same memory space. 
+%This solution seems suitable  J-Kernel \cite{Hawb98a} and Luna \cite{Hawb02a} present a solution similar to ours regarding the memory usage. They are Java solution for isolating object graphs with security purposes. In them, each object graph is called a \emph{protection domain}. All protection domains loaded in a system, and their objects, share the same memory space. 
 
-The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept. In our solution, the separation is given by the same inability to forge object references and the membrane objects that control the communication.
+%The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept. In our solution, the separation is given by the same inability to forge object references and the membrane objects that control the communication.
 
 %\section{Creating an \objectspace} \label{sec:object_space_creation}
 %
@@ -176,38 +176,75 @@ The J-Kernel enforces the separation between domains by using the Java type syst
 %
 %On the other side, creating an \objectspace from scratch can be implemented as a bootstrap of the system, following the process defined in \cite{Poli12a}. The \objectspace provides the \textbf{\ct{createObjectWithFormat:}} method to create an object respecting the given format but with an anonymous class, so we can consider it as a "classless" object. This method is used in the first stage of the bootstrap process, when no classes are available in the \objectspace image yet, to create the \ct{nil} instance~(cf. Figure~\ref{code:bootstrap_nil}) and the first classes~(cf. Figure~\ref{code:bootstrap_classes}). Later, when the classes are available, those objects are set their corresponding ones by using the \textbf{\ct{setClass:}} message.
 
-\begin{figure}[htb]
-\begin{code}
-theNil := objectSpace createObjectWithFormat: nilFormat.
-objectSpace nilObject: theNil.
-\end{code}
-\caption{Bootstrapping an \objectspace: Creating a "classless" nil when there are no classes
-\label{code:bootstrap_nil}}
-\end{figure}
+\section{Benchmarks}
 
-\begin{figure}[htb]
-\begin{code}
-metaclassMirror := objectSpace
-    createClassWithFormat: classFormat
-    forInstancesOfFormat: metaclassFormat.
-metaclassClassMirror := objectSpace
-    createClassWithFormat: metaclassFormat
-    forInstancesOfFormat: classFormat.
- 
-metaclassMirror             setClass: metaclassClassMirror.
-metaclassClassMirror    setClass: metaclassMirror.
-\end{code}
-\caption{Bootstrapping an \objectspace: Creating "classless" Metaclass and Metaclass class  when there are still no classes
-\label{code:bootstrap_classes}}
-\end{figure}
+To verify the feasibility of this model, we built our \Vtt prototype in the Pharo language. Our prototype includes the \Vtt class libraries and modification on the JIT-less version of the Pharo \VM.
+We benchmarked the virtualized execution of our prototype implementation using a subset of the computer language benchmarks game\footnote{\url{http://benchmarksgame.alioth.debian.org/}}.
+
+We executed each of these benchmarks ten times in two different setups. Results are found in Table \ref{tb:benchmarks}. We first benchmarked the Vanilla JIT-less Pharo \VM without any of our changes, to make it a fair base of comparison with our JIT-less solution. Following, we benchmarked our solution using a null hypervisor that performs no action. This case is meant to measure the execution cycle overhead.
+
+%We executed each of these benchmarks in four different setups. Results are found in Table \ref{tb:benchmarks}. We first benchmarked the Vanilla JIT-less Pharo \VM without any of our changes, to make it a fair base of comparison. Afterwards, we benchmarked our solution in three different setups:
+
+%\begin{description}
+%\item[Null Hypervisor.] A hypervisor performing no action. This case is meant to measure the cycle overhead. 
+%\item[File Checking Hypervisor.] A hypervisor that checks the existence of a File at each cycle. This case is meant to measure an action that does not include an interaction with the 
+%\item[Stack Checking Hypervisor.] A hypervisor checking the execution stack of the virtualized runtime on each monitoring cycle. This benchmark forces in our prototype implementation a reification of the execution contexts~(stack frames) and the creation of several mirror objects.
+%\end{description}
+
+%\begin{landscape}
+ \begin{table}[ht]
+
+ 	\centering
+ 	\begin{tabular}{|l|c|c|}%c|c|}
+			\hline
+			\textbf{Benchmark}
+ 			& \textbf{Vanilla Pharo \VM (1x)}
+			& \textbf{Null Hypervisor}\\
+%			& \textbf{File Checking}
+%			& \textbf{Stack Checking}\\
+			
+% 			\\& \textbf{}
+%			& \textbf{}\\
+%			& \textbf{Hypervisor}
+%			& \textbf{Hypervisor}\\
+		\hline
+		RegexDNA & 5711ms +/-22 & 5878ms +/-18 \\\hline% & 6142ms +/-11 & 6555ms +/-424 \\\hline
+		KNucleotide & 94.00ms +/-0.85 & 100.1ms +/-3.4\\\hline% & 105.8ms +/-3.2 & 134.4ms +/-3.7 \\\hline
+		SpectralNorm & 79.8ms +/-1.4 & 86.6ms +/-1.4\\\hline% & 92.7ms +/-6.0 & 110.7ms +/-1.7 \\\hline
+		BinaryTrees & 36.80ms +/-0.65 & 37.10ms +/-0.83 \\\hline%& 35.30ms +/-0.66 & 65.20ms +/-0.93 \\\hline
+		Mandelbrot & 422.3ms +/-1.4 & 488.0ms +/-6.5 \\\hline%& 494.9ms +/-3.4 & 632ms +/-23 \\\hline
+		ReverseComplement & 5.40ms +/-0.48 & 6.80ms +/-0.24 \\\hline%& 6.80ms +/-0.59 & 8.00ms +/-0.60 \\\hline
+		ThreadRing & 2.50ms +/-0.41 & 2.50ms +/-0.56\\\hline% & 2.70ms +/-0.90 & 3.20ms +/-0.80 \\\hline
+		PiDigits & 0.90ms +/-0.69 & 0.70ms +/-0.66 \\\hline%& 0.70ms +/-0.66 & 0.90ms +/-0.69 \\\hline
+		Meteor & 2260.2ms +/-2.6 & 2398.2ms +/-8.5 \\\hline%& 2479ms +/-16 & 3677ms +/-267 \\\hline
+		NBody & 21.10ms +/-0.57 & 21.70ms +/-0.66 \\\hline%& 22.6ms +/-1.4 & 37.7ms +/-1.5 \\\hline
+%		FannkuchRedux & 0.00ms +/-0.00 & 0.00ms +/-0.00 & 0.20ms +/-0.36 & 0.00ms +/-0.00 \\\hline
+		Fasta & 4.30ms +/-0.54 & 5.20ms +/-0.65 \\\hline%& 5.70ms +/-0.61 & 9.30ms +/-0.39 \\\hline
+ 	\end{tabular}
+	\vspace*{0.2cm}
+ 	\caption{\small\textbf{Language Virtualization Overhead.} Comparing the cycle overhead from a non virtualized Pharo VM to a virtualized one.\label{tb:benchmarks}}
+ \end{table}
+%\end{landscape}
+
+These results show that our prototype implementation poses an overhead between 0-9\% for the majority of these benchmarks. Special cases are Mandelbrot~(16\% overhead), ReverseComplement~(26\% overhead) and Fasta~(20\% overhead).
+There is however room for improvements due to the absence of a JIT compiler, shared garbage collection and the single threaded nature of the system.
+\gp{not sure what else put in here, since I cannot exactly explain why the overhead is there. One is the shared object memory hence shared GC hence biggest GC time}
+
 
 \section{Non Implemented Aspects} \label{sec:not_yet_implemented}
  
  For the sake of completion, we document in this subsection the aspects that have not been yet implemented in our solution.
- 
+
+\subsection{Just in Time Compilation}
+
+\subsection{Plugin and Native Libraries State}
+
+\subsection{External Resources}
 Our current implementation does not handle properly the release of resources such as files or network connections~(sockets). In Pharo, the finalization and release of such resources is made in the language side. Given the single-threaded nature of our solution, an image running can provoke the garbage collection of any object in the memory even if they belong to another image, since the object memory is shared by all images~(cf. Section \ref{sec:memory}). However, garbage collection only activates in the current implementation the finalization process that belongs to the running image. The finalization processes of other images are ignored. Then, resources may leak, since they can be garbage collected but not properly finalized and released.
 
 Another yet not implemented aspect regarding resources are global limitations imposed by the virtual machine. For example, the virtual machine memory is accounted globally without distinguish the usage per image; the virtual machine network plugin accounts and limits the amount of open sockets in a global way. In this sense, an image can use resources indiscriminately and restricting their use to other images \ie if there is a total of 100 sockets and an image opens 70, the rest of the images in the system have to share the 30 left.  
+
+
 
 % ===========================================================================
 \section{Conclusion and Summary}
