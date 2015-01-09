@@ -8,9 +8,11 @@
 \introduction
 % ===========================================================================
 
-This chapter presents the core contribution of this dissertation: our Virtual Language Runtime infrastructure, namely \VTT~(cf. Section \ref{sec:virtualization_overview}). \VTT allows the monitoring and manipulation of a language runtime through a language hypervisor~(cf. Figure \ref{fig:virtualization_introduction}). In \VTT, both the virtualized runtime and the language hypervisor are first class objects. A first-class representation of a language runtime, namely an \emph{object space}, encapsulates the language runtime and provides a high-level API to query and manipulate it~(cf. Section \ref{sec:object_space}). A first-class \emph{language hypervisor} is a client of an object space~(cf. Section\ref{sec:hypervisor}).
+This chapter presents the core contribution of this dissertation: our Virtual Language Runtime infrastructure, namely \VTT~(cf. Section \ref{sec:virtualization_overview}). \VTT allows the monitoring and manipulation of a language runtime through a language hypervisor~(cf. Figure \ref{fig:virtualization_introduction}).
+%In \VTT, both the virtualized runtime and the language hypervisor are first class objects.
+A first-class representation of a language runtime, namely an \emph{object space}, encapsulates the language runtime and provides a high-level API to query and manipulate it~(cf. Section \ref{sec:object_space}). A first-class \emph{language hypervisor} is a client of an object space~(cf. Section\ref{sec:hypervisor}).
 
-A language hypervisor runs in the same process than the virtualized runtime to monitor and manipulate it directly. However, the language hypervisor and the virtualized runtime run on different language runtimes: basic objects, classes and \VM structures are not shared between the language hypervisor and the virtualized runtime. This has the main purpose of allowing the hypervisor to change any part of the virtualized runtime without affecting itself.
+A language hypervisor runs in the same process than the virtualized runtime to monitor and manipulate it directly. However, the language hypervisor runs on a different language runtime than the virtualized runtime it supervises \ie basic objects, classes and \VM structures are not shared between the language hypervisor and the virtualized runtime. With this no sharing strategy we pursue to allow the hypervisor to change any part of the virtualized runtime without affecting itself.
 
 \begin{figure}[htb]
 \begin{center}
@@ -19,9 +21,8 @@ A language hypervisor runs in the same process than the virtualized runtime to m
 \end{center}
 \end{figure}
 
-In the rest of this chapter we present in detail these two elements and how they relate to each other. Section \ref{sec:isolation} presents how communication is dealt between an object space and its hypervisor with the no-sharing strategy.
-Section \ref{sec:interpretation} explains how we achieve full intercession through virtual execution.
-Finally, Section \ref{sec:virtualization_benchmarks} shows the benchmarks we did on our \Vtt prototype, showing the feasibility of our solution.
+The language hypervisor manipulates directly the virtualized runtime through an object space. The hypervisor can also perform cross-runtime message-sends by injecting processes, as the direct message-send \VM mechanism would fail the method lookup~(Section \ref{sec:isolation}).
+Finally, a more granular control can be made through virtual execution. A virtual code interpreter gives us full intercession power over the execution of the virtualized application for usages such as tracing or debugging~(Section \ref{sec:interpretation}).
 
 %On one side, this means that the hypervisor can freely manipulate the virtualized language runtime without affecting itself. On the other side, this no-sharing strategy poses an extra effort in communication~(cf. Section \emph{sec:isolation}) mainly in object marshaling.
 
@@ -262,58 +263,7 @@ This solution for cross-runtime communication solves both problems observed befo
 
 The virtual interpreter uses the object space mirrors to access and write object fields and execute primitives on objects. It accesses the virtualized runtime code during method-lookup.
 
-\section{Virtualization Overhead Benchmarks} \label{sec:virtualization_benchmarks}
-
-To verify the feasibility of this model, we built a \Vtt prototype in the Pharo language. Our prototype includes the \Vtt class libraries and modification on the JIT-less version of the Pharo \VM.
-We benchmarked the virtualized execution of our prototype implementation using a subset of the computer language benchmarks game\footnote{\url{http://benchmarksgame.alioth.debian.org/}}.
-
-We executed each of these benchmarks ten times in two different setups. Results are found in Table \ref{tb:benchmarks}. We first benchmarked the Vanilla JIT-less Pharo \VM without any of our changes, to make it a fair base of comparison with our JIT-less solution. Following, we benchmarked our solution using a null hypervisor that performs no action. This case is meant to measure the cycle overhead.
-
-%We executed each of these benchmarks in four different setups. Results are found in Table \ref{tb:benchmarks}. We first benchmarked the Vanilla JIT-less Pharo \VM without any of our changes, to make it a fair base of comparison. Afterwards, we benchmarked our solution in three different setups:
-
-%\begin{description}
-%\item[Null Hypervisor.] A hypervisor performing no action. This case is meant to measure the cycle overhead. 
-%\item[File Checking Hypervisor.] A hypervisor that checks the existence of a File at each cycle. This case is meant to measure an action that does not include an interaction with the 
-%\item[Stack Checking Hypervisor.] A hypervisor checking the execution stack of the virtualized runtime on each monitoring cycle. This benchmark forces in our prototype implementation a reification of the execution contexts~(stack frames) and the creation of several mirror objects.
-%\end{description}
-
-%\begin{landscape}
- \begin{table}[ht]
-
- 	\centering
- 	\begin{tabular}{|l|c|c|}%c|c|}
-			\hline
-			\textbf{Benchmark}
- 			& \textbf{Vanilla Pharo \VM (1x)}
-			& \textbf{Null Hypervisor}\\
-%			& \textbf{File Checking}
-%			& \textbf{Stack Checking}\\
-			
-% 			\\& \textbf{}
-%			& \textbf{}\\
-%			& \textbf{Hypervisor}
-%			& \textbf{Hypervisor}\\
-		\hline
-		RegexDNA & 5711ms +/-22 & 5878ms +/-18 \\\hline% & 6142ms +/-11 & 6555ms +/-424 \\\hline
-		KNucleotide & 94.00ms +/-0.85 & 100.1ms +/-3.4\\\hline% & 105.8ms +/-3.2 & 134.4ms +/-3.7 \\\hline
-		SpectralNorm & 79.8ms +/-1.4 & 86.6ms +/-1.4\\\hline% & 92.7ms +/-6.0 & 110.7ms +/-1.7 \\\hline
-		BinaryTrees & 36.80ms +/-0.65 & 37.10ms +/-0.83 \\\hline%& 35.30ms +/-0.66 & 65.20ms +/-0.93 \\\hline
-		Mandelbrot & 422.3ms +/-1.4 & 488.0ms +/-6.5 \\\hline%& 494.9ms +/-3.4 & 632ms +/-23 \\\hline
-		ReverseComplement & 5.40ms +/-0.48 & 6.80ms +/-0.24 \\\hline%& 6.80ms +/-0.59 & 8.00ms +/-0.60 \\\hline
-		ThreadRing & 2.50ms +/-0.41 & 2.50ms +/-0.56\\\hline% & 2.70ms +/-0.90 & 3.20ms +/-0.80 \\\hline
-		PiDigits & 0.90ms +/-0.69 & 0.70ms +/-0.66 \\\hline%& 0.70ms +/-0.66 & 0.90ms +/-0.69 \\\hline
-		Meteor & 2260.2ms +/-2.6 & 2398.2ms +/-8.5 \\\hline%& 2479ms +/-16 & 3677ms +/-267 \\\hline
-		NBody & 21.10ms +/-0.57 & 21.70ms +/-0.66 \\\hline%& 22.6ms +/-1.4 & 37.7ms +/-1.5 \\\hline
-%		FannkuchRedux & 0.00ms +/-0.00 & 0.00ms +/-0.00 & 0.20ms +/-0.36 & 0.00ms +/-0.00 \\\hline
-		Fasta & 4.30ms +/-0.54 & 5.20ms +/-0.65 \\\hline%& 5.70ms +/-0.61 & 9.30ms +/-0.39 \\\hline
- 	\end{tabular}
-	\vspace*{0.2cm}
- 	\caption{\small\textbf{Language Virtualization Overhead.} Comparing the cycle overhead from a non virtualized Pharo VM to a virtualized one.\label{tb:benchmarks}}
- \end{table}
-%\end{landscape}
-
-These results show that our prototype implementation poses an overhead between 0-9\% for the majority of these benchmarks. Special cases are Mandelbrot~(16\% overhead), ReverseComplement~(26\% overhead) and Fasta~(20\% overhead).
-\gp{not sure what else put in here, since I cannot exactly explain why the overhead is there. One is the shared object memory hence shared GC hence biggest GC time}
-
 % =============================================================================
+\section{Conclusion and Summary}
+
 \input{chapter-footer.tex}
