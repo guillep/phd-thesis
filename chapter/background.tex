@@ -22,95 +22,6 @@ This chapter finishes by presenting a detailed description of the problem statem
 \newpage
 % ===========================================================================
 
-\section{Problems Modifying a Language Runtime} \label{sec:bootstrapping_problems}
-
-We identify three main limitations in the state of the art of language initialization techniques. First, how flexible is a language definition to be changed and adapted. Second, the unclear mixture of \VM and language concerns prevents us to extract the language definition and easily replace it. Finally, the differences in the abstraction levels and tool support between the language we are building and the language we use to build it makes it a challenging task.
-
-%A high-level object-oriented language kernel is the runtime representation of the abstractions that define the language behaviour. For example, Ruby language kernel is composed by the initial class hierarchy~(\ct{BasicObject}, \ct{Object}, \ct{Module} and \ct{Class}), their respective metaclasses and methods. Changing this language kernel is a challenging task.
-
-\subsection{Flexibility to Change the Language Definition}
-
-The \VM is often the component in charge of initialising the language kernel. This decision is indeed practical as the \VM can safely initialise the language structures and solve the language bootstrapping issues avoiding recursions~\cite{Kicz91a}~(\eg create the first class without a class). This language kernel must comply at runtime to the execution model imposed by the \VM~(\eg an object format denoting how objects are represented in memory and a set of instructions for execution such as bytecode or assembly). This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions.
-
-These hardcoded \VM assumptions have two main consequences when we target to change the language kernel: the \VM fixes its initial structures~(\eg Ruby's class hierarchy in Figure \ref{code:ruby_hierarchy}) and they introduce code duplications to manipulate language objects.
-To illustrate this second problem, let us consider the code in Figure~\ref{code:logic_dup} that creates a \ct{Dictionary} or hashmap. A language kernel that is defined by a \ct{Dictionary} object to keep \eg a map of global objects, must execute the code in the figure to create the corresponding instance. However, since the language kernel and the \VM are in middle of their initialization, the \VM cannot execute this code as it is, and thus it cannot enforce its own invariants. The state of the art \VMs will provide an alternative low-level representation of the same code respecting the same invariants~(Figure~\ref{code:logic_dup2}). This introduces a redundancy: the \VM and the language have different code to honor the same invariants.
-
-\begin{figure}[ht]
-\begin{code}
-Dictionary class>>new: n
-    ^ self new initialize: n
-
-Dictionary>>initialize: n
-    "Initialize array to an array size of n"
-    array := Array new: n.
-    tally := 0
-\end{code}
-\caption{\textbf{Code to create a \ct{Dictionary} object in Smalltalk.}\label{code:logic_dup}}
-\end{figure}
-
-\begin{figure}[ht]
-\begin{code}
-void* createDictionaryWithSize(int n)\{
-    void* dictionary, internalArray;
-    dictionary = instantiateClass("Dictionary");
-    internalArray := instantiateClass("Array", n);
-    setInstanceVariable(dictionary, 1, internalArray);
-    setInstanceVariableInt(dictionary, 2, 0);
-    return dictionary;
-\}
-\end{code}
-\caption{\textbf{Code to create the same \ct{Dictionary} object from C.}\label{code:logic_dup2}}
-\end{figure}
-
-
-%This execution model is often less restrictive than the object models of the language's that run on top of them. For example, the Smalltalk and Ruby \VMs require for each object in the system to have a class, and each class a superclass, but there is no need for metaclasses.
-
-After the language initialization, reflective languages~\cite{Smit84a} such as LISP or Smalltalk provide the means to modify themselves at runtime. These languages are based on a reflective architecture presenting the notion of causal connection~\cite{Maes87a}: a link between a programming element and its representation that keeps both in synchronization. However, as these languages contain meta-circular definitions in their kernel~\cite{Chib96a}, this can result in a Metastability problem~\cite{Kicz91a} \ie a change in the language kernel may introduce a meta-call recursion and turn the system unusable. In this context, Reflectivity~\cite{Denk08b} is a framework that scopes reflection to avoid meta-call recursions.  Reflectivity succeeds to control behavioural reflection by accounting the level of \emph{metaness} of the execution in a program and executing reflective operations when it is in the correct meta-level. The main limitation of Reflectivity is that it does not allow structural reflective changes in the language kernel.
-
-Finally, snapshot-based languages offer different means to evolve a language kernel. Instead of being reinitialized each time we need it, the state of the whole graph of objects that denotes the running program can be suspended and saved as a snapshot in a file. Later on, the program in this snapshot can be restarted from the point it was suspended. As a consequence of this persistency property, some snapshot-based languages such as Squeak or Pharo  do not have the infrastructure to be reinitialised from scratch. Indeed, their current deliverable snapshots are the result of a chain of side effects (updates and migrations) made to the original Smalltalk-80 snapshot. Thus, even if we can change the language kernel at runtime, they cannot ensure a reproducible initial state for their users.
-
-\subsection{Mixture of \VM and Language Concerns}
-
-The unclear interface between the language and the \VM makes difficult to recognize whether a piece of code belongs to a \VM or language concern. This causes undesirable temporal couplings between these two elements and prevents us to clearly extract and replace the language definition by another one.
-To illustrate this problem, Figure \ref{code:jikes_vm_initialization} shows an excerpt of the JikesRVM\footnote{Taken from the version 3.1.3 of the JikesRVM in \url{http://sourceforge.net/projects/jikesrvm}}~\cite{Alpe00a}. In this example, the memory manager is initialised in the middle of the initial class loading phase. These memory manager calls are indeed needed to avoid the collection of objects during the initialization. However, it is necessary to call it after some specific classes are initialized and not before.
-
-\begin{figure}[ht]
-\begin{code}
-private static void finishBooting() {
-    ...
-    MemoryManager.postBoot(); //Memory management
-    ...
-    runClassInitializer("java.lang.Runtime");
-    runClassInitializer("java.lang.System");
-    runClassInitializer("sun.misc.Unsafe");
-    ...
-    MemoryManager.fullyBootedVM(); //Memory management
-    ...
-    runClassInitializer("java.util.logging.Level");
-    runClassInitializer("gnu.java.nio.charset.EncodingHelper");
-}
-\end{code}
-\caption{\textbf{Code of the JikesRVM that initialises loads the initial classes of the runtime (excerpt).} The code performing the initial class loading is mixed with the code that initialises the memory manager of the \VM.\label{code:jikes_vm_initialization}}
-\end{figure}
-
-Snapshot-based languages, on the other side, show that language initialization and \VM initialization can be orthogonal. Indeed, languages such as Pharo, LISP or the V8 flavor of Javascript can restart their system from a snapshot. The \VM loads atomically the snapshot and binds it to the current runtime. Loading a snapshot clarifies the \VM startup steps as it replaces the phase of language initialization. Moreover, as long as the snapshot satisfies the \VM execution model, it can run any language model, as it is the case of Pharo and Newspeak that run on the same \VM.
-
-%Other snapshot-based languages such as GNU-Smalltalk or the V8 flavor of Javascript possess both mechanisms: they recreate the language runtime from scratch, and can also restart from a snapshot. In the case of V8, the snapshot was chosen with performance in mind, to avoid parsing and recreation on client-side machines.
-
-%\item[The \VM-Language interface is unclear.]
-%For example, the \VM assumes how objects are structured in the runtime to manipulate them: the amount and size of their instance variables, object headers, special kind of object references~(\eg weak references). The \VM also needs access to some well-known objects to run code: this is the case for example of \ct{nil}, \ct{true} and \ct{false} objects. Another example of a tight coupling are the callbacks \VM-language, where the \VM can trigger some specific code on the language to notify it from some event.
-
-\subsection{Abstraction Level and Tool Support}
-
-On one side, when defining the language kernel at the \VM level, we rely on the tools and abstractions available to develop the \VM to change the language. That means that the language developer uses low-level abstractions to express possibly higher-level concerns. Indeed the developer would benefit from the productivity that a high-level language brings.
-
-To attack these problems, many programming systems have found desirable to follow the principles of \emph{high-level low-level programming} \ie expressing low-level concerns using high-level languages~\cite{Fram09a}. High-level low-level programming pursues the objective of simplifying the complexity of programming systems. By using a high-level language to describe the low-level world the developer benefits from their abstraction power and tooling of the first one. A clear example of this fact is the metacircular \VM field, where many projects whose goal is to write \VMs in a high-level language have blossomed in the last years~\cite{Wimm13a,Alpe00a,Verw11a,Inga97a,Unga05a,Rigo06a}. These projects are biased to \VM building techniques and not to the initialization of the languages that run on top of them. %For example, the SqueakVM~\cite{Inga97a} and the JikesRVM~\cite{Alpe00a} act as high-level C pre-processors. As such, their semantics are closer to C than to their host languages~(Smalltalk and Java respectively). 
-
-
-% as drawback that the initial language kernel cannot be modified without changing the \VM.
-
-On the other side, we found that reflective languages support naturally the usage of the language abstractions and tools to modify the language kernel. Reflective languages benefit from the reification of the language concepts to be able to change them from the language itself.
-
 \section{Modifying the Runtime}
 
 In the following sections we present related work that aim to modify a language runtime, sorted in two main categories. First, we present related work that targets the modification of a language's semantics at runtime by safe means~(\ie avoiding crashes). We follow by looking at the field of metacircular runtimes and \VMs, to study how they ease the modification of a runtime by means of simplifying the language-\VM relation for development.
@@ -476,13 +387,6 @@ MVM can run unmodified Java applications. Additionally, MVM-aware applications c
 
 % =============================================================================
 
-\section{Problem Statement}
-
-A better language kernel initialization solution should have the following properties:
-\begin{itemize}
-\item Allow one to easily change the structure and behavior of the language kernel.
-\item Clarify the separation between \VM and language.
-\item Ensure the initial state of the language even in presence of a reflective architecture (Solving the bootstrapping and metastability problems as defined in AMOP~\cite{Kicz91a}).
-\end{itemize}
+\section{Conclusion and Summary}
 
 \input{chapter-footer.tex}
