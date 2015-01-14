@@ -1,8 +1,6 @@
 \input{chapter-header.tex}
 % ===========================================================================
-\chapter{Evolution by Recreation: Bootstrapping}
-\chaplabel{bootstrapping}
-\minitoc
+\part{Evolution by Recreation: Bootstrapping}
 % ===========================================================================
 \introduction
 % ===========================================================================
@@ -48,7 +46,7 @@ Finally, we validate our work by showing how our solution allows us to create an
 
 
 % ===========================================================================
-\section{Bootstrapping an OO Language Kernel}\label{sec:bootstrapping}
+\chapter{Bootstrapping an Object-Oriented Language}\label{sec:bootstrapping}
 
 The idea of a \emph{bootstrap} is well known in the context of compilers, where a compiler is considered bootstrapped when it compiles itself. For example, a bootstrapped C compiler is a compiler that, by using its own source code written in C, can produce another compiler with its same behavior. Notice that the compiled source is not a direct description of the C language, but a description of the compiler itself \ie the description of a program that builds a program. Notice as well that the output of this bootstrap is an executable representation of that description \ie the machine code that will be loaded and run by the operating system.
 
@@ -59,8 +57,6 @@ It is a process whose input is the definition of a language behavior written in 
 \end{definition}
 
 The input definition of this bootstrap \textbf{must} include the knowledge to recreate itself: the basic operations to create classes and methods, and initialize the basic structures of the language kernel \eg the runtime table of symbols or its threads. The runtime representation that outputs this process is made of a graph of objects \ie the classes, methods, threads and other objects that allow programs to run.
-
-\subsection{Overview}
 
 Following those principles, we developed a bootstrap architecture for an object-oriented language based on \Vtt~(Figure \ref{fig:bootstrapping_overview}). This architecture presents three explicit components decouple the initialization of the language kernel from the \VM initialization so we can define different languages on top of the same \VM. Additionally we can modify the language kernel using the abstractions and tools of the high-level language.
 
@@ -79,7 +75,7 @@ Following those principles, we developed a bootstrap architecture for an object-
 The main limitation of our approach is the \VM execution model. Our solution exposes a clear but fixed \VM interface that introduces a common denominator for each of the languages we bootstrapped. The co-evolution of language kernel and \VM will be addressed in future work and is out of the scope of this paper.
 
 %============================================================================
-\subsection{A Bootstrapping Process for Reflective Languages}
+\section{Circular Language Definition}
 
 Bootstrapping requires a language kernel to be self-described. That is, there should exist a definition of the language expressed in the language it defines. This language definition includes the \textbf{base-level} entities of the language~(its classes and methods), and the \textbf{meta-level} entities with the means to define itself from scratch~(\eg a compiler or compiler interface to create methods and classes). The latter includes in addition the code of the bootstrapping process \ie the steps that must be followed to create a coherent and well formed language kernel~(Figure \ref{fig:language_definition}).
 
@@ -108,7 +104,7 @@ Thus, this language definition has direct impact on the design of the language w
 %
 %\item[The meta-level language elements.]
 
-\subsection{The process to create the language kernel}
+\section{A Bootstrapping Process}
 The bootstrapping process requires a particular order as it sets up very interrelated dependencies~(sometimes meta-circular in the case of reflective languages~\cite{Stra14a,Chib96a,Maes87a,Smit84a}) amongst the language elements. The order and specifics to build the language must be described in the language definition so the bootstrapping interpreter can make use of it to orchestrate the process. This process presents also which are the elements that will be introduced into the built language: it is here where we decide if the output language kernel will be reflective or not.
 
 Following we describe a bootstrap process we developed to bootstrap the Pharo language. A bootstrap process may be different for different languages, as they may contain different meta-models and concepts. As an example, Figure \ref{code:process} shows an excerpt of our particular bootstrap process applied to the Pharo language.
@@ -346,7 +342,7 @@ Our bootstrapping infrastructure measures the impact by making a diff between th
 \end{figure}
 
 % ===========================================================================
-\section{Validation} \label{sec:bootstrapping_validation}
+\chapter{Validation} \label{sec:bootstrapping_validation}
 
 In this section we present our results while bootstrapping three different three different case study languages.
 As all our languages share the same \VM, we start this section by describing the execution model of this \VM and its impact on the bootstrapping languages.
@@ -361,7 +357,7 @@ To reuse the parsing infrastructure and the bootstrapping interpreter, the three
 Finally in this section we present some measurements. To keep bootstrapping practical, we optimized the critical parts of the process for both the language user and the language engineer. On one side language users do not usually search to modify the language kernel but to use it, independently of the language initialization process it provides. To suit this scenario we do not build the language kernel each time: we generate a snapshot with a cached version of it. On the other side we find language designers/engineers whose job is to change the language kernel. For them the bootstrap process must provide with an acceptable development cycle for activities like debugging. With this case in mind, we optimized the \emph{bootstrapping interpreter} with a dynamic compilation technique. Each of the measurements we present below were made on a 2.2 Ghz Intel Core i7 machine with memory 8 Gb 1333 Mhz DDR3.
 
 
-\subsection{Pharo Execution Model in a Nutshell}\label{sec:pharo_execution_model}
+\section{Pharo Execution Model in a Nutshell}\label{sec:pharo_execution_model}
 
 To understand the common denominator between the three language kernels we bootstrapped, we describe briefly the execution model imposed by the Pharo \VM. The Pharo \VM features a bytecode-based stack interpreter with a generational garbage collector and a JIT compiler. For the interested reader, several publications describe its details and how it evolved during time~\cite{Gold83a,Inga97a,Mira11a}. On the execution model side, this \VM imposes us the following contract:
 
@@ -375,7 +371,7 @@ To understand the common denominator between the three language kernels we boots
 
 \end{description}
 
-\subsection{Case Study I: Pharo}\label{sec:bootstrap_pharo}
+\section{Case Study I: Pharo}\label{sec:bootstrap_pharo}
 
 Pharo~\cite{Blac09a} is an object-oriented reflective Smalltalk-inspired programming language. As it is a Smalltalk-80 inspired language, its class model includes implicit metaclasses: each class has its own metaclass, an instance of \ct{Metaclass}. Pharo also extends the execution model its \VM provides with traits~\cite{Scha03a} and class extensions~(\ie the ability to add methods to a class that belongs to another package). Finally Pharo has first class instance variables (slots) structured in object layouts \cite{Verw11a}. Figure \ref{fig:pharo_simplified_model} shows how the elements of the language are related to each other; the diagram is not meant to reflect the actual class graph but the language concepts.
 
@@ -398,7 +394,7 @@ Pharo is a fully-reflective language, placed at the end of the reflective spectr
 %This is achieved by loading the binary packages of hazelnut and using it's own specification in the building process.
 %Regarding the size of our obtained kernel, which is certainly not yet the minimal possible, our results shows that the design of the language kernel should be refined to create an even cleaner version.
 
-\subsection{Case Study II: Metatalk} \label{sec:bootstrap_metatalk}
+\section{Case Study II: Metatalk} \label{sec:bootstrap_metatalk}
 
 Metatalk~\cite{Papo11a} is a reflective language where reflection is fully decomposed in explicit meta-objects, namely mirrors~\cite{Brac04b}. Metatalk makes the usage of reflection explicit: a program's execution takes place in the base-level of the language kernel, and it jumps to a meta-level when a mirror is used. Metatalk class model is simpler than Smalltalk's class model. It does not impose metaclasses. Instead, all classes are instances of the single \ct{Class} class. If there is a need for metaclasses~(to share behavior between classes), the developer can write its own explicit metaclasses~(Figure \ref{fig:metatalk_simplified_model}).
 
@@ -413,7 +409,7 @@ Metatalk mirrors decompose reflective behavior as well as the language meta-info
 Metatalk's can be bootstrapped in two different ways. A non-reflective bootstrap initializes only the main classes of the language but does not create its meta-level. The non-reflective bootstrap does not contain mirrors. A second bootstrap creates a reflective Metatalk, which based on the latter one introduces the mirror instances with their corresponding metadata. We could bootstrap easily Metatalk in such a way due to the clear decomposition of its reflective elements. 
 
 %%%%%%%%%%%%%%%%%%% Case of study and Results 2 %%%%%%%%%%%%%%%%%%%%
-\subsection{Case Study III: Candle} \label{sec:bootstrap_candle}
+\section{Case Study III: Candle} \label{sec:bootstrap_candle}
 
 Candle is a Smalltalk-based language with a micro language kernel. Its class model includes implicit metaclasses as Smalltalk's and Pharo's one. However, Candle has no support for traits or slots~(Figure \ref{fig:candle_simplified_model}). We built Candle's language kernel by adapting MicroSqueak~\cite{Malo11a} to run on top of the Pharo \VM. This micro language kernel was designed with the explicit goal of being the minimal distribution for the Squeak Smalltalk language.
 
@@ -426,7 +422,7 @@ Candle is a Smalltalk-based language with a micro language kernel. Its class mod
 
 Candle is a partially reflective language defined by a total of 49 classes and a reduced set of methods. Candle includes a minimal core of the language, a basic collection library and basic file IO support. It also provides with object introspection and mutation facilities. It does not include, however, a class builder or compiler to extend itself.%A bootstrapped Candle kernel presents a memory footprint of 80KB, with potential applications in embedded devices with little available memory.\gp{remeasure it. Do we care about size?}
 
-\subsection{Measurements}
+\section{Measurements}
 
 In this section we present the benchmarks we did to measure the bootstrap time of each of our three languages using our standard infrastructure. Table \ref{tb:measurements} shows the time to bootstrap each of the three languages using an unoptimised AST interpreter. This time comprehends the entire bootstrap process: from parsing the code in the language definition to its complete setup. We executed each of these benchmarks 10 times. The results table puts also the results in context: it presents how many code entities~(classes, traits, mirrors) and methods are built for each language. Notice that the bootstrapping time depends on the amount of elements it builds and also on their complexity. For example, creating a class in Pharo involves a biggest graph of objects than in the other two languages (because of the introduction of traits and class layouts). Section \ref{sec:optimisations} introduces two optimizations we did based on these measurements, that focus on the startup time and the development cycle of the bootstrap. 
 
@@ -452,7 +448,7 @@ We can observe from our measurements that bootstrapping Metatalk takes in averag
 
 Particularly about bootstrapping Pharo, a lack of modularity of the language impacts in the amount of code elements we have to build. Pharo's language kernel is historically a monolithic system which precludes us to build a minimal system. In fact, the Pharo language kernel we are bootstrapping represents a subset of the full Pharo language as it is distributed.
 
-\subsection{Optimisations}\label{sec:optimisations}
+\section{Optimisations}\label{sec:optimisations}
 
 To be useful in practice, we understand that the bootstrap process should have the following two properties: (a) be fast enough to provide a good feedback loop and allow debugging to the language engineer and (b) provide a short startup time for the language users. Optimising a bootstrap process is indeed a challenge since we cannot optimise it statically by fixing the meta-level semantics, as changing them is the main purpose of the bootstrap. In the following sections we show how snapshotting and dynamic compilation aid in these two optimisation scenarios. 
 

@@ -231,6 +231,103 @@ On one side, when defining the language runtime at the \VM level, we rely on the
 
 On the other side, we found that reflective languages support naturally the usage of the language abstractions and tools to modify the language runtime. Reflective languages benefit from the reification of the language concepts to be able to change them from the language itself. Languages such as Smalltalk show how debuggers and code browsers can be built using such features.
 
+\section{Problems of Application Bloat}
+
+Deployed object-oriented applications often contain \emph{code units}~(e.g. packages, classes, methods) that the running application never uses~(Section~\ref{sec:problem}).
+This problem shows itself more evident and harder to control under the usage of third party software. 
+Third party libraries and frameworks are designed in a generic fashion that allows multiple usages and functionalities, while applications use only few of them. 
+Examples are logging libraries, web application frameworks or object-relational mappers.
+
+Unused deployed code units have an undesired impact when targeting a constrained infrastructure. 
+Constrained devices may constrain applications due to a restrictive hardware such as low primary or secondary memory~\cite{Mart12a}, or even software impositions such as the Android's Dalvik VM restriction to deploy only 65536 methods\footnote{According to dalvik's bytecode documentation~(\url{http://source.android.com/devices/tech/dalvik/dalvik-bytecode.html}), the source register accepts values between 0 and 65535.}. Big JavaScript mashup applications have an impact on loading time due to network speed and parsing time.
+These limitations may forbid the deployment of applications that contain lots of code units, or limit the amount of applications and content a user can have in its device.
+
+Existing solutions to this problem propose to eliminate dead code by extracting used code units of an application, and thus reduce their size and memory footprint. The majority of the solutions in the field propose to automatically detect and extract used code units, so called \emph{tailoring}, with static call graph construction as the most dominant technique~\cite{Grov97a}. 
+These static approaches present limitations in the presence of dynamic features such as reflection~\cite{Livs05a}, or in the absence of static type annotations. Additionally, they do not allow the user to customize the process of selection to cover different levels of an application's code \ie a user may want to extract only the used application specific code and let third-party and base-language libraries untouched; another user may want apply the process to the whole of the application.
+
+
+\subsection{A Motivating Example} \label{sec:example_intro}
+
+To clearly show the problem, consider the application using a logging library in Figure~\ref{fig:example_dead_code}. In this figure, we emphasize in gray the unused code units that can safely be removed.
+%An interface is present in the diagram to show polymorphism between two classes that do not share a class inheritance hierarchy. 
+%However, some languages, such as the dynamically typed ones, may not need to represent it in the source code.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=.7\linewidth]{example_dead_code}
+\caption{\small\textbf{Example of unused code units.} In gray, the unused code units that can safely be removed.\label{fig:example_dead_code}}
+\end{center}
+\end{figure}
+
+Figure~\ref{fig:code_example1} shows the code of this application, written in the Pharo Smalltalk language. This application contains a \ct{MainApp} class with a \ct{start} method, which is the entry point of our application. The \ct{start} method creates an instance of \ct{Stdout\-Logger} and logs the application's start and end. In turn, the \ct{StdoutLogger} uses the \ct{stdout} global instance to log in the standard output the current time and the message. To print the time, the \ct{StdoutLogger} makes use of the \ct{Time} class from the base libraries of the language. Note that for the sake of clarity, we didn't include in the example all base libraries, though, in modern programming languages they represent a large codebase with several features going from networking to multithreading. For example, Java 8 SE contains 4240 classes\footnote{according to the javadoc API}, and the development edition of Pharo 3.0~\cite{Blac09a} contains 4115 classes and traits.
+
+\begin{figure}[ht]
+\begin{code}
+MainApp>>start (
+    logger := StdoutLogger new.
+    logger log: 'Application has started'.
+    "do something"
+    logger log: 'Application has finished'. )
+
+!\unusedcode{StdoutLogger>>newLine (}!
+!\unusedcode{~~~stdout newLine. )}!
+
+StdoutLogger>>log: aMessage (
+    stdout nextPutAll: Time now printString.
+    stdout nextPutAll: aMessage.
+    stdout newLine. )
+    
+!\unusedcode{RemoteLogger>>log: aMessage (}!
+!\unusedcode{~~~| socket |}!
+!\unusedcode{~~~socket := self newSocket.}!
+!\unusedcode{~~~socket nextPutAll: Time now printString.}!
+!\unusedcode{~~~socket nextPutAll: aMessage.}!
+!\unusedcode{~~~socket newLine. )}!
+
+!\unusedcode{RemoteLogger>>newSocket (}!
+!\unusedcode{~~~"...."}!
+!\unusedcode{~~~"creates an instance of socket given some configuration" )}!
+\end{code}
+
+\caption{ \small\textbf{Code of the example logging application.} In gray, methods not used by the application.\label{fig:code_example1}}
+\end{figure}
+
+In this example we can detect the following unused code units, shown in grey in Figure~\ref{fig:example_dead_code} and Figure~\ref{fig:code_example1}:
+\begin{enumerate}
+\item The logger library includes two logging classes~(\ct{Stdout\-Logger} and \ct{RemoteLogger}). Only the \ct{StdoutLogger} is used and thus, the \ct{RemoteLogger} class can be discarded.
+\item Since the \ct{MainApp} class does not use the \ct{Socket} class nor the \ct{RemoteLogger} class~(the only user of the \ct{Socket} class), the \ct{Socket} class can be discarded.
+\item No class in the application makes use of the \ct{Date} class, according that it is not used in the base libs either. Then, this class can be safely removed.
+\item The method \ct{newLine}~(lines 7-8 of Figure~\ref{fig:code_example1}) of the \ct{StdoutLogger} class is not used and can be also removed.
+\item The \ct{StdoutLogger} class uses the \ct{Time} class to print the current time. Then, all code units that are not related to the \ct{Time now} resolution or printing~(\ie time arithmetic) could be considered as unused.
+\end{enumerate}
+
+We would like to generate a new version of this application not containing these unused code units while keeping the application's behavior. We call this technique \emph{application tailoring}.
+
+\subsection{Challenges of Application Tailoring} \label{sec:challenges}
+
+A lot of work exists on the tailoring of statically-typed applications~\cite{Cour10a,Rays02a,Tip03a,Popa04a,Teod01a}, where type annotations aid in the resolution of which piece of code will be used at runtime. 
+However, static analysis is not an option in the context of dynamically-typed languages or in the presence of meta-programming and reflection~\cite{Livs05a}.
+%~\cite{Mart12a}
+In this context of dynamically-typed and object-oriented programs that may use reflection, we identify the following main challenges in creating tailored applications:
+
+\begin{description}
+
+\item[Language Runtime Unused Code Units.] As the core point of this thesis, we would like to extract not only application code but also code that belongs to the language base libraries, including its core meta-model.
+
+\item[Dynamic typing.] Dynamically-typed languages cannot benefit from the most powerful static analysis due to the absence of type annotations. Name-based static analyses~(static analyses that build a simpler call graph based only on method names) can be used on them, but are not as efficient. Static techniques to detect code unit usage, such as call-graph analysis, need the support of more dynamic techniques \eg tracking runtime information, following the application's execution flow, or performing symbolic execution.
+
+\item[Polymorphism and inheritance.] Polymorphism in object-oriented languages allows a code unit to treat objects of different concrete types in the same way as soon as they share a common interface. Inheritance plays a similar role: any class can extend another class and provide different behavior while sharing a common API.
+As a consequence, both polymorphism and inheritance make the behavior of a program more difficult to predict by just statically analyzing its code units~\cite{Taen89a}.
+
+\item[Application runtime configuration.] Modern applications often contain libraries and frameworks besides their proper code. 
+To make these different code units fit together, applications rely on heavy configurations. 
+These configurations are usually present in configuration files looked up dynamically by the application. 
+Based on these configurations, the dependency injection pattern is usually used to dynamically set up the application. 
+This recurrent and standard process for configuring applications implies that static analysis will be inefficient to detect used code units without library-specific knowledge.
+
+\item[Reflection.] Reflection makes static analysis inoperative by allowing an application to execute unanticipated pieces of code. 
+Any \ct{String} resulting from a program execution or program configuration can denote a message send\footnote{We refer method invocations as message sends because they represent better from our understanding the dynamic property of the invocation.}, the name of a class to be instantiated, or even a script to be executed. Reflection is indeed important to cover, since it is a broadly used tool in industrial applications with object relational mappers such as Hibernate or Glorp and web frameworks such as Ruby On Rails, Struts or Seaside.
+\end{description}
 
 \section{Problem Statement}
 
@@ -241,6 +338,8 @@ A better language runtime initialization solution should have the following prop
 \item Clarify the separation between \VM and language.
 \item Ensure the initial state of the language even in presence of a reflective architecture (Solving the bootstrapping and metastability problems as defined in AMOP~\cite{Kicz91a}).
 \end{itemize}
+
+\section{Contributions}
 
 % =============================================================================
 \section{Thesis Outline}
@@ -286,6 +385,7 @@ Furthermore we list undergoing efforts on the \B infrastructure and future work.
 \item[\chapref{conclusion}] concludes the dissertation.
 
 \end{description}
+
 
 % =============================================================================
 \input{chapter-footer.tex}

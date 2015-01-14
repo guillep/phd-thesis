@@ -1,22 +1,12 @@
 \input{chapter-header.tex}
 % ===========================================================================
-\chapter{Evolution by Extraction: Tailoring}
+\part{Evolution by Extraction: Tailoring}
 \minitoc
 % ===========================================================================
 \introduction
 % ===========================================================================
 
-Deployed object-oriented applications often contain \emph{code units}~(e.g. packages, classes, methods) that the running application never uses~(Section~\ref{sec:problem}).
-This problem shows itself more evident and harder to control under the usage of third party software. 
-Third party libraries and frameworks are designed in a generic fashion that allows multiple usages and functionalities, while applications use only few of them. 
-Examples are logging libraries, web application frameworks or object-relational mappers.
 
-Unused deployed code units have an undesired impact when targeting a constrained infrastructure. 
-Constrained devices may have restrictive hardware such as low primary or secondary memory, or even software impositions such as the Android's Dalvik VM restriction to deploy only 65536 methods\footnote{According to dalvik's bytecode documentation~(\url{http://source.android.com/devices/tech/dalvik/dalvik-bytecode.html}), the source register accepts values between 0 and 65535.}. Big JavaScript mashup applications have an impact on loading time due to network speed and parsing time.
-These limitations may forbid the deployment of applications that contain lots of code units, or limit the amount of applications and content a user can have in its device.
-
-Existing solutions to this problem propose to eliminate dead code by extracting used code units of an application, and thus reduce their size and memory footprint. The majority of the solutions in the field propose to automatically detect and extract used code units, so called \emph{tailoring}, with static call graph construction as the most dominant technique~\cite{Grov97a}. 
-These static approaches present limitations in the presence of dynamic features such as reflection~\cite{Livs05a}, or in the absence of static type annotations. Additionally, they do not allow the user to customize the process of selection to cover different levels of an application's code \ie a user may want to extract only the used application specific code and let third-party and base-language libraries untouched; another user may want apply the process to the whole of the application.
 
 This chapter describes the \emph{run-fail-grow} (RFG) technique: an alternative solution to dead code elimination that identifies at runtime those code units that are actually used in an application~(Section~\ref{sec:model}).
 For such a task, in RFG we launch a \emph{reference} application containing all code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application containing a minimal set of code units we want to ensure in our application, so called a \emph{seed}.
@@ -35,181 +25,10 @@ It also successfully deals with applications that make use of programming langua
 We developed Tornado, an RFG implementation using \Vtt~(Section~\ref{sec:implementation}). In Tornado, the nurtured application resides inside a virtualized runtime. We use \Vtt to monitor the execution of the nurtured application to install code when we need to. We validate our work by conducting several experiments (Section~\ref{sec:results}) and comparing our solution to existing related work on application tailoring~(Section~\ref{sec:related_work}).
 Finally, we discuss some aspects and trade-offs of the run-fail-grow approach and our implementation~(Section~\ref{sec:discussion}).
 
-%Section~\ref{sec:problem} illustrates the problem of having unused code in application deployment units, it then describes the challenges of application tailoring and finally it presents a list of criteria for evaluating tailoring techniques.
-%Section~\ref{sec:model} thoroughly describes our \emph{run-fail-grow} approach to tailor applications.
-%Section~\ref{sec:implementation} presents Tornado, our run-fail-grow implementation in the Pharo programming language.
-%Section~\ref{sec:results} reports on results of experiments we conducted on two different applications. 
-%Section~\ref{sec:related_work} presents an evaluation of our solution and compares it to related work.
-%Section~\ref{sec:discussion} discusses some aspects and trade-offs of the run-fail-grow approach and our implementation.
-%Finally, Section~\ref{sec:conclusion} concludes this paper and presents some future work.
 
 
 % ===========================================================================
-\section{Problem of Unused Code Units}\label{sec:problem}
-Deployed applications contain a set of code units such as classes and methods.
-At run-time, required code units are loaded into RAM according to some \emph{loading strategy}.
-Scripting languages such as JavaScript, Ruby, Python or PHP have an explicit loading strategy: they load and run a script file and all its declarations when an explicit import statement is found. 
-Java uses a transparent code unit loading strategy based on class loaders~\cite{Lian98a}: a class loader loads classes on demand in a transparent way for the application code.
-Besides the loading strategy, an application may load a code unit that is only partially used, such as a class with some methods that are never executed.
-Additionally, in both situations the deployed application tends to occupy more secondary memory than necessary since the full set of code units should be available to be loaded as we cannot anticipate their usage.
-
-
-%Figure~\ref{fig:unusedCodeUnits} shows a typical deployment scenario with unused code units.
-%
-%This problem becomes more evident with the inclusion of third party libraries~(and frameworks). 
-%Third party libraries provide often a great variety of code units, usually designed in a generic fashion. 
-%They allow multiple usages, while applications tend to use only some of them. 
-%Additionally, application developers do not often modify and customize third party libraries to fit their needs but use them as black boxes. 
-%Modifying them would mean to lose compatibility with the original development branch of the library and having deep knowledge on the library.
-%
-%\begin{figure}[ht]
-%\begin{center}
-%\includegraphics[width=1\linewidth]{components}
-%\caption{\textbf{Unused Code Units.} Package P1 contains class A which is used during runtime and class B which is never needed and thus, not loaded. Package P2 contains class C which is partially used~(it contains methods that are never invoked) though it's completely loaded. Class D is loaded because an instance of it is created, but it is never used.\label{fig:unusedCodeUnits}}
-%\end{center}
-%\end{figure}
-
-Unused code units represent serious drawbacks in constrained devices. 
-First, unused code units may forbid the deployment into a constrained resource device.
-It may also interfere with the deployment and usage of other applications, because of large memory footprints in both secondary~(disk storage) and primary~(RAM) memory~\cite{Mart12a} or the presence of slow networks in the case of rich web applications.
-Second, some deployment targets may have an infrastructure designed in such a manner that forbids the deployment of large applications. For example, the Android's Dalvik VM restricts an application to deploy only 65536 methods per application.
-
-% \noury{I would remove this paragraph}\lf{I rewrote it but yes we can discard it}
-% The rest of this section is organized as follows. 
-% Section~\ref{sec:example_intro} illustrates these problems through an example and shows what the ideal case would be. 
-% Section~\ref{sec:challenges} shows the challenges involved in controlling unused code units in object-oriented applications. 
-% Finally, Section~\ref{sec:criteria} defines evaluation criteria that an ideal solution should fulfill.
-
-%\begin{description}
-%\item[Wasting storage space.] A deployment unit or some of the code units it contains may be never loaded by the runtime environment. Those unused code units stay in secondary memory wasting storage space that could be used for other applications.
-%
-%\item[Large memory footprints.] Big loading granularities produce the load of several code units at the same time. When that is the case, the runtime environment may load code units which will never be used. These unused code units produce larger memory footprints unnecessarily.
-%
-%\item[Mismatch with the runtime representation.] The deployment units contain code units that usually describe the structural~(\eg packages, classes) and behavioral~(\eg methods, scripts) parts of an application. However, the main code units in charge of code execution during an application's runtime are objects, in turn organized in graphs. Objects and object graphs are not directly represented in the deployment units, but through the code that creates them inside scripts and methods. This mismatch between the deployment code units and the code units existing in runtime poses the problem of unused objects: an application may create, store or cache objects that it may not use, and thus, waste memory in them\gp{cite mariano?}.
-%\end{description}
-
-\subsection{A Motivating Example} \label{sec:example_intro}
-
-To clearly show the problem, consider the application using a logging library in Figure~\ref{fig:example_dead_code}. In this figure, we emphasize in gray the unused code units that can safely be removed.
-%An interface is present in the diagram to show polymorphism between two classes that do not share a class inheritance hierarchy. 
-%However, some languages, such as the dynamically typed ones, may not need to represent it in the source code.
-
-\begin{figure}[ht]
-\begin{center}
-\includegraphics[width=.7\linewidth]{example_dead_code}
-\caption{\small\textbf{Example of unused code units.} In gray, the unused code units that can safely be removed.\label{fig:example_dead_code}}
-\end{center}
-\end{figure}
-
-Figure~\ref{fig:code_example1} shows the code of this application, written in the Pharo Smalltalk language\footnote{To those not versed in Smalltalk-like syntax, these are the equivalents to Java that are required for this example:\\
-\ct{new SomeClass();} -> \ct{SomeClass new.}\\
-\ct{this.simpleMethod();} -> \ct{self simpleMethod.}\\
-\ct{other.methodWithArg(arg);} -> \ct{other methodWithArg: arg.}\\
-\ct{/*a comment*/} -> \ct{"a comment"}\\
-\ct{"a string"} -> \ct{'a string'}
-}. This application contains a \ct{MainApp} class with a \ct{start} method, which is the entry point of our application. The \ct{start} method creates an instance of \ct{Stdout\-Logger} and logs the application's start and end. In turn, the \ct{StdoutLogger} uses the \ct{stdout} global instance to log in the standard output the current time and the message. To print the time, the \ct{StdoutLogger} makes use of the \ct{Time} class from the base libraries of the language. Note that for the sake of clarity, we didn't include in the example all base libraries, though, in modern programming languages they represent a large codebase with several features going from networking to multithreading. For example, Java 8 SE contains 4240 classes\footnote{according to the javadoc API}, and the development edition of Pharo 3.0~\cite{Blac09a} contains 4115 classes and traits.
-
-\begin{figure}[ht]
-\begin{code}
-MainApp>>start (
-    logger := StdoutLogger new.
-    logger log: 'Application has started'.
-    "do something"
-    logger log: 'Application has finished'. )
-
-!\unusedcode{StdoutLogger>>newLine (}!
-!\unusedcode{~~~stdout newLine. )}!
-
-StdoutLogger>>log: aMessage (
-    stdout nextPutAll: Time now printString.
-    stdout nextPutAll: aMessage.
-    stdout newLine. )
-    
-!\unusedcode{RemoteLogger>>log: aMessage (}!
-!\unusedcode{~~~| socket |}!
-!\unusedcode{~~~socket := self newSocket.}!
-!\unusedcode{~~~socket nextPutAll: Time now printString.}!
-!\unusedcode{~~~socket nextPutAll: aMessage.}!
-!\unusedcode{~~~socket newLine. )}!
-
-!\unusedcode{RemoteLogger>>newSocket (}!
-!\unusedcode{~~~"...."}!
-!\unusedcode{~~~"creates an instance of socket given some configuration" )}!
-\end{code}
-
-\caption{ \small\textbf{Code of the example logging application.} In gray, methods not used by the application.\label{fig:code_example1}}
-\end{figure}
-
-In this example we can detect the following unused code units, shown in grey in Figure~\ref{fig:example_dead_code} and Figure~\ref{fig:code_example1}:
-\begin{enumerate}
-\item The logger library includes two logging classes~(\ct{Stdout\-Logger} and \ct{RemoteLogger}). Only the \ct{StdoutLogger} is used and thus, the \ct{RemoteLogger} class can be discarded.
-\item Since the \ct{MainApp} class does not use the \ct{Socket} class nor the \ct{RemoteLogger} class~(the only user of the \ct{Socket} class), the \ct{Socket} class can be discarded.
-\item No class in the application makes use of the \ct{Date} class, according that it is not used in the base libs either. Then, this class can be safely removed.
-\item The method \ct{newLine}~(lines 7-8 of Figure~\ref{fig:code_example1}) of the \ct{StdoutLogger} class is not used and can be also removed.
-\item The \ct{StdoutLogger} class uses the \ct{Time} class to print the current time. Then, all code units that are not related to the \ct{Time now} resolution or printing~(\ie time arithmetic) could be considered as unused.
-\end{enumerate}
-
-We would like to generate a new version of this application not containing these unused code units while keeping the application's behavior. We call this technique \emph{application tailoring}.
-
-\subsection{Challenges of Application Tailoring} \label{sec:challenges}
-
-A lot of work exists on the tailoring of statically-typed applications~\cite{Cour10a,Rays02a,Tip03a,Popa04a,Teod01a}, where type annotations aid in the resolution of which piece of code will be used at runtime. 
-However, static analysis is not an option in the context of dynamically-typed languages or in the presence of meta-programming and reflection~\cite{Livs05a}.
-%~\cite{Mart12a}
-In this context of dynamically-typed and object-oriented programs that may use reflection, we identify the following main challenges in creating tailored applications:
-
-\begin{description}
-
-\item[Language Runtime Unused Code Units.] As the core point of this thesis, we would like to extract not only application code but also code that belongs to the language base libraries, including its core meta-model. This presents the problems already stated in \chapref{background}.
-
-\item[Dynamic typing.] Dynamically-typed languages cannot benefit from the most powerful static analysis due to the absence of type annotations. Name-based static analyses~(static analyses that build a simpler call graph based only on method names) can be used on them, but are not as efficient. Static techniques to detect code unit usage, such as call-graph analysis, need the support of more dynamic techniques \eg tracking runtime information, following the application's execution flow, or performing symbolic execution.
-
-\item[Polymorphism and inheritance.] Polymorphism in object-oriented languages allows a code unit to treat objects of different concrete types in the same way as soon as they share a common interface. Inheritance plays a similar role: any class can extend another class and provide different behavior while sharing a common API.
-As a consequence, both polymorphism and inheritance make the behavior of a program more difficult to predict by just statically analyzing its code units~\cite{Taen89a}.
-
-\item[Application runtime configuration.] Modern applications often contain libraries and frameworks besides their proper code. 
-To make these different code units fit together, applications rely on heavy configurations. 
-These configurations are usually present in configuration files looked up dynamically by the application. 
-Based on these configurations, the dependency injection pattern is usually used to dynamically set up the application. 
-This recurrent and standard process for configuring applications implies that static analysis will be inefficient to detect used code units without library-specific knowledge.
- % The configuration code unit adds another dynamic element to the application, making its behavior more complex to predict with static approaches.
-
-%\item[Application configuration granularity.] An application's configuration is not often granular. Libraries and frameworks may initialize during their startup lots of objects that are not used during the application's life cycle. These configuration objects may remain in static/class fields cached until the application is stopped, impacting in the memory footprint \gp{this is a problem, not a challenge. The challenge is to be able to detect unused objects in addition to methods}.
-
-\item[Reflection.] Reflection makes static analysis inoperative by allowing an application to execute unanticipated pieces of code. 
-Any \ct{String} resulting from a program execution or program configuration can denote a message send\footnote{We refer method invocations as message sends because they represent better from our understanding the dynamic property of the invocation.}, the name of a class to be instantiated, or even a script to be executed. Reflection is indeed important to cover, since it is a broadly used tool in industrial applications with object relational mappers such as Hibernate or Glorp and web frameworks such as Ruby On Rails, Struts or Seaside.
-\end{description}
-
-\subsection{Evaluation Criteria for Application Tailoring} \label{sec:criteria}
-
-
-This section presents properties that we consider the most relevant to evaluate techniques addressing the issue of unused deployment code units.
-
-\begin{description}
-
-\item[Reflection.] An ideal tailoring solution should handle correctly reflective code and resolve the unanticipated code executions in the same way as the application would do during runtime.
-
-\item[Base Library Specialization.] A programming language contains several base libraries covering very common and generic tasks. Not all the code units in these libraries are used in an application. An ideal tailoring solution should tailor base libraries of the language to reduce an application's deployment memory footprint.
-
-\item[Third Party Libraries Specialization.] Applications use several third-party libraries and frameworks covering several aspects of application development such as user interfaces, persistence or publication of services. Third party libraries contain large code bases and many dependencies. Thus, an ideal tailoring solution should consider the existence of third-party software.
-
-\item[Legacy Code.] An ideal tailoring solution should be applicable on already existing applications and not require modifications on them.
-
-\item[Dedicated Infrastructure for Deployment.] An ideal tailoring solution should produce a version of the application that is able to run on the official production infrastructure~(such as the VM) without overhead.
-
-\item[Flexibility.] An ideal solution for tailoring an application should support many different levels of application. Some applications may not need to tailor base libraries because they are shared with other applications. However, tailoring base libraries may be useful on those applications residing alone in constrained devices.
-
-\item[Applicable without type annotations.] An ideal tailoring solution should be applicable to dynamic languages with no type annotations.
-
-\item[Full Coverage.] An ideal tailoring solution will guarantee that all code units selected as part of the deployable application are those needed. That is, it does not contain extra code units, nor it misses code units.
-
-\end{description}
-
-
-% ===========================================================================
-\section{Run-Fail-Grow: a Dynamic Approach} \label{sec:model}
-
-\subsection{Run-Fail-Grow in a Nutshell}
+\chapter{Run-Fail-Grow: a Dynamic Approach} \label{sec:model}
 
 We propose run-fail-grow (RFG) for tailoring. Briefly, RFG works by launching a \emph{reference} application encompassing the full application with all its code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application that has only part of its required code units installed. The nurtured application is run, and when a failure is detected because it misses a code unit, we install into it the corresponding code unit from the reference application. Thus, the nurtured application grows progressively as missing code units are found and solved.
 Once finished, the nurtured application is ready to be deployed on target devices. Figure~\ref{fig:runfail} depicts the basics of our run-fail-grow approach.
@@ -239,7 +58,7 @@ The dynamic nature of RFG tackles all our challenges. Missing code units are det
 %%%%%%%%%% 
 
 
-\subsection{Run-Fail-Grow through an example}
+\section{Run-Fail-Grow through an example}
 We illustrate in this section the ideas behind RFG with the example introduced in Section~\ref{sec:example_intro}. For the sake of clarity, in this example we will tailor the application's code units and not the base libraries \ie the seed includes the base libraries.
 
 \paragraph{Setup of the Environment} First, we launch the reference application~(cf. Figure~\ref{fig:example_reference}) and the nurtured application~(cf. Figure~\ref{fig:example_all} Step 0). We fill the nurtured application with a seed containing the language base libraries. Thus, each application has its own copy of the base libraries, as shown in this case with the \ct{Date} and \ct{Time} classes and the \ct{stdout} object.
@@ -320,7 +139,7 @@ Once the \ct{log:} method finishes, the execution returns to the \ct{start} meth
 %\end{center}
 %\end{figure}
 
-\subsection{Detecting Missing Code Units}\label{sec:model_detail}
+\section{Detecting Missing Code Units}\label{sec:model_detail}
 
 
 RFG depends on getting notified when a missing code unit failure appears. RFG's algorithm is based on traps to achieve this task, as shown in Algorithm~\ref{alg:tailoring_process}. Traps are placeholders that are installed in the nurtured application in the place of real elements. They are triggered whenever the application tries to access them. In case a trap is triggered, we stop the nurtured application execution, we install the missing code units replacing their corresponding traps, and finally resume the execution from the moment immediately before the trap was triggered. Traps are installed dynamically in the nurtured application following the information flow of the application \eg when a method \ct{A} is installed some traps are installed on it to capture possible missing code unit failures it may cause.
@@ -360,7 +179,7 @@ We identified the following as the basic traps that are necessary to tailor an a
 
 
 
-\subsection{Customizing Dead Code Elimination with Seeds}\label{sec:seeds}
+\section{Customizing Dead Code Elimination with Seeds}\label{sec:seeds}
 
 The level of tailoring of RFG can be specified using seeds. A seed is a collection of code units whose installation is forced into the nurtured application. These code units are available for the nurtured application and thus, accessing them does not trigger missing code unit failures.
 
@@ -379,22 +198,6 @@ Figure \ref{fig:nurturing_map_model} presents the tailoring map showing two exam
 
 %============================================================================
 \section{Tornado: RFG in \Vtt} \label{sec:implementation}
-
-\subsection{RFG's Implementation Requirements}\label{sec:requirements}
-
-We identify the following requirements for a development platform to implement RFG.
-%Some platforms present all of these elements while some others present only part of them. In the latter case, the missing elements should be developed as part of the solution.
-In this and the following sections we explain how we fulfilled each of these requirements and how we put them together to implement our solution. Note that these features are only needed to implement RFG and prepare an application for deployment. Once RFG is applied, we must be able to deploy our application on the standard platform infrastructure~(virtual machine, operating system), without special support.
-
-\begin{description}
-\item[Control application's execution.] RFG requires full control on an application's execution. It needs to be able to suspend all threads of an application when a trap is triggered, and to resume them once the trap is handled.
-
-\item[Capture message-sends.] RFG requires to intercept an application's execution at runtime to detect missing code unit failures, and thus, to implement traps. In particular, it needs the ability to intercept all message sends of the application, and in particular method invocations.
-
-\item[Install and Query Code at Runtime.] RFG requires a platform where it is possible to install code and query the installed code at runtime. Classes, methods and objects have to be installed at any moment of the execution, including the modification of classes that already contain instances, or objects that are already cloned. Also, we need to fetch the code units installed in the reference application 
-\end{description}
-
-\subsection{Tornado's Overview}\label{sec:infrastructure}
 
 We implemented our RFG technique as a tool called \emph{Tornado}. Tornado is implemented using \Vtt, to tailor applications written in the Pharo programming language.
 %Pharo is a reflective and dynamic programming language inspired from Smalltalk.
@@ -513,10 +316,10 @@ Once Tornado is stopped, the nurtured application contains all the code units ne
 
 Finally, Tornado extracts the application code units using one of two different techniques: (a) the creation of a snapshot file containing all code units and already initialized objects; or (b) build a static description of the application containing the code for all classes and methods that should be part of it.
 
-
-\section{Experiments and Results}\label{sec:results}
-
-\subsection{Experiment's Methodology}
+\chapter{Validation}
+%\section{Experiments and Results}\label{sec:results}
+%
+%\subsection{Experiment's Methodology}
 We evaluate Tornado by conducting five experiments that tailor different Pharo applications, with increasing requirements. We chose our experiments under the objectives of (a) understand how minimal are the applications we can tailor, (b) explore how successfully we address the challenges we stated in Section \ref{sec:challenges} and (c) exercise those cases that push to the limit the interaction between the language and the VM. Each of our experiments is detailed in the following sections.
 
 Our experiment methodology consists in the following steps:
@@ -529,7 +332,9 @@ Our experiment methodology consists in the following steps:
 \item \textbf{Perform measurements.} Finally, to present our results we measure the size of the generated snapshots files and compare them against two different Pharo distributions prepared for production, as we present in Section \ref{sec:results_discussion}.
 \end{enumerate}
 
-\subsection{Experiment I: Adding Two Numbers}
+\section{Experiments}
+
+\subsection*{Experiment I: Adding Two Numbers}
 
 The smallest~(in terms of size) interesting program to tailor is adding two numbers, without the involvement of any I/O \ie an application just executing the \ct{"2 + 3"} statement as entry point. Tailoring this program is challenging because it stresses the infrastructure by installing only the minimal elements an application needs to run. It makes evident how small a tailored application can be. Additionally, it is interesting since it makes use of the following features of the Pharo language and infrastructure:
 
@@ -538,7 +343,7 @@ The smallest~(in terms of size) interesting program to tailor is adding two numb
 \item[Special selectors.] The method selector \ct{+} is a special selector for the Pharo VM. Special selectors are optimized as they are broadly used messages, for example for arithmetics. First, they are implemented as special bytecodes to avoid method lookup. If the special bytecode cannot be executed because some VM assertions are not valid~(\eg class and object format assumptions), the VM performs the default method lookup. In this experiment the VM should take care of small integer arithmetic \ie it should fulfill all VM assumptions and not perform a method lookup; Tornado should install no extra methods nor classes.
 \end{description}
 
-\subsection{Experiment II: Factorial of a little number}
+\subsection*{Experiment II: Factorial of a little number}
 
 The following experiment in incremental complexity is the factorial of a small number, again without the involvement of any I/O \ie an application executing the \ct{"10 factorial"} statement as its entry point. Factorial uses arithmetic as the latter experiment~(sums and multiplications), while it also adds the following interesting cases:
 
@@ -547,7 +352,7 @@ The following experiment in incremental complexity is the factorial of a small n
 \item[Recursion.] The factorial implementation in Pharo base libraries is recursive. Additionally, this recursion activates the \ct{factorial} method many times, creating many activation records in the VM. Activation records are reified lazily whenever it is accessed reflectively, or the stack depth is deeper than the maximum supported.
 \end{description}
 
-\subsection{Experiment III: Factorial of a large number}
+\subsection*{Experiment III: Factorial of a large number}
 
 Following, we experimented with an application whose entry point was the \ct{"100 factorial"} statement. This application does not either make use of any I/O. The factorial of a large integer creates eventually integers that exceed 32 bits, and thus, do not fit as immediate small integers. This experiment adds the following interesting cases:
 \begin{description}
@@ -555,7 +360,7 @@ Following, we experimented with an application whose entry point was the \ct{"10
 \item[Polymorphism.] The introduction of large integers introduces also \emph{polymorphism} between them and the immediate small integers. They share the same class hierarchy~(\ct{Integer} is the superclass of \ct{SmallInteger} and \ct{LargePositiveInteger}), being the method \ct{factorial} implemented in the superclass and having each of the subclasses their own implementation of the arithmetic methods for adding and multiplying.
 \end{description}
 
-\subsection{Experiment IV: Reflective invocations} \label{sec:results_helloworld}
+\subsection*{Experiment IV: Reflective invocations} \label{sec:results_helloworld}
 
 The fourth experiment introduces reflective invocations. Figure \ref{fig:reflective_invocations} introduces the code we used for this experiment. The \ct{User} class in our example has two fields (\ct{name} and \ct{age}), and four methods. Two of these methods (\ct{age} and \ct{name}) return directly the field with the same name, the method \ct{hasWritePermissions} is annotated with the \ct{property} annotation (a pragma in Pharo's terminology) and the method \ct{isMinor} is a normal method. We introduce also \ct{PropertyExtractor} class with the responsibility of returning the name of those methods that are properties of an object \ie all methods that only return a field, and all those methods annotated with the \ct{property} annotation. The statement we introduced as the entry point for this experiment is \ct{"PropertyExtractor new extractPropertiesFrom: User new"}.
 
@@ -587,7 +392,7 @@ PropertyExtractor>>extractPropertiesFrom: anObject (
 
 This experiment evaluates how do we handle the reflective abilities of Tornado's RFG. The \ct{PropertyExtractor} queries the methods from the \ct{User} class, that are included as part of the tailored application~(since they receive the messages \ct{isReturnField} and \ct{pragmas}). These reflective invocations include: (a) access to an object's class, (b) access class methods and (c) query those methods to know if they correspond to the criteria of the \ct{PropertyExtractor}.
 
-\subsection{Experiment V: Adding I/O} \label{sec:results_helloworld}
+\subsection*{Experiment V: Adding I/O} \label{sec:results_helloworld}
 
 A fifth experiment introduces I/O to each of the previous experiments, adding a statement printing to the standard output the obtained results. Figure~\ref{fig:hello_world_entry_point} shows the code from our entry point in the case of summing up two numbers. The entry points for the other experiments have the same structure, differing only on the expression that is printed~(the \ct{"1+2"} expression in this case). Notice that the \ct{FileStream} class needs to be initialized before the proper printing into the stdout stream because the code needed for class initialization is not installed by default in the empty seed.
 
@@ -604,7 +409,7 @@ FileStream stdout
 
 In this experiment, besides testing the proper usage of I/O streams such as the standard output stream, we evaluate the ability of Tornado to handle \textbf{platform identification}. The \ct{stdout} stream initialization for Pharo is done by the File package written in Pharo, and it depends on which is the current operating system. This experiment shows that Tornado prepares tailored versions of applications to run on a single operating system or platform.
 
-\subsection{Experiment VI: Seaside Web Application}
+\subsection*{Experiment VI: Seaside Web Application}
 
 
 
@@ -612,7 +417,7 @@ Our last experiment consists is tailoring a web application using Seaside applic
 
 For this case, we proceeded to do two different experiences, with two different seeds. We first used the empty seed~(\emph{Seaside Web Application A}), as in the previous experiments, and then used a seed containing all Pharo base libraries~(\emph{Seaside Web Application B}). For reasons of space, the details of how the entry points are initialized for these both seeds can be found in our technical report~\cite{Poli14a}.
 
-\subsection{Results} \label{sec:results_discussion}
+\subsection*{Results} \label{sec:results_discussion}
 
 We gathered our experiments' results into Table \ref{tb:results}. This table shows:
 \begin{description}
@@ -721,11 +526,7 @@ To have a broader view of our results, we compare them to MicroSqueak~\cite{Malo
 
 On one side, Tornado ensures smaller memory footprints when working on small applications. On the other side, MicroSqueak presents crucial differences with Pharo base libraries: it does not provide the same libraries~(\eg it does not contain socket support) and it does not ensure the same API of those libraries that it contains. Thus, applications such as the one in our Seaside experiment cannot run on top of MicroSqueak without a dedicated version of the Seaside framework.
 
-\section{Comparison of Tornado with Related Work} \label{sec:related_work}
-
-
-
-\subsection{Evaluation of Tornado}
+\section{Evaluation of Tornado}
 
 We start this section evaluating Tornado according to the criteria we defined in Section \ref{sec:criteria}, so we can in the following sections discuss it and compare it with other approaches. Table~\ref{tb:comparison} shows an overview of the criteria defined in Section~\ref{sec:criteria} and their possible values to evaluate tailoring solutions.
 In this section we focus on the evaluation of Tornado that is summarized in the latest column of Table~\ref{tb:comparison}.
@@ -789,47 +590,6 @@ Tornado's model and implementation show themselves as a complete solution in the
 Tornado requires a dedicated infrastructure only during the tailoring: tools to monitor and manipulate the tailoring application. However, once the tailoring is finished and the application reaches a stable point, Tornado extracts and prepares the application to run in the deployment-ready unmodified infrastructure.
 
 Finally, Tornado is a flexible solution in the sense that it allows one to configure the level of tailoring by means of a seed. The seed contains a pre-selection of code units available in the tailoring application before the tailoring starts. In such a way, we can use the seed to specify whether, for example, the base or third-party libraries should be tailored or not.
- 
-The reduction of the deployment footprint of object-oriented applications has been subject of interest both in industry and research since many years. In such regard, we identified four different families of solutions for dead code elimination: dedicated platforms~(cf. Section \ref{section:static_selection_rw}), static analyses~(cf. Section \ref{section:static_rw}), dynamic analyses~(cf. Section \ref{section:dynamic_rw}) and hybrid analyses~(cf. Section \ref{section:hybrid_rw}). Table~\ref{tb:comparison} presents a comparison of these techniques, given the criteria defined in section~\ref{sec:criteria}.
-
-\subsection{Dedicated platforms}%Pre-conceived specialized application-independent platforms}
-\label{section:static_selection_rw}
-
-Dedicated platforms are platforms containing frameworks and/or libraries prepared to run under specific circumstances. For example, Java Micro Edition~(J2ME)~\cite{JavaME} as the dedicated version of the Java platform, or Cocoa Touch as the one of Cocoa. These specialized platforms are reduced platforms to run applications inside mobile and constrained devices. These platforms provide a reduced and fixed set of base libraries defined a priori and in a not customizable way. Applications have to be written especially for them, and thus legacy code and third-party libraries not written especially for it are not compatible. Reflection is available since the statically tailored base libraries are built in a not automatic fashion, and the application code is not tailored.
-
-\subsection{Static Analysis-Based Techniques}\label{section:static_rw}
-
-Static analysis approaches for dead code elimination make use of the static information of a program to select the minimal subset of used elements. The bibliography describes four different algorithms to achieve this goal: unique name, class hierarchy analysis~(CHA), rapid type analysis~(RTA) and reachable members analysis~(RMA) \cite{Baco96a, Titz06a}. These techniques share a common approach, selecting an entry point method of an application and following from it the execution flow using the available static information \ie type annotations, and class and method names, building a call-graph~\cite{Grov97a}.
-
-These techniques have been studied and applied in many environments and languages. Rayside et al.~\cite{Rays02a}, Jax~\cite{Tip03a} and the ExoVM System~\cite{Titz06a} propose application extraction tools using these techniques for Java applications. Sallenave et al.~\cite{Sall10a} apply RTA to produce smaller .NET assemblies for embedded systems. Bournoutian et al.~\cite{Bour14a} use CHA to optimize on-device Objective-C applications. Ole Agesen~\cite{Ages96a} presents in his thesis a static technique applied to Self, a dynamically-typed language. Ole Agesen uses type inference to obtain type information and use it to select which objects to extract.
-
-In summary, these approaches are based on the static types found either in the source code or byte code. Thus, they are not applicable \emph{efficiently} in dynamic languages with no static type declarations. These solutions are valuable as they allow one to tailor base and third-party libraries, and legacy code. Their tailoring approach generates new deployment units that can run on the standard runtime infrastructure. The main drawback of this approach appears in the presence of reflection and configuration files, which will only work with a subset of reflective invocations through complementary analyses on the strings found in the source code. Also, existing solutions in this family lack the flexibility to declare and identify levels of tailoring, making it an "all or nothing".
-
-\subsection{Dynamic Analysis-Based Techniques}\label{section:dynamic_rw}
-
-Dynamic analysis techniques use exclusively runtime information~(\ie execution flow, alive objects, execution statistics) to perform dead code elimination. Amongst these, we identify two different approaches: \emph{load on demand} and \emph{code collection}. Load on demand approaches detect during runtime whenever a class or method needs to be installed and request it to a server application. Code collection approaches deploy the full application  and garbage collect unused code based on usage statistics. Related work in this family share a common characteristic: these techniques are used inside ubiquitous systems \ie systems meant to be always connected. Ubiquitous systems, as they are always connected, have a possibility to fallback and recover in the case of incompleteness. However, to focus here on the dead code elimination techniques, we will discuss the incompleteness recovery techniques in section \ref{sec:discussion}.
-
-\begin{description}
-\item[JUCE \cite{Popa04a,Teod01a}.] It is a platform for ubiquitous devices supporting code load on demand and code collection. Its approach for building up an application is similar to Tornado. First, it initializes a minimal running application and code is loaded, with a method granularity, from a server located in a different machine. Unused code is collected following usage statistics, and loaded back again on demand if needed.
-
-\item[OLIE~\cite{Gu03a}.] It is an engine that intelligently partitions and offloads objects during runtime to minimize memory consumption. It is part of the adaptive infrastructure for distributed loading (AIDE). In OLIE, offloaded objects are indeed migrated to nearby remote devices. Migrated objects can be accessed later through proxies that perform remote invocations on them.
-
-\item[SlimVM~\cite{Kers09a, Wagn11a}.] It is an ubiquitous system where all code resides on a remote server and is loaded only on demand on small devices. Some static analysis is performed only on the server to reduce the size of the transported code, by identifying most likely needed code. SlimVM changes the class format. However, on the client side, every code load is done dynamically.
-
-\end{description}
-
-All solutions inside this category share one main property: they require to run the application inside a dedicated infrastructure to apply their techniques \eg dedicated VMs implementing remote lazy loading, code collection or new bytecode sets. The main challenge of these solutions resides on applying these techniques while minimizing their impact on performance during the runtime. Additionally, these solutions require their applications to run exclusively inside their infrastructure. Tornado works in the same way as these solutions: it uses a dedicated infrastructure to run the desired application and select the used elements.  However, Tornado provides also with the ability to extract this application and run in \emph{offline} mode, using the non-modified infrastructure.
-
-Regarding dynamic features such as reflection, these solutions are the ones that can, potentially, handle it in the best way since they have in runtime all the information needed to resolve it. JUCE and OLIE, as Tornado, handle naturally reflection as they do not change the runtime representation (which programs make assumptions of, when they use metaprogramming). SlimVM on the other side, had to change the reflection support because they changed the object and class representation on their VM.
-
-Regarding its applicability, SlimVM needs to recompile the whole application into its own format, while OLIE and JUCE, as Tornado, can tailor base and third party libraries without any modifications on it. Thus, the latter two can be applied to legacy code also for free. None of these solutions provide with the ability to select the level of tailoring always working on the full application. In contrast, Tornado uses seeds to force a minimal subset of elements to be part of the application.
-
-
-\subsection{Hybrid Analysis-Based Techniques}\label{section:hybrid_rw}
-
-Hybrid analysis techniques mix static and dynamic~(\ie runtime) information to provide better results. The common approach of these is to start an application, such as Tornado does, and pause it after some minimal runtime information is available \ie call stacks are created, some classes are loaded and initialized, and some objects are instantiated. Then, it uses the built stack of alive objects to perform a static analysis, as described in Section \ref{section:static_rw}, with concrete type information.
-
-Java in The Small (JITS)~\cite{Cour10a} uses a hybrid approach to select the used parts of a program, and then loads them inside a binary image. A dedicated VM loads the binary image at startup. JITS's approach tailors base and third-party libraries as well as application specific code. It does not require modifications on the existent application to tailor it, so a legacy application could theoretically be tailored with this approach. JITS does not offer the possibility to configure the tailoring level, since it was designed to be used only in embedded devices where no more than one application would be running. Regarding reflection, JITS presents the same drawbacks as the other static call graph analysis approaches since not all the runtime information about the reflective invocations can be deduced.
 
 \section{Discussions on the run-fail-grow approach} \label{sec:discussion}
 
@@ -877,9 +637,9 @@ Tornado handles modern programming language features such as reflection, open cl
 
 %\subsection{The snapshot approach} \gp{maybe we should remove this discussion since it is orthogonal and not strong}Tornado prepares an application for deployment by extracting it in a snapshot file. A snapshot file allows one to deploy already initialized objects, avoiding the installation of the code needed to create them. Additionally, having a snapshot file speeds up the application's startup. Additionally, our tailoring model is not limited to snapshot/image based systems. Tornado can inspect the complete state of the nurtured application thanks to the object runtime manipulation interface~(Oz object spaces in our case). Thus, it can extract all the information it needs from it once the tailoring is finished: which are the classes installed, their methods, and their state. With such information, a static description of the system could be built. In our technical report~\cite{Poli14a} we present a list of the code units installed in the applications from each of our experiments, obtained by inspecting the nurtured application.
 
-\subsection{Easily Managing Base libraries} Most applications do not use the whole base-library collection distributed along with a language. These libraries, representing big code code bases, are then potential candidates for removal. However, in most of the modern object-oriented languages, base language libraries are loaded and initialized by the language's Virtual Machine~(VM) as some times an order has to be ensured or those same code units are used internally by the VM. Thus, the application developer cannot easily manage and customize which of them he wants, since it often requires VM modifications.
-
-Pharo provides the developer with access to the base libraries in the language. Thanks to this ability, Tornado can manage Pharo's base libraries as it manages application code. There is, however, an exception: the code units that belong to the interface between the language kernel~(\ie the minimal language elements that should be available to run) and the VM must be installed and initialized in a particular order and be always ensured. Because of this, we guarantee that the minimal seed, the \emph{empty seed}, contains at least all these needed code units.
+%\subsection{Easily Managing Base libraries} Most applications do not use the whole base-library collection distributed along with a language. These libraries, representing big code code bases, are then potential candidates for removal. However, in most of the modern object-oriented languages, base language libraries are loaded and initialized by the language's Virtual Machine~(VM) as some times an order has to be ensured or those same code units are used internally by the VM. Thus, the application developer cannot easily manage and customize which of them he wants, since it often requires VM modifications.
+%
+%Pharo provides the developer with access to the base libraries in the language. Thanks to this ability, Tornado can manage Pharo's base libraries as it manages application code. There is, however, an exception: the code units that belong to the interface between the language kernel~(\ie the minimal language elements that should be available to run) and the VM must be installed and initialized in a particular order and be always ensured. Because of this, we guarantee that the minimal seed, the \emph{empty seed}, contains at least all these needed code units.
 
 %\subsection{Implementing RFG in other technologies}
 %

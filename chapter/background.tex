@@ -1,13 +1,11 @@
 \input{chapter-header.tex}
 % ===========================================================================
-\chapter{State of the Art}
+\part{State of the Art}
 \chaplabel{background}
 \minitoc
 % ===========================================================================
-\introduction
-% ===========================================================================
 
-Software inevitable changes and we need to provide with the tools and methodologies that support such changes~\cite{Nier08b}. However, production-ready applications are not usually change-aware. These applications should be either engineered from scratch with change in mind, or a lot of reengineering effort should be invested in them to support change. Making deep modifications to a language runtime can be a cumbersome task.
+%Software inevitable changes and we need to provide with the tools and methodologies that support such changes~\cite{Nier08b}. However, production-ready applications are not usually change-aware. These applications should be either engineered from scratch with change in mind, or a lot of reengineering effort should be invested in them to support change. Making deep modifications to a language runtime can be a cumbersome task.
 
 This chapter presents the related work to this dissertation. With that in mind, we organize and classify the related work in two different axis. We will first explore work that is related to this dissertation on its objective: runtime manipulation. Afterwards we will give an overview on virtualization related technique that inspired our work. The reader would notice that some of the related works we present may fit into both these categories, according to our point of view. However, for the sake of clarity, we emphasize the aspects we believe will clarify the understanding of the rest of this thesis.
 
@@ -22,13 +20,13 @@ This chapter finishes by presenting a detailed description of the problem statem
 \newpage
 % ===========================================================================
 
-\section{Modifying the Runtime}
+\chapter{Modifying the Runtime}
 
 In the following sections we present related work that aim to modify a language runtime, sorted in two main categories. First, we present related work that targets the modification of a language's semantics at runtime by safe means~(\ie avoiding crashes). We follow by looking at the field of metacircular runtimes and \VMs, to study how they ease the modification of a runtime by means of simplifying the language-\VM relation for development.
 
-\subsection{Modification of language semantics}
+\section{Modification of language semantics}
 
-\subsubsection*{\textsc{Tower of Interpreters Model}}
+\subsection{\textsc{Tower of Interpreters Model}}
 
 The original model of reflection as defined by Smith~\cite{Smit82c} is based on meta-level interpretation. A program is interpreted by an interpreter, such interpreter is interpreted by a meta-interpreter and so on, possibly ad-infinitum. This leads to a tower of interpreters, where each floor defines the semantics of the program~(interpreter of application) it interprets~(Figure \ref{fig:tower_of_interpreters}).
 
@@ -45,7 +43,7 @@ The tower of interpreters presents a model where one can define and redefine the
 
 Smith's tower of interpreters model is flexible and coherent regarding the manipulation of the reflective behavior of a program. The tower does not present a limit on the amount of interpreters we can stack, presenting a problematic infinite potential. This idea collides with the non-infinite amount resources in current hardware. On one side, limited memory prevents us to have a tower of infinite interpreters running at the same time. On the other side, above certain limit of interpreters, this approach becomes too slow and impractical. We will show in the following subsections other reflective models that try to overcome these deficiencies while trying to keep some of the good properties of this model.
 
-\subsubsection*{\textsc{Black}}
+\subsection{\textsc{Black}}
 
 Black is a reflective language based on Scheme that mimics the infinite tower of interpreters with the goal to make it practical. Its model is based on the same idea as the reflective tower: the base level is interpreted by an interpreter, which is interpreted by a meta-interpreter and so on. The main difference between the original tower of interpreters and the model presented by Black is that the latter avoids the infinite regression, making the model practical in finite resource machines.
 
@@ -62,7 +60,7 @@ Black avoids the infinite regression by limiting the real levels of interpretati
 
 By limiting the levels of interpretation, the model presented by Black forbids \emph{indirect modification}. Changing the interpreter in a level \emph{n} above the first level does not impact any more the interpreters below it, as they are directly-executed in the machine and not by the modified interpreter. Black supports, however, the modification of the first level of interpretation with the introduction of hooks inside the machine code. A hook detects wether a function in the interpreter~(written in directly-executed code) is changed, and interprets it by a meta-level interpreter written also in directly executed code. Hooks degrade the performance in comparison of a non-hooked interpreter, but it allows in exchange to change and specialize the behavior of the directly-executed code.
 
-\subsubsection*{\textsc{Safe-Tcl}}
+\subsection{\textsc{Safe-Tcl}}
 Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke another interpreter and specialize its behavior. Both the master child interpreters run isolated from each other~(Figure \ref{fig:safetcl_twin_interpreters}).
 
 \begin{figure}[ht]
@@ -78,7 +76,7 @@ The master interpreter modifies the behavior of a safe interpreter by providing 
 
 Safe-Tcl twin interpretation allows us to change the behavior of a program running on a specialized interpreter, without the limitations of the infinite tower of interpreters. However, in contrast with the solutions we already presented, Safe-Tcl does not provide with the ability to change completely the semantics of the language but just to override or provide new commands, with a focus on security.
 
-\subsection*{\textsc{Reflectivity: scoping reflection in Reflective Architectures}}
+\subsection{\textsc{Reflectivity: scoping reflection in Reflective Architectures}}
 
 To enable reflection in mainstream languages such as Java, Ruby or JavaScript, the tower of interpreters is replaced by a reflective architecture~\cite{Maes87a}. Instead of relying on a stack of interpreters interpreting each the level below it, a reflective architecture relies on the idea of \emph{causal connection} \ie the programming language incorporates structures that represents aspects of itself~(\eg classes, objects), in such a way that if one structure changes the aspect it represents is updated accordingly, and vice-versa.
 
@@ -113,7 +111,7 @@ Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is
 
 Reflectivity succeeds to modify and scope behavioral reflection for different meta-levels inside the same reflective architecture. However, it does not provide with support to fully change the language semantics~(residing in the \VM) or to perform structural reflection.
 
-\subsection{Metacircular Runtimes}
+\section{Metacircular Runtimes}
 
 High-level language \VMs are inherent complex pieces of software.
 They have to combine two rather extreme goals: abstraction and performance.
@@ -140,7 +138,7 @@ However, there are more high-level approaches that try to simplify creating \VMs
 In the following sections we are shedding light on metacircular \VMs which are programmed in the same language they in the end support.
 
 
-\subsubsection*{\textsc{Squeak Smalltalk \VM}}
+\subsection{\textsc{Squeak Smalltalk \VM}}
 \seclabel{background-squeak}
 % ---------------------------------------------------------------------------
 The Squeak \VM~\cite{Inga97a} is of importance in the context of this work.
@@ -165,7 +163,7 @@ The simulator itself works by setting up a byte array which servers as native me
 Then the \VM sources written in Slang are interpreted by the \VM of the development environment.
 
 % ---------------------------------------------------------------------------
-\subsubsection*{\textsc{Jikes: High-level low-level Programming with MMTK}}
+\subsection{\textsc{Jikes: High-level low-level Programming with MMTK}}
 \seclabel{background-jikes}
 % ---------------------------------------------------------------------------
 Jikes (former Jalapeño) is an early metacircular research \VM for Java written in Java~\cite{Alpe00a}.
@@ -184,7 +182,7 @@ Additionally their framework is successfully used in a separate project, the mem
 
 
 % ---------------------------------------------------------------------------
-\subsubsection*{\textsc{Maxine Java \VM}}
+\subsection{\textsc{Maxine Java \VM}}
 \seclabel{background-maxine}
 % ---------------------------------------------------------------------------
 Maxine is a metacircular Java \VM~\cite{Wimm13a} focused on an efficient developer experience.
@@ -202,7 +200,7 @@ We identify this as crucial, as most of the time is spent debugging, notably on 
 Hence having a specific debuggers and inspectors greatly improve the interaction with the \VM artifact.
 
 
-\subsubsection*{\textsc{PyPy Toolchain}}
+\subsection{\textsc{PyPy Toolchain}}
 \seclabel{background-pypy}
 % ---------------------------------------------------------------------------
 \urlfootnote{PyPy}{http://pypy.org/} is a Python-based high-level \VM framework~\cite{Rigo06a}.
@@ -234,7 +232,7 @@ Again, this is similar to PyPy's GC, both are provided as a service and do not h
 Instead, the \VM programmer tweaks parameters of the JIT or GC.
 
 % ------------------------------------------------------------------------------
-\subsubsection*{\textsc{Pinocchio \VM}}
+\subsection{\textsc{Pinocchio \VM}}
 \seclabel{background-Pinocchio }
 
 Pinocchio~\cite{Verw11a} is a research Smalltalk environment that directly uses native code instead of bytecodes.
@@ -262,7 +260,7 @@ Pinocchio achieves a flexible connection between the low-level world and the hig
 During execution, the \VM jumps freely between what previously was native \VM-level code and interpretation of language-side code.
 
 % ------------------------------------------------------------------------------
-\subsubsection*{\textsc{Klein \VM}}
+\subsection{\textsc{Klein \VM}}
 \seclabel{background-klein}
 
 \urlfootnote{Klein}{http://kleinvm.sourceforge.net/} is a metacircular \VM for the Self programming language that has no separation into \VM and language \cite{Unga05a}.
@@ -280,8 +278,125 @@ From the literature presented about the Klein project we see a strong focus on t
 The fact that the language-runtime allows \VM-level reflection to change the \VM dynamically is not directly mentioned in the literature.
 While we see the practical limitations of changing the \VM runtime system at runtime we would like to open the doors to this new form of reflection.
 
-\newpage
-\section{Application/Runtime Virtualization Techniques}
+\chapter{Specializing Applications for Memory Footprint}
+
+The reduction of the deployment footprint of object-oriented applications has been subject of interest both in industry and research since many years. In such regard, we identified four different families of solutions for dead code elimination: dedicated platforms~(cf. Section \ref{section:static_selection_rw}), static analyses~(cf. Section \ref{section:static_rw}), dynamic analyses~(cf. Section \ref{section:dynamic_rw}) and hybrid analyses~(cf. Section \ref{section:hybrid_rw}). 
+
+This section presents properties that we consider the most relevant to evaluate techniques addressing the issue of unused deployment code units.
+
+\begin{description}
+
+\item[Reflection.] An ideal tailoring solution should handle correctly reflective code and resolve the unanticipated code executions in the same way as the application would do during runtime.
+
+\item[Base Library Specialization.] A programming language contains several base libraries covering very common and generic tasks. Not all the code units in these libraries are used in an application. An ideal tailoring solution should tailor base libraries of the language to reduce an application's deployment memory footprint.
+
+\item[Third Party Libraries Specialization.] Applications use several third-party libraries and frameworks covering several aspects of application development such as user interfaces, persistence or publication of services. Third party libraries contain large code bases and many dependencies. Thus, an ideal tailoring solution should consider the existence of third-party software.
+
+\item[Legacy Code.] An ideal tailoring solution should be applicable on already existing applications and not require modifications on them.
+
+\item[Dedicated Infrastructure for Deployment.] An ideal tailoring solution should produce a version of the application that is able to run on the official production infrastructure~(such as the VM) without overhead.
+
+\item[Flexibility.] An ideal solution for tailoring an application should support many different levels of application. Some applications may not need to tailor base libraries because they are shared with other applications. However, tailoring base libraries may be useful on those applications residing alone in constrained devices.
+
+\item[Applicable without type annotations.] An ideal tailoring solution should be applicable to dynamic languages with no type annotations.
+
+\item[Full Coverage.] An ideal tailoring solution will guarantee that all code units selected as part of the deployable application are those needed. That is, it does not contain extra code units, nor it misses code units.
+
+\end{description}
+
+
+\section{Dedicated platforms}%Pre-conceived specialized application-independent platforms}
+\label{section:static_selection_rw}
+
+Dedicated platforms are platforms containing frameworks and/or libraries prepared to run under specific circumstances. For example, Java Micro Edition~(J2ME)~\cite{JavaME} as the dedicated version of the Java platform, or Cocoa Touch as the one of Cocoa. These specialized platforms are reduced platforms to run applications inside mobile and constrained devices. These platforms provide a reduced and fixed set of base libraries defined a priori and in a not customizable way. Applications have to be written especially for them, and thus legacy code and third-party libraries not written especially for it are not compatible. Reflection is available since the statically tailored base libraries are built in a not automatic fashion, and the application code is not tailored.
+
+\section{Static Analysis-Based Techniques}\label{section:static_rw}
+
+Static analysis approaches for dead code elimination make use of the static information of a program to select the minimal subset of used elements. The bibliography describes four different algorithms to achieve this goal: unique name, class hierarchy analysis~(CHA), rapid type analysis~(RTA) and reachable members analysis~(RMA) \cite{Baco96a, Titz06a}. These techniques share a common approach, selecting an entry point method of an application and following from it the execution flow using the available static information \ie type annotations, and class and method names, building a call-graph~\cite{Grov97a}.
+
+These techniques have been studied and applied in many environments and languages. Rayside et al.~\cite{Rays02a}, Jax~\cite{Tip03a} and the ExoVM System~\cite{Titz06a} propose application extraction tools using these techniques for Java applications. Sallenave et al.~\cite{Sall10a} apply RTA to produce smaller .NET assemblies for embedded systems. Bournoutian et al.~\cite{Bour14a} use CHA to optimize on-device Objective-C applications. Ole Agesen~\cite{Ages96a} presents in his thesis a static technique applied to Self, a dynamically-typed language. Ole Agesen uses type inference to obtain type information and use it to select which objects to extract.
+
+In summary, these approaches are based on the static types found either in the source code or byte code. Thus, they are not applicable \emph{efficiently} in dynamic languages with no static type declarations. These solutions are valuable as they allow one to tailor base and third-party libraries, and legacy code. Their tailoring approach generates new deployment units that can run on the standard runtime infrastructure. The main drawback of this approach appears in the presence of reflection and configuration files, which will only work with a subset of reflective invocations through complementary analyses on the strings found in the source code. Also, existing solutions in this family lack the flexibility to declare and identify levels of tailoring, making it an "all or nothing".
+
+\section{Dynamic Analysis-Based Techniques}\label{section:dynamic_rw}
+
+Dynamic analysis techniques use exclusively runtime information~(\ie execution flow, alive objects, execution statistics) to perform dead code elimination. Amongst these, we identify two different approaches: \emph{load on demand} and \emph{code collection}. Load on demand approaches detect during runtime whenever a class or method needs to be installed and request it to a server application. Code collection approaches deploy the full application  and garbage collect unused code based on usage statistics. Related work in this family share a common characteristic: these techniques are used inside ubiquitous systems \ie systems meant to be always connected. Ubiquitous systems, as they are always connected, have a possibility to fallback and recover in the case of incompleteness. However, to focus here on the dead code elimination techniques, we will discuss the incompleteness recovery techniques in section \ref{sec:discussion}.
+
+\begin{description}
+\item[JUCE \cite{Popa04a,Teod01a}.] It is a platform for ubiquitous devices supporting code load on demand and code collection. Its approach for building up an application is similar to Tornado. First, it initializes a minimal running application and code is loaded, with a method granularity, from a server located in a different machine. Unused code is collected following usage statistics, and loaded back again on demand if needed.
+
+\item[OLIE~\cite{Gu03a}.] It is an engine that intelligently partitions and offloads objects during runtime to minimize memory consumption. It is part of the adaptive infrastructure for distributed loading (AIDE). In OLIE, offloaded objects are indeed migrated to nearby remote devices. Migrated objects can be accessed later through proxies that perform remote invocations on them.
+
+\item[SlimVM~\cite{Kers09a, Wagn11a}.] It is an ubiquitous system where all code resides on a remote server and is loaded only on demand on small devices. Some static analysis is performed only on the server to reduce the size of the transported code, by identifying most likely needed code. SlimVM changes the class format. However, on the client side, every code load is done dynamically.
+
+\end{description}
+
+All solutions inside this category share one main property: they require to run the application inside a dedicated infrastructure to apply their techniques \eg dedicated VMs implementing remote lazy loading, code collection or new bytecode sets. The main challenge of these solutions resides on applying these techniques while minimizing their impact on performance during the runtime. Additionally, these solutions require their applications to run exclusively inside their infrastructure. Tornado works in the same way as these solutions: it uses a dedicated infrastructure to run the desired application and select the used elements.  However, Tornado provides also with the ability to extract this application and run in \emph{offline} mode, using the non-modified infrastructure.
+
+Regarding dynamic features such as reflection, these solutions are the ones that can, potentially, handle it in the best way since they have in runtime all the information needed to resolve it. JUCE and OLIE, as Tornado, handle naturally reflection as they do not change the runtime representation (which programs make assumptions of, when they use metaprogramming). SlimVM on the other side, had to change the reflection support because they changed the object and class representation on their VM.
+
+Regarding its applicability, SlimVM needs to recompile the whole application into its own format, while OLIE and JUCE, as Tornado, can tailor base and third party libraries without any modifications on it. Thus, the latter two can be applied to legacy code also for free. None of these solutions provide with the ability to select the level of tailoring always working on the full application. In contrast, Tornado uses seeds to force a minimal subset of elements to be part of the application.
+
+
+\section{Hybrid Analysis-Based Techniques}\label{section:hybrid_rw}
+
+Hybrid analysis techniques mix static and dynamic~(\ie runtime) information to provide better results. The common approach of these is to start an application, such as Tornado does, and pause it after some minimal runtime information is available \ie call stacks are created, some classes are loaded and initialized, and some objects are instantiated. Then, it uses the built stack of alive objects to perform a static analysis, as described in Section \ref{section:static_rw}, with concrete type information.
+
+Java in The Small (JITS)~\cite{Cour10a} uses a hybrid approach to select the used parts of a program, and then loads them inside a binary image. A dedicated VM loads the binary image at startup. JITS's approach tailors base and third-party libraries as well as application specific code. It does not require modifications on the existent application to tailor it, so a legacy application could theoretically be tailored with this approach. JITS does not offer the possibility to configure the tailoring level, since it was designed to be used only in embedded devices where no more than one application would be running. Regarding reflection, JITS presents the same drawbacks as the other static call graph analysis approaches since not all the runtime information about the reflective invocations can be deduced.
+
+\section{Conclusion and Summary}
+Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given the criteria defined in section~\ref{sec:criteria}.
+
+\begin{table}[ht]
+ \small
+ 	\centering
+ 	\begin{tabular}{|c|cccc|}
+	
+\hline
+ 			& \textbf{Dedicated}
+ 			& \textbf{Static}
+			& \textbf{Hybrid}
+ 			& \textbf{Dynamic} \\
+ 			& \textbf{platforms}
+ 			& \textbf{Analysis}
+			& \textbf{Analysis}
+ 			& \textbf{Analysis}\\
+  \cmidrule(r){2-5}
+% \midrule
+
+		Base Libraries
+ 			& + & + & + & +\\
+		\hline
+		Third-Party
+		& & & & \\Libraries
+ 			& - & + & + & +\\
+		\hline
+		Legacy Code
+ 			& - & + & + & + \\
+		\hline
+		Reflection Support
+ 			& + & - & - & + \\
+		\hline
+		Dedicated Deploy
+			& & & & \\
+		Infrastructure
+ 			& - & + & - & -  \\
+		\hline
+		Flexibility
+ 			& - & - & - & -   \\
+		\hline
+		Ensures
+		& & & & \\
+		Completeness
+ 			& - & - & - & - \\
+ 	 \hline
+ 	\end{tabular}
+	\includegraphics[width=.9\linewidth]{criteria_overview}
+ 	\caption{Evaluation criteria applied to related work on deployment code unit tailoring techniques}
+ 	\label{tb:comparison_intro}
+ \end{table}
+
+\chapter{Language Virtualization Techniques}
 
 The most related family of work in virtualization are approaches like Xen~\cite{Chis07xen}. Xen is a Virtual Machine Monitor~(VMM) that allows to control and manage \VM in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. They rely on support from the hardware platform, and in some cases from the guest OS, concentrating themselves on performance and production features.
 
@@ -297,7 +412,7 @@ Operating System virtualization technology is characterized by the existence of 
 High-level languages abstract the developer from the complexities of the underlying machine by running on top of a language \VM. A language \VM provides a language with an execution model closer to its semantics as well as several services such as automatic memory management or cross-cutting optimizations. Language \VMs also provide with portability \ie a program can run on different operating systems and hardware architectures because the \VM abstracts it from the underlying particular details. Although these language \VMs are indeed \emph{Virtual}, state of the art production-ready \VMs do not provide by themselves with the typical advantages of virtualized operating systems such as co-location, resource control, mature security or application mobility support.
 With the objective of doing runtime manipulation, we study in the following sections techniques that to our understanding are virtualization-related techniques applied to programming languages runtimes.%We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present related work that targets co-location of language runtimes on the same \VM. We continue this section by presenting related work on the subject of runtime control.
 
-\subsubsection*{\textsc{Class Loaders}}
+\section{\textsc{Class Loaders}}
 In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A class loader is a first-class entity responsible of loading classes: create their runtime representation, loading their methods and linking their class references. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load classes with the same name. These classes will be isolated in the sense that they will not be visible to the others statically.
 
 Class loaders can be specialized and extended to provide custom behavior. For example, Fong et. al.~\cite{Fong10a} use the class loading mechanism to enforce scoping rules and determine the visibility of names in various region of the program. They allow the user to control untrusted
@@ -307,7 +422,7 @@ In the context of this thesis, we consider the class loader isolation mechanism 
 
 Notice additionally that class loaders provide only a load mechanism. Once we loaded several versions of the same application, it does not support the means to manage changes or updates of these applications. In this regard, the OSGI~\cite{OSGI} architecture implementations do often make use of class loaders to load classes into separately isolated components and manage them in a higher level way.
 
-\subsubsection*{\textsc{Changeboxes}}
+\section{\textsc{Changeboxes}}
 
 Changeboxes~\cite{Denk07c} is a change model designed to encapsulate and scope changes. Its main purpose is to allow several versions of a system to co-exist at runtime \ie the existence in the same environment of different versions of the same classes and methods. In changeboxes, a \emph{changebox} is a first-class entity that encapsulates changes made on the language elements~(\eg classes and methods) and an executable version of the system with its changes applied. The system can contain many changeboxes at the same time, and applications can be scoped to run within different changeboxes. This notion of dynamically scoping an application to a changebox allows one to have co-existing environments~(\eg testing, development, production), increasing the developer's efficiency. Furthermore, it eases application update and migration to new versions, and reduces its update down-time as the application does not have to be stopped to be updated.
 
@@ -321,7 +436,7 @@ A Changeboxes prototype was developed in Smalltalk and its scoping mechanisms we
 
 Changeboxes model proves sound to update and migrate application and framework classes. However, it has the main drawback of not affecting critical classes in the system. Changeboxes prototype does not work on classes such as \ct{Array} or \ct{CompiledMethod} as the underlying infrastructure~(the VM) restricts the system to the existence of only one of them at the same time. The changes model does not provide neither a solution for this problem, as it focuses on application code update, leaving this as an open problem.
 
-\subsubsection*{\textsc{Caja\textbackslash Cajita} - Object Capability Languages}
+\section{\textsc{Caja\textbackslash Cajita} - Object Capability Languages}
 
 Caja~\cite{Mill08a} is an object-capability language~\cite{Levy84a,Mill03a,Spoo00a} subset of Javascript with the objective of bringing script isolation in Javascript. Caja was thought in the context of the web, where untrusted scripts can be loaded in any webpage and profit from any data available in the webpage. Caja defines a safe Javascript subset that removes elements from the language such as \ct{with} or \ct{eval} because their semantics are strange and in some cases unpredictable. Caja includes Cajita, a subset of Caja without the \ct{this} keyword. Caja is meant for transforming and migrating already existing Javascript code, while Cajita is meant for newly written code.
 
@@ -342,7 +457,7 @@ To allow the safe co-existence of several scripts, Caja removes the Javascript g
 %large datasets, and domain-specific migration policies. In contrast, ObjectSpaces target general 
 %reflective access and bootstrap-like evolutions of code that is critical to the environment.
 
-\subsubsection*{KaffeOS}
+\section{KaffeOS}
 
 KaffeOS~\cite{Back00a} is a multi-application Java Runtime System centered in application isolation and resource accounting. The KaffeOS runtime allows the isolated co-existence of Java applications so they cannot access each other's data, nor interfere in their execution. To avoid the latter, the KaffeOS \VM accounts the application's consumption of CPU and memory.
 
@@ -355,7 +470,7 @@ KaffeOS succeeds to make several Java applications to run side by side taking ca
 %The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept.
 
 
-\subsubsection*{JVMTI}
+\section{JVMTI}
 The Java Virtual Machine Tool Interface~(JVMTI)~\cite{JVMPI} is the interface offered by the Java \VM for its manipulation and control. Originally called Java Platform Debugger Architecture~(JPDA) and used in the context of debugging, it was extended to support other use cases such as monitoring and profiling.
 
 JVMTI exposes C functions to manipulate a Java VM~(Figure \ref{fig:jvmti}). The JVMTI client, so called an \emph{Agent}, queries and controls the given JVM through this interface. The manipulated JVM and an agent share the same operating system process. JVMTI agents are meant to be written in C, to be as compact as possible and allow maximal control with minimal intrusion.
@@ -371,7 +486,7 @@ JVMTI provides with introspection and some limited intercession facilities at VM
 
 In the context of this thesis, we identify in JVMTI's architecture a similarity to a virtualization system. While the Java \VM takes the place of a the virtualized operating system and the agent is its hypervisor and can control.
 
-\subsubsection*{MVM: a Multi User Virtual Machine}
+\section{MVM: a Multi User Virtual Machine}
 The Multi-user Virtual Machine~\cite{Czaj03a,Czaj01a} is a general purpose virtual machine for the Java language that allows the co-existence of different applications, potentially from different users. Each application running on top of the MVM is an \emph{isolate} based on the Java Application Isolation API specification~\cite{JSR121}. This Java Application Isolation API defines a uniform mechanism to control the life-cycle of Java applications.
 
 Many isolates co-exist not inteferring each other, as they believe they own their private JVM: the runtime is modified, so state is not shared between them by default. MVM allows several communication mechanisms to securely communicate isolates: from standard mechanisms such as sockets, up to \emph{links}, a low-level isolate-to-isolate mechanism introduced by the Isolate API.
@@ -386,7 +501,5 @@ MVM can run unmodified Java applications. Additionally, MVM-aware applications c
 %machine implement the specification.
 
 % =============================================================================
-
-\section{Conclusion and Summary}
 
 \input{chapter-footer.tex}
