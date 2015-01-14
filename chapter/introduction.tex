@@ -127,16 +127,13 @@ While indeed an application runtime~(and therefore its language runtime) is coup
 
 \section{Problem Statement}
 
-
-\gp{write from scratch}
-A better language runtime initialization solution should have the following properties:
-\begin{itemize}
-\item Allow one to easily change the structure and behavior of the language runtime.
-\item Clarify the separation between \VM and language.
-\item Ensure the initial state of the language even in presence of a reflective architecture (Solving the bootstrapping and metastability problems as defined in AMOP~\cite{Kicz91a}).
-\end{itemize}
+\gp{I don't know where to put this yet}
 
 \section{Contributions}
+
+The contributions of this thesis are three-fold. First we describe \Vtt, an \emph{infrastructure for application runtime virtualization}. This infrastructure allows us to modify and control the virtualized application's runtime.
+Second, we describe the process to create a language runtime through \emph{bootstrapping}. \Vtt provides this bootstrapping process with a clear interface  to manipulate the language and to use the tools and abstractions of the high-level language for its own creation.
+Finally, we introduce an \emph{application extraction mechanism} based on lazy installation, namely Run-Fail-Grow~(RFG). \Vtt supports RFG by allowing the monitoring of the application under extraction and provide with facilities for code installation.
 
 % =============================================================================
 \section{Thesis Outline}
