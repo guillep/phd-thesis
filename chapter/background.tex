@@ -26,7 +26,7 @@ In the following sections we present related work that aim to modify a language 
 
 \section{Modification of language semantics}
 
-\subsection{\textsc{Tower of Interpreters Model}}
+\subsection*{\textsc{Tower of Interpreters Model}}
 
 The original model of reflection as defined by Smith~\cite{Smit82c} is based on meta-level interpretation. A program is interpreted by an interpreter, such interpreter is interpreted by a meta-interpreter and so on, possibly ad-infinitum. This leads to a tower of interpreters, where each floor defines the semantics of the program~(interpreter of application) it interprets~(Figure \ref{fig:tower_of_interpreters}).
 
@@ -43,7 +43,7 @@ The tower of interpreters presents a model where one can define and redefine the
 
 Smith's tower of interpreters model is flexible and coherent regarding the manipulation of the reflective behavior of a program. The tower does not present a limit on the amount of interpreters we can stack, presenting a problematic infinite potential. This idea collides with the non-infinite amount resources in current hardware. On one side, limited memory prevents us to have a tower of infinite interpreters running at the same time. On the other side, above certain limit of interpreters, this approach becomes too slow and impractical. We will show in the following subsections other reflective models that try to overcome these deficiencies while trying to keep some of the good properties of this model.
 
-\subsection{\textsc{Black}}
+\subsection*{\textsc{Black}}
 
 Black is a reflective language based on Scheme that mimics the infinite tower of interpreters with the goal to make it practical. Its model is based on the same idea as the reflective tower: the base level is interpreted by an interpreter, which is interpreted by a meta-interpreter and so on. The main difference between the original tower of interpreters and the model presented by Black is that the latter avoids the infinite regression, making the model practical in finite resource machines.
 
@@ -60,7 +60,7 @@ Black avoids the infinite regression by limiting the real levels of interpretati
 
 By limiting the levels of interpretation, the model presented by Black forbids \emph{indirect modification}. Changing the interpreter in a level \emph{n} above the first level does not impact any more the interpreters below it, as they are directly-executed in the machine and not by the modified interpreter. Black supports, however, the modification of the first level of interpretation with the introduction of hooks inside the machine code. A hook detects wether a function in the interpreter~(written in directly-executed code) is changed, and interprets it by a meta-level interpreter written also in directly executed code. Hooks degrade the performance in comparison of a non-hooked interpreter, but it allows in exchange to change and specialize the behavior of the directly-executed code.
 
-\subsection{\textsc{Safe-Tcl}}
+\subsection*{\textsc{Safe-Tcl}}
 Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke another interpreter and specialize its behavior. Both the master child interpreters run isolated from each other~(Figure \ref{fig:safetcl_twin_interpreters}).
 
 \begin{figure}[ht]
@@ -76,7 +76,7 @@ The master interpreter modifies the behavior of a safe interpreter by providing 
 
 Safe-Tcl twin interpretation allows us to change the behavior of a program running on a specialized interpreter, without the limitations of the infinite tower of interpreters. However, in contrast with the solutions we already presented, Safe-Tcl does not provide with the ability to change completely the semantics of the language but just to override or provide new commands, with a focus on security.
 
-\subsection{\textsc{Reflectivity: scoping reflection in Reflective Architectures}}
+\subsection*{\textsc{Reflectivity: scoping reflection in Reflective Architectures}}
 
 To enable reflection in mainstream languages such as Java, Ruby or JavaScript, the tower of interpreters is replaced by a reflective architecture~\cite{Maes87a}. Instead of relying on a stack of interpreters interpreting each the level below it, a reflective architecture relies on the idea of \emph{causal connection} \ie the programming language incorporates structures that represents aspects of itself~(\eg classes, objects), in such a way that if one structure changes the aspect it represents is updated accordingly, and vice-versa.
 
@@ -138,7 +138,7 @@ However, there are more high-level approaches that try to simplify creating \VMs
 In the following sections we are shedding light on metacircular \VMs which are programmed in the same language they in the end support.
 
 
-\subsection{\textsc{Squeak Smalltalk \VM}}
+\subsection*{\textsc{Squeak Smalltalk \VM}}
 \seclabel{background-squeak}
 % ---------------------------------------------------------------------------
 The Squeak \VM~\cite{Inga97a} is of importance in the context of this work.
@@ -163,7 +163,7 @@ The simulator itself works by setting up a byte array which servers as native me
 Then the \VM sources written in Slang are interpreted by the \VM of the development environment.
 
 % ---------------------------------------------------------------------------
-\subsection{\textsc{Jikes: High-level low-level Programming with MMTK}}
+\subsection*{\textsc{Jikes: High-level low-level Programming with MMTK}}
 \seclabel{background-jikes}
 % ---------------------------------------------------------------------------
 Jikes (former Jalapeño) is an early metacircular research \VM for Java written in Java~\cite{Alpe00a}.
@@ -182,7 +182,7 @@ Additionally their framework is successfully used in a separate project, the mem
 
 
 % ---------------------------------------------------------------------------
-\subsection{\textsc{Maxine Java \VM}}
+\subsection*{\textsc{Maxine Java \VM}}
 \seclabel{background-maxine}
 % ---------------------------------------------------------------------------
 Maxine is a metacircular Java \VM~\cite{Wimm13a} focused on an efficient developer experience.
@@ -200,7 +200,7 @@ We identify this as crucial, as most of the time is spent debugging, notably on 
 Hence having a specific debuggers and inspectors greatly improve the interaction with the \VM artifact.
 
 
-\subsection{\textsc{PyPy Toolchain}}
+\subsection*{\textsc{PyPy Toolchain}}
 \seclabel{background-pypy}
 % ---------------------------------------------------------------------------
 \urlfootnote{PyPy}{http://pypy.org/} is a Python-based high-level \VM framework~\cite{Rigo06a}.
@@ -232,7 +232,7 @@ Again, this is similar to PyPy's GC, both are provided as a service and do not h
 Instead, the \VM programmer tweaks parameters of the JIT or GC.
 
 % ------------------------------------------------------------------------------
-\subsection{\textsc{Pinocchio \VM}}
+\subsection*{\textsc{Pinocchio \VM}}
 \seclabel{background-Pinocchio }
 
 Pinocchio~\cite{Verw11a} is a research Smalltalk environment that directly uses native code instead of bytecodes.
@@ -260,7 +260,7 @@ Pinocchio achieves a flexible connection between the low-level world and the hig
 During execution, the \VM jumps freely between what previously was native \VM-level code and interpretation of language-side code.
 
 % ------------------------------------------------------------------------------
-\subsection{\textsc{Klein \VM}}
+\subsection*{\textsc{Klein \VM}}
 \seclabel{background-klein}
 
 \urlfootnote{Klein}{http://kleinvm.sourceforge.net/} is a metacircular \VM for the Self programming language that has no separation into \VM and language \cite{Unga05a}.
@@ -412,7 +412,9 @@ Operating System virtualization technology is characterized by the existence of 
 High-level languages abstract the developer from the complexities of the underlying machine by running on top of a language \VM. A language \VM provides a language with an execution model closer to its semantics as well as several services such as automatic memory management or cross-cutting optimizations. Language \VMs also provide with portability \ie a program can run on different operating systems and hardware architectures because the \VM abstracts it from the underlying particular details. Although these language \VMs are indeed \emph{Virtual}, state of the art production-ready \VMs do not provide by themselves with the typical advantages of virtualized operating systems such as co-location, resource control, mature security or application mobility support.
 With the objective of doing runtime manipulation, we study in the following sections techniques that to our understanding are virtualization-related techniques applied to programming languages runtimes.%We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present related work that targets co-location of language runtimes on the same \VM. We continue this section by presenting related work on the subject of runtime control.
 
-\section{\textsc{Class Loaders}}
+\section{Application Co-existence}
+
+\subsection*{\textsc{Class Loaders}}
 In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A class loader is a first-class entity responsible of loading classes: create their runtime representation, loading their methods and linking their class references. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load classes with the same name. These classes will be isolated in the sense that they will not be visible to the others statically.
 
 Class loaders can be specialized and extended to provide custom behavior. For example, Fong et. al.~\cite{Fong10a} use the class loading mechanism to enforce scoping rules and determine the visibility of names in various region of the program. They allow the user to control untrusted
@@ -422,7 +424,7 @@ In the context of this thesis, we consider the class loader isolation mechanism 
 
 Notice additionally that class loaders provide only a load mechanism. Once we loaded several versions of the same application, it does not support the means to manage changes or updates of these applications. In this regard, the OSGI~\cite{OSGI} architecture implementations do often make use of class loaders to load classes into separately isolated components and manage them in a higher level way.
 
-\section{\textsc{Changeboxes}}
+\subsection*{\textsc{Changeboxes}}
 
 Changeboxes~\cite{Denk07c} is a change model designed to encapsulate and scope changes. Its main purpose is to allow several versions of a system to co-exist at runtime \ie the existence in the same environment of different versions of the same classes and methods. In changeboxes, a \emph{changebox} is a first-class entity that encapsulates changes made on the language elements~(\eg classes and methods) and an executable version of the system with its changes applied. The system can contain many changeboxes at the same time, and applications can be scoped to run within different changeboxes. This notion of dynamically scoping an application to a changebox allows one to have co-existing environments~(\eg testing, development, production), increasing the developer's efficiency. Furthermore, it eases application update and migration to new versions, and reduces its update down-time as the application does not have to be stopped to be updated.
 
@@ -436,7 +438,7 @@ A Changeboxes prototype was developed in Smalltalk and its scoping mechanisms we
 
 Changeboxes model proves sound to update and migrate application and framework classes. However, it has the main drawback of not affecting critical classes in the system. Changeboxes prototype does not work on classes such as \ct{Array} or \ct{CompiledMethod} as the underlying infrastructure~(the VM) restricts the system to the existence of only one of them at the same time. The changes model does not provide neither a solution for this problem, as it focuses on application code update, leaving this as an open problem.
 
-\section{\textsc{Caja\textbackslash Cajita} - Object Capability Languages}
+\subsection*{\textsc{Caja\textbackslash Cajita} - Object Capability Languages}
 
 Caja~\cite{Mill08a} is an object-capability language~\cite{Levy84a,Mill03a,Spoo00a} subset of Javascript with the objective of bringing script isolation in Javascript. Caja was thought in the context of the web, where untrusted scripts can be loaded in any webpage and profit from any data available in the webpage. Caja defines a safe Javascript subset that removes elements from the language such as \ct{with} or \ct{eval} because their semantics are strange and in some cases unpredictable. Caja includes Cajita, a subset of Caja without the \ct{this} keyword. Caja is meant for transforming and migrating already existing Javascript code, while Cajita is meant for newly written code.
 
@@ -457,7 +459,7 @@ To allow the safe co-existence of several scripts, Caja removes the Javascript g
 %large datasets, and domain-specific migration policies. In contrast, ObjectSpaces target general 
 %reflective access and bootstrap-like evolutions of code that is critical to the environment.
 
-\section{KaffeOS}
+\subsection*{KaffeOS}
 
 KaffeOS~\cite{Back00a} is a multi-application Java Runtime System centered in application isolation and resource accounting. The KaffeOS runtime allows the isolated co-existence of Java applications so they cannot access each other's data, nor interfere in their execution. To avoid the latter, the KaffeOS \VM accounts the application's consumption of CPU and memory.
 
@@ -469,8 +471,9 @@ KaffeOS succeeds to make several Java applications to run side by side taking ca
 %
 %The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept.
 
+\section{Application Manipulation}
 
-\section{JVMTI}
+\subsection*{JVMTI}
 The Java Virtual Machine Tool Interface~(JVMTI)~\cite{JVMPI} is the interface offered by the Java \VM for its manipulation and control. Originally called Java Platform Debugger Architecture~(JPDA) and used in the context of debugging, it was extended to support other use cases such as monitoring and profiling.
 
 JVMTI exposes C functions to manipulate a Java VM~(Figure \ref{fig:jvmti}). The JVMTI client, so called an \emph{Agent}, queries and controls the given JVM through this interface. The manipulated JVM and an agent share the same operating system process. JVMTI agents are meant to be written in C, to be as compact as possible and allow maximal control with minimal intrusion.
@@ -486,7 +489,7 @@ JVMTI provides with introspection and some limited intercession facilities at VM
 
 In the context of this thesis, we identify in JVMTI's architecture a similarity to a virtualization system. While the Java \VM takes the place of a the virtualized operating system and the agent is its hypervisor and can control.
 
-\section{MVM: a Multi User Virtual Machine}
+\subsection*{MVM: a Multi User Virtual Machine}
 The Multi-user Virtual Machine~\cite{Czaj03a,Czaj01a} is a general purpose virtual machine for the Java language that allows the co-existence of different applications, potentially from different users. Each application running on top of the MVM is an \emph{isolate} based on the Java Application Isolation API specification~\cite{JSR121}. This Java Application Isolation API defines a uniform mechanism to control the life-cycle of Java applications.
 
 Many isolates co-exist not inteferring each other, as they believe they own their private JVM: the runtime is modified, so state is not shared between them by default. MVM allows several communication mechanisms to securely communicate isolates: from standard mechanisms such as sockets, up to \emph{links}, a low-level isolate-to-isolate mechanism introduced by the Isolate API.
