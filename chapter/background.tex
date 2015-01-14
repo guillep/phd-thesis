@@ -7,31 +7,38 @@
 
 %Software inevitable changes and we need to provide with the tools and methodologies that support such changes~\cite{Nier08b}. However, production-ready applications are not usually change-aware. These applications should be either engineered from scratch with change in mind, or a lot of reengineering effort should be invested in them to support change. Making deep modifications to a language runtime can be a cumbersome task.
 
-This chapter presents the related work to this dissertation. With that in mind, we organize and classify the related work in two different axis. We will first explore work that is related to this dissertation on its objective: runtime manipulation. Afterwards we will give an overview on virtualization related technique that inspired our work. The reader would notice that some of the related works we present may fit into both these categories, according to our point of view. However, for the sake of clarity, we emphasize the aspects we believe will clarify the understanding of the rest of this thesis.
-
-The first part of this chapter focuses on runtime manipulation of object-oriented applications. We first show the problems that arise in state of the art languages when trying change their runtime representation. Then we go inside the related work that focus on the safe modification of language semantics at runtime. Then, we show how metacircular runtimes aim to have an unified language runtime to ease its modification. \gp{conclusion?}
-
-The second part of this chapter starts by presenting a brief introduction to virtualization, its terminology and moreover its usage. We continue by identifying virtualization-related techniques applied to the manipulation of language runtimes in the state of the art.  \gp{conclusion?} 
-
-This chapter finishes by presenting a detailed description of the problem statement and a final outlook of the upcoming chapters in the light of the found problems.
-
-
 % ===========================================================================
-\newpage
+%\newpage
 % ===========================================================================
 
 \chapter{Modifying the Language Runtime}
 
-In the following sections we present related work that aim to modify a language runtime, sorted in two main categories. First, we present related work that targets the modification of a language's semantics at runtime by safe means~(\ie avoiding crashes). We follow by looking at the field of metacircular runtimes and \VMs, to study how they ease the modification of a runtime by means of simplifying the language-\VM relation for development.
+Evolving a language can take the path of modifying its language runtime, particularly the concepts the language exposes to the developer and its semantics.
+We identify three main problems in taking such path of evolution~(Section \ref{sec:bootstrapping_problems})
 
-\section{Problems in State of the Art Runtimes} \label{sec:bootstrapping_problems}
+\begin{description}
+\item[Flexibility to change.] How malleable is the language to introduce a change on it. If the language definition is properly structured and abstracted, or not hardcoded.
+\item[Mixture of low-level and high-level concerns.] The coupling between the language and the \VM may prevent some changes if they are not well factored and explicit to the language developer.
+\item[Tool support.] What is the existing tool support to modify the language itself. Here, the worse case scenario is the usage of the low-level \VM tools for that purpose.
+\end{description}
 
-We identify three main limitations when we aim to change a language runtime. First, how flexible a language definition is to be changed and adapted. Second, the unclear mixture of \VM and language concerns prevents us to extract the language definition and easily replace it. Finally, the differences in the abstraction levels and tool support between the language we are building and the language we use to build it makes it a challenging task.
+To introduce changes in a language's semantics, several solutions are proposed, mainly based on metaprogramming and \emph{reflection}~(Section \ref{sec:related_work_changing}). These metaprogramming models allow either the modification of the language interpreter semantics or the scoping of modifications with one main objective: performing such modifications safely \ie not shooting in their own foot by modifying the runtime they are running on.
+
+Another direction is taken recently by metacircular runtimes~(Section \ref{sec:metacircular_runtimes}). Metacircular runtimes aim to ease the modification of a runtime by means of simplifying the language-\VM relation for development. This simplification comes usually by expressing a \VM in the same language it interprets at the end.
+
+
+Finally, this chapter concludes by \gp{I lack a way to conclude this chapter. I could put some problem statement...}
+
+
+
+\section{Problems of Language Runtimes Modification} \label{sec:bootstrapping_problems}
+
+We identify three main limitations when we aim to change a language runtime. First, how flexible a language definition is to be changed and adapted without running into inconsistent states. Second, the unclear mixture of \VM and language concerns prevents us to extract the language definition and easily replace it. Finally, the differences in the abstraction levels and tool support between the language we are building and the language we use to build it makes it a challenging task.
 
 
 \subsection{Flexibility to Safely Change a Language Runtime}
 
-The \VM is often the component in charge of initialising the language runtime. This decision is indeed practical as the \VM can safely initialise the language structures and solve the language bootstrapping issues avoiding recursions~\cite{Kicz91a}~(\eg create the first class without a class). This language runtime must comply at runtime to the execution model imposed by the \VM~(\eg an object format denoting how objects are represented in memory and a set of instructions for execution such as bytecode or assembly). This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions.
+The \VM is often the component in charge of initialising the language runtime. This decision is indeed practical as the \VM can safely initialise the language structures and solve the language bootstrapping issues avoiding recursions~\cite{Kicz91a}~(\eg create the first class without a class). This language runtime must comply at runtime to the execution model imposed by the \VM. This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions.
 
 \begin{figure}[ht!]
 \begin{code}
@@ -52,9 +59,10 @@ void Init_class_hierarchy(void) {
 \end{figure}
 
 These hardcoded \VM assumptions have two main consequences when we target to change the language runtime: the \VM fixes its initial structures~(\eg Ruby's class hierarchy in Figure \ref{code:ruby_hierarchy}) and they introduce code duplications to manipulate language objects.
-To illustrate this second problem, let us consider the code in Figure~\ref{code:logic_dup} that creates a \ct{Dictionary} or hashmap. A language runtime that is defined by a \ct{Dictionary} object to keep \eg a map of global objects, must execute the code in the figure to create the corresponding instance. However, since the language runtime and the \VM are in middle of their initialization, the \VM cannot execute this code as it is, and thus it cannot enforce its own invariants. The state of the art \VMs will provide an alternative low-level representation of the same code respecting the same invariants~(Figure~\ref{code:logic_dup2}). This introduces a redundancy: the \VM and the language have different code to honor the same invariants.
+To illustrate this second problem, let us consider the code in Figure~\ref{code:logic_dup} that creates a \ct{Dictionary} object~(a hash map object). A language runtime that is defined by a \ct{Dictionary} object to keep \eg a map of global objects, must execute the code in the figure to create the corresponding instance. However, since the language runtime and the \VM are in middle of their initialization, the \VM cannot execute this code as it is, and thus it cannot enforce its own invariants. The state of the art \VMs will provide an alternative low-level representation of the same code respecting the same invariants. This introduces a redundancy: the \VM and the language have different code to honor the same invariants.
 
 \begin{figure}[ht]
+\begin{subfigure}{.5\linewidth}
 \begin{code}
 Dictionary class>>new: n
     ^ self new initialize: n
@@ -64,21 +72,20 @@ Dictionary>>initialize: n
     array := Array new: n.
     tally := 0
 \end{code}
-\caption{\textbf{Code to create a \ct{Dictionary} object in Smalltalk.}\label{code:logic_dup}}
-\end{figure}
-
-\begin{figure}[ht]
+\end{subfigure}
+\begin{subfigure}{.5\linewidth}
 \begin{code}
 void* createDictionaryWithSize(int n){
     void* dictionary, internalArray;
-    dictionary = instantiateClass("Dictionary");
-    internalArray := instantiateClass("Array", n);
+    dictionary = instantiate("Dictionary");
+    internalArray := instantiate("Array", n);
     setInstanceVariable(dictionary, 1, internalArray);
     setInstanceVariableInt(dictionary, 2, 0);
     return dictionary;
 }
 \end{code}
-\caption{\textbf{Code to create the same \ct{Dictionary} object from C.}\label{code:logic_dup2}}
+\end{subfigure}
+\caption{\textbf{Code to create a \ct{Dictionary} object.} To the left, the code is written in Smalltalk. To the right, a function with the similar semantics, but written in C, duplicates this behavior.\label{code:logic_dup}}
 \end{figure}
 
 
@@ -127,7 +134,7 @@ On one side, when defining the language runtime at the \VM level, we rely on the
 
 On the other side, we found that reflective languages support naturally the usage of the language abstractions and tools to modify the language runtime. Reflective languages benefit from the reification of the language concepts to be able to change them from the language itself. Languages such as Smalltalk show how debuggers and code browsers can be built using such features.
 
-\section{Changing Language Semantics}
+\section{Changing Language Semantics}\label{sec:related_work_changing}
 
 \subsection*{\textsc{Tower of Interpreters Model}}
 
@@ -214,7 +221,7 @@ Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is
 
 Reflectivity succeeds to modify and scope behavioral reflection for different meta-levels inside the same reflective architecture. However, it does not provide with support to fully change the language semantics~(residing in the \VM) or to perform structural reflection.
 
-\section{Metacircular Runtimes}
+\section{Metacircular Runtimes}\label{sec:metacircular_runtimes}
 
 The increased complexity of the \VMs lead to more novel approaches on how to build \VMs.
 \VMs are still build for a big part in C or C++ for performance reasons.
@@ -364,11 +371,28 @@ While we see the practical limitations of changing the \VM runtime system at run
 
 \section{Conclusion and Summary}
 
+\gp{conclude on what the related work does and does not for language runtime modification}
+
+\chapter{Application Tailoring}
+
+In the context of this thesis, we explore application tailoring as one possible evolution for a language runtime in the context of devices with limited infrastructures~(either hardware or software).
+Application tailoring allows the specialization of an application for its deployment in constrained devices.
+This chapter starts by identifying the problem that motivates application tailoring: code bloat~(Section \ref{sec:footprint_problems}). Code bloat is mainly caused by unused code units appearing in general purpose libraries.
+We illustrate this problem through an example.
+
+Existing application extraction or \emph{Tailoring} techniques build deployment artifacts containing a subset of the original code units inside an application. However, existing tailoring techniques are not completely efficient because they have to overcome many different challenges such as reflection or the absence of type annotations~(Section \ref{sec:challenges}). We present an evaluation criteria that allows us to compare this different existing solutions~(Section \ref{sec:tailoring_criteria}).
+
+Finally, this chapter concludes by presenting and comparing this techniques, grouped in four different categories: 
+\begin{description}
+\item[Dedicated platforms.] Pre-built tailored platforms with specialized \VMs and language runtimes~(Section \ref{section:static_selection_rw}).
+\item[Static techniques.] Tailoring techniques that depend only in static program information such as the source code and type annotations~(Section \ref{section:static_rw}).
+\item[Dynamic techniques.] Tailoring techniques that make use only of runtime information~(Section \ref{section:dynamic_rw}).
+\item[Hybrid techniques.] Tailoring techniques that complement both dynamic and static techniques~(Section \ref{section:hybrid_rw}).
+\end{description}
 
 
-\chapter{Specializing Applications for Memory Footprint}
-
-Deployed object-oriented applications often contain \emph{code units}~(e.g. packages, classes, methods) that the running application never uses~(Section~\ref{sec:problem}).
+\section{Problems of Constrained Devices Deployment}\label{sec:footprint_problems}
+Deployed object-oriented applications often contain \emph{code units}~(e.g. packages, classes, methods) that the running application never uses.
 This problem shows itself more evident and harder to control under the usage of third party software. 
 Third party libraries and frameworks are designed in a generic fashion that allows multiple usages and functionalities, while applications use only few of them. 
 Examples are logging libraries, web application frameworks or object-relational mappers.
@@ -381,7 +405,7 @@ Existing solutions to this problem propose to eliminate dead code by extracting 
 These static approaches present limitations in the presence of dynamic features such as reflection~\cite{Livs05a}, or in the absence of static type annotations. Additionally, they do not allow the user to customize the process of selection to cover different levels of an application's code \ie a user may want to extract only the used application specific code and let third-party and base-language libraries untouched; another user may want apply the process to the whole of the application.
 
 
-\section{A Motivating Example} \label{sec:example_intro}
+%\section{A Motivating Example} \label{sec:example_intro}
 
 To clearly show the problem, consider the application using a logging library in Figure~\ref{fig:example_dead_code}. In this figure, we emphasize in gray the unused code units that can safely be removed.
 %An interface is present in the diagram to show polymorphism between two classes that do not share a class inheritance hierarchy. 
@@ -464,7 +488,7 @@ This recurrent and standard process for configuring applications implies that st
 Any \ct{String} resulting from a program execution or program configuration can denote a message send\footnote{We refer method invocations as message sends because they represent better from our understanding the dynamic property of the invocation.}, the name of a class to be instantiated, or even a script to be executed. Reflection is indeed important to cover, since it is a broadly used tool in industrial applications with object relational mappers such as Hibernate or Glorp and web frameworks such as Ruby On Rails, Struts or Seaside.
 \end{description}
 
-\section{Evaluation Criteria}
+\section{Evaluation Criteria}\label{sec:tailoring_criteria}
 
 This section presents properties that we consider the most relevant to evaluate techniques addressing the issue of unused deployment code units.
 
@@ -586,7 +610,7 @@ Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given
 
 The most related family of work in virtualization are approaches like Xen~\cite{Chis07xen}. Xen is a Virtual Machine Monitor~(VMM) that allows to control and manage \VM in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. They rely on support from the hardware platform, and in some cases from the guest OS, concentrating themselves on performance and production features.
 
-Operating System virtualization technology is characterized by the existence of an \emph{hypervisor}~(named after the Operating System \emph{supervisor} that controls the OS processes\gp{check well that}). The hypervisor is the \VM component that allows one to observe or control the internals of one or many \VMs. A \VM hypervisor gives us, amongst others, the following services:
+Operating System virtualization technology is characterized by the existence of an \emph{hypervisor}~(named after the Operating System \emph{supervisor} that controls the OS processes\gp{check well that name}). The hypervisor is the \VM component that allows one to observe or control the internals of one or many \VMs. A \VM hypervisor gives us, amongst others, the following services:
 
 \begin{description}
 \item[Co-location.] Co-location is the ability to have co-existing applications on top of the same virtual machine. With co-location, a single \VM has information about all the applications running on top of itself and can integrate that information in its decision process. Additionally, it gives to co-located applications a cheap communication mechanism as they reside in the same operating system process.
@@ -596,9 +620,10 @@ Operating System virtualization technology is characterized by the existence of 
 \end{description}
 
 High-level languages abstract the developer from the complexities of the underlying machine by running on top of a language \VM. A language \VM provides a language with an execution model closer to its semantics as well as several services such as automatic memory management or cross-cutting optimizations. Language \VMs also provide with portability \ie a program can run on different operating systems and hardware architectures because the \VM abstracts it from the underlying particular details. Although these language \VMs are indeed \emph{Virtual}, state of the art production-ready \VMs do not provide by themselves with the typical advantages of virtualized operating systems such as co-location, resource control, mature security or application mobility support.
-With the objective of doing runtime manipulation, we study in the following sections techniques that to our understanding are virtualization-related techniques applied to programming languages runtimes.%We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present related work that targets co-location of language runtimes on the same \VM. We continue this section by presenting related work on the subject of runtime control.
 
-\section{Application Co-existence}
+In this chapter, and with the objective of doing runtime manipulation, we study in the following sections techniques that to our understanding are virtualization-related techniques applied to programming languages runtimes: application co-existence~(Section \ref{sec:virtualization_coexistence}) and application manipulation~(Section \ref{sec:virtualization_control}). Finally, we conclude by presenting the aspects of these solutions that inspired our solution following in the next chapters.%We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present related work that targets co-location of language runtimes on the same \VM. We continue this section by presenting related work on the subject of runtime control.
+
+\section{Application Co-existence}\label{sec:virtualization_coexistence}
 
 \subsection*{\textsc{Class Loaders}}
 In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A class loader is a first-class entity responsible of loading classes: create their runtime representation, loading their methods and linking their class references. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load classes with the same name. These classes will be isolated in the sense that they will not be visible to the others statically.
@@ -657,7 +682,7 @@ KaffeOS succeeds to make several Java applications to run side by side taking ca
 %
 %The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept.
 
-\section{Application Manipulation}
+\section{Application Manipulation}\label{sec:virtualization_control}
 
 \subsection*{JVMTI}
 The Java Virtual Machine Tool Interface~(JVMTI)~\cite{JVMPI} is the interface offered by the Java \VM for its manipulation and control. Originally called Java Platform Debugger Architecture~(JPDA) and used in the context of debugging, it was extended to support other use cases such as monitoring and profiling.
@@ -666,7 +691,7 @@ JVMTI exposes C functions to manipulate a Java VM~(Figure \ref{fig:jvmti}). The 
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=.7\linewidth]{jvmti}
+\includegraphics[width=.9\linewidth]{jvmti}
 \caption{\textbf{JVMTI Architecture.} An agent controls a JVM though JVMTI. Both share the same operating system process.\label{fig:jvmti}}
 \end{center}
 \end{figure}
@@ -692,5 +717,7 @@ MVM can run unmodified Java applications. Additionally, MVM-aware applications c
 % =============================================================================
 
 \section{Conclusion and Summary}
+
+\gp{what are the interesting aspects that inspired our solution}
 
 \input{chapter-footer.tex}
