@@ -1,6 +1,8 @@
 \input{chapter-header.tex}
 % ===========================================================================
 \part{Evolution by Extraction: Tailoring}
+% ===========================================================================
+\chapter{Run-Fail-Grow: a Dynamic Approach}
 \minitoc
 % ===========================================================================
 \introduction
@@ -8,29 +10,26 @@
 
 
 
-This chapter describes the \emph{run-fail-grow} (RFG) technique: an alternative solution to dead code elimination that identifies at runtime those code units that are actually used in an application~(Section~\ref{sec:model}).
+This chapter describes the \emph{run-fail-grow} (RFG) technique: an alternative solution to dead code elimination that identifies at runtime those code units that are actually used in an application~(Section~\ref{sec:rfg_model}).
 For such a task, in RFG we launch a \emph{reference} application containing all code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application containing a minimal set of code units we want to ensure in our application, so called a \emph{seed}.
 RFG consists in ``growing'' the nurtured application into a deployable specialized version of the reference application. 
-RFG runs the nurtured version of the application and feeds it with the code units that were detected as missing with a failure.
+RFG runs the nurtured version of the application and feeds it with the code units that were detected as missing with a failure~(Section \ref{sec:rfg_example}).
 
 The resulting deployable application only embeds the seed and used code.
 By carefully choosing the seed, the user customizes the scope of the tailoring process making possible different levels of tailoring.
-For example, a seed that includes all base libraries makes the tailoring process to only select used code in the application-specific part; whereas an empty seed makes the tailoring process to select used code in all parts: base libraries, application libraries and application-specific part.
+For example, a seed that includes all base libraries makes the tailoring process to only select used code in the application-specific part; whereas an empty seed makes the tailoring process to select used code in all parts: base libraries, application libraries and application-specific part~(Section \ref{sec:seeds}).
 % For example, if the seed includes the language base libraries, it ensures that the deployed application will have it all whereas an empty seed will result that only part of the base libs 
 % Afterwards, deployment units are created from this shrank application to only contain the used code units.
 % Using these compacted deployment units leverages the targeted device limitations. 
+
 The dynamic nature of our solution allows its usage in dynamically-typed languages, and applications using reflection. Our solution does not need to modify the original application thanks to its run-fail-grow approach.
 It also successfully deals with applications that make use of programming language features such as reflection or open classes.
 
-We developed Tornado, an RFG implementation using \Vtt~(Section~\ref{sec:implementation}). In Tornado, the nurtured application resides inside a virtualized runtime. We use \Vtt to monitor the execution of the nurtured application to install code when we need to. We validate our work by conducting several experiments (Section~\ref{sec:results}) and comparing our solution to existing related work on application tailoring~(Section~\ref{sec:related_work}).
-Finally, we discuss some aspects and trade-offs of the run-fail-grow approach and our implementation~(Section~\ref{sec:discussion}).
+We developed Tornado, an RFG implementation using \Vtt~(Section~\ref{sec:implementation}). In Tornado, the nurtured application resides inside a virtualized runtime. With \Vtt, we can monitor the execution of the nurtured application to detect whether a code unit is missing or not. Using \Vtt's mirrors we can also install the required code units.
 
+\section{Run Fail Grow: Dynamic dead code elimination}\label{sec:rfg_model}
 
-
-% ===========================================================================
-\chapter{Run-Fail-Grow: a Dynamic Approach} \label{sec:model}
-
-We propose run-fail-grow (RFG) for tailoring. Briefly, RFG works by launching a \emph{reference} application encompassing the full application with all its code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application that has only part of its required code units installed. The nurtured application is run, and when a failure is detected because it misses a code unit, we install into it the corresponding code unit from the reference application. Thus, the nurtured application grows progressively as missing code units are found and solved.
+We propose a tailoring technique we named run-fail-grow~(RFG). Briefly, RFG works by launching a \emph{reference} application encompassing the full application with all its code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application that has only part of its required code units installed. The nurtured application is run, and when a failure is detected because it misses a code unit, we install into it the corresponding code unit from the reference application. Thus, the nurtured application grows progressively as missing code units are found and solved.
 Once finished, the nurtured application is ready to be deployed on target devices. Figure~\ref{fig:runfail} depicts the basics of our run-fail-grow approach.
 
 \begin{figure}[ht]
@@ -58,7 +57,7 @@ The dynamic nature of RFG tackles all our challenges. Missing code units are det
 %%%%%%%%%% 
 
 
-\section{Run-Fail-Grow through an example}
+\section{Run-Fail-Grow through an example}\label{sec:rfg_example}
 We illustrate in this section the ideas behind RFG with the example introduced in Section~\ref{sec:example_intro}. For the sake of clarity, in this example we will tailor the application's code units and not the base libraries \ie the seed includes the base libraries.
 
 \paragraph{Setup of the Environment} First, we launch the reference application~(cf. Figure~\ref{fig:example_reference}) and the nurtured application~(cf. Figure~\ref{fig:example_all} Step 0). We fill the nurtured application with a seed containing the language base libraries. Thus, each application has its own copy of the base libraries, as shown in this case with the \ct{Date} and \ct{Time} classes and the \ct{stdout} object.
@@ -197,7 +196,7 @@ Figure \ref{fig:nurturing_map_model} presents the tailoring map showing two exam
 
 
 %============================================================================
-\section{Tornado: RFG in \Vtt} \label{sec:implementation}
+\section{Tornado: RFG in \Vtt} \label{sec:rfg_implementation}
 
 We implemented our RFG technique as a tool called \emph{Tornado}. Tornado is implemented using \Vtt, to tailor applications written in the Pharo programming language.
 %Pharo is a reflective and dynamic programming language inspired from Smalltalk.
@@ -316,13 +315,20 @@ Once Tornado is stopped, the nurtured application contains all the code units ne
 
 Finally, Tornado extracts the application code units using one of two different techniques: (a) the creation of a snapshot file containing all code units and already initialized objects; or (b) build a static description of the application containing the code for all classes and methods that should be part of it.
 
+\section{Conclusion and Summary}
+
+In this chapter we presented a run-fail-grow~(RFG) approach for application tailoring. RFG tailors an application by starting it and initializing it with a seed that contains the minimal set of code units we want to ensure. Then, we install and execute the application's entry points. As the application executes, missing code units are found and installed on demand, ensuring that only the needed code units are introduced. By following the runtime execution, it supports dynamic features such as reflection and meta-programming.
+
+We implemented RFG in a tool called Tornado based in \Vtt. With \Vtt, we are able to monitor the nurtured application's execution using the execution cycles. Mirrors allows us to easily install required code and restart the execution as it is needed.
+
 \chapter{Validation}
+
+\introduction
+
 %\section{Experiments and Results}\label{sec:results}
 %
 %\subsection{Experiment's Methodology}
-We evaluate Tornado by conducting five experiments that tailor different Pharo applications, with increasing requirements. We chose our experiments under the objectives of (a) understand how minimal are the applications we can tailor, (b) explore how successfully we address the challenges we stated in Section \ref{sec:challenges} and (c) exercise those cases that push to the limit the interaction between the language and the VM. Each of our experiments is detailed in the following sections.
-
-Our experiment methodology consists in the following steps:
+We evaluate Tornado by conducting five experiments that tailor different Pharo applications, with increasing requirements~(Section \ref{sec:rfg_experiments}). We chose our experiments under the objectives of (a) understand how minimal are the applications we can tailor, (b) explore how successfully we address the challenges we stated in Section \ref{sec:challenges} and (c) exercise those cases that push to the limit the interaction between the language and the VM. Our experiment methodology consists in the following steps:
 
 \begin{enumerate}
 \item \textbf{Setting up a seed for the application.} Most of our experiments use what we already called an \emph{empty seed}. This seed is, however, not completely empty. The empty seed we used contains some minimal infrastructural objects that are needed for language-VM interaction, and is therefore 10KB large. Our last experiment, the largest one, uses both this empty seed and an additional seed containing the base libraries. 
@@ -332,7 +338,10 @@ Our experiment methodology consists in the following steps:
 \item \textbf{Perform measurements.} Finally, to present our results we measure the size of the generated snapshots files and compare them against two different Pharo distributions prepared for production, as we present in Section \ref{sec:results_discussion}.
 \end{enumerate}
 
-\section{Experiments}
+Additionally, we present an evaluation of Tornado according to the evaluation criteria stated in \chapref{state_virtualization}. Our evaluation includes a comparison with the already presented related work on application tailoring~(Section~\ref{sec:rfg_evaluation}).
+Finally, we discuss some aspects and trade-offs of the run-fail-grow approach and our implementation~(Section~\ref{sec:discussion}).
+
+\section{Experiments}\label{sec:rfg_experiments}
 
 \subsection*{Experiment I: Adding Two Numbers}
 
@@ -526,7 +535,7 @@ To have a broader view of our results, we compare them to MicroSqueak~\cite{Malo
 
 On one side, Tornado ensures smaller memory footprints when working on small applications. On the other side, MicroSqueak presents crucial differences with Pharo base libraries: it does not provide the same libraries~(\eg it does not contain socket support) and it does not ensure the same API of those libraries that it contains. Thus, applications such as the one in our Seaside experiment cannot run on top of MicroSqueak without a dedicated version of the Seaside framework.
 
-\section{Evaluation of Tornado}
+\section{Evaluation of Tornado}\label{sec:rfg_evaluation}
 
 We start this section evaluating Tornado according to the criteria we defined in Section \ref{sec:criteria}, so we can in the following sections discuss it and compare it with other approaches. Table~\ref{tb:comparison} shows an overview of the criteria defined in Section~\ref{sec:criteria} and their possible values to evaluate tailoring solutions.
 In this section we focus on the evaluation of Tornado that is summarized in the latest column of Table~\ref{tb:comparison}.
@@ -656,9 +665,11 @@ Tornado handles modern programming language features such as reflection, open cl
 % ===========================================================================
 \section{Conclusion and Summary}
 
-In this chapter we presented a run-fail-grow~(RFG) approach for application tailoring. RFG tailors an application by starting it and initializing it with a seed that contains the minimal set of code units we want to ensure. Then, we install and execute the application's entry points. As the application executes, missing code units are found and installed on demand, ensuring that only the needed code units are introduced. By following the runtime execution, it supports dynamic features such as reflection and meta-programming.
+In this chapter we presented a validation on our run-fail-grow~(RFG) approach for application tailoring. We conducted our validation by first showing in several experiments how our solution succeeds in tailoring applications of different sizes and styles. Tailoring an application just adding two numbers demonstrates what is the smaller application we can work with. Other experiments included IO, reflection or even the tailoring of a web application using the Seaside framework.
 
-We implemented RFG in a tool called Tornado based in \Vtt. Tornado succeeds to produce applications with minimal footprint for deployment. Our results show that we manage different extreme and challenging cases with flexibility.
+We also evaluate tornado under the evaluation criteria we stated in the state of the art of this dissertation. The flexibility of our solution through seeds, its ability to handle reflection and its non-dependance on a particular infrastructure for deployment are characteristics that highlight our solution in comparison with the others.
+
+Finally, we present a discussion on several important aspects of RFG and tailoring solutions in general: how to ensure completeness with a tailoring solution, how to maximize the effectiveness of RFG and what are the particular application design decisions that help (or not) when using RFG.
 
 % =============================================================================
 \input{chapter-footer.tex}
