@@ -8,11 +8,11 @@
 \introduction
 % ===========================================================================
 
-This chapter presents the core contribution of this dissertation: our Virtual Language Runtime infrastructure, namely \VTT~(cf. Section \ref{sec:virtualization_overview}). \VTT allows the monitoring and manipulation of a language runtime through a language hypervisor~(cf. Figure \ref{fig:virtualization_introduction}).
-%In \VTT, both the virtualized runtime and the language hypervisor are first class objects.
-A first-class representation of a language runtime, namely an \emph{object space}, encapsulates the language runtime and provides a high-level API to query and manipulate it~(cf. Section \ref{sec:object_space}). A first-class \emph{language hypervisor} is a client of an object space~(cf. Section\ref{sec:hypervisor}).
+This chapter presents the core contribution of this dissertation: our Virtual Language Runtime infrastructure, namely \VTT~(cf. Section \ref{sec:virtualization_overview}). In \VTT, a language runtime is virtualized by residing inside a controlled space, namely an \emph{object space}.
+An object space encapsulates this language runtime and a first-class representation of it provides a high-level API to easily query and manipulate the language runtime~(cf. Section \ref{sec:object_space}).
 
-A language hypervisor runs in the same process than the virtualized runtime to monitor and manipulate it directly. However, the language hypervisor runs on a different language runtime than the virtualized runtime it supervises \ie basic objects, classes and \VM structures are not shared between the language hypervisor and the virtualized runtime. With this no sharing strategy we pursue to allow the hypervisor to change any part of the virtualized runtime without affecting itself.
+A first-class \emph{language hypervisor} is a client of an object space~(cf. Section\ref{sec:hypervisor}).
+A language hypervisor runs in the same process than the virtualized runtime to monitor and manipulate it directly. However, the language hypervisor runs inside a different language runtime than the virtualized runtime it supervises \ie basic objects, classes and \VM structures are not shared between the language hypervisor and the virtualized runtime. With this no sharing strategy we pursue to allow the hypervisor to change any part of the virtualized runtime without affecting itself.
 
 \begin{figure}[htb]
 \begin{center}
@@ -33,7 +33,7 @@ Finally, a more granular control can be made through virtual execution. A virtua
 
 \section{\Vtt Architecture} \label{sec:virtualization_overview}
 
-\Vtt presents an architecture where multiple runtime systems can run on the same process independently. They do not share any \VM or language state \ie each one has its own interpreter, stack, classes and objects. A virtualized runtime is a runtime system that is monitored by another runtime system. The runtime system that controls the virtualized runtime is the hypervisor runtime. The hypervisor runtime is a full-fledged object runtime, providing us with the expression power and abstractions of our high level language to express our language hypervisor. To control the virutalized runtime, a hypervisor runtime contains an object space and language hypervisor objects that we use for virtualization purposes. An object space is a first-class object that represents the virtualized runtime and provides operations for its manipulation. A language hypervisor object is the client of such object space implementing a particular manipulation on it \eg runtime update or failure detection.
+\Vtt presents an architecture where multiple runtime systems can run on the same process independently. They do not share any \VM or language state \ie each one has its own interpreter, stack, classes and objects. A virtualized runtime is a runtime system that is monitored by another runtime system. The runtime system that controls the virtualized runtime is the hypervisor runtime. The hypervisor runtime is a full-fledged object runtime, providing us with the expression power and abstractions of our high level language to express our language hypervisor. To control the virtualized runtime, a hypervisor runtime contains the reifications of an \emph{object space} and a \emph{language hypervisor}. An object space is a first-class object that represents the virtualized runtime and provides operations for its manipulation. A language hypervisor object is the client of such object space implementing a particular manipulation on it \eg runtime update or failure detection. Figure \ref{fig:objectSpaceOverview} provides an overview of the \Vtt's architecture.
 
 \begin{figure}[htb]
 \begin{center}
@@ -46,12 +46,12 @@ An object space manipulates the virtualized runtime through directly manipulatin
 
 \begin{description}
 \item[Transparency.] Our solution does not require any changes in the applications residing inside the virtualized runtime. Thus, we can virtualize existing applications without modifications.
-\item[Application independence.] Our solution does not depend on the particular application inside the virtualized runtime. It does depend however on its underlying model imposed by the \VM.
+\item[Application independence.] Our solution does not depend on the particular application inside the virtualized runtime. It does depend however on the execution model imposed by the \VM.
 \end{description}
 
 \section{Object Spaces: First-class Language Runtimes} \label{sec:object_space}
 
-An object space is a first-class representation of an object runtime system, meant for its manipulation and control. An object space encapsulates a language runtime and provides with a clear and explicit interface to manipulate it. This interface is splitted in two different objects: an \ct{objectSpace} object provides with general runtime operations while mirror objects~\cite{Brac04b} provide with operations to manipulate individual objects~(Figure \ref{fig:objectSpaceMirrors}). Specific mirrors, such as the \ct{ClassMirror}, are meant for the manipulation of elements that have a different object-format or runtime representation.
+An object space is a first-class representation of an object oriented language runtime system, meant for its manipulation and control. An object space encapsulates a language runtime and provides with a clear and explicit interface to manipulate it. This interface is splitted in two different objects: an \ct{objectSpace} object provides with general runtime operations while mirror objects~\cite{Brac04b} provide with operations to manipulate individual objects~(Figure \ref{fig:objectSpaceMirrors}). Specific mirrors, such as the \ct{ClassMirror}, are meant for the manipulation of elements that have a different object-format or runtime representation.
 
 \begin{figure}[htb]
 \begin{center}
@@ -70,12 +70,12 @@ This configuration is usually done only during the language initialization, befo
 The \VM setup interface allows us to configure the following kind of elements:
 
 \begin{description}
-\item[Well-known objects of the language.] Objects such as \ct{nil}, \ct{true} or \ct{false} may be needed at runtime for different purposes. The garbage collection can insert a reference to \ct{nil} in a weak reference. Particular objects may be held by the \VM as prototypes for improve instantiation time of commonly used objects.
-\item[Special classes.] Special classes are those needed by the \VM at runtime to make safety checks, create instances or handle special cases such as immediate objects. For example, when mutating a \ct{String} object the Pharo \VM checks that the introduced object is a \ct{Character} object, to avoid putting the \ct{String} into an invalid state. The \VM instantiates some classes that are not directly instantiated through the \ct{new} message inside a program. For example, the \VM instantiates a \ct{Block} object when it founds a block expression at runtime. Immediate objects are objects that are encoded inside an object reference instead of occupying a place inside the heap. Immediate objects do not include a reference to their class and therefore the \VM needs to know how to map each particular reference encoding to its corresponding class to perform the method-lookup. 
-\item[Special messages.] Special messages are callbacks that the \VM will invoke into the language to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(the equivalent to Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will replace that message-send by the \ct{doesNotUnderstand} selector and let the user program decide what to do in such a case.
+\item[Well-known objects of the language.] Objects such as \ct{nil}, \ct{true} or \ct{false} may be needed at runtime for different purposes. The garbage collection can insert a reference to \ct{nil} in a weak reference. Particular objects may be held by the \VM as prototypes to speed-up instantiation time of commonly used objects.
+\item[Special classes.] Special classes are those needed by the \VM at runtime to make safety checks, create instances or handle special cases such as immediate objects. For example, when mutating a \ct{String} object the Pharo \VM checks that the introduced object is a \ct{Character} object, to avoid putting the \ct{String} into an invalid state. Also, the \VM requires to know those classes that it instantiates instead of being created through the \ct{new} message inside a program. For example, the \VM instantiates a \ct{Block} object when it founds a block expression at runtime. Finally, immediate objects are objects that are encoded inside an object reference instead of occupying a place inside the heap. Immediate objects do not include a reference to their class and therefore the \VM needs to know how to map each particular reference encoding to its corresponding class to perform the method-lookup. 
+\item[Special messages.] Special messages are callbacks that the \VM will invoke into the language to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(the equivalent to \eg Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will send a \ct{doesNotUnderstand} message to the receiver object and let the user program decide what to do in such a case.
 \end{description}
 
-This \VM setup interface avoids to hardcode particular knowledge of a language inside the \VM. This gives us the possibility to easily change particular language internals such as renaming special messages or changing the class hierarchy of special classes without. In the extreme, we could port another language to this VM, as long as they share similar execution semantics \ie the \VM execution model is compatible with the language.
+This \VM setup interface avoids to hardcode particular knowledge of a language inside the \VM. This gives us the possibility to easily change particular language internals such as renaming special messages or changing the class hierarchy of special classes without. In the extreme, we could port another language to this VM, as long as they share similar execution semantics \ie the \VM execution model is compatible with the given language.
 
 Following, we present an example of such an interface for the Pharo language. The \ct{objectSpace} object contains the \VM setup interface.
 
@@ -109,7 +109,7 @@ ObjectSpace {
 The runtime manipulation interface includes operations to monitor and modify the \VM at runtime. This interface provides access to the language runtime elements and encapsulate the details behind the object-format imposed by the \VM.
 
 \begin{description}
-\item[Runtime Global Access.] The object space provides with operations to query and modify the global state of the runtime. For example, it can provide with a list of installed classes or running threads/processes or let us install new of them.
+\item[Runtime Global Access.] The object space provides with operations to query and modify the global state of the runtime. For example, it provides access to the a list of installed classes or running threads/processes. It let us also install new of them or remove existing ones.
 
 \begin{code}
 ObjectSpace {
@@ -160,7 +160,7 @@ ClassMirror {
 
 \section{First-Class Language Hypervisors}\label{sec:hypervisor}
 
-A language hypervisor is first-class entity that serves as a virtual runtime's client and implementing our monitoring/modification strategy. The hypervisor acts in between the execution of the virtualized runtime. For this purpose, we split the virtualized runtime execution in cycles. These cycles are delimited by a time window and finished in safe suspension points~(Figure \ref{fig:execution_cycle}). During each execution cycle, the virtualized runtime runs unmanaged using the full \VM's capacity. When the cycle finishes because the execution completed a time window and found a suspension point, the control is returned to the language hypervisor. Then, the language hypervisor applies its corresponding action and resumes the execution of the virtualized runtime from the last suspension point.
+The client of an object space is a \emph{language hypervisor}. A language hypervisor is first-class entity that implements a particular monitoring/modification strategy. A language hypervisor monitors an object space by splitting the execution in cycles. These cycles are delimited by a time window and finished in safe suspension points~(Figure \ref{fig:execution_cycle}). During each execution cycle, the virtualized runtime runs unmanaged using the full \VM's capacity. When the cycle finishes because the execution completed a time window and found a suspension point, the control is returned to the language hypervisor. Then, the language hypervisor applies its corresponding action and resumes the execution of the virtualized runtime from the last suspension point.
 
 \begin{figure}[ht]
 \center
@@ -220,7 +220,13 @@ UpdateHypervisor >> checkForUpdate [
 
 \section{Cross-Runtime Communication} \label{sec:communication}\label{sec:isolation}
 
-A non-restrictive communication between the virtualized and the hypervisor runtimes is indeed important for their manipulation. We showed already how direct object manipulation following the \VM's object-format is achieved through mirrors~(Section \ref{sec:object_space}). There is, however, the case in which the language hypervisor may need to execute an arbitrary expression or statement within the scope of the virtualized runtime. For example, we would need to enable or disable a logger from the virtualized application:
+A language hypervisor may require to apply some operation in a virtualized runtime that would be tougher through direct object manipulation with mirrors. Let's take as an example a virtualized application that uses a particular logging library. In the context of that application, disabling logging would mean to execute the following statement:
+
+\begin{code}
+Logger disable.
+\end{code}
+
+However, doing the same through our abstract layer of mirrors would mean (a) to replicate the behavior of the \ct{disable} method inside the hypervisor and (b) to couple it to the internals of such a logging library. Thus, a language hypervisor may benefit from the execution of an arbitrary expression or statement within the scope of the virtualized runtime. For example, enabling or disabling a logger from the virtualized application can be easily achieved through executing the following statement in the language hypervisor instead of manually modifying the state of the logger objects:
 
 \begin{code}
 objectSpace execute: [ Logger disable ].
@@ -248,7 +254,7 @@ To achieve this kind of communication, we observe the following drawbacks in usi
 
 \end{description}
 
-To overcome this problems we base the cross-runtime communication on \emph{process injection}. We create a new process/thread inside the virtualized runtime containing the expression to execute. The new process is installed in the virtualized runtime and executed in cycles until it is finished. Once finished we can access the result of the expression through a mirror. The objects that conform the message-send signature and other literals~(\eg strings, numbers) are translated from their representation in the hypervisor runtime to their corresponding representation in the virtualized runtime. Global object references such as classes are mapped to their corresponding references in the virtualized runtime. Non-global non-literal objects can be specified explicitly:
+To overcome this problems we base the cross-runtime communication on \emph{process injection}. We create a new process/thread inside the virtualized runtime containing the expression to execute. The new process is installed in the virtualized runtime and executed in cycles until it is finished. Once finished we can access the result of the expression through a mirror. The objects that conform the message-send signature and other literals~(\eg strings, numbers) are translated from their representation in the hypervisor runtime to their corresponding representation in the virtualized runtime. Global object references such as classes are mapped to their corresponding references in the virtualized runtime. Non-global non-literal objects can be specified explicitly as an argument:
 
 \begin{code}
 objectSpace
@@ -314,12 +320,12 @@ TracingCodeInterpreter >> writeInstanceVariableNumber: index with: aMirror
 % =============================================================================
 \section{Conclusion and Summary}
 
-\Vtt presents an architecture where several language runtimes can share the same process. A virtualized language runtime is subject of monitoring and manipulation of another language runtime, namely the hypervisor runtime. The hypervisor runtime contains a first class representation of the virtualized runtime, an object space. The object space exposes a clear interface to safely access and modify a language runtime. This interface includes operations to configure the virtualized language runtime and operations to modify particular objects from it. The latter is encapsulated in mirror objects.
+\Vtt presents an architecture where several language runtimes can share the same process. A virtualized language runtime is subject of monitoring and manipulation from another language runtime, namely the hypervisor runtime. The hypervisor runtime contains a first class representation of the virtualized runtime, an object space. The object space exposes a clear interface to safely access and modify a language runtime. This interface includes operations to configure the virtualized language runtime and operations to modify particular objects from it. The latter is encapsulated in mirror objects.
 
 The execution of the virtualized runtime is organized in cycles. In between cycles, a first class language hypervisor can perform an operation and then resume the virtualized runtime's execution. We ensure that the state of the virtualized runtime keeps its coherence by only suspending it in safe suspension points.
 
 Besides the direct manipulation through mirrors, a language hypervisor can perform cross-runtime message-sends for a richer communication using process injection. Process injection prevents failures in the method lookup and avoids stack traversing techniques such as exception to leak cross-runtime references. Additionally, a virtual code interpreter allows us to execute code on the virtualized runtime with full intercession. A virtual code interpreter is a first class entity, allowing us to easily specialize and change it.
 
-In following chapters we will show how this infrastructure supports the evolution of a programming language runtime in two different scenarios. First, the recreation of a language runtime from scratch using a bootstrap process. Second, the extraction of the used parts of an application.
+In following chapters we will show how this infrastructure supports the evolution of a programming language runtime in two different scenarios. First, the recreation of a language runtime from scratch using a bootstrap process. Second, an application tailoring technique that specialized an application to contain only elements that are used during runtime.
 
 \input{chapter-footer.tex}
