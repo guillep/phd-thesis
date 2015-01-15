@@ -6,33 +6,33 @@
 \introduction
 % ===========================================================================
 
-We implemented \Vtt on the Pharo platform. Our solution virtualizes Pharo runtimes and provides, as already described, the ability to manipulate their object graph and control their execution. Our implementation includes a language side library containing the object space and language hypervisor related classes. Our main modification to Pharo's runtime is an extension to its stack-based \VM. This \VM is a version of Pharo's \VM without a Just In Time~(JIT) compiler. This extensions are meant to allow the co-existence of many runtime systems on the same \VM and to allow us to easily modify the \VM setup interface.
+We implemented our \Vtt prototype on the Pharo platform. Our solution virtualizes Pharo runtimes and provides, as already described, the ability to manipulate their object graph and control their execution. Our implementation includes a language side library containing the object space and language hypervisor related classes. Our main modification to Pharo's runtime is an extension to its stack-based \VM. This \VM is a version of Pharo's \VM without a Just In Time~(JIT) compiler. This extensions are meant to allow the co-existence of many runtime systems on the same \VM and to allow us to easily modify the \VM setup interface.
 
-An object space VM-Setup Interface in \Vtt~(Section \ref{sec:setup_interface}) is implemented by exposing the \VM interpreter state. The Pharo \VM interpreter state is hold inside an array, so called \emph{special objects array}, which contains references to the objects that the \VM may need at runtime. We expose and modify this array through an object space. The special objects array also provides support for the execution of several runtimes on top of the same \VM. In our solution, the \VM has a single bytecode interpreter shared amongst the different running runtimes. To allow the execution of a different runtime, we exchange the interpreter state for the state of its corresponding runtime in an atomic operation that we call \emph{context switch}~(Section \ref{sec:context_switch}).
+An object space VM-Setup Interface in \Vtt is implemented by exposing the \VM interpreter state~(Section \ref{sec:setup_interface}). The Pharo \VM interpreter state is hold inside an array, so called \emph{special objects array}, which contains references to the objects that the \VM may need at runtime. We expose and modify this array through an object space. The special objects array also provides support for the execution of several runtimes on top of the same \VM. In our solution, the \VM has a single bytecode interpreter shared amongst the different running runtimes. To allow the execution of a different runtime, we exchange the interpreter state for the state of its corresponding runtime in an atomic operation that we call \emph{context switch}~(Section \ref{sec:context_switch}).
 
 \Vtt mirror implementation~(Section \ref{sec:implementation_mirrors}) does not require particular changes in the Pharo \VM. We base our mirror implementation in two existing \VM primitive operations that allows us to execute a primitive on an arbitrary object by changing the primitive's receiver. Additionally, the already existent reifications of objects such as \ct{CompiledMethod}, \ct{Process}~(threads) or \ct{Context}~(stack frames or activation records), allows us to manage such runtime elements using the same mirror mechanism and avoid specific solutions.
 
 \Vtt's presents a memory layout where the objects of both the virtualized and hypervisor co-exist in the same heap~(Section \ref{sec:memory}). This means that there is no need for special support on \emph{cross-runtime references} for implementing \eg mirrors, and that we can reuse the existing memory management in the virtual machine almost transparently.
 However, this solution forbids us to analyze the memory usage of the virtualized runtime and has an impact on the GC.
 
-Finally, This chapter finishes, with means of completion, by presenting the non-implemented aspects of our solution~(Section \ref{sec:not_yet_implemented}).
+This chapter finishes, with means of completion, by presenting the non-implemented aspects of our solution: JIT compilation, shared state enforced by \VM implementation and correct management of external resources such as files or sockets~(Section \ref{sec:not_yet_implemented}).
 
-\section{\VM-Setup Interface}\label{sec:setup_interface}
+\section{The Special Objects Array as \VM-Setup Interface}\label{sec:setup_interface}
 
-Pharo \VM holds the state of the \VM-setup interface inside a \emph{special objects array} object. Pharo's special objects array contains 56 entries whose indexes are well known by the \VM for their access at runtime. To implement our \VM-setup interface, we access and modify this special object array. Following, we detail the special objects array entries that we expose for our solution.
+Pharo \VM holds the state of the \VM-setup interface inside a \emph{special objects array} object. Pharo's special objects array contains 56 entries whose indexes are well known by the \VM for their access at runtime. To implement our \VM-setup interface, we expose, access and modify this special object array. Following, we detail the special objects array entries that we expose for our solution.
 
 \begin{description}
 \item[Special Instances.] Special instances such as \ct{nil}, \ct{true} and \ct{false} are directly pushed by the \VM interpreter at runtime instead of residing in a method literal list. A flyweight \ct{Character} table contains the first 256 character objects to ensure their identity and save memory.
 
 \item[System Dictionary.] The system dictionary contains all installed classes in the system. An object space uses this entry to query the installed classes and to install new ones. The \VM does not make any special use of this object as it is managed directly from the language.
 
-\item[Process Scheduler.] The process scheduler contains all existing processes~(threads) in the runtime. We can install and remove process from the process scheduler. The \VM uses this same process scheduler to manage the runtime's execution.
+\item[Process Scheduler.] The process scheduler contains all existing processes/threads in the runtime. We can install and remove process from the process scheduler. The \VM uses this same process scheduler to manage the runtime's execution.
 
 \item[Symbol Table.] The symbol table gathers is the set of \emph{unique} strings in the system. Symbols are mainly used to denote method signatures and ensure reference equality during the method lookup. An object space uses the symbol table to map symbols between runtimes and so it ensures no duplicate symbols are created. The \VM does not make any special use of this object as it is managed directly from the language.
 
 \item[Literal Classes.] Literal classes are the classes of literal objects. Literal objects are those present directly in a method's literal list~(\eg numbers, strings, literal arrays), or those objects that the \VM creates at runtime~(\eg BlockClosures). On one side, the \VM uses the classes available in this list to directly instantiate objects of these types or perform safety checks at runtime~(which cannot be performed at compile time because of reflection or the dynamically-typed nature of the language). On the other side, an object space uses these well-known classes to perform transformations between objects in one runtime to another \eg translate a string from the hypervisor runtime to a string in the virtualized runtime.
 
-\item[Special Selectors.] The special selectors denote those messages that the \VM will send to the image under special situations. This is the case of the \ct{doesNotUnderstand} selector that is sent to the receiver object when the method lookup fails finding a method under a message-send. Other selectors in this category are (a)\ct{cannotInterpret} which is sent when a class in the middle of the method lookup has no method dictionary, (b) \ct{mustBeBoolean} which is sent when a branch operation founds a non-boolean object, (c) \ct{cannotReturn} and \ct{aboutToReturn} are selectors used when contexts are finalized and (d)\ct{run:with:in:} is the message used to implement method wrappers.
+\item[Special Selectors.] The special selectors denote those messages that the \VM will send to the image under special situations. This is the case of the \ct{doesNotUnderstand} selector that is sent to the receiver object when the method lookup fails finding a method under a message-send. Other selectors in this category are (a) \ct{cannotInterpret} which is sent when a class in the middle of the method lookup has no method dictionary, (b) \ct{mustBeBoolean} which is sent when a branch operation founds a non-boolean object, (c) \ct{cannotReturn} and \ct{aboutToReturn} are selectors used when contexts are finalized and (d) \ct{run:with:in:} is the message used to implement method wrappers.
 
 \end{description}
 
@@ -44,7 +44,7 @@ Pharo \VM holds the state of the \VM-setup interface inside a \emph{special obje
 
 The Pharo \VM has single threaded execution. Only one operating system thread is used to execute Pharo code, so process scheduling is handled internally by the virtual machine. Processes scheduled using this approach are also called \emph{green threads}. Green threads provide process scheduling without native operative system support while limiting the proper usage of modern multicore CPUs. By using green threads only one process, the \emph{active process}, is executed at each instant in time. After the active process executes for a given window of time, if there are any waiting processes with greater or equal priority, the active process gets preempted \ie it is suspended and the process with the highest priority becomes the new active process.
 
-In \Vtt, we reused part of the green thread mechanism to schedule runtime execution, which we called \emph{context switch}. A virtualized language runtime runs for a window of time after which it gets preempted if another runtime with highest priority~(the language hypervisor runtime) is waiting. Internally, the \VM has a single bytecode interpreter shared amongst the different running runtimes. To perform the context switch, we exchange the special objects array of the \VM interpreter by the one in the language runtime to resume, and then resume the \VM execution. This solution keeps the single threaded nature of the \VM meaning that when a language runtime is running the others are suspended. On the good side, there are no concurrency problems between the different language runtimes, allowing us to focus on the language specialization features.
+In \Vtt, we modified part of the green thread mechanism to allow the scheduling of different language runtimes. We call \emph{context switch} the mechanism that changes from one language runtime to another. A virtualized language runtime runs for a window of time after which it gets preempted if another runtime with highest priority~(the language hypervisor runtime) is waiting. Internally, the \VM has a single bytecode interpreter shared amongst the different running runtimes. To perform the context switch, we exchange the special objects array of the \VM interpreter by the one in the language runtime to resume, and then resume the \VM execution. This solution keeps the single threaded nature of the \VM meaning that when a language runtime is running the others are suspended. This implementation has the benefit of avoiding concurrency problems between the different language runtimes, allowing us to focus on the runtime modification features.
 
 
 \begin{figure*}[htb]
@@ -54,11 +54,11 @@ In \Vtt, we reused part of the green thread mechanism to schedule runtime execut
 \end{center}
 \end{figure*}
 
-Finally, the window time control was implemented reusing the existing process preemption mechanism in the \VM. A separate thread, namely the \emph{heartbeat}, is awaken every 200 milliseconds and activating a flag that indicates a preemption can occur. When the \VM code interpreter arrives to one of the safe suspension points (\ie a point where suspending the current execution will not leave the current process in a incoherent state) such as a back jump or a message-send bytecode, the code interpreter preempts the active process if the corresponding flag was activated. In \Vtt we modified the preemption code to activate another language runtime if available.
+Finally, the window time control was implemented reusing the existing process preemption mechanism in the \VM. A separate thread, namely the \emph{heartbeat}, is awaken every 200 milliseconds and activating a flag that indicates a preemption may occur. When the \VM code interpreter arrives to one of the safe suspension points (\ie a point where suspending the current execution will not leave the current process in a incoherent state) the code interpreter preempts the active process if the corresponding flag was activated. Such safe suspension points are in our implementation the back jump and message-send bytecodes. These suspension points avoid to suspend the execution in between of \eg operations that perform stack alignment. In \Vtt we modified the preemption code to activate another language runtime if available.
 
 \section{Mirror Implementation}\label{sec:implementation_mirrors}
 
-Our implementation of mirrors manipulate the objects inside an object space by using already Pharo \VM primitives. A primitive in Pharo is a function executed at the \VM level. To execute a primitive from the language, this primitive should be available as a method. Then, we have to send the corresponding message to the a object subject of the primitive:
+Our mirror implementation manipulate the objects inside an object space by using already Pharo \VM primitives. A primitive in Pharo is a function executed at the \VM level. To execute a primitive from the language, this primitive should be available as a method. Then, we have to send the corresponding message to the a object subject of the primitive:
 
 \begin{code}
 Array >> size [
@@ -68,7 +68,7 @@ Array >> size [
 {1 . 2 . 3} size.
 \end{code}
 
-We want however, to avoid cross-runtime message-sends~(\chapref{vtt}), we bypass the message-send with the combination of two existing primitives:
+We want however, to avoid cross-runtime message-sends, we bypass the message-send with the combination of two existing primitives:
 \begin{description}
 	\item \textbf{Execute a given method on an object.} Given a method, it is possible to execute it on an object, avoiding method lookup in the object. In current Pharo \VM, this primitive is implemented in the method \textbf{\ct{receiver:withArguments:executeMethod:}} of the \ct{CompiledMethod} class, with number 188. This method receives as arguments the object on which the primitive will be executed, an array of arguments, and the methods to execute.
 	\item \textbf{Execute a primitive on an object.} It is possible to send a message to an object, so a primitive is executed on the receiver. This primitive is implemented in Pharo's \ct{ProtoObject} class as \textbf{\ct{tryPrimitive:withArgs:}} with number 118 and receives as argument the number of the primitive and an array or arguments.
@@ -83,7 +83,7 @@ CompiledMethod
        executeMethod: (ProtoObject >> #tryPrimitive:withArgs:)
 \end{code}
 
-We have one mirror per type of object supported by the Pharo \VM. Notice that as some runtime elements such as methods, activation records or even processes are reified as objects in Pharo, we can manipulate them through mirrors without developing new support for them in the \VM:
+Our \Vtt prototype includes one mirror per type of object supported by the Pharo \VM. Notice that as some runtime elements such as methods, activation records or even processes are reified as objects in Pharo, we can manipulate them through mirrors without developing new support for them in the \VM:
 
 \begin{description}
 \item[Object mirrors.] Mirrors for objects containing just object references such as an \ct{Array} or an \ct{OrderedCollection}.
@@ -101,7 +101,7 @@ We have one mirror per type of object supported by the Pharo \VM. Notice that as
 
 \section{Memory Layout} \label{sec:memory}
 
-In \Vtt, all objects belonging to the different language runtimes share a unique object heap. Objects are mixed in this heap and are objects from the same language runtime not necessarily contiguous, as shown in Figure \ref{fig:heap}. Although they are mixed, they are logically separated as they conform different object graphs. Pharo being a safe-language~\cite{Hawb98a,Hawb02a} prevents us to forge references~(\ie creating references from numbers using pointer arithmetic) and isolates the object graphs of each runtime system.
+In \Vtt, all objects belonging to the different language runtimes share a unique object heap. Objects are mixed in this heap and are objects from the same language runtime not necessarily contiguous, as shown in Figure \ref{fig:heap}. However, Although they are mixed, they are logically separated as they conform different object graphs. Pharo being a safe-language~\cite{Hawb98a,Hawb02a} prevents us to forge references~(\ie creating references from numbers using pointer arithmetic) and isolates the object graphs of each runtime system.
 
 \begin{figure}[ht]
 \begin{center}
@@ -192,6 +192,7 @@ We executed each of these benchmarks ten times in two different setups. Results 
 %\end{description}
 
 %\begin{landscape}
+\gp{I also benchmarked other kind of hypervisors: one that checks the existence of a file (does not use the mirrors) and one that checks if a context was suspended in a particular point (forces mirrors creation for processes, contexts, methods and literals in the method)}
  \begin{table}[ht]
 
  	\centering
