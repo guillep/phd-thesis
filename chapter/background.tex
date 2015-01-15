@@ -12,6 +12,7 @@
 % ===========================================================================
 
 \chapter{Modifying the Language Runtime}
+\chaplabel{state_modifying}
 
 Evolving a language can take the path of modifying its language runtime, particularly the concepts the language exposes to the developer and its semantics.
 We identify three main problems in taking such path of evolution~(Section \ref{sec:bootstrapping_problems})
@@ -374,6 +375,7 @@ While we see the practical limitations of changing the \VM runtime system at run
 \gp{conclude on what the related work does and does not for language runtime modification}
 
 \chapter{Application Tailoring}
+\chaplabel{state_tailoring}
 
 In the context of this thesis, we explore application tailoring as one possible evolution for a language runtime in the context of devices with limited infrastructures~(either hardware or software).
 Application tailoring allows the specialization of an application for its deployment in constrained devices.
@@ -607,6 +609,7 @@ Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given
  \end{table}
 
 \chapter{Language Virtualization Techniques}
+\chaplabel{state_virtualization}
 
 The most related family of work in virtualization are approaches like Xen~\cite{Chis07xen}. Xen is a Virtual Machine Monitor~(VMM) that allows to control and manage \VM in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. They rely on support from the hardware platform, and in some cases from the guest OS, concentrating themselves on performance and production features.
 
