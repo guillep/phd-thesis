@@ -38,23 +38,6 @@ For example, an application runtime should be easily tailorable to consume less 
 This problem shows itself more evident and harder to control under the usage of third party software. 
 Third party libraries and frameworks are designed in a generic fashion that allows multiple usages and functionalities, while applications use only few of them. 
 Examples are logging libraries, web application frameworks or object-relational mappers.
-
-
-%Figure~\ref{fig:unusedCodeUnits} shows a typical deployment scenario with unused code units.
-%
-%This problem becomes more evident with the inclusion of third party libraries~(and frameworks). 
-%Third party libraries provide often a great variety of code units, usually designed in a generic fashion. 
-%They allow multiple usages, while applications tend to use only some of them. 
-%Additionally, application developers do not often modify and customize third party libraries to fit their needs but use them as black boxes. 
-%Modifying them would mean to lose compatibility with the original development branch of the library and having deep knowledge on the library.
-%
-%\begin{figure}[ht]
-%\begin{center}
-%\includegraphics[width=1\linewidth]{components}
-%\caption{\textbf{Unused Code Units.} Package P1 contains class A which is used during runtime and class B which is never needed and thus, not loaded. Package P2 contains class C which is partially used~(it contains methods that are never invoked) though it's completely loaded. Class D is loaded because an instance of it is created, but it is never used.\label{fig:unusedCodeUnits}}
-%\end{center}
-%\end{figure}
-
 Unused code units represent serious drawbacks in constrained devices. 
 First, unused code units may forbid the deployment into a constrained resource device.
 It may also interfere with the deployment and usage of other applications, because of large memory footprints in both secondary~(disk storage) and primary~(RAM) memory~\cite{Mart12a} or the presence of slow networks in the case of rich web applications.
@@ -67,9 +50,9 @@ Second, some deployment targets may have an infrastructure designed in such a ma
 
 %\gp{explain why code mobility is important!}
 
-Another example of support that should be brought to user applications is \emph{code mobility}. Code mobility is a mechanism that allows the migration of programs between different environments. This problem is important in the context of ubiquitous systems and virtualization technology. Code mobility provides support for \eg load balancing, adjusting an application's resources dynamically and functionality customization. Fuggetta et al. define informally code mobility as the capability to rebind a piece of code with the location it is running~\cite{Fugg98a}. The languages and applications we develop should support this kind of rebinding and, more generally, be adaptable to new situations.
+Another example of support that should be brought to user applications is \emph{code mobility}. Code mobility is a mechanism that allows the migration of programs between different environments. This problem is important in the context of ubiquitous systems and virtualization technology. Code mobility provides support for \eg load balancing, adjusting an application's resources dynamically and functionality customization. However, applications must have support to rebind a piece of code or object to another location~\cite{Fugg98a}.
 
-To answer these questions we propose \Vtt: a language virtualization infrastructure. With \Vtt we can virtualize a language runtime for its control and manipulation. This manipulation is transparent for the virtualized runtime. We show how \Vtt simplifies two different language runtime evolution paths: the language recreation by bootstrapping and the application extraction to reduce its memory consumption.
+The languages and applications we develop should be adaptable to these and other new situations and scenarios. For this we propose \emph{\Vtt}: a language virtualization infrastructure. With \Vtt we can virtualize a language runtime for its control and manipulation. This manipulation is transparent for the virtualized runtime. We show how \Vtt simplifies two different language runtime evolution paths: the language recreation by bootstrapping and the application extraction to reduce its memory consumption.
 
 % =============================================================================
 \section{What to Evolve?}
@@ -77,8 +60,7 @@ To answer these questions we propose \Vtt: a language virtualization infrastruct
 
 In the context of evolution of language and applications, we ask ourselves the following question: \emph{What are the elements of programming languages we should focus on?} High-level language runtimes are inherent complex pieces of software.
 First, high-level languages virtual machines~(\VMs) have to combine two rather extreme goals: abstraction and performance.
-We have seen that the required abstraction for the running high-level language has a strong influence on the \VM design.
-At the same time the hard performance requirement requires precise interaction with the underlying hardware.
+The hard performance requirements requires precise interaction with the underlying hardware.
 This goes even so far that specialized hardware is conceived to match the performance requirements \cite{Unga84a,Stef84a,McGh98a,Clic05a}.
 
 
@@ -92,8 +74,8 @@ In the following sections we propose a dissection of a high-level program that r
 
 \begin{figure}[!ht]
 \begin{center}
-\includegraphics[width=0.6\linewidth]{elements_to_evolve}
-\caption{\textbf{What to Evolve.}\label{fig:whatToEvolve}}
+\includegraphics[width=0.5\linewidth]{elements_to_evolve}
+\caption{\textbf{Dissection of a running program to evolve.}\label{fig:whatToEvolve} We identify the application and language runtimes that represent respectively the particular application under execution and the language that provides support for it. The \VM provides as well an execution support for the application runtime. The overlapping shows the interrelations between these three components.}
 \end{center}
 \end{figure}
 
@@ -115,25 +97,35 @@ At the same time they crosscut all abstraction layers; they have to access high-
 Similar complexity applies to the automatic memory management present in most high-level language \VMs.
 Garbage Collectors (\GC) evolved from simple helpers to complex software artifacts that for instance support concurrent garbage collection \cite{Clic05a}.
 
-In this context, being able to evolve a \VM is crucial for language evolution, as \VMs are the enablers of many of the features in programming languages. A \VM complexity should be engineered to favor its change. In this thesis we do not focus on \VM evolution but on the languages and applications that run of top of them. However, we have \VMs in mind as they are very interlaced with the languages we want to evolve and they impose and constraint our languages to their execution model.
+In this context, being able to evolve a \VM is crucial for language evolution, as \VMs are the enablers of many of the features in programming languages. A \VM complexity should be engineered to favor its change. In this thesis we do not focus on \VM evolution but on the languages and applications that run of top of them. However, \VMs are important in the context of this thesis, as they are very interlaced with the languages we want to evolve, imposing and constraining our languages to their execution model.
 
 \subsection{Application Runtime}
 
 The application runtime is the set of elements that an application includes at runtime \eg libraries, objects, classes, methods. The \VM interprets and executes the application runtime. Indeed, with this purpose the application runtime must comply to the \VM execution model~(Figure \ref{fig:whatToEvolve}).
 
-The \emph{language runtime} is the subset of the application runtime that describe the concepts and behavior available in the language we use \ie the set of classes, methods and constructs that describe the language internals. The language runtime concretizes the model that the language proposes to the developers. For example, Pharo Smalltalk proposes a programming model of classes with metaclasses~(the class of a class). This programming model is implemented in Pharo with the concrete existence of the \ct{Class} and \ct{Metaclass} classes and the implicit creation of a metaclass for each class we create. Additionally, a language runtime is not only composed by classes but also by other objects. For example, it contains a table of interned strings or \emph{symbols} that should be guaranteed unique in the system.
-
-While indeed an application runtime~(and therefore its language runtime) is coupled to its \VM to run, sometimes it is also coupled in its definition. That is, the \VM defines and fixes the language model and some of the initially loaded libraries. In this context, we focus on the evolution of application runtimes. We would like to extend or specialize an application runtime by (a) modifying the concepts provided by the language and (b) adapt existing programs to new situations.
+The \emph{language runtime} is the subset of the application runtime that describe the concepts and behavior available in the language we use \ie the set of classes, methods and constructs that describe the language internals. The language runtime concretizes the model that the language proposes to the developers. For example, Pharo Smalltalk proposes a programming model of classes with metaclasses~(the class of a class) and traits. This programming model is implemented in Pharo with the concrete existence of the \ct{Class} and \ct{Metaclass} classes, the implicit creation of a metaclass for each class we create, and objects representing traits. Additionally, a language runtime is not only composed by classes but also by other objects. For example, it contains a table of interned strings or \emph{symbols} that should be guaranteed unique in the system.
+While indeed an application runtime~(and therefore its language runtime) is coupled to its \VM to run, sometimes it is also coupled in its definition. That is, the \VM defines and fixes the language model and some of the initially loaded libraries.
 
 \section{Problem Statement}
 
-\gp{I don't know where to put this yet}
+We focus this thesis in the evolution of object-oriented high-level applications. In such context, we identify as a general problem for this thesis the lack of an infrastructure for safe application runtime evolution. We mean by evolution the ease of development and change of the structures that represent an application at runtime. This infrastructure must allow both the specialization and extension of application and language runtimes.
+
+Particularly, we indentify these more concrete problems:
+\begin{description}
+\item[Unclear \VM-Language interface.] The relation between the language the \VM and the language remains often unclear in \VM hardcoded assumptions.
+\item[Core runtime changes remain low-level.] Changing a language or application runtime representation often forces us to modify the low-level code that defines such a runtime.
+\end{description}
+
 
 \section{Contributions}
 
-The contributions of this thesis are three-fold. First we describe \Vtt, an \emph{infrastructure for application runtime virtualization}. This infrastructure allows us to modify and control the virtualized application's runtime.
-Second, we describe the process to create a language runtime through \emph{bootstrapping}. \Vtt provides this bootstrapping process with a clear interface  to manipulate the language and to use the tools and abstractions of the high-level language for its own creation.
-Finally, we introduce an \emph{application extraction mechanism} based on lazy installation, namely Run-Fail-Grow~(RFG). \Vtt supports RFG by allowing the monitoring of the application under extraction and provide with facilities for code installation.
+The contributions of this thesis are three-fold. First we describe \Vtt, an \emph{infrastructure for application runtime virtualization}. This infrastructure allows us to modify and control a virtualized application's runtime. In \Vtt, we expose the \VM-language interface as a first-class runtime object, namely an object space. An object space clarifies and makes explicit such interface, and provides with a high-level interface for its manipulation.
+
+We validate our language virtualization infrastructure by exploring two application runtime evolution approaches.
+\begin{description}
+\item[Bootstrapping.] We describe the process to create a language runtime through \emph{bootstrapping} with \Vtt. Our bootstrapping process provides a novel way to define an object-oriented language runtime by using the definition of the language to define itself.
+\item[Application tailoring.] We developed a novel dynamic application tailoring approach based on lazy installation, namely Run-Fail-Grow~(RFG). \Vtt supports RFG by allowing the monitoring of the application under extraction and provide with facilities for code installation.
+\end{description}
 
 % =============================================================================
 \section{Thesis Outline}
