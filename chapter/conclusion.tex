@@ -6,9 +6,24 @@
 % =============================================================================
 \introduction
 
+Software inevitable changes and we need to provide with the tools and methodologies that support such changes~\cite{Nier08b}. However, production-ready applications are not usually change-aware. These applications should be either engineered from scratch with change in mind, or a lot of reengineering effort should be invested in them to support change. Making deep modifications to a language runtime can be a cumbersome task.
+At the same time, evolving a language runtime has become an important task in the last years. Multicore hardware brought new problems on concurrency and parallelism; the \emph{cloud} increased the need for software adaptation; new resource constrained devices such as phones are as current as almost every person has one in their our pockets. These new technologies present new challenges to software developers. The software we use, and in particular the programming languages and tools we use should be easily tailorable to support many of the new challenges that come with new technology and needs.
+
+The complexity and unclear interactions between different runtime components such as \VMs and the languages that run on top of it make such evolution challenging. This thesis explores two different language runtime evolution scenarios through their virtualization. We present our virtualization model called \Vtt, a language bootstrapping process and infrastructure and RFG, an application runtime tailoring technique.
+
 % =============================================================================
 \section{Contributions}
 % =============================================================================
+
+This thesis explores the evolution of an application and language runtime through \emph{\Vtt, a language virtualization infrastructure}. In \Vtt, a first-class runtime system, namely an object space, allows the manipulation, control and monitoring of such runtime system through a clear API. A first-class language hypervisor implements such runtime manipulations with the expression power and abstractions of the high-level language we are manipulating. We validate this approach by exploring two different evolution scenarios: bootstrapping and tailoring.
+
+\emph{Bootstrapping} is commonly known by its usage on compiler building, where a compiler can compile itself.
+It can be generalized to the introduction of any software system to its own building process.
+A bootstrap process allows us to easily change this system as it is expressed in terms of itself, taking advantage of its abstractions and tools.
+Our virtualization infrastructure eases this bootstrap process by providing a clear VM-language interface to manipulate the runtime system of the language under creation. It also provides with a bootstrapping interpreter that allows the manipulation of the bootstrapped language in terms of itself, and not manipulating chunks of memory.
+We show how by this infrastructure can be used to bootstrap three different object-oriented languages with different programming models: a minimal small-talk with implicit metaclasses, the core of the Pharo language which is defined by traits, and finally Metatalk which decomposes reflection from the base level and stores meta information in the meta level of the language.
+
+\emph{Tailoring} is a technique that specialized an application runtime to contain only code units that will be used at runtime. We presented our run-fail-grow~(RFG) approach for application tailoring. RFG tailors an application by starting it and initializing it with a seed that contains the minimal set of code units we want to ensure. Then, we install and execute the application's entry points. As the application executes, missing code units are found and installed on demand, ensuring that only the needed code units are introduced. By following the runtime execution, it supports dynamic features such as reflection and meta-programming. Tornado, our RFG implementation, succeeds to produce applications with minimal footprint for deployment. Our results show that we manage different extreme and challenging cases with flexibility.
 
 % =============================================================================
 \section{Published Papers}
@@ -16,11 +31,24 @@
 
 \section{Future Work}
 
-\subsection{Runtime Adaptation}
+\Vtt presents a language runtime virtualization model that opens several lines of future work that we consider for exploration.
 
-\subsection{New Language Models}
+\begin{description}
 
-\subsection{Co-Evolution of \VM and Language}
+\item[Security.] In our current implementation, we have no control over primitive methods. This means that a program can call a primitive like \ct{nextObject} which returns all the objects in the image, and thus escape the ObjectSpace boundary.
+As a solution, we plan to intercept primitive calls from the patient, so that the surgeon can prevent or replace them by other primitive calls or even Smalltalk methods.
+It would be then possible to create ObjectSpaces where unwanted primitives like file access or inspecting the whole object memory (\ct{nextObject} or \ct{become:}) throw an exception to the surgeon.
+
+\item[Application distribution and migration.] For future research we would like to explore the \objectspace API for controlling remote images and how it relates to distributed images.
+As future work, we want to explore the introduction of operating system threads to take advantage on the latest multicore CPUs, take control of them through the objectspace and account their consumed resources through the language.
+
+\item[Dynamic Adaptation.] On one side, we would like to continue exploring in the future the usage of this approach in the context of dynamic adaptation. We believe that our model in conjunction with reflective language architectures are one more step closer of the runtime adaptation and distribution of applications with almost zero downtime. On the other side, to complement this work we plan also to experiment on the tailoring of virtual machines and system libraries.
+
+\item[VM-Language Co-Evolution.] The main limitation of our approach is that we don't address the co-evolution of language and VM. A co-evolution implies changing not only language and VM but also their interface. We expect to address these issues in future work and see what the introduction of a metacircular-programming framework implies in this regard.
+
+\item[Optimization.]
+
+\end{description}
 
 % =============================================================================
 \section{Software Artifacts}
