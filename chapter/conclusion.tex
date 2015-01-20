@@ -31,7 +31,17 @@ We show how by this infrastructure can be used to bootstrap three different obje
 
 \subsection{Journals}
 
+Guillermo Polito, Stéphane Ducasse, Luc Fabresse, Noury Bouraqadi, and Benjamin Ryseghem. Bootstrapping Reflective Systems: The Case of Pharo. In Science of Computer Programming, 2013. Impact Factor: 0,548\newline
+
+
+
+tornado (under submission spe)
+
 \subsection{Workshops}
+
+Clara Allende, Guillermo Polito. Virtual Smalltalk Images: Model and Applications. In WISIT - Workshop de Ingeniería en Sistemas y Tecnologías de la Información, 2014.
+Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Understanding Pharo’s global state to move programs through time and space. In IWST - International Workshop on Smalltalk Technology, Co-located within the 22th International Smalltalk Conference - 2014, 2014.
+Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Virtual Smalltalk Images: Model and Applications. In IWST - International Workshop on Smalltalk Technology, Co-located within the 21th International Smalltalk Conference - 2013, 2013.
 
 \section{Future Work}
 
@@ -54,6 +64,17 @@ We show how by this infrastructure can be used to bootstrap three different obje
 % =============================================================================
 \section{Software Artifacts}
 
+The research that appears in this thesis was supported and validated by several prototypes implemented in the course of the P.h.d. The produced software artifacts are the following:
+
+\begin{description}
+
+\item[\Vtt.] \Vtt's prototype is the main software artifact that results from this research. This prototype included changes in the Pharo \VM to allow the described co-existence, manipulation and control of a language runtime. \Vtt also includes several language libraries that expose the \VM behavior: object spaces and its mirrros encapsulate a language runtime; a \Vtt-based AST interpreter was created from an existent AST interpreter in Pharo; a heap exporter and importer allowed us to work on existing smalltalk images.
+
+\item[Hazelnut/Seed.] Hazelnut/Seed is our bootstrapping solution for the Pharo language. Hazelnut describes a language runtime and allow its creation through a bootstrapping interpreter based on \Vtt's one.
+
+\item[Tornado.] Tornado is our tailoring implementation on top of \Vtt. Tornado uses the Ghost proxies model to implement execution traps and the \Vtt execution cycle to install code when missing code is detected.
+
+\end{description}
 
 % =============================================================================
 \input{chapter-footer.tex}
