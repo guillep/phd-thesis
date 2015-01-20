@@ -35,18 +35,15 @@ We show how by this infrastructure can be used to bootstrap three different obje
 
 \begin{description}
 
-\item[Security.] In our current implementation, we have no control over primitive methods. This means that a program can call a primitive like \ct{nextObject} which returns all the objects in the image, and thus escape the ObjectSpace boundary.
-As a solution, we plan to intercept primitive calls from the patient, so that the surgeon can prevent or replace them by other primitive calls or even Smalltalk methods.
-It would be then possible to create ObjectSpaces where unwanted primitives like file access or inspecting the whole object memory (\ct{nextObject} or \ct{become:}) throw an exception to the surgeon.
+\item[Security.] Virtualization opens the door to easily forbid or constraint operations to the virtualized runtime. Sandboxing can then be transparent to the virtualized application, which may believe that it \emph{owns} the entire machine for itself.
 
-\item[Application distribution and migration.] For future research we would like to explore the \objectspace API for controlling remote images and how it relates to distributed images.
-As future work, we want to explore the introduction of operating system threads to take advantage on the latest multicore CPUs, take control of them through the objectspace and account their consumed resources through the language.
+\item[Resource Control.] An application could be virtualized to restrict its consumption of critical resources such as CPU or memory. Doing so in a flexible way with our first class runtimes would simplify \eg the creation of simulators for specific platforms such as constrained devices.
 
-\item[Dynamic Adaptation.] On one side, we would like to continue exploring in the future the usage of this approach in the context of dynamic adaptation. We believe that our model in conjunction with reflective language architectures are one more step closer of the runtime adaptation and distribution of applications with almost zero downtime. On the other side, to complement this work we plan also to experiment on the tailoring of virtual machines and system libraries.
+\item[Application distribution and migration.] The virtual language runtime API exposed by an object space encapsulates the internals of the implementation. This same API may provide transparent access to remote application runtimes residing in different processes/machines. This could open the possibility of exploring application distribution and migration in the \emph{cloud} at the language level.
 
-\item[VM-Language Co-Evolution.] The main limitation of our approach is that we don't address the co-evolution of language and VM. A co-evolution implies changing not only language and VM but also their interface. We expect to address these issues in future work and see what the introduction of a metacircular-programming framework implies in this regard.
+\item[Dynamic Adaptation.] Language virtualization can be also useful in the context of dynamic adaptation of applications with almost zero downtime. An object space API is general enough to allow updates to occur at runtime. Additionally, the execution cycles provides with atomicity for doing such changes.
 
-\item[Optimization.]
+\item[VM-Language Co-Evolution.] Our approach doesn't address the co-evolution of language and VM. However, object spaces make explicit the border-line between the VM and the language to change the latter. A co-evolution implies changing not only language and VM but also their interface.
 
 \end{description}
 
