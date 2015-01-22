@@ -16,32 +16,23 @@
 %\section{The need for Software Evolution}
 % =============================================================================
 
-Software inevitable changes and we need to provide with the tools and methodologies that support such changes~\cite{Nier08b}. However, production-ready applications are not usually change-aware. These applications should be either engineered from scratch with change in mind, or a lot of reengineering effort should be invested in them to support change. Making deep modifications to a language runtime can be a cumbersome task.
-At the same time, evolving a language runtime has become an important task in the last years. Multicore hardware brought new problems on concurrency and parallelism; the \emph{cloud} increased the need for software adaptation; new resource constrained devices such as phones are as current as almost every person has one in their our pockets. These new technologies present new challenges to software developers. The software we use, and in particular the programming languages and tools we use should be easily tailorable to support many of the new challenges that come with new technology and needs.
+An application runtime is the set of software elements that denote such application during its execution. Narrowing to high-level object-oriented applications, an application runtime includes \eg the loaded libraries, classes and methods, the created objects and the running application threads. An application runtime usually follows the model and concepts imposed by the language it is written on. For example, Smalltalk or Ruby propose that an application is structured in classes with implicit metaclasses \ie a class is instance of a (\emph{meta})class that describes its behavior. Thus, we will find that inside the application runtime of a Smalltalk or Ruby application is structured in those terms also, each class will have a metaclass. 
 
-% =============================================================================
-%\section{Resource Constrained Devices}
-% =============================================================================
+Within an application runtime, we find the \emph{language runtime}. The language runtime is the subset of the application runtime that denotes the concepts and behavior available in the language we use \ie the set of structures and constructs that describe the language internals. The language runtime concretizes the model that the language proposes to the developers.
 
-%\gp{noury had a reference on this -> everything is going small}
+Manipulating and modifying these language models and their runtimes is becoming important in the last years. Multicore hardware brought new problems on concurrency and parallelism; the \emph{cloud} increased the need for software adaptation; new resource constrained devices such as phones are as current as almost every person has one in their our pockets. These new technologies present new challenges to software and language developers. The software we use, and in particular the programming languages and tools we use should be easily tailorable to support many of the new challenges that come with new technology and needs.
 
-%Unused deployed code units have an undesired impact when targeting a constrained infrastructure. 
-%Constrained devices may present restrictive hardware such as low primary or secondary memory, or even software impositions such as the Android's Dalvik VM restriction to deploy only 65536 methods\footnote{According to dalvik's bytecode documentation~(\url{http://source.android.com/devices/tech/dalvik/dalvik-bytecode.html}), the source register accepts values between 0 and 65536.}. Big JavaScript mashup applications have an impact on loading time due to network speed and parsing time.
-%These limitations may forbid the deployment of applications that contain lots of code units, or limit the amount of applications and content an user can have in its device.
+We observe, however, that software is not usually designed and thought to easily accept changes. Applications and languages should be either engineered from scratch with change in mind, or a lot of reengineering effort should be invested in them to support change. We need to provide with the tools and methodologies that support such changes~\cite{Nier08b}. The languages and applications we develop should be adaptable to new situations and scenarios. In this direction we propose \emph{\Vtt}: a runtime virtualization infrastructure. \Vtt virtualizes an application runtime for its control and manipulation. This manipulation is transparent for the virtualized runtime. We show how \Vtt simplifies application and language runtime manipulation in two different scenarios: the language runtime recreation by bootstrapping and the application runtime extraction to reduce its memory consumption.
 
-%Existing solutions to this problem propose the extraction of used code units of an application to reduce their size and memory footprint. Java Micro Edition~\cite{JavaME} proposes a general purpose specialized runtime environment with no possibility of customization. Other solutions in the field propose to automatically detect and extract used code units, so called \emph{tailoring}, with static call graph construction as the most dominant technique~\cite{ShortGrov97a}. 
-%Static approaches present limitations in the presence of dynamic features such as reflection or in the absence of static type annotations. Additionally, these existing solutions are generally designed to extract all used code units with no possibility for the user to customize the process of selection.
 
-For example, an application runtime should be easily tailorable to consume less resources. We can observe that deployed applications contain a set of \emph{code units} such as classes and methods that tend to occupy more memory~(primary and secondary) than necessary.
-%Besides, an application may load a code unit that is only partially used, such as a class with some methods that are never invoked.
-%Deployed object-oriented applications often contain \emph{code units}~(e.g. packages, classes, methods) that the running application never uses. 
-This problem shows itself more evident and harder to control under the usage of third party software. 
-Third party libraries and frameworks are designed in a generic fashion that allows multiple usages and functionalities, while applications use only few of them. 
-Examples are logging libraries, web application frameworks or object-relational mappers.
-Unused code units represent serious drawbacks in constrained devices. 
-First, unused code units may forbid the deployment into a constrained resource device.
-It may also interfere with the deployment and usage of other applications, because of large memory footprints in both secondary~(disk storage) and primary~(RAM) memory~\cite{Mart12a} or the presence of slow networks in the case of rich web applications.
-Second, some deployment targets may have an infrastructure designed in such a manner that forbids the deployment of large applications. For example, the Android's Dalvik VM restricts an application to deploy only 65536 methods.
+%For example, an application runtime should be easily tailorable to consume less resources. We can observe that deployed applications contain a set of \emph{code units} such as classes and methods that tend to occupy more memory~(primary and secondary) than necessary.
+%This problem shows itself more evident and harder to control under the usage of third party software. 
+%Third party libraries and frameworks are designed in a generic fashion that allows multiple usages and functionalities, while applications use only few of them. 
+%Examples are logging libraries, web application frameworks or object-relational mappers.
+%Unused code units represent serious drawbacks in constrained devices. 
+%First, unused code units may forbid the deployment into a constrained resource device.
+%It may also interfere with the deployment and usage of other applications, because of large memory footprints in both secondary~(disk storage) and primary~(RAM) memory~\cite{Mart12a} or the presence of slow networks in the case of rich web applications.
+%Second, some deployment targets may have an infrastructure designed in such a manner that forbids the deployment of large applications. For example, the Android's Dalvik VM restricts an application to deploy only 65536 methods.
 
 
 % =============================================================================
@@ -50,12 +41,10 @@ Second, some deployment targets may have an infrastructure designed in such a ma
 
 %\gp{explain why code mobility is important!}
 
-Another example of support that should be brought to user applications is \emph{code mobility}. Code mobility is a mechanism that allows the migration of programs between different environments. This problem is important in the context of ubiquitous systems and virtualization technology. Code mobility provides support for \eg load balancing, adjusting an application's resources dynamically and functionality customization. However, applications must have support to rebind a piece of code or object to another location~\cite{Fugg98a}.
-
-The languages and applications we develop should be adaptable to these and other new situations and scenarios. For this we propose \emph{\Vtt}: a language virtualization infrastructure. With \Vtt we can virtualize a language runtime for its control and manipulation. This manipulation is transparent for the virtualized runtime. We show how \Vtt simplifies two different language runtime evolution paths: the language recreation by bootstrapping and the application extraction to reduce its memory consumption.
+%Another example of support that should be brought to user applications is \emph{code mobility}. Code mobility is a mechanism that allows the migration of programs between different environments. This problem is important in the context of ubiquitous systems and virtualization technology. Code mobility provides support for \eg load balancing, adjusting an application's resources dynamically and functionality customization. However, applications must have support to rebind a piece of code or object to another location~\cite{Fugg98a}.
 
 % =============================================================================
-\section{What to Evolve?}
+\section{Application and Language Runtimes}
 % =============================================================================
 
 In the context of evolution of language and applications, we ask ourselves the following question: \emph{What are the elements of programming languages we should focus on?} High-level language runtimes are inherent complex pieces of software.
@@ -68,7 +57,7 @@ On top of these complex \VMs, we run our  languages and applications.
 These programs must comply to the contract required by the \VM to run, namely the \VM's \emph{execution model}.
 A \VM's execution model imposes for example an object format, a class or prototype model to perform a method lookup, a bytecode set to execute methods at runtime.
 In some cases, the \VM also loads and initializes the language structures.
-These \VM-language complex interactions makes difficult to evolve any of these elements without affecting the other.
+These \VM-language complex interactions make difficult to evolve any of these elements without affecting the other.
 
 In the following sections we propose a dissection of a high-level program that runs on a \VM. We made this dissection with the objective of understanding the relation and separation between the elements we believe important in the context of software and language evolution. These sections do also state the terminology used during the rest of this dissertation. Figure \ref{fig:whatToEvolve} shows an schema of this dissection.
 
@@ -87,7 +76,7 @@ In the following sections we propose a dissection of a high-level program that r
 The early \VMs focused on interpreting an abstract instruction set (bytecodes).
 The benefits are twofold.
 On the one hand the bytecodes guarantee certain platform independence by abstracting away from the \CPU specific instruction set.
-On the other hand bytecodes allow to encode complex operations into little space both serving the hard memory constraints of the hardware and simplifying the design of a compiler.
+On the other hand bytecodes allow one to encode complex operations into little space both serving the hard memory constraints of the hardware and simplifying the design of a compiler.
 Obviously this abstraction gain comes at a cost and ever since the first \VMs were built research and industry strive to reduce the interpretation overhead.
 
 An efficient way to improve performance is to use a just in time compiler (\JIT) that dynamically generates native code from the bytecode \cite{Deut84a}.
@@ -103,7 +92,7 @@ In this context, being able to evolve a \VM is crucial for language evolution, a
 
 The application runtime is the set of elements that an application includes at runtime \eg libraries, objects, classes, methods. The \VM interprets and executes the application runtime. Indeed, with this purpose the application runtime must comply to the \VM execution model~(Figure \ref{fig:whatToEvolve}).
 
-The \emph{language runtime} is the subset of the application runtime that describe the concepts and behavior available in the language we use \ie the set of classes, methods and constructs that describe the language internals. The language runtime concretizes the model that the language proposes to the developers. For example, Pharo Smalltalk proposes a programming model of classes with metaclasses~(the class of a class) and traits. This programming model is implemented in Pharo with the concrete existence of the \ct{Class} and \ct{Metaclass} classes, the implicit creation of a metaclass for each class we create, and objects representing traits. Additionally, a language runtime is not only composed by classes but also by other objects. For example, it contains a table of interned strings or \emph{symbols} that should be guaranteed unique in the system.
+The \emph{language runtime} is the subset of the application runtime that describes the concepts and behavior available in the language we use \ie the set of classes, methods and constructs that describe the language internals. The language runtime concretizes the model that the language proposes to the developers. For example, Pharo Smalltalk proposes a programming model of classes with metaclasses~(the class of a class) and traits. This programming model is implemented in Pharo with the concrete existence of the \ct{Class} and \ct{Metaclass} classes, the implicit creation of a metaclass for each class we create, and objects representing traits. Additionally, a language runtime is not only composed by classes but also by other objects. For example, it contains a table of interned strings or \emph{symbols} that should be guaranteed unique in the system.
 While indeed an application runtime~(and therefore its language runtime) is coupled to its \VM to run, sometimes it is also coupled in its definition. That is, the \VM defines and fixes the language model and some of the initially loaded libraries.
 
 \section{Problem Statement}
