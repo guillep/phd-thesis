@@ -129,7 +129,7 @@ Indeed the developer would benefit from the productivity that a high-level langu
 
 %To attack these problems, many programming systems have found desirable to follow the principles of \emph{high-level low-level programming} \ie expressing low-level concerns using high-level languages~\cite{Fram09a}. High-level low-level programming pursues the objective of simplifying the complexity of programming systems. By using a high-level language to describe the low-level world the developer benefits from their abstraction power and tooling of the first one. A clear example of this fact is the metacircular \VM field, where many projects whose goal is to write \VMs in a high-level language have blossomed in the last years~\cite{Wimm13a,Alpe00a,Verw11a,Inga97a,Unga05a,Rigo06a}. These projects are biased to \VM building techniques and not to the initialization of the languages that run on top of them.
 
-\section{Changing Language Semantics}\label{sec:related_work_changing}
+\section{Reflection and Metaprogramming Models}\label{sec:related_work_changing}
 
 \subsection*{\textsc{Tower of Interpreters Model}}
 
@@ -356,7 +356,7 @@ From the literature presented about the Klein project we see a strong focus on t
 
 \section{Language Virtualization Techniques}\label{sec:background_virtualization_techniques}
 
-The most related family of work in virtualization are approaches like Xen~\cite{Chis07xen}. Xen is a Virtual Machine Monitor~(VMM) that allows one to control and manage \VM in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. They rely on support from the hardware platform, and in some cases from the guest OS, concentrating themselves on performance and production features.
+The most related family of work in virtualization are approaches like Xen~\cite{Chis07a}. Xen is a Virtual Machine Monitor~(VMM) that allows one to control and manage \VM in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. They rely on support from the hardware platform, and in some cases from the guest OS, concentrating themselves on performance and production features.
 
 Operating System virtualization technology is characterized by the existence of an \emph{hypervisor}~(named after the Operating System \emph{supervisor} that controls the OS processes). The hypervisor is the \VM component that allows one to observe or control the internals of one or many \VMs. A \VM hypervisor gives us, amongst others, the following services:
 
@@ -484,7 +484,7 @@ Finally, virtualization techniques applied to application runtimes provide with 
 \chaplabel{state_tailoring}
 \minitoc
 
-In the context of this thesis, we explore application tailoring as one possible evolution for a language runtime in the context of devices with limited infrastructures~(either hardware or software).
+In the context of this thesis, we explore application tailoring as one usage of an application runtime, in the context limited infrastructure devices~(either hardware or software).
 Application tailoring allows the specialization of an application for its deployment in constrained devices.
 This chapter starts by identifying the problem that motivates application tailoring: code bloat~(Section \ref{sec:footprint_problems}). Code bloat is mainly caused by unused code units appearing in general purpose libraries.
 We illustrate this problem through an example.
@@ -664,7 +664,9 @@ Java in The Small (JITS)~\cite{Cour10a} uses a hybrid approach to select the use
 
 \section{Conclusion and Summary}
 
-Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given the criteria defined in section~\ref{sec:criteria}.
+Tailoring is a cross-cutting technique that may affect any element of an application runtime, and thus, it requires particular support to detect and extract used code units at runtime. Several existing techniques were applied in the past with several results.
+Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given the criteria we defined in Section~\ref{sec:tailoring_criteria}.
+We can see an almost general lack of support of dynamic techniques such as reflection and the flexibility to select whether a code unit should be subject to the tailoring or not. \chapref{chap:rfg} explores a new dynamic tailoring technique based on \Vtt. We show how our technique succeeds to tailor even in the existence of reflection and allows flexibility while others do not.
 
 \begin{table}[ht]
  \small
