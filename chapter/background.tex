@@ -9,36 +9,32 @@
 %\newpage
 % ===========================================================================
 
-\chapter{Modifying the Language Runtime}
+\chapter{Application Runtime Manipulation}
 \chaplabel{state_modifying}
 \minitoc
 
-Evolving a language can take the path of modifying its language runtime, particularly the concepts the language exposes to the developer and its semantics.
-We identify three main problems in taking such path of evolution~(Section \ref{sec:bootstrapping_problems})
+This chapter explores the state of the art on application runtime manipulation. From existing solutions and languages, we identify three main problems based on our problem statement that arise while modifying an application runtime~(Section \ref{sec:bootstrapping_problems}):
 
 \begin{description}
-\item[Flexibility to change.] How malleable is the language to introduce a change on it. If the language definition is properly structured and abstracted, or not hardcoded.
-\item[Mixture of low-level and high-level concerns.] The coupling between the language and the \VM may prevent some changes if they are not well factored and explicit to the language developer.
+\item[Flexibility to change.] How malleable is the language to introduce a change on it. Flexibility involves if the language definition is properly structured and abstracted, if it is hardcoded or not, if it is safe to apply a change without breaking the whole runtime.
+\item[Mixture of low-level and high-level concerns.] The coupling between the language and the \VM may prevent changes in the application runtime if they are not well factored and explicit to the language developer.
 \item[Tool support.] What is the existing tool support to modify the language itself. Here, the worse case scenario is the usage of the low-level \VM tools for that purpose.
 \end{description}
 
-To introduce changes in a language's semantics, several solutions are proposed, mainly based on metaprogramming and \emph{reflection}~(Section \ref{sec:related_work_changing}). These metaprogramming models allow either the modification of the language interpreter semantics or the scoping of modifications with one main objective: performing such modifications safely \ie not shooting in their own foot by modifying the runtime they are running on.
+To introduce changes in a language runtime several solutions are proposed in the literature mainly based on metaprogramming and \emph{reflection}~(Section \ref{sec:related_work_changing}). These metaprogramming models allow either the modification of the language interpreter semantics or the scoping of modifications with one main objective: performing such modifications safely \ie not shooting in their own foot by modifying the runtime they are running on.
 
-Another direction is taken recently by metacircular runtimes~(Section \ref{sec:metacircular_runtimes}). Metacircular runtimes aim to ease the modification of a runtime by means of simplifying the language-\VM relation for development. This simplification comes usually by expressing a \VM in the same language it interprets at the end.
+Another direction is taken recently by metacircular runtimes~(Section \ref{sec:metacircular_runtimes}). Metacircular runtimes aim to ease the modification of a runtime by means of simplifying the language-\VM relation for development. This simplification comes usually by expressing a \VM in the same language it interprets at the end. Metacircular \VMs focus on the simplification of complexity in \VM technology and does not focus on the manipulation of the language runtime elements.
 
+Finally, virtualization techniques applied to application runtimes are used for application control and manipulation~(Section \ref{sec:background_virtualization_techniques}). Application co-existence allows the modification of an application without affecting others. Application manipulation provides with control on an application's life cycle and its internal representation.
 
-Finally, this chapter concludes by \gp{I lack a way to conclude this chapter. I could put some problem statement...}
+\section{Problems of Application Runtime Manipulation} \label{sec:bootstrapping_problems}
 
-
-
-\section{Problems of Language Runtimes Modification} \label{sec:bootstrapping_problems}
-
-We identify three main limitations when we aim to change a language runtime. First, how flexible a language definition is to be changed and adapted without running into inconsistent states. Second, the unclear mixture of \VM and language concerns prevents us to extract the language definition and easily replace it. Finally, the differences in the abstraction levels and tool support between the language we are building and the language we use to build it makes it a challenging task.
+We identify three main limitations when we aim to change an application runtime. First, how flexible its language runtime is to be changed and adapted without running into inconsistent states. Second, the unclear mixture of \VM and language concerns prevents us to extract the language concerns to easily replace them. Finally, the differences in the abstraction levels and tool support between the application runtime we manipulate and the tools we use for it makes it a challenging task.
 
 
 \subsection{Flexibility to Safely Change a Language Runtime}
 
-The \VM is often the component in charge of initialising the language runtime. This decision is indeed practical as the \VM can safely initialise the language structures and solve the language bootstrapping issues avoiding recursions~\cite{Kicz91a}~(\eg create the first class without a class). This language runtime must comply at runtime to the execution model imposed by the \VM. This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions.
+The \VM is often the component in charge of initialising the language runtime. This decision is indeed practical as the \VM can safely initialise the language structures and solve the language bootstrapping issues avoiding recursions~\cite{Kicz91a}~(\eg create the first class without a class). This language runtime must comply at runtime to the execution model imposed by the \VM. This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions. These hardcoded \VM assumptions have two main consequences when we target to change the language runtime. First, the \VM fixes the initial structures of the language runtime. For example, Ruby's initial class hierarchy is imprinted inside the \VM code fixing with \ct{BasicObject} as the top superclass and followed by \ct{Object}, \ct{Module} and \ct{Class} respectively~(Figure \ref{code:ruby_hierarchy}).
 
 \begin{figure}[ht!]
 \begin{code}
@@ -58,8 +54,7 @@ void Init_class_hierarchy(void) {
 \caption{\textbf{Code of the Ruby VM that initialises the class hierarchy (excerpt).} The VM code fixes the language class hierarchy.\label{code:ruby_hierarchy}}
 \end{figure}
 
-These hardcoded \VM assumptions have two main consequences when we target to change the language runtime: the \VM fixes its initial structures~(\eg Ruby's class hierarchy in Figure \ref{code:ruby_hierarchy}) and they introduce code duplications to manipulate language objects.
-To illustrate this second problem, let us consider the code in Figure~\ref{code:logic_dup} that creates a \ct{Dictionary} object~(a hash map object). A language runtime that is defined by a \ct{Dictionary} object to keep \eg a map of global objects, must execute the code in the figure to create the corresponding instance. However, since the language runtime and the \VM are in middle of their initialization, the \VM cannot execute this code as it is, and thus it cannot enforce its own invariants. The state of the art \VMs will provide an alternative low-level representation of the same code respecting the same invariants. This introduces a redundancy: the \VM and the language have different code to honor the same invariants.
+Second, the \VM includes code to manipulate language runtime objects introducing a duplication between the \VM code and the language code. To illustrate this problem, let us consider the code in Figure~\ref{code:logic_dup} that creates a \ct{Dictionary} object~(a hash map object). A language runtime that is defined by a \ct{Dictionary} object to keep \eg a map of global objects, must execute the code in the figure to create the corresponding instance during the language initialization. However, since the language runtime and the \VM are in middle of their initialization, the \VM cannot execute this code as it is, and thus it cannot enforce its own invariants. The state of the art productive \VMs will provide an alternative low-level representation of the same code respecting the same invariants. This introduces a redundancy: the \VM and the language have different code to honor the same invariants.
 
 \begin{figure}[ht]
 \begin{subfigure}{.5\linewidth}
@@ -128,11 +123,11 @@ Snapshot-based languages, on the other side, show that language initialization a
 
 \subsection{Abstraction Level and Tool Support}
 
-On one side, when defining the language runtime at the \VM level, we rely on the tools and abstractions available to develop the \VM to change the language. That means that the language developer uses low-level abstractions to express higher-level concerns. This \emph{mismatch} impacts in the vm/language developer efficiency, as the tools it has are not adequate for the task it tries to accomplish. This problem is indeed aggravated with the complexity of such pieces of software, include elements such as the \GC or the JIT that cross-cuts every \VM concern. Indeed the developer would benefit from the productivity that a high-level language brings.
+When defining the language runtime at the \VM level, we rely on the tools and abstractions available to develop the \VM to change the language. That means that the language developer uses often low-level abstractions to express higher-level concerns. This \emph{mismatch} impacts in the vm/language developer efficiency, as the tools it has are not adequate for the task it tries to accomplish. This problem is indeed aggravated with the complexity of such pieces of software, including elements such as the \GC or the JIT that cross-cuts every \VM concern.
+
+Indeed the developer would benefit from the productivity that a high-level language brings. In this sense, Reflective languages support naturally the usage of the language abstractions and tools to modify the language runtime. Reflective languages benefit from the reification of the language concepts to be able to change them from the language itself. Languages such as Smalltalk show how debuggers and code browsers can be built using such features.
 
 %To attack these problems, many programming systems have found desirable to follow the principles of \emph{high-level low-level programming} \ie expressing low-level concerns using high-level languages~\cite{Fram09a}. High-level low-level programming pursues the objective of simplifying the complexity of programming systems. By using a high-level language to describe the low-level world the developer benefits from their abstraction power and tooling of the first one. A clear example of this fact is the metacircular \VM field, where many projects whose goal is to write \VMs in a high-level language have blossomed in the last years~\cite{Wimm13a,Alpe00a,Verw11a,Inga97a,Unga05a,Rigo06a}. These projects are biased to \VM building techniques and not to the initialization of the languages that run on top of them.
-
-On the other side, we found that reflective languages support naturally the usage of the language abstractions and tools to modify the language runtime. Reflective languages benefit from the reification of the language concepts to be able to change them from the language itself. Languages such as Smalltalk show how debuggers and code browsers can be built using such features.
 
 \section{Changing Language Semantics}\label{sec:related_work_changing}
 
@@ -168,7 +163,7 @@ Black avoids the infinite regression by limiting the real levels of interpretati
 \end{center}
 \end{figure}
 
-By limiting the levels of interpretation, the model presented by Black forbids \emph{indirect modification}. Changing the interpreter in a level \emph{n} above the first level does not impact any more the interpreters below it, as they are directly-executed in the machine and not by the modified interpreter. Black supports, however, the modification of the first level of interpretation with the introduction of hooks inside the machine code. A hook detects wether a function in the interpreter~(written in directly-executed code) is changed, and interprets it by a meta-level interpreter written also in directly executed code. Hooks degrade the performance in comparison of a non-hooked interpreter, but it allows in exchange to change and specialize the behavior of the directly-executed code.
+By limiting the levels of interpretation, the model presented by Black forbids \emph{indirect modification}. Changing the interpreter in a level \emph{n} above the first level does not impact any more the interpreters below it, as they are directly-executed in the machine and not by the modified interpreter. Black supports, however, the modification of the first level of interpretation with the introduction of hooks inside the machine code. A hook detects whether a function in the interpreter~(written in directly-executed code) is changed, and interprets it by a meta-level interpreter written also in directly executed code. Hooks degrade the performance in comparison of a non-hooked interpreter, but it allows in exchange to change and specialize the behavior of the directly-executed code.
 
 \subsection*{\textsc{Safe-Tcl}}
 Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke another interpreter and specialize its behavior. Both the master child interpreters run isolated from each other~(Figure \ref{fig:safetcl_twin_interpreters}).
@@ -221,13 +216,13 @@ Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is
 
 Reflectivity succeeds to modify and scope behavioral reflection for different meta-levels inside the same reflective architecture. However, it does not provide with support to fully change the language semantics~(residing in the \VM) or to perform structural reflection.
 
-\section{Metacircular Runtimes}\label{sec:metacircular_runtimes}
+\section{Metacircular Runtimes and \VMs}\label{sec:metacircular_runtimes}
 
-The increased complexity of the \VMs lead to more novel approaches on how to build \VMs.
-\VMs are still build for a big part in C or C++ for performance reasons.
-However, there are more high-level approaches that try to simplify creating \VMs by using building blocks~\cite{Geof10a}.
-In the following sections we are shedding light on metacircular \VMs which are programmed in the same language they in the end support.
+The increased complexity of the \VMs leads to more novel approaches on how to build \VMs.
+Metacircular \VMs are \VMs programmed in the same language they support in the end. This approach, based on the principles of \emph{high-level low-level programming} \ie expressing low-level concerns using high-level languages~\cite{Fram09a}, benefits from the abstraction power and tooling of the high-level language to manipulate their own \VMs. 
 
+We observer that these projects are biased towards \VM building techniques and not to the manipulation of the languages that run on top of them.
+In this thesis, even if we do not focus on the modification of \VMs, we briefly study metacircular runtimes and \VMs with the objective of understanding more concretely the benefits of their high-level low-level approach.
 
 \subsection*{\textsc{Squeak Smalltalk \VM}}
 \seclabel{background-squeak}
@@ -235,7 +230,7 @@ In the following sections we are shedding light on metacircular \VMs which are p
 The Squeak \VM~\cite{Inga97a} is of importance in the context of this work.
 Its core building system is still in active use for the \urlfootnote{Cog \VM}{http://www.mirandabanda.org/cogblog/} which extends Squeak with a JIT compiler.
 The Cog \VM is used as default by the \urlfootnote{Pharo}{http://pharo.org/} programming language.
-The Squeak \VM is built around a Smalltalk dialect called Slang that is exported to C to be compiled to the final \VM binary.
+The Squeak \VM is built around a Smalltalk subset called Slang that is exported to C to be compiled to the final \VM binary.
 Additionally, the Slang sources can be interpreted to provide an interactive simulator of the \VM, including full graphical support.
 
 Slang is limited to the functionality that can be expressed with standard C code.
@@ -291,64 +286,64 @@ We identify this as crucial, as most of the time is spent debugging, notably on 
 Hence having a specific debuggers and inspectors greatly improve the interaction with the \VM artifact.
 
 
-\subsection*{\textsc{PyPy Toolchain}}
-\seclabel{background-pypy}
-% ---------------------------------------------------------------------------
-\urlfootnote{PyPy}{http://pypy.org/} is a Python-based high-level \VM framework~\cite{Rigo06a}.
-PyPy's major focus lies on an efficient Python interpreter.
-However, it has been successfully used to build \VMs for other languages including Smalltalk~\cite{Bolz08a}.
-Interpreters are written in a type-inferable subset of Python called RPython.
-The underlying PyPy infrastructure automatically provides memory management and JIT compilation.
-Instead of explicitly providing these features, a \VM developer hints certain information to the PyPy framework to improve the generation of a GC or JIT.
-
-PyPy follows a different approach from the previously presented \VM generation frameworks.
-For instance, in Squeak and Jikes the final \VM implementation is not much different from an implementation done directly in a low-level language.
-The programmer specifies all the components of the \VM explicitly, either by implementing them directly or using a provided library.
-Compared to the more static C and C++ these \VM generation frameworks make the compilation phase more tangible.
-Smalltalk in Squeak or Java in Jikes or Maxine fulfill the purpose of the template system in C++ or the restricted macro system in C.
-For the explicit implementation part PyPy is no different.
-However, certain features for the final \VM are directly absorbed from the underlying PyPy infrastructure.
-For instance, the JIT support or the GC are not explicitly implemented but provided by the PyPy framework itself.
-This is a big difference to the other \VM frameworks as it allows programmers to write the \VM in a more high-level fashion.
-For instance in Squeak memory allocation, even for \VM-level objects, has to be performed explicitly.
-Whereas in PyPy the garbage collection is left to the underlying \VM building infrastructure.
-This approach allows RPython \VMs to behave like standard Python programs.
-
-Much like the automatic memory management, PyPy provides a tracing JIT generator~\cite{Bolz09a}.
-By default the \VM programmer does not write an explicit JIT in PyPy.
-Instead the \VM code is annotated to guide the underlying tracing JIT generator.
-This means a \VM compilation time a specific tracing JIT is created for the given meta information.
-As a result, the JIT can track high-level loops in the final interpreted language.
-Again, this is similar to PyPy's GC, both are provided as a service and do not have to be programmed explicitly.
-Instead, the \VM programmer tweaks parameters of the JIT or GC.
+%\subsection*{\textsc{PyPy Toolchain}}
+%\seclabel{background-pypy}
+%% ---------------------------------------------------------------------------
+%\urlfootnote{PyPy}{http://pypy.org/} is a Python-based high-level \VM framework~\cite{Rigo06a}.
+%PyPy's major focus lies on an efficient Python interpreter.
+%However, it has been successfully used to build \VMs for other languages including Smalltalk~\cite{Bolz08a}.
+%Interpreters are written in a type-inferable subset of Python called RPython.
+%The underlying PyPy infrastructure automatically provides memory management and JIT compilation.
+%Instead of explicitly providing these features, a \VM developer hints certain information to the PyPy framework to improve the generation of a GC or JIT.
+%
+%PyPy follows a different approach from the previously presented \VM generation frameworks.
+%For instance, in Squeak and Jikes the final \VM implementation is not much different from an implementation done directly in a low-level language.
+%The programmer specifies all the components of the \VM explicitly, either by implementing them directly or using a provided library.
+%Compared to the more static C and C++ these \VM generation frameworks make the compilation phase more tangible.
+%Smalltalk in Squeak or Java in Jikes or Maxine fulfill the purpose of the template system in C++ or the restricted macro system in C.
+%For the explicit implementation part PyPy is no different.
+%However, certain features for the final \VM are directly absorbed from the underlying PyPy infrastructure.
+%For instance, the JIT support or the GC are not explicitly implemented but provided by the PyPy framework itself.
+%This is a big difference to the other \VM frameworks as it allows programmers to write the \VM in a more high-level fashion.
+%For instance in Squeak memory allocation, even for \VM-level objects, has to be performed explicitly.
+%Whereas in PyPy the garbage collection is left to the underlying \VM building infrastructure.
+%This approach allows RPython \VMs to behave like standard Python programs.
+%
+%Much like the automatic memory management, PyPy provides a tracing JIT generator~\cite{Bolz09a}.
+%By default the \VM programmer does not write an explicit JIT in PyPy.
+%Instead the \VM code is annotated to guide the underlying tracing JIT generator.
+%This means a \VM compilation time a specific tracing JIT is created for the given meta information.
+%As a result, the JIT can track high-level loops in the final interpreted language.
+%Again, this is similar to PyPy's GC, both are provided as a service and do not have to be programmed explicitly.
+%Instead, the \VM programmer tweaks parameters of the JIT or GC.
 
 % ------------------------------------------------------------------------------
-\subsection*{\textsc{Pinocchio \VM}}
-\seclabel{background-Pinocchio }
-
-Pinocchio~\cite{Verw11a} is a research Smalltalk environment that directly uses native code instead of bytecodes.
-The only execution base is native code which is directly generated by the language-side compiler.
-
-Pinocchio is built from a kernel derived originally from a \PH image.
-For the bootstrap classes, objects and methods are exported into binary, native images and linked together with a standard C linker to a final executable.
-For simplicity it relies on a very small part of C code to provide essential primitives, for instance used for file handling.
-Additionally it specifies part of the bootstrap for the Smalltalk object model in plain C code.
-However, besides that, all the other code is written and developed directly in Smalltalk.
-
-An important aspect of Pinocchio is that the method lookup is expressed in terms of normal Smalltalk code.
-Typically this code statically resides in the \VM, thus at a different meta-level.
-Hence this implies for most systems that the lookup can not be modified without altering the \VM itself.
-However, expressing the lookup in terms for normal language-side code introduces a recursive dependency during the bootstrap.
-In order to run the lookup code expressed in Smalltalk code, we have to perform message sends.
-These, in return, require an already working lookup mechanism.
-Hence, without taking special care, a language-side lookup method will lead to infinite recursion during startup.
-Pinocchio resolves this problem by directly interacting with the low-level execution format which among other things relies on inline caches to improve performance.
-The important property of inline caches is that they bypass the slow language-side lookup by directly jumping to the last activated method at a send-site.
-This is exactly the behavior we need to prevent recursion during the startup.
-Hence, when generating the native code for the bootstrap, it prefills all the inline caches of the methods required to perform a full method lookup.
-As a result, when at runtime it is required the first real method lookup, the lookup code itself is running perfectly on the prefilled inline caches.
-Pinocchio achieves a flexible connection between the low-level world and the high-level language-side.
-During execution, the \VM jumps freely between what previously was native \VM-level code and interpretation of language-side code.
+%\subsection*{\textsc{Pinocchio \VM}}
+%\seclabel{background-Pinocchio }
+%
+%Pinocchio~\cite{Verw11a} is a research Smalltalk environment that directly uses native code instead of bytecodes.
+%The only execution base is native code which is directly generated by the language-side compiler.
+%
+%Pinocchio is built from a kernel derived originally from a \PH image.
+%For the bootstrap classes, objects and methods are exported into binary, native images and linked together with a standard C linker to a final executable.
+%For simplicity it relies on a very small part of C code to provide essential primitives, for instance used for file handling.
+%Additionally it specifies part of the bootstrap for the Smalltalk object model in plain C code.
+%However, besides that, all the other code is written and developed directly in Smalltalk.
+%
+%An important aspect of Pinocchio is that the method lookup is expressed in terms of normal Smalltalk code.
+%Typically this code statically resides in the \VM, thus at a different meta-level.
+%Hence this implies for most systems that the lookup can not be modified without altering the \VM itself.
+%However, expressing the lookup in terms for normal language-side code introduces a recursive dependency during the bootstrap.
+%In order to run the lookup code expressed in Smalltalk code, we have to perform message sends.
+%These, in return, require an already working lookup mechanism.
+%Hence, without taking special care, a language-side lookup method will lead to infinite recursion during startup.
+%Pinocchio resolves this problem by directly interacting with the low-level execution format which among other things relies on inline caches to improve performance.
+%The important property of inline caches is that they bypass the slow language-side lookup by directly jumping to the last activated method at a send-site.
+%This is exactly the behavior we need to prevent recursion during the startup.
+%Hence, when generating the native code for the bootstrap, it prefills all the inline caches of the methods required to perform a full method lookup.
+%As a result, when at runtime it is required the first real method lookup, the lookup code itself is running perfectly on the prefilled inline caches.
+%Pinocchio achieves a flexible connection between the low-level world and the high-level language-side.
+%During execution, the \VM jumps freely between what previously was native \VM-level code and interpretation of language-side code.
 
 % ------------------------------------------------------------------------------
 \subsection*{\textsc{Klein \VM}}
@@ -369,7 +364,7 @@ From the literature presented about the Klein project we see a strong focus on t
 The fact that the language-runtime allows \VM-level reflection to change the \VM dynamically is not directly mentioned in the literature.
 While we see the practical limitations of changing the \VM runtime system at runtime we would like to open the doors to this new form of reflection.
 
-\section{Language Virtualization Techniques}
+\section{Language Virtualization Techniques}\label{sec:background_virtualization_techniques}
 
 The most related family of work in virtualization are approaches like Xen~\cite{Chis07xen}. Xen is a Virtual Machine Monitor~(VMM) that allows to control and manage \VM in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. They rely on support from the hardware platform, and in some cases from the guest OS, concentrating themselves on performance and production features.
 
