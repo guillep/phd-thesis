@@ -16,11 +16,9 @@
 %\section{The need for Software Evolution}
 % =============================================================================
 
-An application runtime is the set of software elements that denote such application during its execution. Narrowing to high-level object-oriented applications, an application runtime includes \eg the loaded libraries, classes and methods, the created objects and the running application threads. An application runtime usually follows the model and concepts imposed by the language it is written on. For example, Smalltalk or Ruby propose that an application is structured in classes with implicit metaclasses \ie a class is instance of a (\emph{meta})class that describes its behavior. Thus, we will find that inside the application runtime of a Smalltalk or Ruby application is structured in those terms also, each class will have a metaclass. 
+An application runtime is the set of software elements that denotes an application during its execution. Narrowing to high-level object-oriented applications, an application runtime includes \eg the loaded libraries, classes and methods, the created objects and the running application threads. Within an application runtime, we find the \emph{language runtime}. The language runtime is the subset of the application runtime that denotes the concepts and behavior available in the language we use \ie the set of structures and constructs that describe the language internals. The language runtime concretizes the model that the language proposes to the developers.
 
-Within an application runtime, we find the \emph{language runtime}. The language runtime is the subset of the application runtime that denotes the concepts and behavior available in the language we use \ie the set of structures and constructs that describe the language internals. The language runtime concretizes the model that the language proposes to the developers.
-
-Manipulating and modifying these language models and their runtimes is becoming important in the last years. Multicore hardware brought new problems on concurrency and parallelism; the \emph{cloud} increased the need for software adaptation; new resource constrained devices such as phones are as current as almost every person has one in their our pockets. These new technologies present new challenges to software and language developers. The software we use, and in particular the programming languages and tools we use should be easily tailorable to support many of the new challenges that come with new technology and needs.
+Manipulating and modifying these language runtimes, and therefore their models, is becoming important in the last years. Multicore hardware brought new problems on concurrency and parallelism; the \emph{cloud} increased the need for software adaptation; new resource constrained devices such as phones are spread in a way that almost every person has one powerful computer in their our pockets. These new technologies present new challenges to software and language developers. The software we use, and in particular the programming languages and tools we use should be easily tailorable to support many of the new challenges that come with new technology and needs.
 
 We observe, however, that software is not usually designed and thought to easily accept changes. Applications and languages should be either engineered from scratch with change in mind, or a lot of reengineering effort should be invested in them to support change. We need to provide with the tools and methodologies that support such changes~\cite{Nier08b}. The languages and applications we develop should be adaptable to new situations and scenarios. In this direction we propose \emph{\Vtt}: a runtime virtualization infrastructure. \Vtt virtualizes an application runtime for its control and manipulation. This manipulation is transparent for the virtualized runtime. We show how \Vtt simplifies application and language runtime manipulation in two different scenarios: the language runtime recreation by bootstrapping and the application runtime extraction to reduce its memory consumption.
 
@@ -44,22 +42,11 @@ We observe, however, that software is not usually designed and thought to easily
 %Another example of support that should be brought to user applications is \emph{code mobility}. Code mobility is a mechanism that allows the migration of programs between different environments. This problem is important in the context of ubiquitous systems and virtualization technology. Code mobility provides support for \eg load balancing, adjusting an application's resources dynamically and functionality customization. However, applications must have support to rebind a piece of code or object to another location~\cite{Fugg98a}.
 
 % =============================================================================
-\section{Application and Language Runtimes}
+\section{Application Runtime Dissection}
 % =============================================================================
 
-In the context of evolution of language and applications, we ask ourselves the following question: \emph{What are the elements of programming languages we should focus on?} High-level language runtimes are inherent complex pieces of software.
-First, high-level languages virtual machines~(\VMs) have to combine two rather extreme goals: abstraction and performance.
-The hard performance requirements requires precise interaction with the underlying hardware.
-This goes even so far that specialized hardware is conceived to match the performance requirements \cite{Unga84a,Stef84a,McGh98a,Clic05a}.
-
-
-On top of these complex \VMs, we run our  languages and applications.
-These programs must comply to the contract required by the \VM to run, namely the \VM's \emph{execution model}.
-A \VM's execution model imposes for example an object format, a class or prototype model to perform a method lookup, a bytecode set to execute methods at runtime.
-In some cases, the \VM also loads and initializes the language structures.
-These \VM-language complex interactions make difficult to evolve any of these elements without affecting the other.
-
-In the following sections we propose a dissection of a high-level program that runs on a \VM. We made this dissection with the objective of understanding the relation and separation between the elements we believe important in the context of software and language evolution. These sections do also state the terminology used during the rest of this dissertation. Figure \ref{fig:whatToEvolve} shows an schema of this dissection.
+In the context of application runtime manipulation, we ask ourselves the following question: \emph{What are the elements of high-level programming languages we should focus on?} High-level application runtimes are inherent complex pieces of software. 
+This section proposes a dissection of a high-level language application runtime. We made this dissection with the objective of understanding the relation and separation between the software elements we believe important in the context of this thesis. This section do also state the terminology used during the rest of this dissertation. Figure \ref{fig:whatToEvolve} shows an schema of this dissection.
 
 \begin{figure}[!ht]
 \begin{center}
@@ -68,49 +55,52 @@ In the following sections we propose a dissection of a high-level program that r
 \end{center}
 \end{figure}
 
+\subsection{Application Runtime}
 
+An application runtime is the set of software elements that denotes an application during its execution. An application runtime includes software elements that describe the application's structure, such as its libraries, classes and methods, and elements related with the application's execution, such as threads, the execution stack with its activation records and created objects.
 
-\subsection{Virtual Machines}
+An application runtime usually follows the model and concepts imposed by the language it is written on. For example, Smalltalk or Ruby propose that an application is structured in classes with implicit metaclasses \ie a class is instance of a (\emph{meta})class that describes its behavior. Thus, the application runtime of a Smalltalk or Ruby application is structured in those terms also, each class will have a metaclass.
 
-\VMs concentrate several complex and interconnected elements with two main purposes: first it is to abstract applications from details such as memory management or machine specifics; second is to do that while also obtaining good performance.
+\subsection{Language Runtime}
+
+The \emph{language runtime} is the subset of the application runtime that describes the concepts and behavior available in the language we use \ie the set of structures and constructs that describe the language internals. The language runtime concretizes the model that the language proposes to the developers. For example, in Smalltalk and Ruby there exist structures that represent the concepts of a \ct{Class} and \ct{Metaclass} and control the implicit creation of a metaclass for each class we create. Additionally, a language runtime is not only composed by classes but also by other objects. For example, it contains a table of interned strings or \emph{symbols} that should be guaranteed unique at runtime.
+
+\subsection{Virtual Machine}
+
+High-level languages virtual machines~(\VMs) provide with support for executing an application runtime.
+\VMs concentrate several complex and interconnected elements with two main purposes: first it is to abstract applications from details such as memory management or machine specifics; second it is to do that while also obtaining good performance.
 The early \VMs focused on interpreting an abstract instruction set (bytecodes).
-The benefits are twofold.
 On the one hand the bytecodes guarantee certain platform independence by abstracting away from the \CPU specific instruction set.
 On the other hand bytecodes allow one to encode complex operations into little space both serving the hard memory constraints of the hardware and simplifying the design of a compiler.
-Obviously this abstraction gain comes at a cost and ever since the first \VMs were built research and industry strive to reduce the interpretation overhead.
+Obviously this abstraction gain comes at a cost, and ever since the first \VMs were built, research and industry strive to reduce the interpretation overhead.
 
-An efficient way to improve performance is to use a just in time compiler (\JIT) that dynamically generates native code from the bytecode \cite{Deut84a}.
+%This goes even so far that specialized hardware is conceived to match the performance requirements \cite{Unga84a,Stef84a,McGh98a,Clic05a}.
+
+To improve performance some \VMs use a just in time compiler (\JIT) that dynamically generates native code from the bytecode \cite{Deut84a}.
 In this case the bytecode becomes an intermediate representation (\IR) for a bigger compiler infrastructure.
 However, \JIT compilers are notoriously complex as they crosscut many \VM components.
 At the same time they crosscut all abstraction layers; they have to access high-level information from the running bytecodes and manage native code at the same time.
 Similar complexity applies to the automatic memory management present in most high-level language \VMs.
 Garbage Collectors (\GC) evolved from simple helpers to complex software artifacts that for instance support concurrent garbage collection \cite{Clic05a}.
 
-In this context, being able to evolve a \VM is crucial for language evolution, as \VMs are the enablers of many of the features in programming languages. A \VM complexity should be engineered to favor its change. In this thesis we do not focus on \VM evolution but on the languages and applications that run of top of them. However, \VMs are important in the context of this thesis, as they are very interlaced with the languages we want to evolve, imposing and constraining our languages to their execution model.
-
-\subsection{Application Runtime}
-
-The application runtime is the set of elements that an application includes at runtime \eg libraries, objects, classes, methods. The \VM interprets and executes the application runtime. Indeed, with this purpose the application runtime must comply to the \VM execution model~(Figure \ref{fig:whatToEvolve}).
-
-The \emph{language runtime} is the subset of the application runtime that describes the concepts and behavior available in the language we use \ie the set of classes, methods and constructs that describe the language internals. The language runtime concretizes the model that the language proposes to the developers. For example, Pharo Smalltalk proposes a programming model of classes with metaclasses~(the class of a class) and traits. This programming model is implemented in Pharo with the concrete existence of the \ct{Class} and \ct{Metaclass} classes, the implicit creation of a metaclass for each class we create, and objects representing traits. Additionally, a language runtime is not only composed by classes but also by other objects. For example, it contains a table of interned strings or \emph{symbols} that should be guaranteed unique in the system.
-While indeed an application runtime~(and therefore its language runtime) is coupled to its \VM to run, sometimes it is also coupled in its definition. That is, the \VM defines and fixes the language model and some of the initially loaded libraries.
+These complex \VMs are the enablers of many of the features in our programming languages. However, their complexity constrain the changes we can apply to our application runtimes. For example, adding a new field into the classes of an application runtime may impact the bytecode interpreter, the JIT, the GC, and so on. These constraints denote the \emph{execution model} of a \VM \ie the contract required to a language runtime to execute it. This execution model includes the format in which the runtime elements are layout in memory~(objects, classes, methods), the followed object model (\eg class-based or prototype-based) and the instruction set that the runtime must implement.
 
 \section{Problem Statement}
 
-We focus this thesis in the evolution of object-oriented high-level applications. In such context, we identify as a general problem for this thesis the lack of an infrastructure for safe application runtime evolution. We mean by evolution the ease of development and change of the structures that represent an application at runtime. This infrastructure must allow both the specialization and extension of application and language runtimes.
+We focus this thesis in the manipulation of object-oriented high-level application and language runtimes. In such context, we identify as a general problem for this thesis the lack of an infrastructure for safe application runtime manipulation. By this we mean the ease of change of the structures that represent an application at runtime. This infrastructure must allow both the specialization and extension of application and language runtimes.
 
 Particularly, we indentify these more concrete problems:
 \begin{description}
-\item[Unclear \VM-Language interface.] The relation between the language the \VM and the language remains often unclear in \VM hardcoded assumptions.
+\item[Unclear \VM-Language interface.] The relation between the language and the \VM, particularly its execution model, remains often unclear in \VM hardcoded assumptions.
 \item[Core runtime changes remain low-level.] Changing a language or application runtime representation often forces us to modify the low-level code that defines such a runtime.
 \end{description}
 
 
 \section{Contributions}
 
-The contributions of this thesis are three-fold. First we describe \Vtt, an \emph{infrastructure for application runtime virtualization}. This infrastructure allows us to modify and control a virtualized application's runtime. In \Vtt, we expose the \VM-language interface as a first-class runtime object, namely an object space. An object space clarifies and makes explicit such interface, and provides with a high-level interface for its manipulation.
+The contributions of this thesis are three-fold. The main contribution is \Vtt, an \emph{infrastructure for application runtime virtualization}. This infrastructure allows us to manipulate and control a virtualized application's runtime. \Vtt exposes the \VM-language interface as a first-class runtime object, namely an object space. An object space clarifies and makes explicit such interface, and provides with a high-level API for its manipulation.
 
-We validate our language virtualization infrastructure by exploring two application runtime evolution approaches.
+We validate our language virtualization infrastructure by exploring two approaches for application runtime manipulation.
 \begin{description}
 \item[Bootstrapping.] We describe the process to create a language runtime through \emph{bootstrapping} with \Vtt. Our bootstrapping process provides a novel way to define an object-oriented language runtime by using the definition of the language to define itself.
 \item[Application tailoring.] We developed a novel dynamic application tailoring approach based on lazy installation, namely Run-Fail-Grow~(RFG). \Vtt supports RFG by allowing the monitoring of the application under extraction and provide with facilities for code installation.
@@ -124,40 +114,15 @@ We validate our language virtualization infrastructure by exploring two applicat
 
 \gp{write from scratch, left for the end}
 \begin{description}
-\item[\chapref{background}] sheds light on the context of this work.
-	We present a quick overview of language-side reflection followed by a development of \VM-level reflection.
-	We find that mostly metacircular \VMs provide limited \VM-level reflection and thus we present several high-level language \VMs falling into this category.
-	We conclude that there is only two research \VM that has a uniform model for \VM and language-side.
-	Among them is \P a research \ST \VM we contributed to previous to working on this dissertation.
+\item[\chapref{background}] 
 
-%\item[\chapref{reification}] focuses on language-side applications that simplify the interaction with the underlying \VM.
-%	We present a custom inspector framework that is now used by default in \PH.
-%	As a second part we explain how we introduced first-class layouts and slots to \PH to reify the low-level structural layout of objects.
-%	Both projects are crucial for metacircular \VM development and are direct results from the research conducted on the \P \VM.
-
-\item[\chapref{benzo}] describes a high-level low-level programming framework named \B.
-	The core functionality of \B is to dynamically execute native-code generated at language-side.
-	\B allows us to hoist typical \VM plugins to the language-side.
-	Furthermore we show how code caching makes \B efficient and users essentially only pay a one-time overhead for generating the native code.
+\item[\chapref{benzo}] 
 	
-\item[\chapref{ffi}] presents \NB, a stable foreign function interface (\FFI) implementation that is entirely written at language-side using \B.
-	\NB is a real-world validation of \B as it combines both language-side flexibility with \VM-level performance.
-	We show in detail how \NB outperforms other existing \FFI solutions on \PH.
+\item[\chapref{ffi}] 
 
-\item[\chapref{validation}] focuses on two further \B applications.
-	In the first part we present \WF a framework for dynamically generating primitives at runtime.
-	\WF extends the concept of metacircularity to the running language by reusing the same sources for dynamic primitives that were previously used to generate the static \VM artifact.
-	In a first validation we show how \WF outperforms other reflective language-side solutions to instrument primitives.
-	
-	In a second part of \chapref{validation} we present \NBJ a prototype \JIT compiler that is based on \B.
-	\NBJ shows the limitations of the \B approach as it required a customized \VM to communicate with the existing \JIT interface for native code.
-	Our prototype implementation generates the same native code as the existing \VM-level \JIT, however, it is currently limited to simple expressions.
-	\NBJ shows that for certain applications a well-define interface with the low-level components of the \VM is required.
+\item[\chapref{validation}] 
 
-\item[\chapref{future}] summarizes the limitations of \B and its application.
-Furthermore we list undergoing efforts on the \B infrastructure and future work.
-
-\item[\chapref{conclusion}] concludes the dissertation.
+\item[\chapref{conclusion}] 
 
 \end{description}
 
