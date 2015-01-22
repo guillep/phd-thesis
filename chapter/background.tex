@@ -356,9 +356,9 @@ From the literature presented about the Klein project we see a strong focus on t
 
 \section{Language Virtualization Techniques}\label{sec:background_virtualization_techniques}
 
-The most related family of work in virtualization are approaches like Xen~\cite{Chis07xen}. Xen is a Virtual Machine Monitor~(VMM) that allows to control and manage \VM in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. They rely on support from the hardware platform, and in some cases from the guest OS, concentrating themselves on performance and production features.
+The most related family of work in virtualization are approaches like Xen~\cite{Chis07xen}. Xen is a Virtual Machine Monitor~(VMM) that allows one to control and manage \VM in a high performance and resource-managed way. This approach targets the virtualization of full and unmodified operating systems, to facilitate their adoption in industrial/productive environments. They rely on support from the hardware platform, and in some cases from the guest OS, concentrating themselves on performance and production features.
 
-Operating System virtualization technology is characterized by the existence of an \emph{hypervisor}~(named after the Operating System \emph{supervisor} that controls the OS processes\gp{check well that name}). The hypervisor is the \VM component that allows one to observe or control the internals of one or many \VMs. A \VM hypervisor gives us, amongst others, the following services:
+Operating System virtualization technology is characterized by the existence of an \emph{hypervisor}~(named after the Operating System \emph{supervisor} that controls the OS processes). The hypervisor is the \VM component that allows one to observe or control the internals of one or many \VMs. A \VM hypervisor gives us, amongst others, the following services:
 
 \begin{description}
 \item[Co-location.] Co-location is the ability to have co-existing applications on top of the same virtual machine. With co-location, a single \VM has information about all the applications running on top of itself and can integrate that information in its decision process. Additionally, it gives to co-located applications a cheap communication mechanism as they reside in the same operating system process.
@@ -369,7 +369,7 @@ Operating System virtualization technology is characterized by the existence of 
 
 High-level languages abstract the developer from the complexities of the underlying machine by running on top of a language \VM. A language \VM provides a language with an execution model closer to its semantics as well as several services such as automatic memory management or cross-cutting optimizations. Language \VMs also provide with portability \ie a program can run on different operating systems and hardware architectures because the \VM abstracts it from the underlying particular details. Although these language \VMs are indeed \emph{Virtual}, state of the art production-ready \VMs do not provide by themselves with the typical advantages of virtualized operating systems such as co-location, resource control, mature security or application mobility support.
 
-In this chapter, and with the objective of doing runtime manipulation, we study in the following sections techniques that to our understanding are virtualization-related techniques applied to programming languages runtimes: application co-existence~(Section \ref{sec:virtualization_coexistence}) and application manipulation~(Section \ref{sec:virtualization_control}). Finally, we conclude by presenting the aspects of these solutions that inspired our solution following in the next chapters.%We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present related work that targets co-location of language runtimes on the same \VM. We continue this section by presenting related work on the subject of runtime control.
+With the objective of doing application runtime manipulation, we study in the following sections techniques that to our understanding are virtualization-related techniques applied to application runtimes: application co-existence~(Section \ref{sec:virtualization_coexistence}) and application manipulation~(Section \ref{sec:virtualization_control}). Finally, we conclude by presenting the aspects of these solutions that inspired our solution following in the next chapters.%We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present related work that targets co-location of language runtimes on the same \VM. We continue this section by presenting related work on the subject of runtime control.
 
 \section{Application Co-existence}\label{sec:virtualization_coexistence}
 
@@ -451,7 +451,7 @@ In the context of this thesis, we identify in JVMTI's architecture a similarity 
 \subsection*{MVM: a Multi User Virtual Machine}
 The Multi-user Virtual Machine~\cite{Czaj03a,Czaj01a} is a general purpose virtual machine for the Java language that allows the co-existence of different applications, potentially from different users. Each application running on top of the MVM is an \emph{isolate} based on the Java Application Isolation API specification~\cite{JSR121}. This Java Application Isolation API defines a uniform mechanism to control the life-cycle of Java applications.
 
-Many isolates co-exist not inteferring each other, as they believe they own their private JVM: the runtime is modified, so state is not shared between them by default. MVM allows several communication mechanisms to securely communicate isolates: from standard mechanisms such as sockets, up to \emph{links}, a low-level isolate-to-isolate mechanism introduced by the Isolate API.
+Many isolates co-exist not interfering each other, as they believe they own their private JVM: the runtime is modified, so state is not shared between them by default. MVM allows several communication mechanisms to securely communicate isolates: from standard mechanisms such as sockets, up to \emph{links}, a low-level isolate-to-isolate mechanism introduced by the Isolate API.
 
 MVM can run unmodified Java applications. Additionally, MVM-aware applications can use the API it provides to control the life-cycle~(\eg creation, suspension, resuming and and termination) and the available resources of other isolates. Notice that differently from JVMTI, this control API is available to the applications running on the JVM and not only to native agents.
 
@@ -466,8 +466,15 @@ MVM can run unmodified Java applications. Additionally, MVM-aware applications c
 
 \section{Conclusion and Summary}
 
-\gp{what are the interesting aspects that inspired our solution}
+In this chapter we studied the state of the art on application runtime manipulation techniques. We focus this study on three main problems: the flexibility to change an application and language runtime, the mixture of low-level and high-level concerns and the tool support to do it.
 
+First, we saw that available production \VMs do not offer with the flexibility to modify nor the language nor the application runtime. These \VMs usually fix their how their language runtimes are initialized and enforce a language model to their users. Additionally, they tend to mix \VM concerns such as memory management or JIT compilation with the code in charge of managing the application runtime.
+
+Different reflection models such as the ones appearing in LISP, Smalltalk or Ruby provide with the \emph{flexibility} to manipulate an application runtime from the runtime itself once it is already up un running. However, there exists trade offs between a usable reflection model and the safety of using it to modify its own definition.
+
+Metacircular \VMs explore the idea of expressing a \VM in the same language it supports at the end, under the principles of \emph{high-level low-level programming}. High-level low-level programming aim to provide with \emph{better tool support} and a smaller mismatch to \VM development, with the main objective of increasing the efficiency of \VM developers. Some of the more sophisticated \VMs, like Klein, reifies and exposes its internal components, allowing one to modify them from the running application runtime.
+
+Finally, virtualization techniques applied to application runtimes provide with application co-existence and application runtime control. Application co-existence is used mainly with isolation purposes, but it could be used also to allow a \emph{high-level interaction and control} between applications, as in MVM. JVMTI on the other side, provides with application runtime control and manipulation with a low-level API.
 
 % =============================================================================
 % =============================================================================
