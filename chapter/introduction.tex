@@ -57,13 +57,13 @@ This section proposes a dissection of a high-level language application runtime.
 
 \subsection{Application Runtime}
 
-An application runtime is the set of software elements that denotes an application during its execution. An application runtime includes software elements that describe the application's structure, such as its libraries, classes and methods, and elements related with the application's execution, such as threads, the execution stack with its activation records and created objects.
+The application runtime is the set of software elements that denotes an application during its execution. An application runtime includes software elements that describe the application's structure, such as its libraries, classes and methods, and elements related with the application's execution, such as threads, the execution stack with its activation records and created objects.
 
 An application runtime usually follows the model and concepts imposed by the language it is written on. For example, Smalltalk or Ruby propose that an application is structured in classes with implicit metaclasses \ie a class is instance of a (\emph{meta})class that describes its behavior. Thus, the application runtime of a Smalltalk or Ruby application is structured in those terms also, each class will have a metaclass.
 
 \subsection{Language Runtime}
 
-The \emph{language runtime} is the subset of the application runtime that describes the concepts and behavior available in the language we use \ie the set of structures and constructs that describe the language internals. The language runtime concretizes the model that the language proposes to the developers. For example, in Smalltalk and Ruby there exist structures that represent the concepts of a \ct{Class} and \ct{Metaclass} and control the implicit creation of a metaclass for each class we create. Additionally, a language runtime is not only composed by classes but also by other objects. For example, it contains a table of interned strings or \emph{symbols} that should be guaranteed unique at runtime.
+The \emph{language runtime} is the subset of the application runtime that describes the concepts and behavior available in the language we use \ie the set of structures and constructs that describe the language internals. This language runtime concretizes the model that the language proposes to the developers. For example, in Smalltalk and Ruby there exist structures that represent the concepts of a \ct{Class} and \ct{Metaclass} and control the implicit creation of a metaclass for each class we create. Additionally, a language runtime is not only composed by classes but also by other objects. For example, it contains a table of interned strings or \emph{symbols} that should be guaranteed unique at runtime.
 
 \subsection{Virtual Machine}
 
@@ -87,9 +87,9 @@ These complex \VMs are the enablers of many of the features in our programming l
 
 \section{Problem Statement}
 
-We focus this thesis in the manipulation of object-oriented high-level application and language runtimes. In such context, we identify as a general problem for this thesis the lack of an infrastructure for safe application runtime manipulation. By this we mean the ease of change of the structures that represent an application at runtime. This infrastructure must allow both the specialization and extension of application and language runtimes.
+This thesis focuses in the generation of specialized object-oriented high-level application and language runtimes. In such context, we identify a main problem: application runtimes usually provide with none or little support to change the structures that represent itself. We lack of an infrastructure for safe application runtime manipulation. This infrastructure must allow both the specialization and extension of application and language runtimes.
 
-Particularly, we indentify these more concrete problems:
+Particularly, we identify these more concrete problems that such an infrastructure should solve:
 \begin{description}
 \item[Unclear \VM-Language interface.] The relation between the language and the \VM, particularly its execution model, remains often unclear in \VM hardcoded assumptions.
 \item[Core runtime changes remain low-level.] Changing a language or application runtime representation often forces us to modify the low-level code that defines such a runtime.
