@@ -69,23 +69,30 @@ Within an application runtime we identify also the \emph{application specific ru
 
 \subsection{Virtual Machine}
 
-High-level languages virtual machines~(\VMs) provide with support for executing an application runtime.
+High-level languages virtual machines~(\VMs) provide support for executing an application runtime.
+Likewise, an application runtime must satisfy the \VM's interface to be executed.
+This interface denotes the \emph{execution model} of a \VM and includes the format in which the runtime elements are layout in memory~(objects, classes, methods), the followed object model (\eg class-based or prototype-based) and the instruction set that the runtime must implement.
+
 \VMs concentrate several complex and interconnected elements with two main purposes: first it is to abstract applications from details such as memory management or machine specifics; second it is to do that while also obtaining good performance.
-The early \VMs focused on interpreting an abstract instruction set (bytecodes).
+Early \VMs focused on interpreting an abstract instruction set (bytecodes).
 On the one hand the bytecodes guarantee certain platform independence by abstracting away from the \CPU specific instruction set.
 On the other hand bytecodes allow one to encode complex operations into little space both serving the hard memory constraints of the hardware and simplifying the design of a compiler.
 Obviously this abstraction gain comes at a cost, and ever since the first \VMs were built, research and industry strive to reduce the interpretation overhead.
 
 %This goes even so far that specialized hardware is conceived to match the performance requirements \cite{Unga84a,Stef84a,McGh98a,Clic05a}.
 
-To improve performance some \VMs use a just in time compiler (\JIT) that dynamically generates native code from the bytecode \cite{Deut84a}.
+To improve performance some \VMs use a Just-In-Time compiler (\JIT) that dynamically generates native code from bytecode \cite{Deut84a}.
 In this case the bytecode becomes an intermediate representation (\IR) for a bigger compiler infrastructure.
 However, \JIT compilers are notoriously complex as they crosscut many \VM components.
 At the same time they crosscut all abstraction layers; they have to access high-level information from the running bytecodes and manage native code at the same time.
 Similar complexity applies to the automatic memory management present in most high-level language \VMs.
 Garbage Collectors (\GC) evolved from simple helpers to complex software artifacts that for instance support concurrent garbage collection \cite{Clic05a}.
 
-These complex \VMs are the enablers of many of the features in our programming languages. However, their complexity constrain the changes we can apply to our application runtimes. For example, adding a new field into the classes of an application runtime may impact the bytecode interpreter, the JIT, the GC, and so on. These constraints denote the \emph{execution model} of a \VM \ie the contract required to a language runtime to execute it. This execution model includes the format in which the runtime elements are layout in memory~(objects, classes, methods), the followed object model (\eg class-based or prototype-based) and the instruction set that the runtime must implement.
+%These complex \VMs are the enablers of many of the features in our programming languages.
+%However, their complexity constrain the changes we can apply to our application runtimes.
+%For example, adding a new field into the classes of an application runtime may impact the bytecode interpreter, the JIT, the GC, and so on.
+%These constraints denote the \emph{execution model} of a \VM \ie the contract required to a language runtime to execute it.
+%This execution model includes the format in which the runtime elements are layout in memory~(objects, classes, methods), the followed object model (\eg class-based or prototype-based) and the instruction set that the runtime must implement.
 
 \section{Problem Statement}
 
