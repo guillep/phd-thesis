@@ -44,28 +44,28 @@ To address this goal we propose \emph{\Vtt}: a runtime virtualization infrastruc
 %Another example of support that should be brought to user applications is \emph{code mobility}. Code mobility is a mechanism that allows the migration of programs between different environments. This problem is important in the context of ubiquitous systems and virtualization technology. Code mobility provides support for \eg load balancing, adjusting an application's resources dynamically and functionality customization. However, applications must have support to rebind a piece of code or object to another location~\cite{Fugg98a}.
 
 % =============================================================================
-\section{Application Runtime Dissection}
+\section{Application Runtimes: Concepts and Terminology}
 % =============================================================================
 
-In the context of application runtime manipulation, we ask ourselves the following question: \emph{What are the elements of high-level programming languages we should focus on?} High-level application runtimes are inherent complex pieces of software. 
-This section proposes a dissection of a high-level language application runtime. We made this dissection with the objective of understanding the relation and separation between the software elements we believe important in the context of this thesis. This section do also state the terminology used during the rest of this dissertation. Figure \ref{fig:whatToEvolve} shows an schema of this dissection.
+In the context of application runtime manipulation, we face the following question: \emph{What are the elements of high-level programming languages we should focus on?} High-level application runtimes are inherent complex pieces of software. 
+This section proposes a dissection of a high-level language application runtime. We made this dissection with the objective of understanding the relationship between the software elements. We believe that understanding this relationship is important in the context of this thesis. This section do also state the terminology used during the rest of this dissertation. Figure \ref{fig:whatToEvolve} shows an schema of this dissection.
 
 \begin{figure}[!ht]
 \begin{center}
 \includegraphics[width=0.5\linewidth]{elements_to_evolve}
-\caption{\textbf{Dissection of a running program to evolve.}\label{fig:whatToEvolve} We identify the application and language runtimes that represent respectively the particular application under execution and the language that provides support for it. The \VM provides as well an execution support for the application runtime. The overlapping shows the interrelations between these three components.}
+\caption{\textbf{Dissection of a running program to evolve.}\label{fig:whatToEvolve} }
 \end{center}
 \end{figure}
 
+We identify inside a running application the following elements. First, the application runtime contains the \emph{application specific} and the \emph{language} runtimes that represent respectively the elements of the application under execution and the language that provides support for it. The \VM provides as well an execution support for the application runtime. The overlapping shows the interrelations between these three components.
+
 \subsection{Application Runtime}
 
-The application runtime is the set of software elements that denotes an application during its execution. An application runtime includes software elements that describe the application's structure, such as its libraries, classes and methods, and elements related with the application's execution, such as threads, the execution stack with its activation records and created objects.
+The application runtime is the set of software elements that constitute an application during its execution. An application runtime includes software elements that describe the application's structure, such as its libraries, classes and methods, and elements related with the application's execution, such as threads, the execution stack with its activation records and created objects. In the context of this thesis, we do not consider the Virtual Machine(\VM) as a part of the application runtime, but as a machine that supports the application runtime.
 
-An application runtime usually follows the model and concepts imposed by the language it is written on. For example, Smalltalk or Ruby propose that an application is structured in classes with implicit metaclasses \ie a class is instance of a (\emph{meta})class that describes its behavior. Thus, the application runtime of a Smalltalk or Ruby application is structured in those terms also, each class will have a metaclass.
+The subset of the application runtime that describes the language we use is the \emph{language runtime}. The language runtime includes the set of structures and constructs that describe the language concepts and behavior. This language runtime concretizes the model that the language proposes to the developers. For example, Smalltalk and Ruby propose that an application is structured in classes with implicit metaclasses \ie a class is instance of a (\emph{meta})class that describes its behavior. Therefore, they also contain structures that represent the concepts of a \ct{Class} and \ct{Metaclass} and control the implicit creation of a metaclass for each new class. Additionally, a language runtime is not only composed of classes but it also includes objects. For example, it contains a table of unique strings or \emph{symbols} used to univocally name objects. A language runtime is usually common to different applications in the same language: it is always present and contains always the same elements.
 
-\subsection{Language Runtime}
-
-The \emph{language runtime} is the subset of the application runtime that describes the concepts and behavior available in the language we use \ie the set of structures and constructs that describe the language internals. This language runtime concretizes the model that the language proposes to the developers. For example, in Smalltalk and Ruby there exist structures that represent the concepts of a \ct{Class} and \ct{Metaclass} and control the implicit creation of a metaclass for each class we create. Additionally, a language runtime is not only composed by classes but also by other objects. For example, it contains a table of interned strings or \emph{symbols} that should be guaranteed unique at runtime.
+Within an application runtime we identify also the \emph{application specific runtime}. The application specific runtime is the subset of the application runtime that includes the elements that belong to the particular application. The application specific runtime follows the model and concepts imposed by the language \ie it is expressed in terms of the language runtime, and thus coupled to it. For example, the application specific classes of a Smalltalk or Ruby application have an implicitly created metaclass.
 
 \subsection{Virtual Machine}
 
