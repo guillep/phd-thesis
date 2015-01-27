@@ -92,7 +92,7 @@ Finally, snapshot-based languages offer different means to evolve a language run
 
 \subsection{Mixture of \VM and Language Concerns}
 
-The unclear interface between the language and the \VM makes difficult to recognize whether a piece of code belongs to a \VM or language concern. This causes undesirable temporal couplings between these two elements and prevents us to clearly extract and replace the language definition by another one.
+The unclear interface between the language and the \VM makes it difficult to recognize whether a piece of code belongs to a \VM or language concern. This causes undesirable temporal couplings between these two elements and prevents us from extracting and replacing the application runtime by another one.
 To illustrate this problem, Figure \ref{code:jikes_vm_initialization} shows an excerpt of the JikesRVM\footnote{Taken from the version 3.1.3 of the JikesRVM in \url{http://sourceforge.net/projects/jikesrvm}}~\cite{Alpe00a}. In this example, the memory manager is initialized in the middle of the initial class loading phase. These memory manager calls are indeed needed to avoid the collection of objects during the initialization. However, it is necessary to call it after some specific classes are initialized and not before.
 
 \begin{figure}[ht]
@@ -123,23 +123,28 @@ Snapshot-based languages, on the other side, show that language initialization a
 
 \subsection{Abstraction Level and Tool Support}
 
-When defining the language runtime at the \VM level, we rely on the tools and abstractions available to develop the \VM to change the language. That means that the language developer uses often low-level abstractions to express higher-level concerns. This \emph{mismatch} impacts in the vm/language developer efficiency, as the tools it has are not adequate for the task it tries to accomplish. This problem is indeed aggravated with the complexity of such pieces of software, including elements such as the \GC or the JIT that cross-cuts every \VM concern.
+When defining the language runtime at the \VM level, we rely on the tools and abstractions available to develop the \VM to change the language. That means that the language developer uses often low-level abstractions to express higher-level concerns. This \emph{mismatch} impacts the \VM/language developer efficiency, as the tools are not adequate for the task to accomplish. This problem is indeed aggravated with the complexity of such pieces of software, including elements such as the \GC or the JIT that cross-cut every \VM concern.
 
-Indeed the developer would benefit from the productivity that a high-level language brings. In this sense, Reflective languages support naturally the usage of the language abstractions and tools to modify the language runtime. Reflective languages benefit from the reification of the language concepts to be able to change them from the language itself. Languages such as Smalltalk show how debuggers and code browsers can be built using such features.
+Indeed the developer would benefit from the productivity that a high-level language brings. In this sense, reflective languages support naturally the usage of the language abstractions and tools to modify the language runtime. Reflective languages benefit from the reification of the language concepts to be able to change them from the language itself. Languages such as Smalltalk show how debuggers and code browsers can be built using such features\gp{cite}.
 
 %To attack these problems, many programming systems have found desirable to follow the principles of \emph{high-level low-level programming} \ie expressing low-level concerns using high-level languages~\cite{Fram09a}. High-level low-level programming pursues the objective of simplifying the complexity of programming systems. By using a high-level language to describe the low-level world the developer benefits from their abstraction power and tooling of the first one. A clear example of this fact is the metacircular \VM field, where many projects whose goal is to write \VMs in a high-level language have blossomed in the last years~\cite{Wimm13a,Alpe00a,Verw11a,Inga97a,Unga05a,Rigo06a}. These projects are biased to \VM building techniques and not to the initialization of the languages that run on top of them.
 
 \section{Evaluation Criteria}\label{sec:runtime_modification_criteria}
 
+This section presents the features we consider relevant to include in a runtime manipulation solution. These features serve as a criteria to compare the state of the art we selected in the following sections.
+
 \begin{description}
 
-\item[Manipulate Language Elements.] symbols, classes, methods
-\item[Manipulate Execution Elements.] threads, execution stack
-\item[Manipulate Objects.]
-\item[Safe.] if it does not crash
-\item[Level (?).] if we have to do it from a high level or low level language
-\item[Level of abstraction.] of the API
-\item[Mixture of concerns.] if there is a mixture of concerns between the runtime manipulation and lower level concerns.
+\item[Manipulate Language Elements.] An application runtime manipulation solution must support the creation and modification of elements that conform the language runtime\eg create and modify of classes and methods.
+\item[Manipulate Execution Elements.] An application runtime manipulation solution must also provide support to manipulate those elements related to a program's execution\eg the creation, pausing and resumption of threads; the introspection of such threads to understand a program's execution.
+\item[Manipulate Objects.] An ideal application runtime manipulation should provide access to objects. It should support class instantiation, and object manipulation.
+\item[Safety.] An application runtime manipulation solution should guarantee that both incorrect modifications cannot be applied, and that correct modifications can be safely applied without leaving the system in an inconsistent state.
+
+\item[Users level of abstraction.] Whether the user of an application runtime manipulation solution is written in a high-level or low-level language. A solution available to a high-level language enables its users to benefit from the abstractions and expression power of such language.
+
+\item[API level of abstraction.] The API of an ideal application runtime manipulation solution must provide the abstractions to manipulate the application runtime in terms of the runtime's constructions.
+
+\item[Mixture of concerns.] The solution should clearly separate the interface to modify the application runtime from other concerns such as the \GC or the JIT compiler.
 
 \end{description}
 
