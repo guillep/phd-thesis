@@ -99,7 +99,7 @@ This thesis focuses in the generation of specialized object-oriented high-level 
 \begin{description}
 \item[Unclear \VM-Language interface.] The relation between the language and the \VM, particularly its execution model, remains often unclear in \VM hardcoded assumptions in the multiple \VM components. This unclear interface impacts on its clients, which are exposed to the complexities of the \VM internals. 
 
-\item[Core runtime changes remain low-level.] Changing a language or application runtime representation often forces us to modify such representation  working with low level concerns such as direct memory manipulation.
+\item[Core runtime changes remain low-level.] Changing a language or application runtime representation often forces us to modify such representation without the proper level of abstraction. Instead we should work on low-level concerns such as direct memory manipulation.
 
 %\item[Mismatch between a language model and the \VM execution model.] The execution model imposed by a \VM is often more general than the particular languages that run of top of it. This means that a \VM can support different language models on top of it as long as they satisfy its execution model. However, the \VM often fixes the language model during its language initialization step, preventing us to easily modify it.
 
@@ -116,8 +116,8 @@ First-class runtimes should provide a clear and high-level \VM-Language interfac
 The contribution of this thesis is three-fold. The main contribution is \Vtt, an \emph{infrastructure for application runtime virtualization}. This infrastructure allows us to manipulate and control a virtualized application runtime through a first-class runtime object, namely an object space.
 We validate this language virtualization infrastructure by exploring two approaches for application runtime generation:
 \begin{description}
-\item[Language Runtime Bootstrapping.] We describe the process to create a language runtime through \emph{bootstrapping} with \Vtt. Bootstrapping is Our bootstrapping process provides a novel way to define an object-oriented language runtime by using the definition of the language to define itself.
-\item[Application Runtime Tailoring.] We developed a novel dynamic application tailoring approach named Run-Fail-Grow~(RFG) based on lazy installation. \Vtt supports RFG by allowing the monitoring of the application under extraction and provide facilities for code installation.
+\item[Language Runtime Bootstrapping.] We developed a bootstrapping process for an object-oriented high-level language. Bootstrapping is an explicit process that describes how a language runtime is created using the same language that it generates at the end. Bootstrapping provides us with full control on what are the elements installed on the application runtime at the end.
+\item[Application Runtime Tailoring.] We developed a novel dynamic application runtime tailoring approach named Run-Fail-Grow~(RFG). RFG starts with an empty application runtime and it installs elements inside it as they are needed during at runtime. With RFG we can create a specialized runtime that contains only the used elements of an application.
 \end{description}
 
 % =============================================================================
