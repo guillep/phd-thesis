@@ -16,7 +16,7 @@
 %\section{The need for Software Evolution}
 % =============================================================================
 
-An application runtime is the set of software elements that denote an application during its execution. Narrowing to high-level object-oriented applications, an application runtime includes \eg loaded libraries, classes and methods, created objects and threads. Within an application runtime, we find the \emph{language runtime}. The language runtime is the subset of the application runtime that defines the concepts and behavior available in the language we use \ie the set of structures and constructs that describe the language internals. The language runtime concretizes the model that the language proposes to the developers.
+An application runtime is the set of software elements that denote an application during its execution. Narrowing to high-level object-oriented applications, an application runtime includes \eg loaded libraries, classes and methods, created objects and threads. Within an application runtime, we find the \emph{language runtime}. The language runtime is the subset of the application runtime that defines the concepts and behavior available in the language we use \ie the set of structures and constructs that describe the language internals. The language runtime implements the model that the language proposes to the developers.
 
 Manipulating and modifying these language runtimes, and therefore their models, is becoming important in the last years. Multicore hardware brought new problems on concurrency and parallelism; the \emph{cloud} increases the need of software adaptation for application migration and resource tailoring; new resource constrained devices such as phones are widely spread, making ubiquitous computing a real concern. These new technologies present new challenges to software and language developers. The software we use, and in particular the programming languages and tools we use should be easily tailorable to support many of the new challenges that come with new technology and needs.
 
@@ -48,7 +48,7 @@ To address this goal we propose \emph{\Vtt}: a runtime virtualization infrastruc
 % =============================================================================
 
 In the context of application runtime manipulation, we face the following question: \emph{What are the elements of high-level programming languages we should focus on?} High-level application runtimes are inherent complex pieces of software. 
-This section proposes a dissection of a high-level language application runtime. We made this dissection with the objective of understanding the relationship between the software elements. We believe that understanding this relationship is important in the context of this thesis. This section do also state the terminology used during the rest of this dissertation. Figure \ref{fig:whatToEvolve} shows an schema of this dissection.
+This section proposes a dissection of a high-level language application runtime. We made this dissection with the objective of understanding the relationship between the software elements. We believe that understanding this relationship is important in the context of this thesis. Figure \ref{fig:whatToEvolve} shows an schema of this dissection. This section also states the terminology used during the rest of this dissertation.
 
 \begin{figure}[!ht]
 \begin{center}
@@ -71,7 +71,7 @@ Within an application runtime we identify also the \emph{application specific ru
 
 High-level languages virtual machines~(\VMs) provide support for executing an application runtime.
 Likewise, an application runtime must satisfy the \VM's interface to be executed.
-This interface denotes the \emph{execution model} of a \VM and includes the format in which the runtime elements are layout in memory~(objects, classes, methods), the followed object model (\eg class-based or prototype-based) and the instruction set that the runtime must implement.
+This interface denotes the \emph{execution model} of a \VM and includes the format in which the runtime elements are laid out in memory~(objects, classes, methods), the followed object model (\eg class-based or prototype-based) and the instruction set that the runtime must implement.
 
 \VMs concentrate several complex and interconnected elements with two main purposes: first it is to abstract applications from details such as memory management or machine specifics; second it is to do that while also obtaining good performance.
 Early \VMs focused on interpreting an abstract instruction set (bytecodes).
@@ -83,8 +83,7 @@ Obviously this abstraction gain comes at a cost, and ever since the first \VMs w
 
 To improve performance some \VMs use a Just-In-Time compiler (\JIT) that dynamically generates native code from bytecode \cite{Deut84a}.
 In this case the bytecode becomes an intermediate representation (\IR) for a bigger compiler infrastructure.
-However, \JIT compilers are notoriously complex as they crosscut many \VM components.
-At the same time they crosscut all abstraction layers; they have to access high-level information from the running bytecodes and manage native code at the same time.
+However, \JIT compilers are notoriously complex as they crosscut many \VM components and abstraction layers. They have to access high-level information from the running bytecodes and manage native code at the same time.
 Similar complexity applies to the automatic memory management present in most high-level language \VMs.
 Garbage Collectors (\GC) evolved from simple helpers to complex software artifacts that for instance support concurrent garbage collection \cite{Clic05a}.
 
@@ -96,23 +95,29 @@ Garbage Collectors (\GC) evolved from simple helpers to complex software artifac
 
 \section{Problem Statement}
 
-This thesis focuses in the generation of specialized object-oriented high-level application and language runtimes. In such context, we identify a main problem: application runtimes usually provide with none or little support to change the structures that represent itself. We lack of an infrastructure for safe application runtime manipulation. This infrastructure must allow both the specialization and extension of application and language runtimes.
-
-Particularly, we identify these more concrete problems that such an infrastructure should solve:
+This thesis focuses in the generation of specialized object-oriented high-level application and language runtimes. In such context, we identify a main problem: application runtimes usually provide with none or little support to change the structures that represent themselves. We lack an infrastructure for safe application runtime manipulation. This infrastructure must allow both the specialization and extension of application and language runtimes. We identify these more concrete problems that such an infrastructure should solve:
 \begin{description}
-\item[Unclear \VM-Language interface.] The relation between the language and the \VM, particularly its execution model, remains often unclear in \VM hardcoded assumptions.
-\item[Core runtime changes remain low-level.] Changing a language or application runtime representation often forces us to modify the low-level code that defines such a runtime.
-\end{description}
+\item[Unclear \VM-Language interface.] The relation between the language and the \VM, particularly its execution model, remains often unclear in \VM hardcoded assumptions in the multiple \VM components. This unclear interface impacts on its clients, which are exposed to the complexities of the \VM internals. 
 
+\item[Core runtime changes remain low-level.] Changing a language or application runtime representation often forces us to modify such representation  working with low level concerns such as direct memory manipulation.
+
+%\item[Mismatch between a language model and the \VM execution model.] The execution model imposed by a \VM is often more general than the particular languages that run of top of it. This means that a \VM can support different language models on top of it as long as they satisfy its execution model. However, the \VM often fixes the language model during its language initialization step, preventing us to easily modify it.
+
+\end{description}
 
 \section{Contributions}
 
-The contributions of this thesis are three-fold. The main contribution is \Vtt, an \emph{infrastructure for application runtime virtualization}. This infrastructure allows us to manipulate and control a virtualized application's runtime. \Vtt exposes the \VM-language interface as a first-class runtime object, namely an object space. An object space clarifies and makes explicit such interface, and provides with a high-level API for its manipulation.
+To solve the stated problems, we base our work on the following claim: 
 
-We validate our language virtualization infrastructure by exploring two approaches for application runtime manipulation.
+\blockquote{\emph{First-class runtimes support the manipulation of Application Runtimes and thus, the generation of specialized versions of them.}}
+
+First-class runtimes should provide a clear and high-level \VM-Language interface. This interface must hide the internal details of the \VM complexities and allow us to easily manipulate the elements inside an application runtime. At the same time, it should ensure that the \VM execution model is not broken during such manipulations.
+
+The contribution of this thesis is three-fold. The main contribution is \Vtt, an \emph{infrastructure for application runtime virtualization}. This infrastructure allows us to manipulate and control a virtualized application runtime through a first-class runtime object, namely an object space.
+We validate this language virtualization infrastructure by exploring two approaches for application runtime generation:
 \begin{description}
-\item[Bootstrapping.] We describe the process to create a language runtime through \emph{bootstrapping} with \Vtt. Our bootstrapping process provides a novel way to define an object-oriented language runtime by using the definition of the language to define itself.
-\item[Application tailoring.] We developed a novel dynamic application tailoring approach based on lazy installation, namely Run-Fail-Grow~(RFG). \Vtt supports RFG by allowing the monitoring of the application under extraction and provide with facilities for code installation.
+\item[Language Runtime Bootstrapping.] We describe the process to create a language runtime through \emph{bootstrapping} with \Vtt. Bootstrapping is Our bootstrapping process provides a novel way to define an object-oriented language runtime by using the definition of the language to define itself.
+\item[Application Runtime Tailoring.] We developed a novel dynamic application tailoring approach named Run-Fail-Grow~(RFG) based on lazy installation. \Vtt supports RFG by allowing the monitoring of the application under extraction and provide facilities for code installation.
 \end{description}
 
 % =============================================================================
