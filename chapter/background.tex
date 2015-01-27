@@ -371,9 +371,9 @@ High-level languages abstract the developer from the complexities of the underly
 
 With the objective of doing application runtime manipulation, we study in the following sections techniques that to our understanding are virtualization-related techniques applied to application runtimes: application co-existence~(Section \ref{sec:virtualization_coexistence}) and application manipulation~(Section \ref{sec:virtualization_control}). Finally, we conclude by presenting the aspects of these solutions that inspired our solution following in the next chapters.%We divide theses works in two main topics that are of interest for us in the subject of runtime manipulation. First, we present related work that targets co-location of language runtimes on the same \VM. We continue this section by presenting related work on the subject of runtime control.
 
-\section{Application Co-existence}\label{sec:virtualization_coexistence}
+\subsection{Application Co-existence}\label{sec:virtualization_coexistence}
 
-\subsection*{\textsc{Class Loaders}}
+\subsubsection*{\textsc{Class Loaders}}
 In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A class loader is a first-class entity responsible of loading classes: create their runtime representation, loading their methods and linking their class references. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load classes with the same name. These classes will be isolated in the sense that they will not be visible to the others statically.
 
 Class loaders can be specialized and extended to provide custom behavior. For example, Fong et. al.~\cite{Fong10a} use the class loading mechanism to enforce scoping rules and determine the visibility of names in various region of the program. They allow the user to control untrusted
@@ -383,7 +383,7 @@ In the context of this thesis, we consider the class loader isolation mechanism 
 
 Notice additionally that class loaders provide only a load mechanism. Once we loaded several versions of the same application, it does not support the means to manage changes or updates of these applications. In this regard, the OSGI~\cite{OSGI} architecture implementations do often make use of class loaders to load classes into separately isolated components and manage them in a higher level way.
 
-\subsection*{\textsc{Changeboxes}}
+\subsubsection*{\textsc{Changeboxes}}
 
 Changeboxes~\cite{Denk07c} is a change model designed to encapsulate and scope changes. Its main purpose is to allow several versions of a system to co-exist at runtime \ie the existence in the same environment of different versions of the same classes and methods. In changeboxes, a \emph{changebox} is a first-class entity that encapsulates changes made on the language elements~(\eg classes and methods) and an executable version of the system with its changes applied. The system can contain many changeboxes at the same time, and applications can be scoped to run within different changeboxes. This notion of dynamically scoping an application to a changebox allows one to have co-existing environments~(\eg testing, development, production), increasing the developer's efficiency. Furthermore, it eases application update and migration to new versions, and reduces its update down-time as the application does not have to be stopped to be updated.
 
@@ -397,7 +397,7 @@ A Changeboxes prototype was developed in Smalltalk and its scoping mechanisms we
 
 Changeboxes model proves sound to update and migrate application and framework classes. However, it has the main drawback of not affecting critical classes in the system. Changeboxes prototype does not work on classes such as \ct{Array} or \ct{CompiledMethod} as the underlying infrastructure~(the VM) restricts the system to the existence of only one of them at the same time. The changes model does not provide neither a solution for this problem, as it focuses on application code update, leaving this as an open problem.
 
-\subsection*{\textsc{Caja\textbackslash Cajita} - Object Capability Languages}
+\subsubsection*{\textsc{Caja\textbackslash Cajita} - Object Capability Languages}
 
 Caja~\cite{Mill08a} is an object-capability language~\cite{Levy84a,Mill03a,Spoo00a} subset of Javascript with the objective of bringing script isolation in Javascript. Caja was thought in the context of the web, where untrusted scripts can be loaded in any webpage and profit from any data available in the webpage. Caja defines a safe Javascript subset that removes elements from the language such as \ct{with} or \ct{eval} because their semantics are strange and in some cases unpredictable. Caja includes Cajita, a subset of Caja without the \ct{this} keyword. Caja is meant for transforming and migrating already existing Javascript code, while Cajita is meant for newly written code.
 
@@ -418,7 +418,7 @@ To allow the safe co-existence of several scripts, Caja removes the Javascript g
 %large datasets, and domain-specific migration policies. In contrast, ObjectSpaces target general 
 %reflective access and bootstrap-like evolutions of code that is critical to the environment.
 
-\subsection*{KaffeOS}
+\subsubsection*{KaffeOS}
 
 KaffeOS~\cite{Back00a} is a multi-application Java Runtime System centered in application isolation and resource accounting. The KaffeOS runtime allows the isolated co-existence of Java applications so they cannot access each other's data, nor interfere in their execution. To avoid the latter, the KaffeOS \VM accounts the application's consumption of CPU and memory.
 
@@ -430,9 +430,9 @@ KaffeOS succeeds to make several Java applications to run side by side taking ca
 %
 %The J-Kernel enforces the separation between domains by using the Java type system, the inability of the Java language to forge object references, and by providing capability objects\cite{Levy84a,Mill03a,Spoo00a} enabling remote messaging and controlling the communication. This same separation in Luna \cite{Hawb02a} is achieved by the modification of the type system and the addition in the virtual machine of the \emph{remote reference} concept.
 
-\section{Application Manipulation}\label{sec:virtualization_control}
+\subsection{Application Manipulation}\label{sec:virtualization_control}
 
-\subsection*{JVMTI}
+\subsubsection*{JVMTI}
 The Java Virtual Machine Tool Interface~(JVMTI)~\cite{JVMPI} is the interface offered by the Java \VM for its manipulation and control. Originally called Java Platform Debugger Architecture~(JPDA) and used in the context of debugging, it was extended to support other use cases such as monitoring and profiling.
 
 JVMTI exposes C functions to manipulate a Java VM~(Figure \ref{fig:jvmti}). The JVMTI client, so called an \emph{Agent}, queries and controls the given JVM through this interface. The manipulated JVM and an agent share the same operating system process. JVMTI agents are meant to be written in C, to be as compact as possible and allow maximal control with minimal intrusion.
@@ -448,7 +448,7 @@ JVMTI provides with introspection and some limited intercession facilities at VM
 
 In the context of this thesis, we identify in JVMTI's architecture a similarity to a virtualization system. While the Java \VM takes the place of a the virtualized operating system and the agent is its hypervisor and can control.
 
-\subsection*{MVM: a Multi User Virtual Machine}
+\subsubsection*{MVM: a Multi User Virtual Machine}
 The Multi-user Virtual Machine~\cite{Czaj03a,Czaj01a} is a general purpose virtual machine for the Java language that allows the co-existence of different applications, potentially from different users. Each application running on top of the MVM is an \emph{isolate} based on the Java Application Isolation API specification~\cite{JSR121}. This Java Application Isolation API defines a uniform mechanism to control the life-cycle of Java applications.
 
 Many isolates co-exist not interfering each other, as they believe they own their private JVM: the runtime is modified, so state is not shared between them by default. MVM allows several communication mechanisms to securely communicate isolates: from standard mechanisms such as sockets, up to \emph{links}, a low-level isolate-to-isolate mechanism introduced by the Isolate API.
