@@ -13,28 +13,28 @@
 \chaplabel{state_modifying}
 \minitoc
 
-This chapter explores the state of the art on application runtime manipulation. From existing solutions and languages, we identify three main problems based on our problem statement that arise while modifying an application runtime~(Section \ref{sec:bootstrapping_problems}):
+Generating an application runtime requires the basic ability to manipulate such runtime \eg create and modify classes and methods; instantiate objects; begin and stop threads in it. This chapter explores the state of the art on application runtime manipulation. We identify three main concerns that arise when we attempt to modify an application runtime~(Section \ref{sec:bootstrapping_problems}): how easily a change can be applied to a language runtime, how coupled are the application runtime and \VM concerns, and what is the existing tool support to modify such application runtime.
+
+Based on those concerns, we created an evaluation criteria for application runtime manipulation solutions~(Section \ref{sec:runtime_modification_criteria}). Finally, we present different techniques for application runtime manipulation and we compare the most relevant of them with our criteria:
 
 \begin{description}
-\item[Flexibility to change.] How malleable is the language to introduce a change on it. Flexibility involves if the language definition is properly structured and abstracted, if it is hardcoded or not, if it is safe to apply a change without breaking the whole runtime.
-\item[Mixture of low-level and high-level concerns.] The coupling between the language and the \VM may prevent changes in the application runtime if they are not well factored and explicit to the language developer.
-\item[Tool support.] What is the existing tool support to modify the language itself. Here, the worse case scenario is the usage of the low-level \VM tools for that purpose.
+
+\item[Reflection models.] The literature presents several language runtime manipulation solutions based on metaprogramming and \emph{reflection}~(Section \ref{sec:related_work_changing}). These metaprogramming models allow either the modification of the language interpreter semantics or the scoping of modifications with one main objective: performing such modifications safely \ie avoid breaking the application runtime they are running on.
+
+\item[Metacircular runtimes.] Metacircular runtimes aim at easing the modification of a runtime by means of simplifying the language-\VM relation for development~(Section \ref{sec:metacircular_runtimes}). This simplification comes usually by expressing a \VM in the same language it interprets at the end. Metacircular \VMs focus on the simplification of complexity in \VM technology and does not focus on the manipulation of the language runtime elements.
+
+\item[Virtualization techniques.] Virtualization techniques applied to application runtimes are used for application control and manipulation~(Section \ref{sec:background_virtualization_techniques}). Application co-existence allows the modification of an application without affecting others. Application manipulation provides with control on an application's life cycle and its internal representation.
+
 \end{description}
 
-To introduce changes in a language runtime several solutions are proposed in the literature mainly based on metaprogramming and \emph{reflection}~(Section \ref{sec:related_work_changing}). These metaprogramming models allow either the modification of the language interpreter semantics or the scoping of modifications with one main objective: performing such modifications safely \ie not shooting in their own foot by modifying the runtime they are running on.
+\section{Concerns of Application Runtime Manipulation} \label{sec:bootstrapping_problems}
 
-Another direction is taken recently by metacircular runtimes~(Section \ref{sec:metacircular_runtimes}). Metacircular runtimes aim to ease the modification of a runtime by means of simplifying the language-\VM relation for development. This simplification comes usually by expressing a \VM in the same language it interprets at the end. Metacircular \VMs focus on the simplification of complexity in \VM technology and does not focus on the manipulation of the language runtime elements.
-
-Finally, virtualization techniques applied to application runtimes are used for application control and manipulation~(Section \ref{sec:background_virtualization_techniques}). Application co-existence allows the modification of an application without affecting others. Application manipulation provides with control on an application's life cycle and its internal representation.
-
-\section{Problems of Application Runtime Manipulation} \label{sec:bootstrapping_problems}
-
-We identify three main limitations when we aim to change an application runtime. First, how flexible its language runtime is to be changed and adapted without running into inconsistent states. Second, the unclear mixture of \VM and language concerns prevents us to extract the language concerns to easily replace them. Finally, the differences in the abstraction levels and tool support between the application runtime we manipulate and the tools we use for it makes it a challenging task.
+We identify three main challenges when we aim at changing an application runtime. First, how flexible its language runtime is to be changed and adapted without running into inconsistent states. Second, the unclear mixture of \VM and language concerns prevents us to extract the language concerns to easily replace them. Finally, the differences in the abstraction levels and tool support between the application runtime we manipulate and the tools we use for it makes it a challenging task.
 
 
 \subsection{Flexibility to Safely Change a Language Runtime}
 
-The \VM is often the component in charge of initialising the language runtime. This decision is indeed practical as the \VM can safely initialise the language structures and solve the language bootstrapping issues avoiding recursions~\cite{Kicz91a}~(\eg create the first class without a class). This language runtime must comply at runtime to the execution model imposed by the \VM. This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions. These hardcoded \VM assumptions have two main consequences when we target to change the language runtime. First, the \VM fixes the initial structures of the language runtime. For example, Ruby's initial class hierarchy is imprinted inside the \VM code fixing with \ct{BasicObject} as the top superclass and followed by \ct{Object}, \ct{Module} and \ct{Class} respectively~(Figure \ref{code:ruby_hierarchy}).
+The \VM is often the component in charge of initializing the language runtime. This decision is indeed practical as the \VM can safely initialize the language structures and solve the language bootstrapping issues avoiding recursions~\cite{Kicz91a}~(\eg create the first class without a class). This language runtime must comply at runtime to the execution model imposed by the \VM. This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions. These hardcoded \VM assumptions have two main consequences when we target to change the language runtime. First, the \VM fixes the initial structures of the language runtime. For example, Ruby's initial class hierarchy is imprinted inside the \VM code fixing with \ct{BasicObject} as the top superclass and followed by \ct{Object}, \ct{Module} and \ct{Class} respectively~(Figure \ref{code:ruby_hierarchy}).
 
 \begin{figure}[ht!]
 \begin{code}
@@ -51,7 +51,7 @@ void Init_class_hierarchy(void) {
     RBASIC_SET_CLASS(rb_cBasicObject, rb_cClass);
 }
 \end{code}
-\caption{\textbf{Code of the Ruby VM that initialises the class hierarchy (excerpt).} The VM code fixes the language class hierarchy.\label{code:ruby_hierarchy}}
+\caption{\textbf{Code of the Ruby VM that initializes the class hierarchy (excerpt).} The VM code fixes the language class hierarchy.\label{code:ruby_hierarchy}}
 \end{figure}
 
 Second, the \VM includes code to manipulate language runtime objects introducing a duplication between the \VM code and the language code. To illustrate this problem, let us consider the code in Figure~\ref{code:logic_dup} that creates a \ct{Dictionary} object~(a hash map object). A language runtime that is defined by a \ct{Dictionary} object to keep \eg a map of global objects, must execute the code in the figure to create the corresponding instance during the language initialization. However, since the language runtime and the \VM are in middle of their initialization, the \VM cannot execute this code as it is, and thus it cannot enforce its own invariants. The state of the art productive \VMs will provide an alternative low-level representation of the same code respecting the same invariants. This introduces a redundancy: the \VM and the language have different code to honor the same invariants.
@@ -88,12 +88,12 @@ void* createDictionaryWithSize(int n){
 
 After the language initialization, reflective languages~\cite{Smit84a} such as LISP or Smalltalk provide the means to modify themselves at runtime. These languages are based on a reflective architecture presenting the notion of causal connection~\cite{Maes87a}: a link between a programming element and its representation that keeps both in synchronization. However, as these languages contain meta-circular definitions in their kernel~\cite{Chib96a}, this can result in a Metastability problem~\cite{Kicz91a} \ie a change in the language runtime may introduce a meta-call recursion and turn the system unusable.% In this context, Reflectivity~\cite{Denk08b} is a framework that scopes reflection to avoid meta-call recursions.  Reflectivity succeeds to control behavioural reflection by accounting the level of \emph{metaness} of the execution in a program and executing reflective operations when it is in the correct meta-level. The main limitation of Reflectivity is that it does not allow structural reflective changes in the language runtime.
 
-Finally, snapshot-based languages offer different means to evolve a language runtime. Instead of being reinitialized each time we need it, the state of the whole graph of objects that denotes the running program can be suspended and saved as a snapshot in a file. Later on, the program in this snapshot can be restarted from the point it was suspended. As a consequence of this persistency property, some snapshot-based languages such as Squeak or Pharo  do not have the infrastructure to be reinitialised from scratch. Indeed, their current deliverable snapshots are the result of a chain of side effects (updates and migrations) made to the original Smalltalk-80 snapshot. Thus, even if we can change the language runtime at runtime, they cannot ensure a reproducible initial state for their users.
+Finally, snapshot-based languages offer different means to evolve a language runtime. Instead of being reinitialized each time we need it, the state of the whole graph of objects that denotes the running program can be suspended and saved as a snapshot in a file. Later on, the program in this snapshot can be restarted from the point it was suspended. As a consequence of this persistency property, some snapshot-based languages such as Squeak or Pharo  do not have the infrastructure to be reinitialized from scratch. Indeed, their current deliverable snapshots are the result of a chain of side effects (updates and migrations) made to the original Smalltalk-80 snapshot. Thus, even if we can change the language runtime at runtime, they cannot ensure a reproducible initial state for their users.
 
 \subsection{Mixture of \VM and Language Concerns}
 
 The unclear interface between the language and the \VM makes difficult to recognize whether a piece of code belongs to a \VM or language concern. This causes undesirable temporal couplings between these two elements and prevents us to clearly extract and replace the language definition by another one.
-To illustrate this problem, Figure \ref{code:jikes_vm_initialization} shows an excerpt of the JikesRVM\footnote{Taken from the version 3.1.3 of the JikesRVM in \url{http://sourceforge.net/projects/jikesrvm}}~\cite{Alpe00a}. In this example, the memory manager is initialised in the middle of the initial class loading phase. These memory manager calls are indeed needed to avoid the collection of objects during the initialization. However, it is necessary to call it after some specific classes are initialized and not before.
+To illustrate this problem, Figure \ref{code:jikes_vm_initialization} shows an excerpt of the JikesRVM\footnote{Taken from the version 3.1.3 of the JikesRVM in \url{http://sourceforge.net/projects/jikesrvm}}~\cite{Alpe00a}. In this example, the memory manager is initialized in the middle of the initial class loading phase. These memory manager calls are indeed needed to avoid the collection of objects during the initialization. However, it is necessary to call it after some specific classes are initialized and not before.
 
 \begin{figure}[ht]
 \begin{code}
@@ -111,7 +111,7 @@ private static void finishBooting() {
     runClassInitializer("gnu.java.nio.charset.EncodingHelper");
 }
 \end{code}
-\caption{\textbf{Code of the JikesRVM that initialises loads the initial classes of the runtime (excerpt).} The code performing the initial class loading is mixed with the code that initialises the memory manager of the \VM.\label{code:jikes_vm_initialization}}
+\caption{\textbf{Code of the JikesRVM that initializes loads the initial classes of the runtime (excerpt).} The code performing the initial class loading is mixed with the code that initializes the memory manager of the \VM.\label{code:jikes_vm_initialization}}
 \end{figure}
 
 Snapshot-based languages, on the other side, show that language initialization and \VM initialization can be orthogonal. Indeed, languages such as Pharo, LISP or the V8 flavor of Javascript can restart their system from a snapshot. The \VM loads atomically the snapshot and binds it to the current runtime. Loading a snapshot clarifies the \VM startup steps as it replaces the phase of language initialization. Moreover, as long as the snapshot satisfies the \VM execution model, it can run any language model, as it is the case of Pharo and Newspeak that run on the same \VM.
@@ -128,6 +128,20 @@ When defining the language runtime at the \VM level, we rely on the tools and ab
 Indeed the developer would benefit from the productivity that a high-level language brings. In this sense, Reflective languages support naturally the usage of the language abstractions and tools to modify the language runtime. Reflective languages benefit from the reification of the language concepts to be able to change them from the language itself. Languages such as Smalltalk show how debuggers and code browsers can be built using such features.
 
 %To attack these problems, many programming systems have found desirable to follow the principles of \emph{high-level low-level programming} \ie expressing low-level concerns using high-level languages~\cite{Fram09a}. High-level low-level programming pursues the objective of simplifying the complexity of programming systems. By using a high-level language to describe the low-level world the developer benefits from their abstraction power and tooling of the first one. A clear example of this fact is the metacircular \VM field, where many projects whose goal is to write \VMs in a high-level language have blossomed in the last years~\cite{Wimm13a,Alpe00a,Verw11a,Inga97a,Unga05a,Rigo06a}. These projects are biased to \VM building techniques and not to the initialization of the languages that run on top of them.
+
+\section{Evaluation Criteria}\label{sec:runtime_modification_criteria}
+
+\begin{description}
+
+\item[Manipulate Language Elements.] symbols, classes, methods
+\item[Manipulate Execution Elements.] threads, execution stack
+\item[Manipulate Objects.]
+\item[Safe.] if it does not crash
+\item[Level (?).] if we have to do it from a high level or low level language
+\item[Level of abstraction.] of the API
+\item[Mixture of concerns.] if there is a mixture of concerns between the runtime manipulation and lower level concerns.
+
+\end{description}
 
 \section{Reflection and Metaprogramming Models}\label{sec:related_work_changing}
 
