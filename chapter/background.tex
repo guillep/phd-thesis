@@ -92,7 +92,7 @@ Finally, snapshot-based languages offer different means to evolve a language run
 
 \subsection{Mixture of \VM and Language Concerns}
 
-The unclear interface between the language and the \VM makes it difficult to recognize whether a piece of code belongs to a \VM or language concern. This causes undesirable temporal couplings between these two elements and prevents us from extracting and replacing the application runtime by another one.
+The unclear interface between the language and the \VM makes it difficult to recognize whether a piece of code in the \VM belongs to a \VM concern or a language one. This causes undesirable temporal couplings between these two elements and prevents us from extracting and replacing the application runtime by another one.
 To illustrate this problem, Figure \ref{code:jikes_vm_initialization} shows an excerpt of the JikesRVM\footnote{Taken from the version 3.1.3 of the JikesRVM in \url{http://sourceforge.net/projects/jikesrvm}}~\cite{Alpe00a}. In this example, the memory manager is initialized in the middle of the initial class loading phase. These memory manager calls are indeed needed to avoid the collection of objects during the initialization. However, it is necessary to call it after some specific classes are initialized and not before.
 
 \begin{figure}[ht]
@@ -114,7 +114,7 @@ private static void finishBooting() {
 \caption{\textbf{Code of the JikesRVM that initializes loads the initial classes of the runtime (excerpt).} The code performing the initial class loading is mixed with the code that initializes the memory manager of the \VM.\label{code:jikes_vm_initialization}}
 \end{figure}
 
-Snapshot-based languages, on the other side, show that language initialization and \VM initialization can be orthogonal. Indeed, languages such as Pharo, LISP or the V8 flavor of Javascript can restart their system from a snapshot. The \VM loads atomically the snapshot and binds it to the current runtime. Loading a snapshot clarifies the \VM startup steps as it replaces the phase of language initialization. Moreover, as long as the snapshot satisfies the \VM execution model, it can run any language model, as it is the case of Pharo and Newspeak that run on the same \VM.
+Snapshot-based languages, on the other side, show that language initialization and \VM initialization can be orthogonal. Indeed, languages such as Pharo, LISP or the V8 flavor of Javascript can restart their system from a snapshot. The \VM loads atomically the snapshot and binds it to the current runtime. Loading a snapshot clarifies the \VM startup steps as it replaces the runtime initialization phase. Moreover, as long as the snapshot satisfies the \VM execution model, it can run any language model, as it is the case of Pharo and Newspeak that run on the same \VM.
 
 %Other snapshot-based languages such as GNU-Smalltalk or the V8 flavor of Javascript possess both mechanisms: they recreate the language runtime from scratch, and can also restart from a snapshot. In the case of V8, the snapshot was chosen with performance in mind, to avoid parsing and recreation on client-side machines.
 
@@ -185,7 +185,7 @@ Black avoids the infinite regression by limiting the real levels of interpretati
 By limiting the levels of interpretation, the model presented by Black forbids \emph{indirect modification}. Changing the interpreter in a level \emph{n} above the first level does not impact any more the interpreters below it, as they are directly-executed in the machine and not by the modified interpreter. Black supports, however, the modification of the first level of interpretation with the introduction of hooks inside the machine code. A hook detects whether a function in the interpreter~(written in directly-executed code) is changed, and interprets it by a meta-level interpreter written also in directly executed code. Hooks degrade the performance in comparison of a non-hooked interpreter, but it allows in exchange to change and specialize the behavior of the directly-executed code.
 
 \subsection*{\textsc{Safe-Tcl}}
-Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke another interpreter and specialize its behavior. Both the master child interpreters run isolated from each other~(Figure \ref{fig:safetcl_twin_interpreters}).
+Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke another interpreter and specialize its behavior. Both the master and child interpreters run isolated from each other~(Figure \ref{fig:safetcl_twin_interpreters}).
 
 \begin{figure}[ht]
 \begin{center}
@@ -217,7 +217,7 @@ One problematic corollary of this is that meta-objects rely on the same code and
 \end{center}
 \end{figure}
 
-Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is a reflective framework that avoids meta-recursions by tracking the degree of metaness of the execution context. In each reflective call, the \ct{MetaContext} object is activated and it accounts the meta-level jump. Likewise, when the reflective call returns, the \ct{MetaContext} is deactivated. Using the accounted meta-level jumps of the \ct{MetaContext}, meta-objects do only reflect on objects of a lower metaness~(and not greater or equal metaness). Thus, it simulates the semantics of an infinite tower of distinct interpreters while there is only one of them~(Figure \ref{fig:reflectivity_avoid_meta_recursion}).
+Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is a reflective framework that avoids meta-recursions by tracking the degree of metaness of the execution context. In each reflective call, the \ct{MetaContext} object is activated and it accounts the meta-level jump. Likewise, when the reflective call returns, the \ct{MetaContext} is deactivated. Using the accounted meta-level jumps of the \ct{MetaContext}, meta-objects do only reflect on objects of a lower metaness~(and not greater or equal metaness). Thus, it simulates the semantics of an infinite tower of distinct interpreters while there is only one of them that scopes the meta-operations using the accounted meta-level~(Figure \ref{fig:reflectivity_avoid_meta_recursion}).
 
 \begin{figure}[ht]
 \begin{center}
@@ -233,7 +233,7 @@ Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is
 \end{center}
 \end{figure}
 
-Reflectivity succeeds to modify and scope behavioral reflection for different meta-levels inside the same reflective architecture. However, it does not provide with support to fully change the language semantics~(residing in the \VM) or to perform structural reflection.
+Reflectivity succeeds to modify and scope behavioral reflection for different meta-levels inside a single interpreter reflective architecture. However, it does not provide with support to fully change the language semantics~(residing in the \VM) or to perform structural reflection.
 
 \section{Metacircular Runtimes and \VMs}\label{sec:metacircular_runtimes}
 
