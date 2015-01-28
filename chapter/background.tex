@@ -184,22 +184,6 @@ Black avoids the infinite regression by limiting the real levels of interpretati
 
 By limiting the levels of interpretation, the model presented by Black forbids \emph{indirect modification}. Changing the interpreter in a level \emph{n} above the first level does not impact any more the interpreters below it, as they are directly-executed in the machine and not by the modified interpreter. Black supports, however, the modification of the first level of interpretation with the introduction of hooks inside the machine code. A hook detects whether a function in the interpreter~(written in directly-executed code) is changed, and interprets it by a meta-level interpreter written also in directly executed code. Hooks degrade the performance in comparison of a non-hooked interpreter, but it allows in exchange to change and specialize the behavior of the directly-executed code.
 
-\subsection*{\textsc{Safe-Tcl}}
-Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke another interpreter and specialize its behavior. Both the master and child interpreters run isolated from each other~(Figure \ref{fig:safetcl_twin_interpreters}).
-
-\begin{figure}[ht]
-\begin{center}
-\includegraphics[width=.6\linewidth]{safetcl_twin_interpreters}
-\caption{\textbf{SafeTcl Twin Interpretation.} The Master interpreter creates and configures a safe interpreter. The safe interpreter, with modified commands, will run the sandboxed Tcl application.\label{fig:safetcl_twin_interpreters}
-% (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
- }
-\end{center}
-\end{figure}
-
-The master interpreter modifies the behavior of a safe interpreter by providing a security policy. A security policy grants or removes privileges to the scripts executed on an interpreter. Commands can be aliased so the untrusted interpreter call an aliased method and the command is fully implemented by a trusted interpreter.
-
-Safe-Tcl twin interpretation allows us to change the behavior of a program running on a specialized interpreter, without the limitations of the infinite tower of interpreters. However, in contrast with the solutions we already presented, Safe-Tcl does not provide with the ability to change completely the semantics of the language but just to override or provide new commands, with a focus on security.
-
 \subsection*{\textsc{Reflectivity: scoping reflection in Reflective Architectures}}
 
 To enable reflection in mainstream languages such as Java, Ruby or JavaScript, the tower of interpreters is replaced by a reflective architecture~\cite{Maes87a}. Instead of relying on a stack of interpreters interpreting each the level below it, a reflective architecture relies on the idea of \emph{causal connection} \ie the programming language incorporates structures that represents aspects of itself~(\eg classes, objects), in such a way that if one structure changes the aspect it represents is updated accordingly, and vice-versa.
@@ -473,6 +457,22 @@ Many isolates co-exist not interfering each other, as they believe they own thei
 
 MVM can run unmodified Java applications. Additionally, MVM-aware applications can use the API it provides to control the life-cycle~(\eg creation, suspension, resuming and and termination) and the available resources of other isolates. Notice that differently from JVMTI, this control API is available to the applications running on the JVM and not only to native agents.
 
+\subsection*{\textsc{Safe-Tcl}}
+Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke another interpreter and specialize its behavior. Both the master and child interpreters run isolated from each other~(Figure \ref{fig:safetcl_twin_interpreters}).
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=.6\linewidth]{safetcl_twin_interpreters}
+\caption{\textbf{SafeTcl Twin Interpretation.} The Master interpreter creates and configures a safe interpreter. The safe interpreter, with modified commands, will run the sandboxed Tcl application.\label{fig:safetcl_twin_interpreters}
+% (a)The host language and (b)the guest language contain each one their own classes and objects. The guest language resides inside the host language during the bootstrap; (c)the builder, a program written in the host language, reifies the bootstrap process itself and bootstraps the guest language given a (d)source code specification.
+ }
+\end{center}
+\end{figure}
+
+The master interpreter modifies the behavior of a safe interpreter by providing a security policy. A security policy grants or removes privileges to the scripts executed on an interpreter. Commands can be aliased so the untrusted interpreter call an aliased method and the command is fully implemented by a trusted interpreter.
+
+Safe-Tcl twin interpretation allows us to change the behavior of a program running on a specialized interpreter, without the limitations of the infinite tower of interpreters. However, in contrast with the solutions we already presented, Safe-Tcl does not provide with the ability to change completely the semantics of the language but just to override or provide new commands, with a focus on security.
+
 %\subsection*{Java Isolates}
 %Java Isolates \cite{JSR121} allow multiple applications to run inside the same Java virtual machine.
 %Nothing is shared between the different applications. Resources like CPU time, memory are controlled 
@@ -484,15 +484,73 @@ MVM can run unmodified Java applications. Additionally, MVM-aware applications c
 
 \section{Conclusion and Summary}
 
-In this chapter we studied the state of the art on application runtime manipulation techniques. We focus this study on three main problems: the flexibility to change an application and language runtime, the mixture of low-level and high-level concerns and the tool support to do it.
+In this chapter we studied the state of the art on application runtime manipulation techniques. We focus this study on three main concerns: the flexibility to change an application and language runtime, the mixture of low-level and high-level concerns and the tool support to do it. Based on these three concerns, we developed an evaluation criteria made of seven aspects. With this criteria in mind, we studied the state of the art on application runtime manipulation organizing it in three categories: reflection models, metacircular runtimes and virtualization techniques. Table \ref{tb:comparison_runtime_manipulation} shows how our evaluation criteria matches each of these categories.
 
-First, we saw that available production \VMs do not offer with the flexibility to modify nor the language nor the application runtime. These \VMs usually fix their how their language runtimes are initialized and enforce a language model to their users. Additionally, they tend to mix \VM concerns such as memory management or JIT compilation with the code in charge of managing the application runtime.
+\begin{table}[ht]
+ \small
+ 	\centering
+ 	\begin{tabular}{lccccc}
+	
+\toprule
+ 			& \textbf{Reflection}
+ 			& \textbf{Metacircular}
+			& \multicolumn{2}{c}{\textbf{Virtualization}}\\
+% 			& \textbf{Dynamic} \\
+ 			& \textbf{}
+ 			& \textbf{Runtimes}
+			& \multicolumn{2}{c}{\textbf{Techniques}}\\
+			&&&Co-Existance&Control\\
+% 			& \textbf{Analysis}\\
+%  \cmidrule(r){2-4}
+ \toprule
 
-Different reflection models such as the ones appearing in LISP, Smalltalk or Ruby provide with the \emph{flexibility} to manipulate an application runtime from the runtime itself once it is already up un running. However, there exists trade offs between a usable reflection model and the safety of using it to modify its own definition.
+		Object Manipulation
+ 			& + & + & \textasciitilde & \textasciitilde\\
+		\hline
+		Language
+		Manipulation
+ 			& + & + & \textasciitilde & \textasciitilde\\
+		\hline
+		Execution Manipulation
+ 			& \textasciitilde & + & + & + \\
+		\hline
+		Safety
+ 			& \textasciitilde & + & + & + \\
+		\hline
+		Language Abstraction
+		Level
+ 			& + & + & + & \textasciitilde \\
+		\hline
+		API Abstraction
+		Level
+ 			& + & \textasciitilde & + & + \\
+		\hline
+		Mixture of Concerns
+ 			& + & - & + & + \\
+ 	 \bottomrule
+ 	\end{tabular}
+	\includegraphics[width=.9\linewidth]{runtime_manipulation_criteria_overview}
+ 	\caption{Evaluation criteria applied to related work on deployment code unit tailoring techniques}
+ 	\label{tb:comparison_runtime_manipulation}
+ \end{table}
 
-Metacircular \VMs explore the idea of expressing a \VM in the same language it supports at the end, under the principles of \emph{high-level low-level programming}. High-level low-level programming aim to provide with \emph{better tool support} and a smaller mismatch to \VM development, with the main objective of increasing the efficiency of \VM developers. Some of the more sophisticated \VMs, like Klein, reifies and exposes its internal components, allowing one to modify them from the running application runtime.
+First, we studied different reflection and metaprogramming models such as the ones appearing in LISP, Smalltalk or Ruby. Metaprogramming and reflection support the modification of objects and language elements such as classes and methods. The reification of execution-related elements, when available, provides these models with the ability to also manipulate the execution: start, stop and alter the state of running processes. Reflection models require special support to safely apply arbitrary changes and not run into metastability issues \ie modifying an element that is used at the same time to make such modification can break runtime assumptions. Additionally, as the reflection is available from the language, runtime manipulations are expressed in a high-level language. This provides the ability to both express our manipulations with high-level abstractions and to provide a high-level API to perform reflective changes. Finally, reflection support provides runtime manipulation separated from \VM concerns, as such support exists in the language.
 
-Finally, virtualization techniques applied to application runtimes provide with application co-existence and application runtime control. Application co-existence is used mainly with isolation purposes, but it could be used also to allow a \emph{high-level interaction and control} between applications, as in MVM. JVMTI on the other side, provides application runtime control and manipulation with a low-level API.
+Metacircular \VMs explore the idea of expressing a \VM in the same language it supports at the end, under the principles of \emph{high-level low-level programming}. High-level low-level programming aims at enhancing a developer's productivity by using the abstractions of high-level languages to express lower-level concerns. Metacircular \VMs include all the power of any \VM: they can freely manipulate the application runtime that runs on them. They have the support for manipulating runtime objects, language and execution-related elements. Runtime manipulations can be safely applied as they are atomic for the application runtime being executed. The main advantage of metacircular \VMs over regular low-level \VMs is that they are expressed in high-level languages and thus, we can express our manipulations with the expression power of such language. Not all metacircular \VMs provide with an API written in terms of the runtime elements we want to manipulate, they do provide instead a memory-based API. Finally, metacircular \VMs do often mix language and \VM concerns, as they do not focus in the application runtime initialization but on the enhancements of \VM technology.
+
+Virtualization techniques applied to application runtimes provide with application co-existence and application runtime control. Application co-existence is used mainly with isolation purposes by allowing one to load several applications~(potentially several versions of the same application) to run at the same time and be able to communicate. These application co-existence solutions are available to the high-level language developer. Application control solutions provide mainly support to control an application's life cycle: start, pause or stop it. They often provide an API expressed in terms of such elements, hiding the low-level details of such manipulations. Particularly JVMTI provides fine grained manipulation and control covering also object and language elements manipulations. It's main drawback is however that JVMTI agents are expressed in a low-level language, limiting the application of our solutions.
+
+From this, we can state that our solution should have the following properties:
+
+\begin{description}
+
+\item[High-Level.] Expressing application runtime manipulations in a high-level language provides tooling support and a better level of abstraction for the developer of such manipulations. 
+
+\item[Metaprogramming support.] Metaprogramming supports generally all kind of manipulations that we desire for our solution. Making visible execution elements such as threads and the execution stack provides with control over a program's execution.
+
+\item[To manipulate a co-existing application runtime.] Manipulate a co-existing application runtime provides with the safety and atomicity of making such modifications from the \VM. Additionally, co-existing runtimes provide support to su such manipulations from a high-level language runtime.
+
+\end{description}
 
 % =============================================================================
 % =============================================================================
@@ -689,9 +747,9 @@ We can see an almost general lack of support of dynamic techniques such as refle
 \begin{table}[ht]
  \small
  	\centering
- 	\begin{tabular}{|c|cccc|}
+ 	\begin{tabular}{ccccc}
 	
-\hline
+\toprule
  			& \textbf{Dedicated}
  			& \textbf{Static}
 			& \textbf{Hybrid}
@@ -700,8 +758,7 @@ We can see an almost general lack of support of dynamic techniques such as refle
  			& \textbf{Analysis}
 			& \textbf{Analysis}
  			& \textbf{Analysis}\\
-  \cmidrule(r){2-5}
-% \midrule
+ \toprule
 
 		Base Libraries
  			& + & + & + & +\\
@@ -728,7 +785,7 @@ We can see an almost general lack of support of dynamic techniques such as refle
 		& & & & \\
 		Completeness
  			& - & - & - & - \\
- 	 \hline
+\bottomrule
  	\end{tabular}
 	\includegraphics[width=.9\linewidth]{criteria_overview}
  	\caption{Evaluation criteria applied to related work on deployment code unit tailoring techniques}
