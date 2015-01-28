@@ -23,7 +23,7 @@ Based on those concerns, we created an evaluation criteria for application runti
 
 \item[Metacircular runtimes.] Metacircular runtimes aim at easing the modification of a runtime by means of simplifying the language-\VM relation for development~(Section \ref{sec:metacircular_runtimes}). This simplification comes usually by expressing a \VM in the same language it interprets at the end. Metacircular runtimes mostly focus on the simplification of complexity in \VM technology and not on the manipulation of the language runtime elements.
 
-\item[Virtualization techniques.] Virtualization techniques applied to application runtimes are used for application control and manipulation~(Section \ref{sec:background_virtualization_techniques}). Application co-existence allows the modification of an application without affecting others. Application manipulation provides with control on an application's life cycle and its internal representation.
+\item[Virtualization techniques.] Virtualization techniques applied to application runtimes are used for application control and manipulation~(Section \ref{sec:background_virtualization_techniques}). Application co-existence allows the modification of an application without affecting others. Application manipulation provides control on an application's life cycle and its internal representation.
 
 \end{description}
 
@@ -462,7 +462,7 @@ JVMTI exposes C functions to manipulate a Java VM~(Figure \ref{fig:jvmti}). The 
 \end{center}
 \end{figure}
 
-JVMTI provides with introspection and some limited intercession facilities at VM and language level. In particular it provides with memory and heap management, thread control, execution stack manipulation, object and class manipulation and breakpoint support. JVMTI is used mainly with the purpose of debugging, monitoring and analysis, particularly profiling and thread analysis.
+JVMTI provides introspection and some limited intercession facilities at VM and language level. In particular it provides memory and heap management, thread control, execution stack manipulation, object and class manipulation and breakpoint support. JVMTI is used mainly with for debugging, monitoring and analysing purposes, particularly profiling and thread analysis.
 
 In the context of this thesis, we identify in JVMTI's architecture a similarity to a virtualization system. While the Java \VM takes the place of a the virtualized operating system and the agent is its hypervisor and can control.
 
@@ -492,7 +492,7 @@ Different reflection models such as the ones appearing in LISP, Smalltalk or Rub
 
 Metacircular \VMs explore the idea of expressing a \VM in the same language it supports at the end, under the principles of \emph{high-level low-level programming}. High-level low-level programming aim to provide with \emph{better tool support} and a smaller mismatch to \VM development, with the main objective of increasing the efficiency of \VM developers. Some of the more sophisticated \VMs, like Klein, reifies and exposes its internal components, allowing one to modify them from the running application runtime.
 
-Finally, virtualization techniques applied to application runtimes provide with application co-existence and application runtime control. Application co-existence is used mainly with isolation purposes, but it could be used also to allow a \emph{high-level interaction and control} between applications, as in MVM. JVMTI on the other side, provides with application runtime control and manipulation with a low-level API.
+Finally, virtualization techniques applied to application runtimes provide with application co-existence and application runtime control. Application co-existence is used mainly with isolation purposes, but it could be used also to allow a \emph{high-level interaction and control} between applications, as in MVM. JVMTI on the other side, provides application runtime control and manipulation with a low-level API.
 
 % =============================================================================
 % =============================================================================
