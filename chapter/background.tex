@@ -484,7 +484,7 @@ Safe-Tcl twin interpretation allows us to change the behavior of a program runni
 
 \section{Conclusion and Summary}
 
-In this chapter we studied the state of the art on application runtime manipulation techniques. We focus this study on three main concerns: the flexibility to change an application and language runtime, the mixture of low-level and high-level concerns and the tool support to do it. Based on these three concerns, we developed an evaluation criteria made of seven aspects. With this criteria in mind, we studied the state of the art on application runtime manipulation organizing it in three categories: reflection models, metacircular runtimes and virtualization techniques. Table \ref{tb:comparison_runtime_manipulation} shows how our evaluation criteria matches each of these categories.
+In this chapter we studied the state of the art of application runtime manipulation techniques. We focus this study on three main concerns: the flexibility to change an application and language runtime, the mixture of low-level and high-level concerns and the tool support to do it. Based on these three concerns, we developed an evaluation criteria made of seven aspects. With this criteria in mind, we studied the state of the art on application runtime manipulation organizing it in three categories: reflection models, metacircular runtimes and virtualization techniques. Table \ref{tb:comparison_runtime_manipulation} shows how our evaluation criteria matches each of these categories.
 
 \begin{table}[ht]
  \small
@@ -548,7 +548,7 @@ From this, we can state that our solution should have the following properties:
 
 \item[Metaprogramming support.] Metaprogramming supports generally all kind of manipulations that we desire for our solution. Making visible execution elements such as threads and the execution stack provides with control over a program's execution.
 
-\item[To manipulate a co-existing application runtime.] Manipulate a co-existing application runtime provides with the safety and atomicity of making such modifications from the \VM. Additionally, co-existing runtimes provide support to su such manipulations from a high-level language runtime.
+\item[To manipulate a co-existing application runtime.] Manipulate a co-existing application runtime provides with the safety and atomicity of making such modifications from the \VM as it avoids to modify itself. Additionally, co-existing runtimes provide support to su such manipulations from a high-level language runtime.
 
 \end{description}
 
