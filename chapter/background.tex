@@ -237,32 +237,32 @@ Reflectivity succeeds to modify and scope behavioral reflection for different me
 
 \section{Metacircular Runtimes and \VMs}\label{sec:metacircular_runtimes}
 
-The increased complexity of the \VMs leads to more novel approaches on how to build \VMs.
-Metacircular \VMs are \VMs programmed in the same language they support in the end. This approach, based on the principles of \emph{high-level low-level programming} \ie expressing low-level concerns using high-level languages~\cite{Fram09a}, benefits from the abstraction power and tooling of the high-level language to manipulate their own \VMs. 
+The increased complexity of the \VMs leads to more novel approaches on how to build \VMs and therefore, their runtimes.
+Metacircular \VMs are \VMs programmed in the same language they support in the end. This approach is based on the principles of \emph{high-level low-level programming} \ie expressing low-level concerns using high-level languages~\cite{Fram09a}. Metacircular \VMs benefits from the abstraction power and tooling of a high-level language to manipulate their own \VMs. 
 
-We observer that these projects are biased towards \VM building techniques and not to the manipulation of the languages that run on top of them.
+We observe that these projects are biased towards \VM building techniques and not to the manipulation of the application runtimes that run on top of them.
 In this thesis, even if we do not focus on the modification of \VMs, we briefly study metacircular runtimes and \VMs with the objective of understanding more concretely the benefits of their high-level low-level approach.
 
 \subsection*{\textsc{Squeak Smalltalk \VM}}
 \seclabel{background-squeak}
 % ---------------------------------------------------------------------------
-The Squeak \VM~\cite{Inga97a} is an early metacircular \VM for the Smalltalk language. 
-Its core building system is still in active use for the \urlfootnote{Cog \VM}{http://www.mirandabanda.org/cogblog/} which extends Squeak with a JIT compiler.
+The Squeak \VM~\cite{Inga97a} is an early open source metacircular \VM for the Smalltalk language. 
+Its core building system is still in active use for the \urlfootnote{Cog \VM}{http://www.mirandabanda.org/cogblog/} which introduces a JIT compiler.
 The Cog \VM is used as default by the \urlfootnote{Pharo}{http://pharo.org/} programming language.
-The Squeak \VM is built around a Smalltalk subset called Slang that is exported to C to be compiled to the final \VM binary.
+The Squeak \VM is developed using a Smalltalk subset called Slang that is exported to C to be compiled to the final \VM binary.
 %Additionally, the Slang sources can be interpreted to provide an interactive simulator of the \VM, including full graphical support.
 
-Slang is limited to the functionality that can be expressed with standard C code.
+Slang is limited to functionalities that can be expressed with standard C code.
 Slang in this case is mostly a high-level C preprocessor.
-Even though Slang basically has the same syntax as Smalltalk it is semantically constrained to expressions that can be resolved statically at compilation or code generation time and are compatible with C.
+Even though Slang basically has the same syntax as Smalltalk, it is semantically constrained to expressions that can be resolved statically at compilation or code generation time and are compatible with C.
 Hence Slang's semantics are closer to C's than to Smalltalk's.
-Unlike later metacircular frameworks, Squeak uses little or no compile-time reflection to simplify the \VM designs.
-However, class composition help structuring the sources.
-Next to the Slang source which account for the biggest part of the interpreter code some operating system related code and plugins are written in C.
-To facilitate the interaction with the pure C part Slang supports inline C expressions and type annotations.
+Unlike later metacircular frameworks, the Squeak \VM uses little or no compile-time reflection to simplify \VM designs.
+However, class composition help structuring the source code.
+Next to the Slang source code which account for the biggest part of the interpreter code, some operating system related code and plugins are written in C.
+To facilitate the interaction with the pure C part, Slang supports inline C expressions and type annotations.
 
-A great achievement of the Squeak \VM is a simulator environment that enables programmers to interact dynamically with a simulated version of the running.
-The simulator is capable or running a complete Squeak Smalltalk image including graphical user interface.
+A great achievement of the Squeak \VM is a simulator environment that enables programmers to interact dynamically with a simulated version of the running \VM.
+The simulator is capable of running a complete Squeak Smalltalk image including graphical user interface.
 This means that programmers can change the sources of the running \VM and see the immediate effects in the simulator.
 The \VM developer has complete access and control to the \VM internals and the application runtime it contains. It can, for example, change any object and class inside the simulated application runtime. However, to apply such a change it depends on a high-level but memory oriented interface. Additionally, once the \VM is generated, this low-level interface disappears and is not accessible for the developer.
 
@@ -274,13 +274,12 @@ Jikes (former Jalapeño) is an early metacircular research \VM for Java written 
 The Jikes \VM features several different garbage collectors and does not execute bytecodes but directly compiles to native code.
 With metacircularity in mind Jikes does not resort to a low-level programming language such as C for these typically low-level \VM components.
 Instead they are written in Java as well using a high-level low-level programming framework.
-
 The Jikes \VM had performance as a major goal, hence direct unobstructed interaction with the low-level world is necessary using a specialized framework.
-High-level low-level programming \cite{Fram09a} is mentioned the first time in the context of the Jikes \VM project.
-The goal of high-level low-level programming is to provide high-level abstractions to simplify low-level programming.
-Essentially this is the same motivation that drives the metacircular \VM community.
+%High-level low-level programming \cite{Fram09a} is mentioned the first time in the context of the Jikes \VM project.
+%The goal of high-level low-level programming is to provide high-level abstractions to simplify low-level programming.
+%Essentially this is the same motivation that drives the metacircular \VM community.
 
-Frampton et al. present a high-level low-level framework packaged as \ttt{org.vmmagic}, which is used as a system interface for Jikes. This framework introduces highly controlled low-level interaction in a statically type context. This framework provides with a memory-oriented API to manipulate runtime entities at \VM generation time, which is used to implement \VM concerns. Once generated, the interface exposed by the \ttt{org.vmmagic} framework is translated into native code and this interface is not available for the developer.
+Frampton et al. present a high-level low-level framework packaged as \ttt{org.vmmagic}, which is used as a system interface for Jikes. This framework introduces highly controlled low-level interaction in a statically type context. This framework provides a memory-oriented API to manipulate runtime entities at \VM generation time, which is used to implement \VM concerns. Once the \VM is generated, the interface exposed by the \ttt{org.vmmagic} framework is translated into native code and this interface is not available for the developer.
 
 
 % ---------------------------------------------------------------------------
@@ -289,11 +288,11 @@ Frampton et al. present a high-level low-level framework packaged as \ttt{org.vm
 % ---------------------------------------------------------------------------
 Maxine is a metacircular Java \VM~\cite{Wimm13a} focused on an efficient developer experience.
 Typically \VM frameworks focus on abstraction at the code-level which should yield simpler code and thus help reducing development efforts.
-However, in most situations the programmer is still forced to use existing unspecific tools for instance to debug the \VM.
-In contrast to that, the Maxine \VM provides dedicated tools to interact with the \VM in development.
+However, in most situations the programmer is still forced to use existing general purpose tools for instance to debug the \VM.
+In contrast, the Maxine \VM provides dedicated tools to interact with the \VM in development.
 Maxine uses abstract and high-level representations of \VM-level concepts and consistently exposes them throughout the development process.
 
-The Maxine project follows an approach where reflection is only used at compile-time \ie once the \VM is generated, the metacircular property of the \VM is lost. However, Maxine development tools provide a live interaction with the complete state of the running \VM artifact while debugging it. We believe such a tool support should be available to manipulate a language runtime.
+The Maxine project follows an approach where reflection is used at compile-time \ie once the \VM is generated, the metacircular property of the \VM is lost. However, during development Maxine tools provide a live interaction with the complete state of the running \VM artifact while debugging it.
 
 %\subsection*{\textsc{PyPy Toolchain}}
 %\seclabel{background-pypy}
@@ -361,11 +360,11 @@ The Maxine project follows an approach where reflection is only used at compile-
 \urlfootnote{Klein}{http://kleinvm.sourceforge.net/} is a metacircular \VM for the Self programming language that has no separation into \VM and language \cite{Unga05a}.
 A main difference between Klein and the already seen metacircular \VM projects is that the reification of the \VM-level elements survives the code generation or compilation time.
 Instead the \VM structures are exposed to the language as Self objects, exposing them to the language and thus allowing their manipulation from the application runtime.
+Klein also supports advanced mirror-based debugging tools to inspect and modify a remote \VM.
 %Hence the Klein \VM supports true \VM-level reflection since there is only a single code base.
 
-Additionally to the advances in reflection and metacircularity, Klein focuses on fast compilation turnarounds to allow for a responsive development process.
-Which is unlike for instance the Squeak \VM where a full \VM bootstrap takes an order of minutes on modern hardware.
-Klein also supports advanced mirror-based debugging tools to inspect and modify a remote \VM.
+Additionally to the advances in reflection and metacircularity, Klein focuses on fast compilation turnarounds and incremental modifications for a responsive development process.
+For comparison, the generation process of a Squeak \VM takes minutes on modern hardware.
 
 Development on the Klein \VM stopped in 2009 and left the Klein \VM in fairly usable state.
 Yet, it proved that it is possible and build a language-runtime without the classical separation of the language-side and the \VM.
