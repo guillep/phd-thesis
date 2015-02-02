@@ -7,7 +7,7 @@
 	<key>ApplicationVersion</key>
 	<array>
 		<string>com.omnigroup.OmniGrafflePro</string>
-		<string>139.17.0.185490</string>
+		<string>139.18.0.187838</string>
 	</array>
 	<key>AutoAdjust</key>
 	<true/>
@@ -137,8 +137,8 @@
 										</dict>
 										<key>stroke</key>
 										<dict>
-											<key>Draws</key>
-											<string>NO</string>
+											<key>Width</key>
+											<real>2</real>
 										</dict>
 									</dict>
 									<key>Wrap</key>
@@ -218,15 +218,8 @@
 												</dict>
 												<key>stroke</key>
 												<dict>
-													<key>Color</key>
-													<dict>
-														<key>b</key>
-														<string>0.253758</string>
-														<key>g</key>
-														<string>0.253758</string>
-														<key>r</key>
-														<string>0.253758</string>
-													</dict>
+													<key>Width</key>
+													<real>2</real>
 												</dict>
 											</dict>
 											<key>Wrap</key>
@@ -279,15 +272,8 @@
 												</dict>
 												<key>stroke</key>
 												<dict>
-													<key>Color</key>
-													<dict>
-														<key>b</key>
-														<string>0.253758</string>
-														<key>g</key>
-														<string>0.253758</string>
-														<key>r</key>
-														<string>0.253758</string>
-													</dict>
+													<key>Width</key>
+													<real>2</real>
 												</dict>
 											</dict>
 											<key>VFlip</key>
@@ -368,17 +354,10 @@
 												</dict>
 												<key>stroke</key>
 												<dict>
-													<key>Color</key>
-													<dict>
-														<key>b</key>
-														<string>0.8</string>
-														<key>g</key>
-														<string>0.8</string>
-														<key>r</key>
-														<string>0.8</string>
-													</dict>
 													<key>CornerRadius</key>
 													<real>3</real>
+													<key>Width</key>
+													<real>2</real>
 												</dict>
 											</dict>
 										</dict>
@@ -453,17 +432,10 @@
 						</dict>
 						<key>stroke</key>
 						<dict>
-							<key>Color</key>
-							<dict>
-								<key>b</key>
-								<string>0.829589</string>
-								<key>g</key>
-								<string>0.763515</string>
-								<key>r</key>
-								<string>0.881188</string>
-							</dict>
 							<key>CornerRadius</key>
 							<real>3</real>
+							<key>Width</key>
+							<real>2</real>
 						</dict>
 					</dict>
 					<key>Text</key>
@@ -471,8 +443,8 @@
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx820\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li820\pardirnatural
 
@@ -521,8 +493,8 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -569,8 +541,8 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -1122,12 +1094,12 @@
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
+{\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\b\fs24 \cf2 throw exception}</string>
+\f0\b\fs24 \cf0 throw exception}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -1342,8 +1314,8 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -1402,7 +1374,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2015-01-06 11:47:22 +0000</string>
+	<string>2015-02-02 13:58:55 +0000</string>
 	<key>Modifier</key>
 	<string>Guille</string>
 	<key>NotesVisible</key>
@@ -1497,7 +1469,7 @@
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{-218, 0}, {995, 783}}</string>
+		<string>{{-218, 0}, {995, 780}}</string>
 		<key>Zoom</key>
 		<real>1</real>
 		<key>ZoomValues</key>
