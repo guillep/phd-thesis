@@ -108,7 +108,7 @@ ObjectSpace {
 The runtime manipulation interface includes operations to monitor and modify the application runtime during execution. This interface provides access to the application runtime internal elements and encapsulate the implementation details behind them~(\ie the object-format imposed by the \VM). This interface provides the following kind of operations:
 
 \begin{description}
-\item[Runtime Global Access.] The object space provides with operations to query and modify the global state of the runtime. For example, it provides access to the loaded classes or the running threads/processes. It exposes as well operations to install new and remove existing ones.
+\item[Runtime Global Access.] An object space offers operations to query and modify the global state of the runtime. For example, it provides access to the loaded classes or the running threads/processes. It exposes as well operations to install new and remove existing ones.
 
 \begin{code}
 ObjectSpace {
@@ -141,7 +141,9 @@ Mirror {
     "Primitive execution"
     mirror executePrimitive(primitiveID id, mirror receiver, Array args);
 }
+\end{code}
 
+\begin{code}
 ClassMirror {
     "Instantiation"
     mirror instantiate();
@@ -157,13 +159,13 @@ ClassMirror {
 
 % ===========================================================================
 
-\section{First-Class Language Hypervisors}\label{sec:hypervisor}
+\section{First-Class Runtime Hypervisors}\label{sec:hypervisor}
 
 The client of an object space is a \emph{language hypervisor}. A language hypervisor is first-class entity that implements a particular monitoring/modification strategy. A language hypervisor monitors an object space by splitting the execution in cycles. These cycles are delimited by a time window and finished in safe suspension points~(Figure \ref{fig:execution_cycle}). During each execution cycle, the virtualized runtime runs unmanaged using the full \VM's capacity. When the cycle finishes because the execution completed a time window and found a suspension point, the control is returned to the language hypervisor. Then, the language hypervisor applies its corresponding action and resumes the execution of the virtualized runtime from the last suspension point.
 
 \begin{figure}[ht]
 \center
-\includegraphics[width=.7\linewidth]{execution_cycle}
+\includegraphics[width=.6\linewidth]{execution_cycle}
 \caption{\textbf{Execution Cycle.} \label{fig:execution_cycle}}
 \end{figure}
 
