@@ -76,9 +76,7 @@ The \VM setup interface allows us to configure the following kind of elements:
 \item[Special messages.] Special messages are callbacks that the \VM will invoke into the application to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(the equivalent to \eg Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will send a \ct{doesNotUnderstand} message to the receiver object and let the user program decide what to do in such a case.
 \end{description}
 
-This \VM setup interface avoids to hardcode particular knowledge of a language inside the \VM. This gives us the possibility to easily change particular language internals such as renaming special messages or changing the class hierarchy of special classes without. In the extreme, we could port another language to this VM, as long as they share similar execution semantics \ie the \VM execution model is compatible with the given language.
-
-Following, we present an example of such an interface for the Pharo language. The \ct{objectSpace} object contains the \VM setup interface. \gp{how should I write such an interface in a smalltalkish way?}
+This \VM setup interface avoids to hardcode particular knowledge of a language inside the \VM. This gives us the possibility to easily change particular language internals such as renaming special messages or changing the class hierarchy of special classes without leaving the runtime in an inconsistent state. In the extreme, we could port another language to this VM, as long as they share similar execution semantics \ie the \VM execution model is compatible with the given language. We present an example of such an interface for the Pharo language. The \ct{objectSpace} object contains the \VM setup interface. \gp{how should I write such an interface in a smalltalkish way? (note I want to emphasize that they receive as parameter mirrors and return mirrors as well)}
 
 \begin{code}
 ObjectSpace {
@@ -107,10 +105,10 @@ ObjectSpace {
 %In our particular implementation the list of classes exposed through this interface are those of literal objects and those related with the internal \VM execution model. For the sake of completeness the list of classes is the following: \ct{Array}, \ct{Association}, \ct{BlockClosure}, \ct{ByteArray}, \ct{ByteString}, \ct{ByteSymbol}, \ct{Character}, \ct{Context}, \ct{Float}, \ct{SmallInteger}, \ct{LargePositiveInteger}, \ct{LargeNegativeInteger}, \ct{Message}, \ct{CompiledMethod}, \ct{MethodDictionary}, \ct{Semaphore}, \ct{WeakFinalizationList}.
 
 \subsection{Runtime Manipulation Interface} 
-The runtime manipulation interface includes operations to monitor and modify the \VM at runtime. This interface provides access to the language runtime elements and encapsulate the details behind the object-format imposed by the \VM.
+The runtime manipulation interface includes operations to monitor and modify the application runtime during execution. This interface provides access to the application runtime internal elements and encapsulate the implementation details behind them~(\ie the object-format imposed by the \VM). This interface provides the following kind of operations:
 
 \begin{description}
-\item[Runtime Global Access.] The object space provides with operations to query and modify the global state of the runtime. For example, it provides access to the a list of installed classes or running threads/processes. It let us also install new of them or remove existing ones.
+\item[Runtime Global Access.] The object space provides with operations to query and modify the global state of the runtime. For example, it provides access to the loaded classes or the running threads/processes. It exposes as well operations to install new and remove existing ones.
 
 \begin{code}
 ObjectSpace {
@@ -165,7 +163,7 @@ The client of an object space is a \emph{language hypervisor}. A language hyperv
 
 \begin{figure}[ht]
 \center
-\includegraphics[width=.8\linewidth]{execution_cycle}
+\includegraphics[width=.7\linewidth]{execution_cycle}
 \caption{\textbf{Execution Cycle.} \label{fig:execution_cycle}}
 \end{figure}
 
