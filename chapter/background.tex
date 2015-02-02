@@ -560,12 +560,11 @@ From this, we can state that our solution should have the following properties:
 \chaplabel{state_tailoring}
 \minitoc
 
-In the context of this thesis, we explore application tailoring as one usage of an application runtime, in the context limited infrastructure devices~(either hardware or software).
-Application tailoring allows the specialization of an application for its deployment in constrained devices.
+Application runtime tailoring is the specialization of an application runtime in order that it contains only its required elements at runtime and no more. In other words, tailoring is a technique that generates a specialized application runtime so it can better adapt to devices with constrained resources.
 This chapter starts by identifying the problem that motivates application tailoring: code bloat~(Section \ref{sec:footprint_problems}). Code bloat is mainly caused by unused code units appearing in general purpose libraries.
 We illustrate this problem through an example.
 
-Existing application extraction or \emph{Tailoring} techniques build deployment artifacts containing a subset of the original code units inside an application. However, existing tailoring techniques are not completely efficient because they have to overcome many different challenges such as reflection or the absence of type annotations~(Section \ref{sec:challenges}). We present an evaluation criteria that allows us to compare this different existing solutions~(Section \ref{sec:tailoring_criteria}).
+Existing application extraction or \emph{Tailoring} techniques build deployment artifacts containing a subset of the original code units inside an application. However, these existing techniques are not completely efficient because they have to overcome many different challenges such as reflection or the absence of type annotations in dynamically-typed languages~(Section \ref{sec:challenges}). We present an evaluation criteria that allows us to compare this different existing solutions~(Section \ref{sec:tailoring_criteria}).
 
 Finally, this chapter concludes by presenting and comparing this techniques, grouped in four different categories: 
 \begin{description}
@@ -583,7 +582,7 @@ Third party libraries and frameworks are designed in a generic fashion that allo
 Examples are logging libraries, web application frameworks or object-relational mappers.
 
 Unused deployed code units have an undesired impact when targeting a constrained infrastructure. 
-Constrained devices may constrain applications due to a restrictive hardware such as low primary or secondary memory~\cite{Mart12a}, or even software impositions such as the Android's Dalvik VM restriction to deploy only 65536 methods\footnote{According to dalvik's bytecode documentation~(\url{http://source.android.com/devices/tech/dalvik/dalvik-bytecode.html}), the source register accepts values between 0 and 65535.}. Big JavaScript mashup applications have an impact on loading time due to network speed and parsing time.
+Constrained devices may constrain applications due to a restrictive hardware such as low primary or secondary memory~\cite{Mart12a}, or even software impositions such as the Android's Dalvik VM restriction to deploy only 65536 methods\footnote{According to dalvik's bytecode documentation~(\url{http://source.android.com/devices/tech/dalvik/dalvik-bytecode.html}), the source register accepts values between 0 and 65535.}. Big JavaScript mashup applications have an impact on loading time due to network speed and parsing time in the client.
 These limitations may forbid the deployment of applications that contain lots of code units, or limit the amount of applications and content a user can have in its device.
 
 Existing solutions to this problem propose to eliminate dead code by extracting used code units of an application, and thus reduce their size and memory footprint. The majority of the solutions in the field propose to automatically detect and extract used code units, so called \emph{tailoring}, with static call graph construction as the most dominant technique~\cite{Grov97a}. 
@@ -607,30 +606,30 @@ Figure~\ref{fig:code_example1} shows the code of this application, written in th
 
 \begin{figure}[ht]
 \begin{code}
-MainApp>>start (
+MainApp>>start
     logger := StdoutLogger new.
     logger log: 'Application has started'.
     "do something"
-    logger log: 'Application has finished'. )
+    logger log: 'Application has finished'.
 
-!\unusedcode{StdoutLogger>>newLine (}!
-!\unusedcode{~~~stdout newLine. )}!
+!\unusedcode{StdoutLogger>>newLine}!
+!\unusedcode{~~~stdout newLine.}!
 
-StdoutLogger>>log: aMessage (
+StdoutLogger>>log: aMessage
     stdout nextPutAll: Time now printString.
     stdout nextPutAll: aMessage.
-    stdout newLine. )
+    stdout newLine.
     
-!\unusedcode{RemoteLogger>>log: aMessage (}!
+!\unusedcode{RemoteLogger>>log: aMessage}!
 !\unusedcode{~~~| socket |}!
 !\unusedcode{~~~socket := self newSocket.}!
 !\unusedcode{~~~socket nextPutAll: Time now printString.}!
 !\unusedcode{~~~socket nextPutAll: aMessage.}!
-!\unusedcode{~~~socket newLine. )}!
+!\unusedcode{~~~socket newLine.}!
 
-!\unusedcode{RemoteLogger>>newSocket (}!
+!\unusedcode{RemoteLogger>>newSocket}!
 !\unusedcode{~~~"...."}!
-!\unusedcode{~~~"creates an instance of socket given some configuration" )}!
+!\unusedcode{~~~"creates an instance of socket given some configuration"}!
 \end{code}
 
 \caption{ \small\textbf{Code of the example logging application.} In gray, methods not used by the application.\label{fig:code_example1}}
@@ -742,7 +741,6 @@ Java in The Small (JITS)~\cite{Cour10a} uses a hybrid approach to select the use
 
 Tailoring is a cross-cutting technique that may affect any element of an application runtime, and thus, it requires particular support to detect and extract used code units at runtime. Several existing techniques were applied in the past with several results.
 Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given the criteria we defined in Section~\ref{sec:tailoring_criteria}.
-We can see an almost general lack of support of dynamic techniques such as reflection and the flexibility to select whether a code unit should be subject to the tailoring or not. \chapref{chap:rfg} explores a new dynamic tailoring technique based on \Vtt. We show how our technique succeeds to tailor even in the existence of reflection and allows flexibility while others do not.
 
 \begin{table}[ht]
  \small
@@ -776,7 +774,7 @@ We can see an almost general lack of support of dynamic techniques such as refle
 		Dedicated Deploy
 			& & & & \\
 		Infrastructure
- 			& - & + & - & -  \\
+ 			& + & - & - & -  \\
 		\hline
 		Flexibility
  			& - & - & - & -   \\
@@ -784,12 +782,19 @@ We can see an almost general lack of support of dynamic techniques such as refle
 		Ensures
 		& & & & \\
 		Completeness
- 			& - & - & - & - \\
+ 			& + & - & - & - \\
 \bottomrule
  	\end{tabular}
 	\includegraphics[width=.9\linewidth]{criteria_overview}
  	\caption{Evaluation criteria applied to related work on deployment code unit tailoring techniques}
  	\label{tb:comparison_intro}
  \end{table}
+
+Dedicated platforms are a first useful attempt to produce a specialized application runtime. They contain a pre-selection of base libraries that application developers must rely upon. Dedicated platforms are not tailored by an automatic process: that means that all the developed code will be part of the deployable distribution. This lack of automatic tailoring process means on one side that the usage of reflection will not affect the result of the deploy artifact. On the other side it means, however, that it does not offer the possibility to really tailor third-party libraries, legacy code nor even the developed application code. This is why we consider dedicated platforms to ensure the completeness while they are not as efficient as other techniques.
+
+We also see that automatic tailoring techniques, in contrast with dedicated platforms, base their tailoring on the existing application code: they can tailor base and third-party libraries as well as legacy code. Amongst them, dynamic-analysis based techniques, and hybrid-analisys ones in some grade, are able to handle reflective calls properly. We can see an almost general lack of support of flexibility to select whether a code unit should be subject to the tailoring or not.
+
+Concluding, it is important to notices that none of these techniques ensure completeness. We cannot anticipate the use of reflection and other dynamic techniques in complex scenarios. For this purpose, several techniques such as lazy loading or remote calls can be used to complement tailoring techniques. \chapref{chap:rfg} explores a new dynamic tailoring technique based on \Vtt. We show how our technique succeeds to tailor even in the existence of reflection and allows flexibility while others do not. 
+
 
 \input{chapter-footer.tex}
