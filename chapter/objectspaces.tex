@@ -161,7 +161,7 @@ ClassMirror {
 
 \section{First-Class Runtime Hypervisors}\label{sec:hypervisor}
 
-The client of an object space is a \emph{language hypervisor}. A language hypervisor is first-class entity that implements a particular monitoring/modification strategy. A language hypervisor monitors an object space by splitting the execution in cycles. These cycles are delimited by a time window and finished in safe suspension points~(Figure \ref{fig:execution_cycle}). During each execution cycle, the virtualized runtime runs unmanaged using the full \VM's capacity. When the cycle finishes because the execution completed a time window and found a suspension point, the control is returned to the language hypervisor. Then, the language hypervisor applies its corresponding action and resumes the execution of the virtualized runtime from the last suspension point.
+The client of an object space is a \emph{runtime hypervisor}. A runtime hypervisor is first-class entity that implements a particular monitoring/modification strategy. A runtime hypervisor monitors an object space by splitting the execution in cycles. These cycles are delimited by a time window and finished in safe suspension points~(Figure \ref{fig:execution_cycle})\ie a safe suspension point is a moment in execution where suspending a thread will not leave it in an inconsistent state. For example, in our \Vtt prototype written for the Pharo language, safe suspension points are the activation of message sends and bytecode backjumps. During each execution cycle, the virtualized runtime runs unmanaged using the full \VM's capacity. When the cycle finishes because the execution completed a time window and found a suspension point, the control is returned to the runtime hypervisor. Then, the runtime hypervisor applies its corresponding action and resumes the execution of the virtualized runtime from the last suspension point.
 
 \begin{figure}[ht]
 \center
@@ -169,7 +169,7 @@ The client of an object space is a \emph{language hypervisor}. A language hyperv
 \caption{\textbf{Execution Cycle.} \label{fig:execution_cycle}}
 \end{figure}
 
-To allow cycle execution, we extended the \ct{objectSpace} interface to execute during a cycle of time. This operation will awake the virtualized runtime processes and execute them for a time window. Once the time window is finished, it will be suspended in the next suspension point and the control will return to the language hypervisor.
+To allow cycle execution, we extended the \ct{objectSpace} interface to execute during a cycle of time. An \Vtt implementation should additionally include support for suspension points. This operation will awake the virtualized runtime processes and execute them for a time window. Once the time window is finished, it will be suspended in the next suspension point and the control will return to the runtime hypervisor.
 
 \begin{code}
 ObjectSpace {
@@ -179,49 +179,43 @@ ObjectSpace {
 
 %Our implementation presents an execution cycle of 200ms that allows us to have fine grained control while the virtualized application has still place to run. We use as suspension points backjumps found in the executed bytecode and message sends. In such a way, we ensure that the execution stack is in a consistent state after it is interrupted.
 
-Then, our language hypervisor class hierarchy presents four basic methods. First, the \ct{run} template method implements the basics of the hypervision cycle: it resumes the execution of the virtual runtime inside a loop. Two methods~(\ct{before} and \ct{after}) provide hooks for the specific hypervisor implementations. Figure \ref{fig:hypervisors} shows a class hierarchy example and code with two sketched language hypervisors. A \ct{NullHypervisor} allows the virtualized runtime to run without any intervention. The \ct{UpdateHypervisor} instead checks the existence of a file with updates on every cycle.
+Then, our runtime hypervisor class hierarchy presents four basic methods. First, the \ct{run} template method implements the basics of the hypervision cycle: it resumes the execution of the virtual runtime inside a loop. Two methods~(\ct{before} and \ct{after}) provide hooks for the specific hypervisor implementations. Figure \ref{fig:hypervisors} shows a class hierarchy example and code with two sketched runtime hypervisors. A \ct{NullHypervisor} allows the virtualized runtime to run without any intervention. The \ct{UpdateHypervisor} instead checks the existence of a file with updates on every cycle.
 
 \begin{code}
-Hypervisor >> run [
+Hypervisor >> run
     [ true ] whileTrue: [
         self before.
         self basicRun.
         self after.
     ]
-]
 
-Hypervisor >> basicRun [
+Hypervisor >> basicRun
     objectSpace runCycle.
-]
 
-NullHypervisor >> before [
+NullHypervisor >> before
     "Nothing"
-]
 
-NullHypervisor >> after [
+NullHypervisor >> after
     "Nothing"
-]
 
-UpdateHypervisor >> before [
+UpdateHypervisor >> before
     self checkForUpdate.
-]
 
-UpdateHypervisor >> checkForUpdate [
+UpdateHypervisor >> checkForUpdate
     "We check if a given file exists"
     'update.txt' asFile exists ifTrue: [ ...
     ...
-]
 \end{code}
 
 \begin{figure}[ht]
 \center
 \includegraphics[width=.9\linewidth]{hypervisors}
-\caption{\textbf{Example Language Hypervisors Class Hierarchy.} A \ct{NullHypervisor} does nothing while the \ct{UpdateHypervisor checks for updates before every cycle execution}.\label{fig:hypervisors}}
+\caption{\textbf{Example Runtime Hypervisors Class Hierarchy.} A \ct{NullHypervisor} does nothing while the \ct{UpdateHypervisor checks for updates before every cycle execution}.\label{fig:hypervisors}}
 \end{figure}
 
 \section{Cross-Runtime Communication} \label{sec:communication}\label{sec:isolation}
 
-A language hypervisor may require to apply some operation in a virtualized runtime that would be tougher through direct object manipulation with mirrors. Let's take as an example a virtualized application that uses a particular logging library. In the context of that application, disabling logging would mean to execute the following statement:
+A runtime hypervisor may require to apply some operation in a virtualized runtime that would be tougher through direct object manipulation with mirrors. Let's take as an example a virtualized application that uses a particular logging library. In the context of that application, disabling logging would mean to execute the following statement:
 
 \begin{code}
 Logger disable.
