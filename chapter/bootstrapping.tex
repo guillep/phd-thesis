@@ -1,6 +1,6 @@
 \input{chapter-header.tex}
 % ===========================================================================
-\part{Bootstrapping: Explicit Generation of an Application Runtime}
+\part{Bootstrapping:\\Application Runtime Generation\\through an\\Explicit Process}
 % ===========================================================================
 \chapter{Bootstrapping an Object-Oriented Language}
 \introduction
@@ -131,7 +131,7 @@ Following we describe a bootstrap process we developed to bootstrap the Pharo la
 
 \begin{figure}[ht]
 \begin{code}
-Bootstrap >> bootstrap [
+Bootstrap >> bootstrap
     "Create the basic language structures"
     nilObject := UndefinedObject basicNew.
     trueObject := True basicNew.
@@ -158,7 +158,6 @@ Bootstrap >> bootstrap [
         subclass: #Object
         instanceVariableNames: ''.
     ...
-]
 \end{code}
 \caption{\textbf{Code (excerpt) of the Pharo language definition.}\label{code:process}}
 \end{figure}
@@ -375,7 +374,7 @@ The main limitation of our approach is that we don't address the co-evolution of
 \chapter{Validation} \label{sec:bootstrapping_validation}
 \introduction
 
-In this chapter we present our results while bootstrapping three different three different case study languages.
+In this chapter we present our results while bootstrapping three different case study languages.
 As all our languages share the same \VM, we start this section by describing the execution model of this \VM and its impact on the bootstrapping languages.
 To reuse the parsing infrastructure and the bootstrapping interpreter, the three bootstrapped languages share also the same syntax: a Smalltalk syntax. Although these similarities, each of the three language runtimes possess different model and semantics: Pharo is a fully-reflective language composed of classes and traits with first class slots and object layouts \cite{Verw11a}; \emph{Metatalk}~\cite{Papo11a} is a language that fully decomposes the meta-level from the base-level using mirrors, allowing us to bootstrap a reflective and a non-reflective version of it; \emph{Candle} is a partially reflective \ct{Smalltalk-80} based mini-kernel that includes introspection and some self-modification features. Figure \ref{fig:languages_spectrum} shows how these three languages are placed in the language spectrum.% These results show that our process can produce different systems when fed with different specifications. The resulting bootstrapped systems are available at \url{http://ci.inria.fr/rmod/view/Oz/}.
 
@@ -460,7 +459,7 @@ In this section we present the benchmarks we did to measure the bootstrap time o
  	\caption{\small\textbf{Building Benchmarks.} Comparing the execution time of the bootstrapped languages using AST interpretation and partial evaluation. (*) Pharo and Candle have implicit metaclasses, meaning that for each created class, an associated metaclass is created even if not necessary. Metatalk introduces a mirror object for each of the classes in the language.\label{tb:measurements}}
  \end{table}
 
-We can observe from our measurements that bootstrapping Metatalk takes in average 1 second if no mirrors are created and 13 in the reflective Metatalk case. Candle bootstrap is slower, in the order of 1 minute and a half, mainly because it contains eight times more methods than the Metatalk. We can see that a plain AST-based bootstrapping interpreter has a a bigger impact in the bootstrap time if the language contains complex structures to initialize.  Indeed, creating a Pharo class using the AST interpreter is an operation that takes in average 17 seconds, because each class contains a reification of its memory layout and slots~\cite{Verw11a}. This problem is aggravated by the high amount of classes and methods in this language definition.
+We can observe from our measurements that bootstrapping Metatalk takes in average 1 second if no mirrors are created and 13 in the reflective Metatalk case. Candle bootstrap is slower, in the order of 1 minute and a half, mainly because it contains eight times more methods than the Metatalk. We can see that a plain AST-based bootstrapping interpreter has a a bigger impact in the bootstrap time if the language contains complex structures to initialize.  Indeed, creating a Pharo class using the AST interpreter is an operation that takes in average 17 seconds, because each class contains a reification of its memory layout and slots~\cite{Verw11a}. This problem is aggravated by the amount of classes and methods in this language definition.
 
 Particularly about bootstrapping Pharo, a lack of modularity of the language impacts in the amount of code elements we have to build. Pharo's language runtime is historically a monolithic system which precludes us to build a minimal system. In fact, the Pharo language runtime we are bootstrapping represents a subset of the full Pharo language as it is distributed.
 
@@ -470,7 +469,7 @@ To be useful in practice, we understand that the bootstrap process should have t
 
 \begin{description}
 \item[Enhancing Bootstrap Time: Dynamic Compilation.]
-Since the main purpose of the bootstrap process is to easily change the meta-level semantics and structure of the language entities we cannot fix them statically to optimize them. In exchange, we chose to optimize the interpretation cycle using a dynamic compiler. The dynamic compiler compiles the interpreted code on demand. This compiled code is cached and executed directly on the \VM bypassing the interpretation step in following executions. We implemented dynamic compilation to optimize Pharo as it presents the worse of our results~(cf. Table \ref{tb:dynamic_compilation}). We reduced the total bootstrap time by a factor of 2.85. Additionally, we observed a mayor improvement on class creation, where the time improves from 17 to less than half a second. Class creation has a great impact on the Pharo's total bootstrap time, as it is executed 313 times. Contrastingly, the initial setup of the language structures~(\eg the symbol and character table, the initial threads) is executed only once where the cost of our dynamic compilation implementation increases the execution time. Please notice that the current implementation does not optimize method compilation nor parsing, meaning there is still a room for improvement.
+Since the main purpose of the bootstrap process is to easily change the meta-level semantics and structure of the language entities we cannot fix them statically to optimize them. In exchange, we chose to optimize the interpretation cycle using a dynamic compiler. The dynamic compiler compiles the interpreted code on demand. This compiled code is cached and executed directly on the \VM bypassing the interpretation step in following executions. We implemented dynamic compilation to optimize Pharo as it presents the worse of our results~(cf. Table \ref{tb:dynamic_compilation}). We reduced the total bootstrap time by a factor of 2.85. Additionally, we observed a mayor improvement on class creation, where the time improves from 17 to less than half a second. Class creation has a great impact on the Pharo's total bootstrap time, as it is executed 313 times. Contrastingly, the initial setup of the language structures~(\eg the symbol and character table, the initial threads) is executed only once where the cost of our dynamic compilation implementation increases the execution time. Notice that the current implementation does not optimize method compilation nor parsing, meaning there is still a room for improvement.
 
  \begin{table}[ht]
  \small
@@ -493,7 +492,7 @@ Since the main purpose of the bootstrap process is to easily change the meta-lev
 
 \item[Optimizing Startup Time: Snapshotting.]\label{sec:snapshot}
 The user of a programming language is concerned about writing applications that run on this programming language instead of changing the programming language. From a user perspective the initialization of the language is transparent within the startup of an application. It should be however fast and ensure always the same state.
-The language initialization present in state of the art \VMs~(Section \ref{sec:intro}) provides both properties. Bootstrapping, in the sense of this paper, turns this process slower due to the interpretation step.
+The language initialization present in production \VMs provides both properties. Bootstrapping, in the sense of this paper, turns this process slower due to the interpretation step.
 
 For language users, we overcome this slow-down by \emph{caching} the result of our bootstrap process in a snapshot. Thus, we bootstrap a language runtime only when we change it, and otherwise we load the cached version. Caching keeps both properties of application startup: it guarantees the same state and it is faster. Table \ref{tb:startup} shows a comparison in the startup time of our \VM loading Pharo and Candle using snapshots, in contrast with Ruby. We measured the startup times by running each of them 10 times and making an average. From the results, we observe our startup time is bigger than ruby's but still reasonable, under the half of a second.
 
@@ -522,7 +521,10 @@ Implementation-wise, the snapshot we used is a memory dump of the \VM heap. This
 % ===========================================================================
 \section{Conclusion and Summary}
 
-This chapter presents the validation of our bootstrap process by bootstrapping three different object-oriented languages. These three languages have key differences in their meta-models: the core of the Pharo language is defined by traits, class layouts and first-class slots, Candle is a minimal Smalltalk with implicit metaclasses, finally Metatalk decomposes reflection from the base level and stores meta information in the meta level of the language. By using \Vtt these three languages run on top of the same Pharo Virtual Machine.
+This chapter presents a bootstrap process for object-oriented languages based on \Vtt. Bootstrapping is a process for generating an application runtime from an explicit description of it. \Vtt supports this generation by providing hosting the runtime under construction inside a virtualized environment. Then, an object space's API exposes the operations needed for such creation.
+
+
+We bootstrapped three different languages have key differences in their meta-models: the core of the Pharo language is defined by traits, class layouts and first-class slots, Candle is a minimal Smalltalk with implicit metaclasses, finally Metatalk decomposes reflection from the base level and stores meta information in the meta level of the language. By using \Vtt these three languages run on top of the same Pharo Virtual Machine.
 
 Then, we showed also that bootstrapping can be applied in a real environment. A fast startup can be achieved by caching the language runtime and a fast development cycle can be obtained by optimizing the bootstrapping interpreter.
 % =============================================================================
