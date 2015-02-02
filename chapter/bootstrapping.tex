@@ -27,7 +27,7 @@ void Init_class_hierarchy(void) {
 \end{figure}
 
 
-As we stated in \chapref{background}, this has many negative consequences. First, the Ruby \VM fixes this basic class hierarchy and prevents us to change it without changing the \VM.
+As we stated in \chapref{background}, this has many negative consequences. First, the \VM~(the Ruby \VM in this case) fixes this basic class hierarchy and prevents us to change it without changing the \VM.
 In addition, an unclear separation between the \VM and language concerns in the \VM code makes harder to change and adapt the language to other circumstances. Finally, when this \VM is written in a low-level language, we rely on the tools and abstractions this low-level language provides instead of the more powerful ones from the high-level language. 
 
 %We developed a bootstrap process for an object-oriented language based on the following ideas: we introduce (a) the language definition as a self-description of the bootstrapped language~(a description of its elements and how to build itself, written in itself), (b) a \textbf{first-class runtime} that provides a clear \VM-language interface for its manipulation, and (c) a specialized code interpreter~(the \emph{bootstrapping interpreter}) that executes the language definition~(Figure \ref{fig:bootstrapping_overview}) to initialize the language runtime in the reified runtime through its clear \VM-language interface. These three explicit components allows the separation of concerns and decouple the initialization of the language runtime from the \VM initialization.
@@ -37,7 +37,8 @@ In addition, an unclear separation between the \VM and language concerns in the 
 % at runtime, the \VM interpreter does not require this particular fixed class hierarchy nor the fact that classes have metaclasses. It is orthogonal.
 %This unnecessary coupling has a double impact on the language infrastructure: first, the only means to change the initial class hierarchy is to change the \VM code; second, the \VM can only run this language runtime even if it's execution model is less restrictive.
 
-In this context we pose the following question: \emph{How do we build and change language runtimes?} This chapter presents a high-level low-level programming approach~\cite{Fram09a} for it and revisits an already well-known technique: \textbf{bootstrapping}~(cf. Section \ref{sec:bootstrapping}). While bootstrapping is well known in the context of compilers~(where a compiler can compile itself), we explore and expand this concept in the context of object-oriented languages. A circular definition of the language allows us to use the abstraction power and tools of the language itself for its definition~(Section\ref{sec:circular_definition}). Additionally, a bootstrapping process states the required steps to build a language runtime from scratch~(Section\ref{sec:circular_definition}).
+%In this context we pose the following question: \emph{How do we build and change language runtimes?}
+This chapter presents a high-level low-level programming approach for runtime generation~\cite{Fram09a} and it revisits an already well-known technique: \textbf{bootstrapping}~(cf. Section \ref{sec:bootstrapping}). While bootstrapping is well known in the context of compilers~(where a compiler can compile itself), we explore and expand this concept in the context of object-oriented languages. A circular definition of the language allows us to use the abstraction power and tools of the language itself for its definition~(Section\ref{sec:circular_definition}). Additionally, a bootstrapping process states the required steps to build a language runtime from scratch~(Section\ref{sec:circular_definition}).
 
 Finally, we show how \Vtt represents a robust infrastructure that helps solving the issues that arise from defining a language issues~(Section\ref{sec:bootstrapping_infrastructure}). Our \Vtt based bootstrap uses mirrors to manipulate objects while they cannot execute code by themselves because the runtime is under creation~(\eg send a message when no methods are yet installed). Additionally, our infrastructure allows us to trace the execution of the bootstrap code to detect the impact that a change in the language may have in the bootstrap process.
 
@@ -55,7 +56,29 @@ It is a process whose input is the definition of a language behavior written in 
 
 The input definition of this bootstrap \textbf{must} include the knowledge to recreate itself: the basic operations to create classes and methods, and initialize the basic structures of the language runtime \eg the runtime table of symbols or its threads. The runtime representation that outputs this process is made of a graph of objects \ie the classes, methods, threads and other objects that allow programs to run.
 
-Following those principles, we developed a bootstrap architecture for an object-oriented language based on \Vtt~(Figure \ref{fig:bootstrapping_overview}). This architecture presents three explicit components decouple the initialization of the language runtime from the \VM initialization so we can define different languages on top of the same \VM. Additionally we can modify the language runtime using the abstractions and tools of the high-level language.
+\section{Bootstrapping without \Vtt}
+
+We developed a first prototype of a bootstrap process without the support of \Vtt's infrastructure~\cite{Poli14c}. This prototype version was successful to generate different application runtimes while presenting some limitations. With the absence of object spaces, the two application runtimes (the one under construction and the one constructing it) share the same application runtime. Thus, the bootstrapped application runtime cannot use its own version of special classes as they are not recognized by the \VM. For example, Figure \ref{fig:bootstrap_step4} shows the state of our bootstrap containing already the classes \ct{Point}, \ct{Rectangle} and the method \ct{Point>>corner:}. This method is an instance of the \ct{CompiledMethod} of the source runtime because the Virtual Machine does not support multiple versions of this class.
+This new method also refers to the class \ct{Rectangle}, for which an \ct{Association} is built.
+The association is kept as an instance of the source runtime also.
+However, it references to the \ct{Rectangle} class in the new environment.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.9\linewidth]{bootstrap_step4}
+\caption{State of method literal resolution in the initial bootstrap.\label{fig:bootstrap_step4}}
+\end{center}
+\end{figure}
+
+This problem is present for every object required by the \VM's execution model, including most of literal objects~(nil, true, false, strings and numbers), causing that the object graphs of both runtime systems end up mixed.
+In this first bootstrap implementation we solve these limitations with the introduction of an extra serialization step at the end of the bootstrap.
+This step provides the possibility to swap incorrect references with the right ones during the serialization graph traversal.
+However, this approach's main limitation is that it prevents us to use the system before the serialization because it may lead to undesired side effects due to the incorrect references.
+In other words, we cannot use and test completely the bootstrapped system before its serialization.
+
+\section{Bootstrapping with \Vtt}
+
+Following those principles, we developed a bootstrap architecture for an object-oriented language based on \Vtt~(Figure \ref{fig:bootstrapping_overview}). This architecture presents three explicit components that decouple the initialization of the language runtime from the \VM initialization so we can define different languages on top of the same \VM. Additionally we can modify the language runtime using the abstractions and tools of the high-level language.
 
 \begin{description}
 \item[Language self-description.] The code that defines the initialization of the language runtime is extracted and expressed in the same language it defines. This self-description~(from now on the \emph{language definition}) contains the collection of elements that will be created to define the language and how to build them. Thus, during the language initialization we can benefit from the abstractions and tools of the language we are defining.
