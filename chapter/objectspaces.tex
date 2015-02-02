@@ -33,7 +33,7 @@ This chapter focuses on the model of our solution and presents its core ideas. T
 
 \section{\Vtt Architecture} \label{sec:virtualization_overview}
 
-\Vtt presents an architecture where multiple application runtimes can run on the same process independently. They do not share any \VM or language state \ie each one has its own interpreter, stack, classes and objects. In this setting, a virtualized application runtime is an application runtime that is monitored by another application runtime. The application runtime that takes the role of controlling the virtualized runtime is the hypervisor runtime. The hypervisor runtime is a full-fledged application runtime, providing us with the expression power and abstractions of a high-level language to express our language hypervisor. The hypervisor runtime includes a first-class representation of an \emph{object space} and \emph{runtime hypervisor}. The first-class object space represents the virtualized runtime and provides operations for its manipulation. A first-class runtime hypervisor object is the client of such object space implementing a particular manipulation on it \eg runtime update or failure detection. Figure \ref{fig:objectSpaceOverview_architecture} provides an overview of the \Vtt's architecture.
+\Vtt presents an architecture where multiple application runtimes can run on the same process independently. They do not share any \VM or language state \ie each one has its own interpreter, stack, classes and objects. In this setting, a virtualized application runtime is an application runtime that is monitored by another application runtime. The application runtime that takes the role of controlling the virtualized runtime is the hypervisor runtime. The hypervisor runtime is a full-fledged application runtime, providing us with the expression power and abstractions of a high-level language to express our runtime hypervisor. The hypervisor runtime includes a first-class representation of an \emph{object space} and \emph{runtime hypervisor}. The first-class object space represents the virtualized runtime and provides operations for its manipulation. A first-class runtime hypervisor object is the client of such object space implementing a particular manipulation on it \eg runtime update or failure detection. Figure \ref{fig:objectSpaceOverview_architecture} provides an overview of the \Vtt's architecture.
 
 \begin{figure}[htb]
 \begin{center}
@@ -179,7 +179,7 @@ ObjectSpace {
 
 %Our implementation presents an execution cycle of 200ms that allows us to have fine grained control while the virtualized application has still place to run. We use as suspension points backjumps found in the executed bytecode and message sends. In such a way, we ensure that the execution stack is in a consistent state after it is interrupted.
 
-Then, our runtime hypervisor class hierarchy presents four basic methods. First, the \ct{run} template method implements the basics of the hypervision cycle: it resumes the execution of the virtual runtime inside a loop. Two methods~(\ct{before} and \ct{after}) provide hooks for the specific hypervisor implementations. Figure \ref{fig:hypervisors} shows a class hierarchy example and code with two sketched runtime hypervisors. A \ct{NullHypervisor} allows the virtualized runtime to run without any intervention. The \ct{UpdateHypervisor} instead checks the existence of a file with updates on every cycle.
+Then, our runtime hypervisor class hierarchy presents four basic methods. First, the \ct{run} template method implements the basics of the hypervision cycle: it resumes the execution of the virtualized runtime inside a loop. Two methods~(\ct{before} and \ct{after}) provide hooks for the specific hypervisor implementations. Figure \ref{fig:hypervisors} shows a class hierarchy example and code with two sketched runtime hypervisors. A \ct{NullHypervisor} allows the virtualized runtime to run without any intervention. The \ct{UpdateHypervisor} instead checks the existence of a file with updates on every cycle.
 
 \begin{code}
 Hypervisor >> run
@@ -215,19 +215,43 @@ UpdateHypervisor >> checkForUpdate
 
 \section{Cross-Runtime Communication} \label{sec:communication}\label{sec:isolation}
 
-A runtime hypervisor may require to apply some operation in a virtualized runtime that would be tougher through direct object manipulation with mirrors. Let's take as an example a virtualized application that uses a particular logging library. In the context of that application, disabling logging would mean to execute the following statement:
+A runtime hypervisor may require to apply some operation in a virtualized runtime that would be more difficult through direct object manipulation with mirrors. Let's take as an example a virtualized application that uses a particular logging library. In the context of that application, disabling logging would mean to execute the following statement:
 
 \begin{code}
 Logger disable.
 \end{code}
 
-However, doing the same through our abstract layer of mirrors would mean (a) to replicate the behavior of the \ct{disable} method inside the hypervisor and (b) to couple it to the internals of such a logging library. Thus, a language hypervisor may benefit from the execution of an arbitrary expression or statement within the scope of the virtualized runtime. For example, enabling or disabling a logger from the virtualized application can be easily achieved through executing the following statement in the language hypervisor instead of manually modifying the state of the logger objects:
+And the code invoked should be:
+
+\begin{code}
+Logger class>>disable
+	self uniqueInstance disable
+	
+Logger>>disable
+	enabled := false
+\end{code}
+
+However, doing the same through our abstract layer of mirrors presents the following drawbacks (a) to replicate the behavior of the \ct{disable} method inside the hypervisor and (b) to couple it to the internals of such a logging library. 
+
+\begin{code}
+OurHypervisor>>disableLogging
+	logger := objectSpace getClass: #Logger.
+
+	"the logger is a singleton"
+	"in a class variable named uniqueInstance"
+	loggerInstance := logger classVariablesAt: #UniqueInstance.
+
+	"The enabled instance variable is the first"
+	loggerInstange instanceVariableAt: 1 put: false.
+\end{code}
+
+Thus, a runtime hypervisor may benefit from the execution of an arbitrary expression or statement within the scope of the virtualized runtime. For example, enabling or disabling a logger from the virtualized application can be easily achieved through executing the following statement in the runtime hypervisor instead of manually modifying the state of the logger objects:
 
 \begin{code}
 objectSpace execute: [ Logger disable ].
 \end{code}
 
-To achieve this kind of communication, we observe the following drawbacks in using the plain \VM's message-send mechanism. 
+To achieve this kind of communication, we observe the following challenges in using a plain \VM's message-send mechanism with our no sharing strategy.
 
 \begin{description}
 
@@ -236,10 +260,10 @@ To achieve this kind of communication, we observe the following drawbacks in usi
 \begin{figure}[ht]
 \center
 \includegraphics[width=.9\linewidth]{cross_runtime_lookup}
-\caption{\textbf{Failing Cross-Runtime Method Lookup.} The language hypervisor sends the \ct{size} message to an array in the virtual runtime. This message-send signature is the hypervisor runtime's \ct{size} symbol. The \ct{size} method exists but its signature has a different \ct{size} symbol. Both symbols are equals but not identical, and thus the lookup fails.\label{fig:cross_runtime_lookup}}
+\caption{\textbf{Failing Cross-Runtime Method Lookup.} The runtime hypervisor sends the \ct{size} message to an array in the virtualized runtime. This message-send signature is the hypervisor runtime's \ct{size} symbol. The \ct{size} method exists but its signature has a different \ct{size} symbol. Both symbols are equals but not identical, and thus the lookup fails.\label{fig:cross_runtime_lookup}}
 \end{figure}
 
-\item[Exceptions and Stack.] A cross-runtime method-lookup succeeds if we modify the language hypervisor message-send to contain the right symbol from the virtualized runtime. In such case, the execution stack contains a mixture of activations that belong to the hypervisor and virtualized runtimes. This poses a problem under the presence of techniques that traverse the execution stack indiscriminately, such as the exceptions or stack manipulation techniques such as Smalltalk's \ct{thisContext} special variable. The presence of such elements may leak object references from a runtime to another, leaving them in inconsistent state~(Figure \ref{fig:mixed_stack}).
+\item[Exceptions and Stack.] A cross-runtime method-lookup succeeds if we modify the runtime hypervisor message-send to contain the right symbol from the virtualized runtime. In such case, the execution stack contains a mixture of activations that belong to the hypervisor and virtualized runtimes. This poses a problem under the presence of techniques that traverse the execution stack indiscriminately, such as the exceptions or stack manipulation techniques such as Smalltalk's \ct{thisContext} special variable. The presence of such elements may leak object references from a runtime to another, leaving them in inconsistent state~(Figure \ref{fig:mixed_stack}) \gp{cite some paper like j kernel on exceptions leaking references}.
 
 \begin{figure}[ht]
 \center
@@ -249,7 +273,7 @@ To achieve this kind of communication, we observe the following drawbacks in usi
 
 \end{description}
 
-To overcome this problems we base the cross-runtime communication on \emph{process injection}. We create a new process/thread inside the virtualized runtime containing the expression to execute. The new process is installed in the virtualized runtime and executed in cycles until it is finished. Once finished we can access the result of the expression through a mirror. The objects that conform the message-send signature and other literals~(\eg strings, numbers) are translated from their representation in the hypervisor runtime to their corresponding representation in the virtualized runtime. Global object references such as classes are mapped to their corresponding references in the virtualized runtime. Non-global non-literal objects can be specified explicitly as an argument:
+To overcome these problems we base the cross-runtime communication on \emph{process injection}. We create a new process/thread inside the virtualized runtime containing the expression to execute. The new process is installed in the virtualized runtime and executed in cycles until it is finished. Once finished we can access the result of the expression through a mirror. The objects that conform the message-send signature and other literals~(\eg strings, numbers) are translated from their representation in the hypervisor runtime to their corresponding representation in the virtualized runtime. Global object references such as classes are mapped to their corresponding references in the virtualized runtime. Non-global non-literal objects can be specified explicitly as an argument:
 
 \begin{code}
 objectSpace
@@ -261,7 +285,15 @@ This solution for cross-runtime communication solves both problems observed befo
 
 \section{Virtual Execution through Interpretation} \label{sec:interpretation}
 
-\Vtt allows a \emph{virtual execution} mode through interpretation. Virtual execution takes place by doing code interpretation of either abstract syntax trees~(ASTs) or bytecode. In \Vtt a virtual code interpreter is a first-class entity that interprets code inside a virtualized runtime and has full control on the interpreted code. The virtual interpreter comes in handy for those cases when the virtualized runtime is in an incoherent or buggy state and it cannot execute code by itself. In those cases, the virtual interpreter can be used to fix the problem in the virtualized runtime before it can continue its own execution.
+\Vtt allows a \emph{virtual execution} mode through interpretation. Virtual execution takes place by doing code interpretation of either abstract syntax trees~(ASTs) or bytecode. In \Vtt a virtual code interpreter is a first-class entity that interprets code inside a virtualized runtime and has full control on the interpreted code. The virtual interpreter is useful in cases where the virtualized runtime is in an incoherent or buggy state and it cannot execute code by itself. In those cases, the virtual interpreter can be used to fix the problem in the virtualized runtime before it can continue its own execution. For example, we can use the virtual code interpreter to replace a broken method in the basic class hierarchy:
+
+\begin{code}
+"newMethod is a method that fixes the bug"
+interpreter := VirtualCodeInterpreter newOn: anObjectSpace.
+interpreter
+	execute: 'Object methodDictionary at: #brokenSelector put: newMethod'
+	with: newMethod.
+\end{code}
 
 The virtual code interpreter has three main points of communication with an object space:
 
@@ -290,7 +322,7 @@ VirtualCodeInterpreter >> lookupSelector: selector
     ]
 \end{code}
 
-\item[Primitive Execution.] In the leafs of the execution, message-sends invoke the language primitives. These language primitives are executed through the object space interface.
+\item[Primitive Execution.] In the leaves of the execution, message-sends invoke the language primitives. These language primitives are executed through the object space interface.
 
 \begin{code}
 VirtualCodeInterpreter >> invokePrimitiveMethod: aMethod
@@ -315,12 +347,12 @@ TracingCodeInterpreter >> writeInstanceVariableNumber: index with: aMirror
 % =============================================================================
 \section{Conclusion and Summary}
 
-\Vtt presents an architecture where several language runtimes can share the same process. A virtualized language runtime is subject of monitoring and manipulation from another language runtime, namely the hypervisor runtime. The hypervisor runtime contains a first class representation of the virtualized runtime, an object space. The object space exposes a clear interface to safely access and modify a language runtime. This interface includes operations to configure the virtualized language runtime and operations to modify particular objects from it. The latter is encapsulated in mirror objects.
+\Vtt presents an architecture where several application runtimes can share the same process. A virtualized application runtime is subject of monitoring and manipulation from another application runtime, namely the hypervisor runtime. The hypervisor runtime contains a first class representation of the virtualized runtime, an object space. The object space exposes a clear interface to safely access and modify an application runtime. This interface includes operations to configure the virtualized application runtime and operations to modify particular objects from it. The latter is encapsulated in mirror objects.
 
-The execution of the virtualized runtime is organized in cycles. In between cycles, a first class language hypervisor can perform an operation and then resume the virtualized runtime's execution. We ensure that the state of the virtualized runtime keeps its coherence by only suspending it in safe suspension points.
+The execution of the virtualized runtime is organized in cycles. In between cycles, a first-class runtime hypervisor can perform an operation and then resume the virtualized runtime's execution. We ensure that the state of the virtualized runtime keeps its coherence by only suspending it in safe suspension points.
 
-Besides the direct manipulation through mirrors, a language hypervisor can perform cross-runtime message-sends for a richer communication using process injection. Process injection prevents failures in the method lookup and avoids stack traversing techniques such as exception to leak cross-runtime references. Additionally, a virtual code interpreter allows us to execute code on the virtualized runtime with full intercession. A virtual code interpreter is a first class entity, allowing us to easily specialize and change it.
+Besides the direct manipulation through mirrors, a runtime hypervisor can perform cross-runtime message-sends for a richer communication using process injection. Process injection prevents failures in the method lookup and avoids stack traversing techniques such as exception to leak cross-runtime references. Additionally, a virtual code interpreter allows us to execute code on the virtualized runtime with full intercession. A virtual code interpreter is a first class entity, allowing us to easily specialize and change it.
 
-In following chapters we will show how this infrastructure supports the evolution of a programming language runtime in two different scenarios. First, the recreation of a language runtime from scratch using a bootstrap process. Second, an application tailoring technique that specialized an application to contain only elements that are used during runtime.
+In following chapters we will show how this infrastructure supports the evolution of a programming application runtime in two different scenarios. First, the recreation of a application runtime using an explicit bootstrap process. Second, an application tailoring technique that specializes an application runtime to contain only elements that are used during runtime.
 
 \input{chapter-footer.tex}
