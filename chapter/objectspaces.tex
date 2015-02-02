@@ -8,7 +8,7 @@
 \introduction
 % ===========================================================================
 
-This chapter presents a Virtualization Application Runtime infrastructure, namely \VTT~(cf. Section \ref{sec:virtualization_overview}). In \VTT, an application runtime is virtualized by residing inside a controlled space, namely an \emph{object space}, that encapsulates the access to it. A first-class representation of this object space provides a high-level API to easily query and manipulate the application runtime~(cf. Section \ref{sec:object_space}). The client of an object space is a \emph{runtime hypervisor}~(cf. Section\ref{sec:hypervisor}).
+This chapter presents the model of our Virtualization Application Runtime infrastructure, namely \VTT~(cf. Section \ref{sec:virtualization_overview}). In \VTT, an application runtime is virtualized by residing inside a controlled space, namely an \emph{object space}, that encapsulates the access to it. A first-class representation of this object space provides a high-level API to easily query and manipulate the application runtime~(cf. Section \ref{sec:object_space}). The client of an object space is a \emph{runtime hypervisor}~(cf. Section\ref{sec:hypervisor}).
 
 \begin{figure}[htb]
 \begin{center}
@@ -21,6 +21,8 @@ The runtime hypervisor runs in the same process than the virtualized runtime to 
 
 A first class runtime hypervisor manipulates the virtualized runtime through an object space. This hypervisor can also perform cross-runtime message-sends by injecting processes, as the direct message-send \VM mechanism would fail the method lookup~(Section \ref{sec:isolation}).
 Finally, a more granular control can be made through virtual execution. A virtual code interpreter gives us full intercession power over the execution of the virtualized application for usages such as tracing or debugging~(Section \ref{sec:interpretation}).
+
+This chapter focuses on the model of our solution and presents its core ideas. The following \chapref{prototype} will present the particular implementation details of our prototype implementation of \Vtt on Pharo.
 
 %On one side, this means that the hypervisor can freely manipulate the virtualized language runtime without affecting itself. On the other side, this no-sharing strategy poses an extra effort in communication~(cf. Section \emph{sec:isolation}) mainly in object marshaling.
 
@@ -48,9 +50,9 @@ An object space manipulates the virtualized runtime directly, changing the appli
 \item[Application independence.] Our solution does not depend on the particular application inside the virtualized runtime. Different runtime hypervisors can be written for different use cases, including application specific and general ones. The limitation of this approach is, however, its dependance on the \VM imposed execution model.
 \end{description}
 
-\section{Object Spaces: First-class Language Runtimes} \label{sec:object_space}
+\section{Object Spaces: First-class Application Runtimes} \label{sec:object_space}
 
-An object space is a first-class representation of an object oriented language runtime system, meant for its manipulation and control. An object space encapsulates a language runtime and provides with a clear and explicit interface to manipulate it. This interface is splitted in two different objects: an \ct{objectSpace} object provides with general runtime operations while mirror objects~\cite{Brac04b} provide with operations to manipulate individual objects~(Figure \ref{fig:objectSpaceMirrors}). Specific mirrors, such as the \ct{ClassMirror}, are meant for the manipulation of elements that have a different object-format or runtime representation.
+An object space is a first-class representation of an object oriented application runtime, meant for its manipulation and control. An object space encapsulates an application runtime and provides with a clear and explicit interface to manipulate it. This interface is split in two different kind of objects: an \ct{objectSpace} object provides with general operations on the virtualized runtime while mirror objects~\cite{Brac04b} provide with operations to manipulate individual objects that reside inside it~(Figure \ref{fig:objectSpaceMirrors}). Specific mirrors, such as the \ct{ClassMirror}, are meant for the manipulation of elements that have a different object-format or runtime representation.
 
 \begin{figure}[htb]
 \begin{center}
@@ -59,7 +61,7 @@ An object space is a first-class representation of an object oriented language r
 \end{center}
 \end{figure}
 
-These objects make explicit through the operations they expose two important parts of a \VM interface, explained in detail in the following subsections. First, what are the elements of the language that should be initialized so the \VM can run a program. Second, what are the operations that take part at runtime to manipulate runtime structures such as objects, classes, threads, the execution stack.
+These objects make explicit through the operations they expose two important parts of a \VM-language interface, explained in detail in the following subsections. First, The \VM setup interface exposes the elements of the language that should be initialized so it can run a program. Second, the runtime manipulation interface exposes operations that take part at runtime to manipulate runtime structures such as objects, classes, threads, the execution stack.
 
 \subsection{\VM Setup Interface}
 
@@ -69,14 +71,14 @@ This configuration is usually done only during the language initialization, befo
 The \VM setup interface allows us to configure the following kind of elements:
 
 \begin{description}
-\item[Well-known objects of the language.] Objects such as \ct{nil}, \ct{true} or \ct{false} may be needed at runtime for different purposes. The garbage collection can insert a reference to \ct{nil} in a weak reference. Particular objects may be held by the \VM as prototypes to speed-up instantiation time of commonly used objects.
-\item[Special classes.] Special classes are those needed by the \VM at runtime to make safety checks, create instances or handle special cases such as immediate objects. For example, when mutating a \ct{String} object the Pharo \VM checks that the introduced object is a \ct{Character} object, to avoid putting the \ct{String} into an invalid state. Also, the \VM requires to know those classes that it instantiates instead of being created through the \ct{new} message inside a program. For example, the \VM instantiates a \ct{Block} object when it founds a block expression at runtime. Finally, immediate objects are objects that are encoded inside an object reference instead of occupying a place inside the heap. Immediate objects do not include a reference to their class and therefore the \VM needs to know how to map each particular reference encoding to its corresponding class to perform the method-lookup. 
-\item[Special messages.] Special messages are callbacks that the \VM will invoke into the language to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(the equivalent to \eg Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will send a \ct{doesNotUnderstand} message to the receiver object and let the user program decide what to do in such a case.
+\item[Well-known objects of the language.] Objects such as \ct{nil}, \ct{true} or \ct{false} are needed at runtime for different purposes. For example, the garbage collection needs \ct{nil} at runtime to update weak references. Other particular objects may be held by the \VM as prototypes to speed-up instantiation time of commonly used objects.
+\item[Special classes.] Special classes are those needed by the \VM at runtime to make safety checks, create instances or handle special cases such as immediate objects. For example, when mutating a \ct{String} object the Pharo \VM checks that the introduced object is a \ct{Character} object, to avoid putting the \ct{String} into an invalid state. Also, the \VM requires references to those classes that it instantiates~(instead of being created through the \ct{new} message in program). For example, the Pharo \VM instantiates a \ct{Block} object when it founds the bytecodes that correspond a block expression at runtime. Finally, immediate objects are objects that are encoded inside an object reference instead of occupying a place inside the heap. Immediate objects do not include a reference to their class and therefore the \VM needs to know how to map each particular reference encoding to its corresponding class to perform the method-lookup. 
+\item[Special messages.] Special messages are callbacks that the \VM will invoke into the application to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(the equivalent to \eg Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will send a \ct{doesNotUnderstand} message to the receiver object and let the user program decide what to do in such a case.
 \end{description}
 
 This \VM setup interface avoids to hardcode particular knowledge of a language inside the \VM. This gives us the possibility to easily change particular language internals such as renaming special messages or changing the class hierarchy of special classes without. In the extreme, we could port another language to this VM, as long as they share similar execution semantics \ie the \VM execution model is compatible with the given language.
 
-Following, we present an example of such an interface for the Pharo language. The \ct{objectSpace} object contains the \VM setup interface.
+Following, we present an example of such an interface for the Pharo language. The \ct{objectSpace} object contains the \VM setup interface. \gp{how should I write such an interface in a smalltalkish way?}
 
 \begin{code}
 ObjectSpace {
