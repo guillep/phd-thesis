@@ -73,7 +73,7 @@ Finally, the window time control was implemented reusing the existing process pr
 
 \section{Mirror Implementation}\label{sec:implementation_mirrors}
 
-Our mirror implementation manipulate the objects inside an object space by using already Pharo \VM primitives. A primitive in Pharo is a function executed at the \VM level. To execute a primitive from the language, this primitive should be available as a method. Then, we have to send the corresponding message to the a object subject of the primitive:
+Our mirror implementation manipulate the objects inside an object space by using already Pharo \VM primitives. A primitive in Pharo is a function executed at the \VM level. To execute a primitive from the language, this primitive should be available as a method. Then, we have to send the corresponding message to the object subject of the primitive:
 
 \begin{code}
 Array >> size [
@@ -89,7 +89,7 @@ We want however, to avoid cross-runtime message-sends, we bypass the message-sen
 	\item \textbf{Execute a primitive on an object.} It is possible to send a message to an object, so a primitive is executed on the receiver. This primitive is implemented in Pharo's \ct{ProtoObject} class as \textbf{\ct{tryPrimitive:withArgs:}} with number 118 and receives as argument the number of the primitive and an array or arguments.
 \end{description}
 
-We use primitive \ct{receiver:withArguments:executeMethod:} to execute the primitive method \ct{tryPrimitive:withArgs:} on the object from the guest image, avoiding the \emph{cross image-message send} and executing directly the primitive on the given object.
+We use primitive \ct{receiver:withArguments:executeMethod:} to execute the primitive method \ct{tryPrimitive:withArgs:} on the object from the virtualized runtime, avoiding the \emph{cross image-message send} and executing directly the primitive on the given object.
 
 \begin{code}
 CompiledMethod
@@ -125,7 +125,7 @@ In \Vtt, all objects belonging to the different language runtimes share a unique
 \end{center}
 \end{figure}
 
-This decision is funded on minimizing the changes made to the virtual machine, because of its complex state of the art. Our decision, while easing the development of our solution, has the following impact on it:
+This decision is funded on minimizing the changes made to the virtual machine, to minimize the complexity in our prototype implementation. Our decision, while easing the development of our solution, has the following impact on it:
 
 \begin{description}
 	\item[Reuse memory handling mechanisms.] We use the same existing memory infrastructure as when \Vtt is not used. Existing mechanisms for allocating objects or growing the object memory when a limit is reached can be reused transparently by our implementation. 
@@ -193,7 +193,7 @@ This decision is funded on minimizing the changes made to the virtual machine, b
 
 \section{Benchmarks}
 
-To verify the feasibility of this model, we built our \Vtt prototype in the Pharo language. Our prototype includes the \Vtt class libraries and modification on the JIT-less version of the Pharo \VM.
+To verify the feasibility of this model, we built our \Vtt prototype in the Pharo language. Our prototype includes the \Vtt class libraries and modification f the JIT-less version of the Pharo \VM.
 We benchmarked the virtualized execution of our prototype implementation using a subset of the computer language benchmarks game\footnote{\url{http://benchmarksgame.alioth.debian.org/}}.
 
 We executed each of these benchmarks ten times in two different setups. Results are found in Table \ref{tb:benchmarks}. We first benchmarked the Vanilla JIT-less Pharo \VM without any of our changes, to make it a fair base of comparison with our JIT-less solution. Following, we benchmarked our solution using a null hypervisor that performs no action. This case is meant to measure the execution cycle overhead.
@@ -244,6 +244,7 @@ We executed each of these benchmarks ten times in two different setups. Results 
 
 These results show that our prototype implementation poses an overhead between 0-9\% for the majority of these benchmarks. Special cases are Mandelbrot~(16\% overhead), ReverseComplement~(26\% overhead) and Fasta~(20\% overhead).
 There is however room for improvements due to the absence of a JIT compiler, shared garbage collection and the single threaded nature of the system.
+For example, the incoming version of the Pharo \VM~(Spur) features segmented memory, and an improved garbage collector, leaving an open door to host object spaces in several memory regions without affecting others. 
 \gp{not sure what else put in here, since I cannot exactly explain why the overhead is there. One is the shared object memory hence shared GC hence biggest GC time}
 
 
@@ -259,9 +260,9 @@ However, these assumptions that are broken by \Vtt, as it introduces more than o
 
 \subsection{Plugin and Native Libraries State}
 
-Pharo \VM allows to access resources from outside the language runtime through native libraries and \VM plugins. A \VM plugin is a native library that satisfies a particular interfaces to communicate with the \VM. A native library may keep its own state and may not be thought to be loaded several times in the same process. The same problem appears in \VM plugins, which are often developed assuming the existence of only one language runtime so their state is global for the whole \VM.
+Pharo \VM allows one to access resources from outside the language runtime through native libraries and \VM plugins. A \VM plugin is a native library that satisfies a particular interface to communicate with the \VM. A native library may keep its own state and may not be thought to be loaded several times in the same process. The same problem appears in \VM plugins, which are often developed assuming the existence of only one application runtime so their state is global for the whole \VM.
 
-Our prototype was developed around the modification of the language runtime. As such, our \Vtt prototype does not modify each \VM plugins, nor it handles the case of loading multiple versions of the same native library from different runtimes. The usage of some of these elements in \Vtt may not be fully working.
+The main \VM modifications we made in our prototype to support the basic execution of several application runtimes do not include modification on \VM plugins, nor it handles the case of loading multiple versions of the same native library from different runtimes. The usage of some of these elements in \Vtt may not be fully working.
 
 \subsection{Finalization of External Resources}
 
