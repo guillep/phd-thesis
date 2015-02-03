@@ -655,9 +655,29 @@ In this context of dynamically-typed and object-oriented programs that may use r
 
 \begin{description}
 
-\item[Language Runtime Unused Code Units.] As the core point of this thesis, we would like to extract not only application code but also code that belongs to the language base libraries, including its core meta-model.
+\item[Language Runtime Unused Code Units.] As the core point of this thesis, we would like to extract not only application code but also code that belongs to the language base libraries, including its core meta-model. For example, if metaclasses are not used in a program and the \VM execution model does not require them to exist, we could safely remove them. This same could apply to classes and metaclasses that are part of the base-language libraries.
 
 \item[Dynamic typing.] Dynamically-typed languages cannot benefit from the most powerful static analysis due to the absence of type annotations. Name-based static analyses~(static analyses that build a simpler call graph based only on method names) can be used on them, but are not as efficient. Static techniques to detect code unit usage, such as call-graph analysis, need the support of more dynamic techniques \eg tracking runtime information, following the application's execution flow, or performing symbolic execution.
+
+For example, an approach just following method names would not eliminate the \ct{asString} method from the \ct{Object} or \ct{String} classes in the following code, as it cannot predict that only integer classes are used in the program.
+
+\begin{code}
+MainApp >> start
+    100 print
+
+Integer >> asString
+    "the code to create a string from an integer"
+    ...
+
+Object >> print
+    stdout nextPutAll: self asString
+
+!\unusedcode{Object >> asString}!
+!\unusedcode{~~~\textasciicircum self class name}!
+
+!\unusedcode{String >> asString}!
+!\unusedcode{~~~\textasciicircum self}!
+\end{code}
 
 \item[Polymorphism and inheritance.] Polymorphism in object-oriented languages allows a code unit to treat objects of different concrete types in the same way as soon as they share a common interface. Inheritance plays a similar role: any class can extend another class and provide different behavior while sharing a common API.
 As a consequence, both polymorphism and inheritance make the behavior of a program more difficult to predict by just statically analyzing its code units~\cite{Taen89a}.
@@ -668,8 +688,27 @@ These configurations are usually present in configuration files looked up dynami
 Based on these configurations, the dependency injection pattern is usually used to dynamically set up the application. 
 This recurrent and standard process for configuring applications implies that static analysis will be inefficient to detect used code units without library-specific knowledge.
 
+For example, an application configuration can be changed at any moment after deployment to use different code:
+
+\begin{code}
+MainApp >> start
+    userService := self configuration classById: #UserService.
+    users := userClass new getUsers.
+    ...
+
+"XML with the application configuration"
+<appContext>
+    <classes id="UserService" class="LocalUserRepository" />
+</appContext>
+
+"Use this one if using a remote repository"   
+<appContext>
+    <classes id="UserService" class="RemoteRestUserRepository" />
+</appContext>
+\end{code}
+
 \item[Reflection.] Reflection makes static analysis inoperative by allowing an application to execute unanticipated pieces of code. 
-Any \ct{String} resulting from a program execution or program configuration can denote a message send\footnote{We refer method invocations as message sends because they represent better from our understanding the dynamic property of the invocation.}, the name of a class to be instantiated, or even a script to be executed. Reflection is indeed important to cover, since it is a broadly used tool in industrial applications with object relational mappers such as Hibernate or Glorp and web frameworks such as Ruby On Rails, Struts or Seaside.
+Any \ct{String} resulting from a program execution or program configuration can denote a message send\footnote{We refer method invocations as message sends because they represent better from our understanding the dynamic property of the invocation.}, the name of a class to be instantiated, or even a script to be executed. Reflection is indeed important to cover, since it is a broadly used tool in industrial applications with object relational mappers such as Hibernate\footnote{\url{http://hibernate.org/}} or Glorp\footnote{\url{https://sites.google.com/site/glorpsite/}} and web frameworks such as Ruby On Rails\footnote{\url{http://rubyonrails.org/}}, Struts\footnote{\url{https://struts.apache.org/}} or Seaside\footnote{\url{http://www.seaside.st/}}.
 \end{description}
 
 \section{Evaluation Criteria}\label{sec:tailoring_criteria}
