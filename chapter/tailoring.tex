@@ -547,9 +547,9 @@ In this section we focus on the evaluation of Tornado that is summarized in the 
 \begin{table}[ht]
  \small
  	\centering
- 	\begin{tabular}{|c|cccc>{\columncolor[gray]{0.8}}c|}
+ 	\begin{tabular}{ccccc>{\columncolor[gray]{0.8}}c}
 	
-\hline
+\toprule
  			& \textbf{Dedicated}
  			& \textbf{Static}
 			& \textbf{Hybrid}
@@ -560,35 +560,35 @@ In this section we focus on the evaluation of Tornado that is summarized in the 
 			& \textbf{Analysis}
  			& \textbf{Analysis}
  			& \\
-  \cmidrule(r){2-6}
-% \midrule
+
+\midrule
 
 		Base Libraries
  			& + & + & + & + & +\\
-		\hline
+\midrule
 		Third-Party
 		& & & & & \\Libraries
  			& - & + & + & + & +\\
-		\hline
+\midrule
 		Legacy Code
  			& - & + & + & + & + \\
-		\hline
+\midrule
 		Reflection Support
  			& + & - & - & + & + \\
-		\hline
+\midrule
 		Dedicated Deploy
 			& & & & & \\
 		Infrastructure
  			& - & + & - & - & + \\
-		\hline
+\midrule
 		Flexibility
  			& - & - & - & - & +  \\
-		\hline
+\midrule
 		Ensures
 		& & & & & \\
 		Completeness
  			& - & - & - & - & -  \\
- 	 \hline
+\bottomrule
  	\end{tabular}
 	\includegraphics[width=.9\linewidth]{criteria_overview}
  	\caption{Evaluation criteria applied to related work on deployment code unit tailoring techniques}

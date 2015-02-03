@@ -7,7 +7,7 @@
 	<key>ApplicationVersion</key>
 	<array>
 		<string>com.omnigroup.OmniGrafflePro</string>
-		<string>139.17.0.185490</string>
+		<string>139.18.0.187838</string>
 	</array>
 	<key>AutoAdjust</key>
 	<true/>
@@ -51,6 +51,71 @@
 	<integer>8</integer>
 	<key>GraphicsList</key>
 	<array>
+		<dict>
+			<key>AllowConnections</key>
+			<string>NO</string>
+			<key>Bounds</key>
+			<string>{{338.13307952880859, 488.03936767578125}, {140.88188171386719, 85.03936767578125}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Color</key>
+				<dict>
+					<key>b</key>
+					<string>0.0542092</string>
+					<key>g</key>
+					<string>0.0542092</string>
+					<key>r</key>
+					<string>0.0542092</string>
+				</dict>
+				<key>Font</key>
+				<string>Courier-Bold</string>
+				<key>Size</key>
+				<real>18</real>
+			</dict>
+			<key>ID</key>
+			<integer>129</integer>
+			<key>Shape</key>
+			<string>Rectangle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.698039</string>
+						<key>g</key>
+						<string>0.698039</string>
+						<key>r</key>
+						<string>0.698039</string>
+					</dict>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+					<key>Width</key>
+					<real>2</real>
+				</dict>
+			</dict>
+			<key>Text</key>
+			<dict>
+				<key>Text</key>
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
+{\colortbl;\red255\green255\blue255;\red14\green14\blue14;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
+
+\f0\b\fs36 \cf2 Base Level}</string>
+			</dict>
+		</dict>
 		<dict>
 			<key>Class</key>
 			<string>LineGraphic</string>
@@ -165,8 +230,8 @@
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -218,8 +283,8 @@
 						<key>Pad</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -227,420 +292,6 @@
 \i\b0 Version 2}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
-					</dict>
-				</dict>
-				<dict>
-					<key>AllowConnections</key>
-					<string>NO</string>
-					<key>Bounds</key>
-					<string>{{336.9998779296875, 488.03936767578125}, {141.59904479980469, 85.03936767578125}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>FontInfo</key>
-					<dict>
-						<key>Color</key>
-						<dict>
-							<key>b</key>
-							<string>0.0542092</string>
-							<key>g</key>
-							<string>0.0542092</string>
-							<key>r</key>
-							<string>0.0542092</string>
-						</dict>
-						<key>Font</key>
-						<string>Courier-Bold</string>
-						<key>Size</key>
-						<real>18</real>
-					</dict>
-					<key>ID</key>
-					<integer>125</integer>
-					<key>Shape</key>
-					<string>Rectangle</string>
-					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Color</key>
-							<dict>
-								<key>tiff</key>
-								<data>
-								TU0AKgAABAi2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv//////
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								//////+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv//////tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2////
-								//+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv//
-								////tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2//////+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv//////
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								//////+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv//////tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2////
-								//+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv//
-								////tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2//////+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv//////
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								//////+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2////
-								//+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb//////7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2//////+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								/////7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								//////+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/////
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2////
-								//+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb//////7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2//////+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								/////7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								//////+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/////
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2////
-								//+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb//////7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2//////+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								/////7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/////
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv//////AA4B
-								AAADAAAAAQAQ
-								AAABAQADAAAA
-								AQAQAAABAgAD
-								AAAABAAABLYB
-								AwADAAAAAQAB
-								AAABBgADAAAA
-								AQACAAABEQAE
-								AAAAAQAAAAgB
-								EgADAAAAAQAB
-								AAABFQADAAAA
-								AQAEAAABFgAD
-								AAAAAQAQAAAB
-								FwAEAAAAAQAA
-								BAABHAADAAAA
-								AQABAAABUgAD
-								AAAAAQABAAAB
-								UwADAAAABAAA
-								BL6HcwAHAAAH
-								qAAABMYAAAAA
-								AAgACAAIAAgA
-								AQABAAEAAQAA
-								B6hhcHBsAiAA
-								AG1udHJSR0Ig
-								WFlaIAfZAAIA
-								GQALABoAC2Fj
-								c3BBUFBMAAAA
-								AGFwcGwAAAAA
-								AAAAAAAAAAAA
-								AAAAAAD21gAB
-								AAAAANMtYXBw
-								bAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAC2Rlc2MA
-								AAEIAAAAb2Rz
-								Y20AAAF4AAAF
-								bGNwcnQAAAbk
-								AAAAOHd0cHQA
-								AAccAAAAFHJY
-								WVoAAAcwAAAA
-								FGdYWVoAAAdE
-								AAAAFGJYWVoA
-								AAdYAAAAFHJU
-								UkMAAAdsAAAA
-								DmNoYWQAAAd8
-								AAAALGJUUkMA
-								AAdsAAAADmdU
-								UkMAAAdsAAAA
-								DmRlc2MAAAAA
-								AAAAFEdlbmVy
-								aWMgUkdCIFBy
-								b2ZpbGUAAAAA
-								AAAAAAAAABRH
-								ZW5lcmljIFJH
-								QiBQcm9maWxl
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAABtbHVj
-								AAAAAAAAAB4A
-								AAAMc2tTSwAA
-								ACgAAAF4aHJI
-								UgAAACgAAAGg
-								Y2FFUwAAACQA
-								AAHIcHRCUgAA
-								ACYAAAHsdWtV
-								QQAAACoAAAIS
-								ZnJGVQAAACgA
-								AAI8emhUVwAA
-								ABYAAAJkaXRJ
-								VAAAACgAAAJ6
-								bmJOTwAAACYA
-								AAKia29LUgAA
-								ABYAAALIY3ND
-								WgAAACIAAALe
-								aGVJTAAAAB4A
-								AAMAZGVERQAA
-								ACwAAAMeaHVI
-								VQAAACgAAANK
-								c3ZTRQAAACYA
-								AAKiemhDTgAA
-								ABYAAANyamFK
-								UAAAABoAAAOI
-								cm9STwAAACQA
-								AAOiZWxHUgAA
-								ACIAAAPGcHRQ
-								TwAAACYAAAPo
-								bmxOTAAAACgA
-								AAQOZXNFUwAA
-								ACYAAAPodGhU
-								SAAAACQAAAQ2
-								dHJUUgAAACIA
-								AARaZmlGSQAA
-								ACgAAAR8cGxQ
-								TAAAACwAAASk
-								cnVSVQAAACIA
-								AATQYXJFRwAA
-								ACYAAATyZW5V
-								UwAAACYAAAUY
-								ZGFESwAAAC4A
-								AAU+AFYBYQBl
-								AG8AYgBlAGMA
-								bgD9ACAAUgBH
-								AEIAIABwAHIA
-								bwBmAGkAbABH
-								AGUAbgBlAHIA
-								aQENAGsAaQAg
-								AFIARwBCACAA
-								cAByAG8AZgBp
-								AGwAUABlAHIA
-								ZgBpAGwAIABS
-								AEcAQgAgAGcA
-								ZQBuAOgAcgBp
-								AGMAUABlAHIA
-								ZgBpAGwAIABS
-								AEcAQgAgAEcA
-								ZQBuAOkAcgBp
-								AGMAbwQXBDAE
-								MwQwBDsETAQ9
-								BDgEOQAgBD8E
-								QAQ+BEQEMAQ5
-								BDsAIABSAEcA
-								QgBQAHIAbwBm
-								AGkAbAAgAGcA
-								6QBuAOkAcgBp
-								AHEAdQBlACAA
-								UgBWAEKQGnUo
-								ACAAUgBHAEIA
-								IIJyX2ljz4/w
-								AFAAcgBvAGYA
-								aQBsAG8AIABS
-								AEcAQgAgAGcA
-								ZQBuAGUAcgBp
-								AGMAbwBHAGUA
-								bgBlAHIAaQBz
-								AGsAIABSAEcA
-								QgAtAHAAcgBv
-								AGYAaQBsx3y8
-								GAAgAFIARwBC
-								ACDVBLhc0wzH
-								fABPAGIAZQBj
-								AG4A/QAgAFIA
-								RwBCACAAcABy
-								AG8AZgBpAGwF
-								5AXoBdUF5AXZ
-								BdwAIABSAEcA
-								QgAgBdsF3AXc
-								BdkAQQBsAGwA
-								ZwBlAG0AZQBp
-								AG4AZQBzACAA
-								UgBHAEIALQBQ
-								AHIAbwBmAGkA
-								bADBAGwAdABh
-								AGwA4QBuAG8A
-								cwAgAFIARwBC
-								ACAAcAByAG8A
-								ZgBpAGxmbpAa
-								ACAAUgBHAEIA
-								IGPPj/Blh072
-								TgCCLAAgAFIA
-								RwBCACAw1zDt
-								MNUwoTCkMOsA
-								UAByAG8AZgBp
-								AGwAIABSAEcA
-								QgAgAGcAZQBu
-								AGUAcgBpAGMD
-								kwO1A70DuQO6
-								A8wAIAPAA8ED
-								vwPGA68DuwAg
-								AFIARwBCAFAA
-								ZQByAGYAaQBs
-								ACAAUgBHAEIA
-								IABnAGUAbgDp
-								AHIAaQBjAG8A
-								QQBsAGcAZQBt
-								AGUAZQBuACAA
-								UgBHAEIALQBw
-								AHIAbwBmAGkA
-								ZQBsDkIOGw4j
-								DkQOHw4lDkwA
-								IABSAEcAQgAg
-								DhcOMQ5IDicO
-								RA4bAEcAZQBu
-								AGUAbAAgAFIA
-								RwBCACAAUABy
-								AG8AZgBpAGwA
-								aQBZAGwAZQBp
-								AG4AZQBuACAA
-								UgBHAEIALQBw
-								AHIAbwBmAGkA
-								aQBsAGkAVQBu
-								AGkAdwBlAHIA
-								cwBhAGwAbgB5
-								ACAAcAByAG8A
-								ZgBpAGwAIABS
-								AEcAQgQeBDEE
-								SQQ4BDkAIAQ/
-								BEAEPgREBDgE
-								OwRMACAAUgBH
-								AEIGRQZEBkEA
-								IAYqBjkGMQZK
-								BkEAIABSAEcA
-								QgAgBicGRAY5
-								BicGRQBHAGUA
-								bgBlAHIAaQBj
-								ACAAUgBHAEIA
-								IABQAHIAbwBm
-								AGkAbABlAEcA
-								ZQBuAGUAcgBl
-								AGwAIABSAEcA
-								QgAtAGIAZQBz
-								AGsAcgBpAHYA
-								ZQBsAHMAZXRl
-								eHQAAAAAQ29w
-								eXJpZ2h0IDIw
-								MDcgQXBwbGUg
-								SW5jLiwgYWxs
-								IHJpZ2h0cyBy
-								ZXNlcnZlZC4A
-								WFlaIAAAAAAA
-								APNSAAEAAAAB
-								Fs9YWVogAAAA
-								AAAAdE0AAD3u
-								AAAD0FhZWiAA
-								AAAAAABadQAA
-								rHMAABc0WFla
-								IAAAAAAAACga
-								AAAVnwAAuDZj
-								dXJ2AAAAAAAA
-								AAEBzQAAc2Yz
-								MgAAAAAAAQxC
-								AAAF3v//8yYA
-								AAeSAAD9kf//
-								+6L///2jAAAD
-								3AAAwGw=
-								</data>
-							</dict>
-						</dict>
-						<key>shadow</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>Width</key>
-							<real>2</real>
-						</dict>
-					</dict>
-					<key>Text</key>
-					<dict>
-						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
-{\colortbl;\red255\green255\blue255;\red14\green14\blue14;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
-
-\f0\b\fs36 \cf2 Base Level}</string>
 					</dict>
 				</dict>
 			</array>
@@ -744,8 +395,8 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -792,8 +443,8 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -868,8 +519,8 @@
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
 
@@ -935,8 +586,8 @@ Change\
 								<key>Pad</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -999,8 +650,8 @@ Language Kernel\
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -1040,363 +691,12 @@ Language Kernel\
 								<dict>
 									<key>Color</key>
 									<dict>
-										<key>tiff</key>
-										<data>
-								TU0AKgAABAi2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv//////
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								//////+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv//////tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2////
-								//+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv//
-								////tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2//////+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv//////
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								//////+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv//////tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2////
-								//+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv//
-								////tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2//////+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv//////
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								//////+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2////
-								//+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb//////7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2//////+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								/////7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								//////+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/////
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2////
-								//+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb//////7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2//////+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								/////7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								//////+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/////
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2////
-								//+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb//////7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2//////+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								/////7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/tra2
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv+2trb/////
-								/7a2tv+2trb/
-								tra2/7a2tv+2
-								trb/tra2/7a2
-								tv//////AA4B
-								AAADAAAAAQAQ
-								AAABAQADAAAA
-								AQAQAAABAgAD
-								AAAABAAABLYB
-								AwADAAAAAQAB
-								AAABBgADAAAA
-								AQACAAABEQAE
-								AAAAAQAAAAgB
-								EgADAAAAAQAB
-								AAABFQADAAAA
-								AQAEAAABFgAD
-								AAAAAQAQAAAB
-								FwAEAAAAAQAA
-								BAABHAADAAAA
-								AQABAAABUgAD
-								AAAAAQABAAAB
-								UwADAAAABAAA
-								BL6HcwAHAAAH
-								qAAABMYAAAAA
-								AAgACAAIAAgA
-								AQABAAEAAQAA
-								B6hhcHBsAiAA
-								AG1udHJSR0Ig
-								WFlaIAfZAAIA
-								GQALABoAC2Fj
-								c3BBUFBMAAAA
-								AGFwcGwAAAAA
-								AAAAAAAAAAAA
-								AAAAAAD21gAB
-								AAAAANMtYXBw
-								bAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAC2Rlc2MA
-								AAEIAAAAb2Rz
-								Y20AAAF4AAAF
-								bGNwcnQAAAbk
-								AAAAOHd0cHQA
-								AAccAAAAFHJY
-								WVoAAAcwAAAA
-								FGdYWVoAAAdE
-								AAAAFGJYWVoA
-								AAdYAAAAFHJU
-								UkMAAAdsAAAA
-								DmNoYWQAAAd8
-								AAAALGJUUkMA
-								AAdsAAAADmdU
-								UkMAAAdsAAAA
-								DmRlc2MAAAAA
-								AAAAFEdlbmVy
-								aWMgUkdCIFBy
-								b2ZpbGUAAAAA
-								AAAAAAAAABRH
-								ZW5lcmljIFJH
-								QiBQcm9maWxl
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAAAAAAAA
-								AAAAAABtbHVj
-								AAAAAAAAAB4A
-								AAAMc2tTSwAA
-								ACgAAAF4aHJI
-								UgAAACgAAAGg
-								Y2FFUwAAACQA
-								AAHIcHRCUgAA
-								ACYAAAHsdWtV
-								QQAAACoAAAIS
-								ZnJGVQAAACgA
-								AAI8emhUVwAA
-								ABYAAAJkaXRJ
-								VAAAACgAAAJ6
-								bmJOTwAAACYA
-								AAKia29LUgAA
-								ABYAAALIY3ND
-								WgAAACIAAALe
-								aGVJTAAAAB4A
-								AAMAZGVERQAA
-								ACwAAAMeaHVI
-								VQAAACgAAANK
-								c3ZTRQAAACYA
-								AAKiemhDTgAA
-								ABYAAANyamFK
-								UAAAABoAAAOI
-								cm9STwAAACQA
-								AAOiZWxHUgAA
-								ACIAAAPGcHRQ
-								TwAAACYAAAPo
-								bmxOTAAAACgA
-								AAQOZXNFUwAA
-								ACYAAAPodGhU
-								SAAAACQAAAQ2
-								dHJUUgAAACIA
-								AARaZmlGSQAA
-								ACgAAAR8cGxQ
-								TAAAACwAAASk
-								cnVSVQAAACIA
-								AATQYXJFRwAA
-								ACYAAATyZW5V
-								UwAAACYAAAUY
-								ZGFESwAAAC4A
-								AAU+AFYBYQBl
-								AG8AYgBlAGMA
-								bgD9ACAAUgBH
-								AEIAIABwAHIA
-								bwBmAGkAbABH
-								AGUAbgBlAHIA
-								aQENAGsAaQAg
-								AFIARwBCACAA
-								cAByAG8AZgBp
-								AGwAUABlAHIA
-								ZgBpAGwAIABS
-								AEcAQgAgAGcA
-								ZQBuAOgAcgBp
-								AGMAUABlAHIA
-								ZgBpAGwAIABS
-								AEcAQgAgAEcA
-								ZQBuAOkAcgBp
-								AGMAbwQXBDAE
-								MwQwBDsETAQ9
-								BDgEOQAgBD8E
-								QAQ+BEQEMAQ5
-								BDsAIABSAEcA
-								QgBQAHIAbwBm
-								AGkAbAAgAGcA
-								6QBuAOkAcgBp
-								AHEAdQBlACAA
-								UgBWAEKQGnUo
-								ACAAUgBHAEIA
-								IIJyX2ljz4/w
-								AFAAcgBvAGYA
-								aQBsAG8AIABS
-								AEcAQgAgAGcA
-								ZQBuAGUAcgBp
-								AGMAbwBHAGUA
-								bgBlAHIAaQBz
-								AGsAIABSAEcA
-								QgAtAHAAcgBv
-								AGYAaQBsx3y8
-								GAAgAFIARwBC
-								ACDVBLhc0wzH
-								fABPAGIAZQBj
-								AG4A/QAgAFIA
-								RwBCACAAcABy
-								AG8AZgBpAGwF
-								5AXoBdUF5AXZ
-								BdwAIABSAEcA
-								QgAgBdsF3AXc
-								BdkAQQBsAGwA
-								ZwBlAG0AZQBp
-								AG4AZQBzACAA
-								UgBHAEIALQBQ
-								AHIAbwBmAGkA
-								bADBAGwAdABh
-								AGwA4QBuAG8A
-								cwAgAFIARwBC
-								ACAAcAByAG8A
-								ZgBpAGxmbpAa
-								ACAAUgBHAEIA
-								IGPPj/Blh072
-								TgCCLAAgAFIA
-								RwBCACAw1zDt
-								MNUwoTCkMOsA
-								UAByAG8AZgBp
-								AGwAIABSAEcA
-								QgAgAGcAZQBu
-								AGUAcgBpAGMD
-								kwO1A70DuQO6
-								A8wAIAPAA8ED
-								vwPGA68DuwAg
-								AFIARwBCAFAA
-								ZQByAGYAaQBs
-								ACAAUgBHAEIA
-								IABnAGUAbgDp
-								AHIAaQBjAG8A
-								QQBsAGcAZQBt
-								AGUAZQBuACAA
-								UgBHAEIALQBw
-								AHIAbwBmAGkA
-								ZQBsDkIOGw4j
-								DkQOHw4lDkwA
-								IABSAEcAQgAg
-								DhcOMQ5IDicO
-								RA4bAEcAZQBu
-								AGUAbAAgAFIA
-								RwBCACAAUABy
-								AG8AZgBpAGwA
-								aQBZAGwAZQBp
-								AG4AZQBuACAA
-								UgBHAEIALQBw
-								AHIAbwBmAGkA
-								aQBsAGkAVQBu
-								AGkAdwBlAHIA
-								cwBhAGwAbgB5
-								ACAAcAByAG8A
-								ZgBpAGwAIABS
-								AEcAQgQeBDEE
-								SQQ4BDkAIAQ/
-								BEAEPgREBDgE
-								OwRMACAAUgBH
-								AEIGRQZEBkEA
-								IAYqBjkGMQZK
-								BkEAIABSAEcA
-								QgAgBicGRAY5
-								BicGRQBHAGUA
-								bgBlAHIAaQBj
-								ACAAUgBHAEIA
-								IABQAHIAbwBm
-								AGkAbABlAEcA
-								ZQBuAGUAcgBl
-								AGwAIABSAEcA
-								QgAtAGIAZQBz
-								AGsAcgBpAHYA
-								ZQBsAHMAZXRl
-								eHQAAAAAQ29w
-								eXJpZ2h0IDIw
-								MDcgQXBwbGUg
-								SW5jLiwgYWxs
-								IHJpZ2h0cyBy
-								ZXNlcnZlZC4A
-								WFlaIAAAAAAA
-								APNSAAEAAAAB
-								Fs9YWVogAAAA
-								AAAAdE0AAD3u
-								AAAD0FhZWiAA
-								AAAAAABadQAA
-								rHMAABc0WFla
-								IAAAAAAAACga
-								AAAVnwAAuDZj
-								dXJ2AAAAAAAA
-								AAEBzQAAc2Yz
-								MgAAAAAAAQxC
-								AAAF3v//8yYA
-								AAeSAAD9kf//
-								+6L///2jAAAD
-								3AAAwGw=
-										</data>
+										<key>b</key>
+										<string>0.678431</string>
+										<key>g</key>
+										<string>0.678431</string>
+										<key>r</key>
+										<string>0.678431</string>
 									</dict>
 								</dict>
 								<key>shadow</key>
@@ -1415,8 +715,8 @@ Language Kernel\
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
 {\colortbl;\red255\green255\blue255;\red14\green14\blue14;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -1608,7 +908,7 @@ Language Kernel\
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2014-12-03 14:41:16 +0000</string>
+	<string>2015-02-03 16:34:12 +0000</string>
 	<key>Modifier</key>
 	<string>Guille</string>
 	<key>NotesVisible</key>
@@ -1703,7 +1003,7 @@ Language Kernel\
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{-60, 0}, {649, 783}}</string>
+		<string>{{-60, 0}, {649, 780}}</string>
 		<key>Zoom</key>
 		<real>1</real>
 		<key>ZoomValues</key>
