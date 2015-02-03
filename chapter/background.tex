@@ -745,7 +745,9 @@ This section presents properties that we consider the most relevant to evaluate 
 \section{Dedicated platforms}%Pre-conceived specialized application-independent platforms}
 \label{section:static_selection_rw}
 
-Dedicated platforms are platforms containing frameworks and/or libraries prepared to run under specific circumstances. For example, Java Micro Edition~(J2ME)~\cite{JavaME} as the dedicated version of the Java platform, or Cocoa Touch as the one of Cocoa\gp{cite cocoa touch}. These specialized platforms are reduced platforms to run applications inside mobile and constrained devices. These platforms provide a reduced and fixed set of base libraries defined a priori and in a not customizable way. Applications have to be written especially for them, and thus legacy code and third-party libraries not written especially for it are not compatible. Reflection is not a problem if the dedicated platform provides it. This is because the statically tailored base libraries are not built in an automatic fashion and the application code is not tailored.
+Dedicated platforms are platforms containing frameworks and/or libraries prepared to run under specific circumstances. For example, Java Micro Edition~(J2ME)~\cite{JavaME} as the dedicated version of the Java platform, or Cocoa Touch as the one of Cocoa\gp{cite cocoa touch}. These specialized platforms are reduced platforms to run applications inside mobile and constrained devices. These platforms provide a reduced and fixed set of base libraries defined a priori and in a not customizable way. On one side, this means that applications written for this platforms will never miss a code unit and fail at runtime. On the other side, completeness comes at the cost of minimality: the final application includes more code units than the ones required at runtime.
+
+Applications have to be written especially for them, and thus legacy code and third-party libraries not written especially for it are not compatible. Reflection is not a problem if the dedicated platform provides it. This is because the statically tailored base libraries are not built in an automatic fashion and the application code is not tailored.
 
 \section{Static Analysis-Based Techniques}\label{section:static_rw}
 
@@ -826,7 +828,7 @@ Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given
  			& + & - & - & - \\
 		\hline
 		Minimality
- 			& - & \textasciitilde & \textasciitilde & + \\
+ 			& - & + & + & + \\
 		\hline
 		Completeness
  			& + & - & - & - \\
@@ -838,11 +840,13 @@ Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given
  	\label{tb:comparison_intro}
  \end{table}
 
-Dedicated platforms are a first useful attempt to produce a specialized application runtime. They contain a pre-selection of base libraries that application developers must rely upon. Dedicated platforms are not tailored by an automatic process: that means that all the developed code will be part of the deployable distribution. This lack of automatic tailoring process means on one side that the usage of reflection will not affect the result of the deploy artifact. On the other side it means, however, that it does not offer the possibility to really tailor third-party libraries, legacy code nor even the developed application code. This is why we consider dedicated platforms to ensure the completeness while they are not as efficient as other techniques.
+Dedicated platforms are a first useful attempt to produce a specialized application runtime. They contain a pre-selection of base libraries that application developers must rely upon. Dedicated platforms are not tailored by an automatic process: that means that all the developed code will be part of the deployable distribution. This lack of automatic tailoring process means on one side that the usage of reflection will not affect the result of the deploy artifact. On the other side it means, however, that it does not offer the possibility to really tailor third-party libraries, legacy code nor even the developed application code. This is why we consider dedicated platforms to ensure the completeness while they are not as efficient to ensure minimality as other techniques.
 
 We also see that automatic tailoring techniques, in contrast with dedicated platforms, base their tailoring on the existing application code: they can tailor base and third-party libraries as well as legacy code. Amongst them, dynamic-analysis based techniques, and hybrid-analisys ones in some grade, are able to handle reflective calls properly. We can see an almost general lack of support of flexibility to select whether a code unit should be subject to the tailoring or not.
 
-Concluding, it is important to notices that none of these techniques ensure completeness. We cannot anticipate the use of reflection and other dynamic techniques in complex scenarios. For this purpose, several techniques such as lazy loading or remote calls can be used to complement tailoring techniques. \chapref{chap:rfg} explores a new dynamic tailoring technique based on \Vtt. We show how our technique succeeds to tailor even in the existence of reflection and allows flexibility while others do not. 
+Regarding minimality, automatic techniques are more efficient when they have more information at their disposal. Dynamic techniques use runtime information to know the concrete types of objects while static techniques use the types annotations in the source code. Between the two, dynamic techniques are more 
+
+Concluding, it is important to notice that none of the automatic tailoring techniques ensure completeness. We cannot anticipate the use of reflection and other dynamic techniques in complex scenarios. For this purpose, several techniques such as lazy loading or remote calls can be used to complement tailoring techniques. \chapref{chap:rfg} explores a new dynamic tailoring technique based on \Vtt. We show how our technique succeeds to tailor even in the existence of reflection and allows flexibility while others do not. 
 
 
 \input{chapter-footer.tex}

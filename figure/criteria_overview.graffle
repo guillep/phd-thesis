@@ -60,7 +60,7 @@
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{287.69289779663086, 272}, {67, 33}}</string>
+					<string>{{287.69289779663086, 272}, {67, 22}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -110,9 +110,6 @@
 
 \f0\fs18 \cf0 (+)
 \f1  ensured\
-
-\f0 (~)
-\f1  partially\
 
 \f0 (-)
 \f1  not ensured}</string>
@@ -1235,7 +1232,7 @@ Support}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2015-02-03 15:55:27 +0000</string>
+	<string>2015-02-03 16:10:59 +0000</string>
 	<key>Modifier</key>
 	<string>Guille</string>
 	<key>NotesVisible</key>
@@ -1321,7 +1318,7 @@ Support}</string>
 			</dict>
 		</array>
 		<key>Frame</key>
-		<string>{{508, 269}, {1680, 944}}</string>
+		<string>{{508, 473}, {1680, 944}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>
