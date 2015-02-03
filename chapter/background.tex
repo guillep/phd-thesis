@@ -720,21 +720,23 @@ This section presents properties that we consider the most relevant to evaluate 
 
 \begin{description}
 
-\item[Reflection.] An ideal tailoring solution should handle correctly reflective code and resolve the unanticipated code executions in the same way as the application would do during runtime.
-
 \item[Base Library Specialization.] A programming language contains several base libraries covering very common and generic code. Not all the code units in these libraries are used in every application. An ideal tailoring solution should tailor base libraries of the language to reduce an application's deployment memory footprint.
 
 \item[Third Party Libraries Specialization.] Applications use several third-party libraries and frameworks covering several aspects of application development such as user interfaces, persistence or publication of services. Third party libraries contain large code bases and many dependencies. Thus, an ideal tailoring solution should tailor third-party libraries and frameworks too.
 
 \item[Legacy Code.] An ideal tailoring solution should be applicable on already existing applications and not require modifications on them, independently of the size of their code-base.
 
-\item[General purpose Infrastructure.] An ideal tailoring solution should produce a version of the application that is able to run on the official production infrastructure~(such as the VM) without overhead.
+\item[Reflection Support.] An ideal tailoring solution should handle correctly reflective code and resolve the unanticipated code executions in the same way as the application would do during runtime.
+
+\item[General Purpose Infrastructure.] An ideal tailoring solution should produce a version of the application that is able to run on the official production infrastructure~(such as the VM) without overhead.
 
 \item[Flexibility.] An ideal solution for tailoring an application should support many different levels of application. Some applications may not need to tailor base libraries because they are shared with other applications. However, tailoring base libraries may be useful on applications residing alone in constrained devices.
 
-\item[Dinamic typing.] An ideal tailoring solution should be applicable to dynamic languages with no type annotations.
+\item[Dynamic typing.] An ideal tailoring solution should be applicable and effective in dynamically-typed languages \ie with no type annotations.
 
-\item[Full Coverage.] An ideal tailoring solution will guarantee that all code units selected as part of the deployable application are those needed. That is, it does not contain extra code units, nor it misses code units.
+\item[Minimality.] An ideal tailoring solution achieves at selecting the minimal set of elements that a deployable application should contains. That is, it does not contain extra code units.
+
+\item[Completeness.] An ideal tailoring solution guarantees that the deployable application contains all the elements it needs to run without failing.
 
 \end{description}
 
@@ -812,7 +814,7 @@ Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given
 		Reflection Support
  			& + & - & - & + \\
 		\hline
-		Dedicated Deploy
+		General Purpose
 			& & & & \\
 		Infrastructure
  			& + & - & - & -  \\
@@ -820,12 +822,17 @@ Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given
 		Flexibility
  			& - & - & - & -   \\
 		\hline
-		Ensures
-		& & & & \\
+		Dynamic typing
+ 			& + & - & - & - \\
+		\hline
+		Minimality
+ 			& - & \textasciitilde & \textasciitilde & + \\
+		\hline
 		Completeness
  			& + & - & - & - \\
 \bottomrule
  	\end{tabular}
+	
 	\includegraphics[width=.7\linewidth]{criteria_overview}
  	\caption{Evaluation criteria applied to related work on deployment code unit tailoring techniques}
  	\label{tb:comparison_intro}
