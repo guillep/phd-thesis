@@ -560,7 +560,7 @@ From this, we can state that our solution should have the following properties:
 \chaplabel{state_tailoring}
 \minitoc
 
-Application runtime tailoring is the specialization of an application runtime in order that it contains only its required elements at runtime and no more. In other words, tailoring is a technique that generates a specialized application runtime so it can better adapt to devices with constrained resources.
+Application runtime tailoring is the specialization of an application runtime in order that it contains only the elements necessary for its execution and no more. In other words, tailoring is a technique that generates a specialized application runtime so it can better adapt to devices with constrained memory.
 This chapter starts by identifying the problem that motivates application tailoring: code bloat~(Section \ref{sec:footprint_problems}). Code bloat is mainly caused by unused code units appearing in general purpose libraries.
 We illustrate this problem through an example.
 
@@ -569,24 +569,24 @@ Existing application extraction or \emph{Tailoring} techniques build deployment 
 Finally, this chapter concludes by presenting and comparing this techniques, grouped in four different categories: 
 \begin{description}
 \item[Dedicated platforms.] Pre-built tailored platforms with specialized \VMs and language runtimes~(Section \ref{section:static_selection_rw}).
-\item[Static techniques.] Tailoring techniques that depend only in static program information such as the source code and type annotations~(Section \ref{section:static_rw}).
+\item[Static techniques.] Tailoring techniques that depend only on static program information such as the source code and type annotations~(Section \ref{section:static_rw}).
 \item[Dynamic techniques.] Tailoring techniques that make use only of runtime information~(Section \ref{section:dynamic_rw}).
 \item[Hybrid techniques.] Tailoring techniques that complement both dynamic and static techniques~(Section \ref{section:hybrid_rw}).
 \end{description}
 
 
-\section{Problems of Constrained Devices Deployment}\label{sec:footprint_problems}
+\section{Problems of Deployment on Constrained Devices}\label{sec:footprint_problems}
 Deployed object-oriented applications often contain \emph{code units}~(e.g. packages, classes, methods) that the running application never uses.
 This problem shows itself more evident and harder to control under the usage of third party software. 
 Third party libraries and frameworks are designed in a generic fashion that allows multiple usages and functionalities, while applications use only few of them. 
 Examples are logging libraries, web application frameworks or object-relational mappers.
 
 Unused deployed code units have an undesired impact when targeting a constrained infrastructure. 
-Constrained devices may constrain applications due to a restrictive hardware such as low primary or secondary memory~\cite{Mart12a}, or even software impositions such as the Android's Dalvik VM restriction to deploy only 65536 methods\footnote{According to dalvik's bytecode documentation~(\url{http://source.android.com/devices/tech/dalvik/dalvik-bytecode.html}), the source register accepts values between 0 and 65535.}. Big JavaScript mashup applications have an impact on loading time due to network speed and parsing time in the client.
+Constrained devices may constrain applications due to a restrictive hardware such as low primary or secondary memory~\cite{Mart12a}, or even software impositions such as the Android's Dalvik VM restriction to deploy only 65536 methods\footnote{According to dalvik's bytecode documentation~(\url{http://source.android.com/devices/tech/dalvik/dalvik-bytecode.html}), the source register accepts values between 0 and 65535.}. Big JavaScript mashup applications have an impact on loading time due to network speed and parsing time on the client.
 These limitations may forbid the deployment of applications that contain lots of code units, or limit the amount of applications and content a user can have in its device.
 
-Existing solutions to this problem propose to eliminate dead code by extracting used code units of an application, and thus reduce their size and memory footprint. The majority of the solutions in the field propose to automatically detect and extract used code units, so called \emph{tailoring}, with static call graph construction as the most dominant technique~\cite{Grov97a}. 
-These static approaches present limitations in the presence of dynamic features such as reflection~\cite{Livs05a}, or in the absence of static type annotations. Additionally, they do not allow the user to customize the process of selection to cover different levels of an application's code \ie a user may want to extract only the used application specific code and let third-party and base-language libraries untouched; another user may want apply the process to the whole of the application.
+Existing solutions to this problem propose to eliminate dead code by extracting used code units of an application, and thus reduce application size in secondary memory and primary memory footprint. The majority of the solutions in the field propose to automatically detect and extract used code units, so called \emph{tailoring}, with static call graph construction as the most dominant technique~\cite{Grov97a}. 
+These static approaches present limitations in the presence of dynamic features such as reflection~\cite{Livs05a}, or in the absence of static type annotations. Additionally, they do not allow the user to customize the process of selection to cover different levels of an application's code \ie if third-party or base-language libraries are shared amongst several applications, a user may want to extract only the used application specific code and let others untouched; another user may want apply the process to the whole application.
 
 
 %\section{A Motivating Example} \label{sec:example_intro}
@@ -602,7 +602,7 @@ To clearly show the problem, consider the application using a logging library in
 \end{center}
 \end{figure}
 
-Figure~\ref{fig:code_example1} shows the code of this application, written in the Pharo Smalltalk language. This application contains a \ct{MainApp} class with a \ct{start} method, which is the entry point of our application. The \ct{start} method creates an instance of \ct{Stdout\-Logger} and logs the application's start and end. In turn, the \ct{StdoutLogger} uses the \ct{stdout} global instance to log in the standard output the current time and the message. To print the time, the \ct{StdoutLogger} makes use of the \ct{Time} class from the base libraries of the language. Note that for the sake of clarity, we didn't include in the example all base libraries, though, in modern programming languages they represent a large codebase with several features going from networking to multithreading. For example, Java 8 SE contains 4240 classes\footnote{according to the javadoc API}, and the development edition of Pharo 3.0~\cite{Blac09a} contains 4115 classes and traits.
+Figure~\ref{fig:code_example1} shows the code of this application, written in the Pharo language. This application contains a \ct{MainApp} class with a \ct{start} method, which is the entry point of our application. The \ct{start} method creates an instance of \ct{Stdout\-Logger} and logs the application's start and end. In turn, the \ct{StdoutLogger} uses the \ct{stdout} global instance to log in the standard output the current time and the message. To print the time, the \ct{StdoutLogger} makes use of the \ct{Time} class from the base libraries of the language. Note that for the sake of clarity, we didn't include in the example all base libraries, though, in modern programming languages they represent a large codebase with several features going from networking to multithreading. For example, Java 8 SE contains 4240 classes\footnote{according to the javadoc API}, and the development edition of Pharo 3.0~\cite{Blac09a} contains 4115 classes and traits.
 
 \begin{figure}[ht]
 \begin{code}
@@ -639,12 +639,12 @@ In this example we can detect the following unused code units, shown in grey in 
 \begin{enumerate}
 \item The logger library includes two logging classes~(\ct{Stdout\-Logger} and \ct{RemoteLogger}). Only the \ct{StdoutLogger} is used and thus, the \ct{RemoteLogger} class can be discarded.
 \item Since the \ct{MainApp} class does not use the \ct{Socket} class nor the \ct{RemoteLogger} class~(the only user of the \ct{Socket} class), the \ct{Socket} class can be discarded.
-\item No class in the application makes use of the \ct{Date} class, according that it is not used in the base libs either. Then, this class can be safely removed.
+\item No class in the application makes use of the \ct{Date} class, and we assume for this example that it is not used in the base-libraries either. Then, this class can be safely removed.
 \item The method \ct{newLine}~(lines 7-8 of Figure~\ref{fig:code_example1}) of the \ct{StdoutLogger} class is not used and can be also removed.
 \item The \ct{StdoutLogger} class uses the \ct{Time} class to print the current time. Then, all code units that are not related to the \ct{Time now} resolution or printing~(\ie time arithmetic) could be considered as unused.
 \end{enumerate}
 
-We would like to generate a new version of this application not containing these unused code units while keeping the application's behavior. We call this technique \emph{application tailoring}.
+We would like to generate a new version of this application not containing these unused code units while keeping the application's behavior. We call this process \emph{application tailoring}.
 
 \section{Challenges of Application Tailoring} \label{sec:challenges}
 
