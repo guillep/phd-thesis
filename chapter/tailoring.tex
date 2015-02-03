@@ -12,8 +12,8 @@
 
 
 This chapter describes the \emph{run-fail-grow} (RFG) technique: an alternative solution to dead code elimination that identifies at runtime those code units that are actually used in an application~(Section~\ref{sec:rfg_model}).
-For such a task, in RFG we launch a \emph{reference} application containing all code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application containing a minimal set of code units we want to ensure in our application, so called a \emph{seed}.
-RFG consists in ``growing'' the nurtured application into a deployable specialized version of the reference application. 
+Using RFG, we launch a \emph{reference} application containing all code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application runtime containing a minimal set of code units we want to ensure in our application, so called a \emph{seed}.
+RFG generates an application runtime by ``growing'' the nurtured application into a deployable specialized version of the reference application. 
 RFG runs the nurtured version of the application and feeds it with the code units that were detected as missing with a failure~(Section \ref{sec:rfg_example}).
 
 The resulting deployable application only embeds the seed and used code.
@@ -221,7 +221,7 @@ Tornado's architecture combines \Vtt~(cf. Section \ref{sec:oz}) and Ghost proxie
 
 \subsection{Execution Traps with Ghost Proxies} \label{sec:proxies}
 
-Implementing execution traps such as the ones described in Section~\ref{sec:model_detail} requires a powerful intercession module or library. Traps must capture \emph{all} message sends to objects provided by the language runtime as well as the application objects, including classes~(for example for the case of class messages or static methods). They must capture \emph{self} and \emph{super} message sends, as well as overrides and particular method invocations.
+Implementing execution traps such as the ones described in Section~\ref{sec:model_detail} requires a powerful intercession module or library. Traps must capture \emph{all} message sends to objects provided by the application runtime as well as the application objects, including classes~(for example for the case of class messages or static methods). They must capture \emph{self} and \emph{super} message sends, as well as overrides and particular method invocations.
 
 To achieve this, we implemented a set of proxies following the Ghost model~\cite{Mart11a}~(similar to JavaScript proxies~\cite{Vanc10a}). Ghost proposes a low-memory footprint, general purpose proxy implementation for the Smalltalk language supporting the creation of proxies for normal objects as well as classes and methods. 
 % These proxies allow the interception of all message sends.
@@ -380,21 +380,21 @@ The fourth experiment introduces reflective invocations. Figure \ref{fig:reflect
 Object subclass: #User
 	instanceVariableNames: 'name age'.
 
-User>>age (
-	^ age )
+User>>age
+	^ age
 
-User>>hasWritePermissions (
+User>>hasWritePermissions
 	<property>
-	^ true )
+	^ true
 
-User>>name (
-	^ name )
+User>>name
+	^ name
 
-PropertyExtractor>>extractPropertiesFrom: anObject (
+PropertyExtractor>>extractPropertiesFrom: anObject
 	^ anObject class methods
 		select: [ :each | each isReturnField
 			or: [ each pragmas anySatisfy: [ :pragma | pragma keyword = #property ] ] ]
-		thenCollect: [ :each | each selector ] )
+		thenCollect: [ :each | each selector ]
 
 \end{code}
 \caption{\small \textbf{Code of the reflective invocations experiment.} The \ct{PropertyExtractor} class does the reflective invocations, the \ct{User} is the class we will be reflecting on.\label{fig:reflective_invocations}}
