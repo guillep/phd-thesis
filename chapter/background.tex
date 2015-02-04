@@ -243,7 +243,8 @@ To enable reflection in mainstream languages such as Java, Ruby or JavaScript, t
 
 
 In languages presenting reflective architectures, reflection is controlled by meta-objects that live in the same environment of the object it reflects upon.
-One problematic corollary of this is that meta-objects rely on the same code and infrastructure than the objects they reflect upon; therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon~(Figure \ref{fig:reflectivity_meta_recursion}).
+One problematic corollary of this is that meta-objects rely on the same code and infrastructure than the objects they reflect upon \eg if a class has a \ct{Set} with its subclasses, changing the  implementation of \ct{Set} impacts the reflective behavior in addition of the base-application behavior.
+Therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon~(Figure \ref{fig:reflectivity_meta_recursion}).
 
 \begin{figure}[ht]
 \begin{center}
@@ -254,7 +255,7 @@ One problematic corollary of this is that meta-objects rely on the same code and
 \end{center}
 \end{figure}
 
-Denker et al. solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is a reflective framework that avoids meta-recursions by tracking the degree of metaness of the execution context. In each reflective call, the \ct{MetaContext} object is activated and it accounts the meta-level jump. Likewise, when the reflective call returns, the \ct{MetaContext} is deactivated. Using the accounted meta-level jumps of the \ct{MetaContext}, meta-objects do only reflect on objects of a lower metaness~(and not greater or equal metaness). Thus, it simulates the semantics of an infinite tower of distinct interpreters while there is only one of them that scopes the meta-operations using the accounted meta-level~(Figure \ref{fig:reflectivity_avoid_meta_recursion}).
+Denker et al. partially solve this problem in Reflectivity~\cite{Denk08b}. Reflectivity is a reflective framework that avoids meta-recursions by tracking the degree of metaness of the execution context. In each reflective call, the \ct{MetaContext} object is activated and it accounts the meta-level jump. Likewise, when the reflective call returns, the \ct{MetaContext} is deactivated. Using the accounted meta-level jumps of the \ct{MetaContext}, meta-objects do only reflect on objects of a lower metaness~(and not greater or equal metaness). Thus, it simulates the semantics of an infinite tower of distinct interpreters while there is only one of them that scopes the meta-operations using the accounted meta-level~(Figure \ref{fig:reflectivity_avoid_meta_recursion}).
 
 \begin{figure}[ht]
 \begin{center}
