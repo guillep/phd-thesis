@@ -89,6 +89,8 @@ However, \JIT compilers are notoriously complex as they crosscut many \VM compon
 Similar complexity applies to the automatic memory management present in most high-level language \VMs.
 Garbage Collectors (\GC) evolved from simple helpers to complex software artifacts that for instance support concurrent garbage collection \cite{Clic05a}.
 
+
+
 %These complex \VMs are the enablers of many of the features in our programming languages.
 %However, their complexity constrain the changes we can apply to our application runtimes.
 %For example, adding a new field into the classes of an application runtime may impact the bytecode interpreter, the JIT, the GC, and so on.
@@ -97,9 +99,13 @@ Garbage Collectors (\GC) evolved from simple helpers to complex software artifac
 
 \section{Problem Statement}
 
-This thesis focuses in the generation of specialized object-oriented high-level application and language runtimes for languages that run on a \VM. In such context, we identify a main problem: application runtimes usually provide with none or little support to change the structures that represent themselves. We lack an infrastructure for safe application runtime manipulation. This infrastructure must allow both the specialization and extension of application and language runtimes. We identify these more concrete problems that such an infrastructure should solve:
+This thesis focuses in the generation of specialized object-oriented high-level application and language runtimes for languages that run on a \VM. In such context, we identify a main question: \newline
+
+\blockquote{\emph{What is the infrastructure that may allow to create application runtimes that are specialized to perform in new scenarios?}}\newline
+
+We lack an infrastructure for safe application runtime manipulation. This infrastructure must allow both the specialization and extension of application and language runtimes. We identify these more concrete problems that such an infrastructure should solve:
 \begin{description}
-\item[Unclear \VM-Language interface.] The relation between the language and the \VM, particularly its execution model, remains often unclear in \VM hardcoded assumptions in the multiple \VM components. This unclear interface impacts on its clients, which are exposed to the complexities of the \VM internals.
+\item[Unclear \VM-Language interface.] The relation between the language and the \VM, particularly its execution model, remains often unclear in \VM hardcoded assumptions in the multiple \VM components. This unclear interface impacts on its clients, which are exposed to the complexities of the \VM internals to change the application runtime.
 
 \item[Core runtime changes remain low-level.] Changing a language or application runtime representation often forces us to modify such representation without the proper level of abstraction. Instead we should work on low-level concerns such as direct memory manipulation.
 
@@ -113,7 +119,7 @@ To solve the stated problems, we base our work on the following claim: \newline
 
 \blockquote{\emph{First-class runtimes support the manipulation of Application Runtimes and thus, the generation of specialized versions of them.}}\newline
 
-First-class runtimes should provide a clear and high-level \VM-Language interface. This interface must hide the internal details of the \VM complexities and allow us to easily manipulate the elements inside an application runtime. At the same time, it should ensure that the \VM execution model is not broken during such manipulations.
+First-class runtimes should provide a clear and high-level \VM-Language interface. This interface must hide the internal details of the \VM complexities and allow us to easily manipulate the elements inside an application runtime. At the same time, it should ensure that the \VM execution model is honored during such manipulations.
 
 The contribution of this thesis is three-fold. The main contribution is \Vtt, an \emph{infrastructure for application runtime virtualization}. This infrastructure allows us to manipulate and control a virtualized application runtime through a first-class runtime object, namely an object space.
 We validate this language virtualization infrastructure by exploring two approaches for application runtime generation:
