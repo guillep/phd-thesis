@@ -47,8 +47,8 @@ To address this goal we propose \emph{\Vtt}: a runtime virtualization infrastruc
 \section{Application Runtimes: Concepts and Terminology}
 % =============================================================================
 
-In the context of application runtime manipulation, we face the following question: \emph{What are the elements of high-level programming languages we should focus on?} High-level application runtimes are inherent complex pieces of software. 
-This section proposes a dissection of a high-level language application runtime. We made this dissection with the objective of understanding the relationship between the software elements. We believe that understanding this relationship is important in the context of this thesis. Figure \ref{fig:whatToEvolve} shows an schema of this dissection. This section also states the terminology used during the rest of this dissertation.
+In the context of application runtime manipulation, we face the following question: \emph{What are the elements of high-level programming languages we should focus on?} High-level programs are inherent complex pieces of software. 
+This section proposes a dissection of a high-level language application runtime and states with it the terminology used during the rest of this dissertation. We made this dissection with the objective of understanding the relationship between the software elements. We believe that understanding this relationship is important in the context of this thesis. Figure \ref{fig:whatToEvolve} shows an schema of this dissection.
 
 \begin{figure}[!ht]
 \begin{center}
@@ -57,7 +57,9 @@ This section proposes a dissection of a high-level language application runtime.
 \end{center}
 \end{figure}
 
-We identify inside a running application the following elements. First, the application runtime contains the \emph{application specific} and the \emph{language} runtimes that represent respectively the elements of the application under execution and the language that provides support for it. The \VM provides as well an execution support for the application runtime. The overlapping shows the interrelations between these three components.
+We identify inside a running application the following elements. First, the application runtime contains the \emph{application specific} and the \emph{language} runtimes that represent respectively the elements of the application under execution and the language that provides support for it. The \VM provides as well an execution support for the application runtime. The overlapping shows the interrelations between these three components. 
+
+Note that some authors may include the \VM inside a more broader runtime system. In this thesis, however, we narrow our study to those programs that run on top of a \VM and their representation during execution. This is the reason why we use the terminology \emph{application runtime} instead of runtime system and we consider this component separately from the \VM.
 
 \subsection{Application Runtime}
 
