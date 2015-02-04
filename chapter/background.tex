@@ -278,8 +278,7 @@ Reflectivity succeeds to modify and scope behavioral reflection for different me
 The increased complexity of the \VMs leads to more novel approaches on how to build \VMs and therefore, their runtimes.
 Metacircular \VMs are \VMs programmed in the same language they support in the end \eg a Java \VM written in Java or a Smalltalk \VM written in Smalltalk. This approach is based on the principles of \emph{high-level low-level programming} \ie expressing low-level concerns using high-level languages~\cite{Fram09a}. Metacircular \VMs benefits from the abstraction power and tooling of a high-level language to manipulate their own \VMs. 
 
-We observe that these projects are biased towards \VM building techniques and not to the manipulation of the application runtimes that run on top of them.
-In this thesis, even if we do not focus on the modification of \VMs, we briefly study metacircular runtimes and \VMs with the objective of understanding more concretely the benefits of their high-level low-level approach.
+These projects are biased towards \VM building techniques and not to the manipulation of the application runtimes that run on top of them. However, even if we do not focus on the modification of \VMs,  in this thesis we briefly study metacircular runtimes and \VMs with the objective of understanding more concretely the benefits of their high-level low-level approach.
 
 \subsection*{\textsc{Squeak Smalltalk \VM}}
 \seclabel{background-squeak}
@@ -302,7 +301,7 @@ To facilitate the interaction with the pure C part, Slang supports inline C expr
 A great achievement of the Squeak \VM is a simulator environment that enables programmers to interact dynamically with a simulated version of the running \VM.
 The simulator is capable of running a complete Squeak Smalltalk image including graphical user interface.
 This means that programmers can change the sources of the running \VM and see the immediate effects in the simulator.
-The \VM developer has complete access and control to the \VM internals and the application runtime it contains. It can, for example, change any object and class inside the simulated application runtime. However, to apply such a change it depends on a high-level but memory oriented interface. Additionally, once the \VM is generated, this low-level interface disappears and is not accessible for the developer.
+The \VM developer has complete access and control to the \VM internals and the application runtime it contains. It can, for example, change any object and class inside the simulated application runtime. However, to apply such a change it depends on a memory oriented interface. Additionally, once the \VM is generated, this low-level interface disappears and is not accessible for the developer.
 
 % ---------------------------------------------------------------------------
 \subsection*{\textsc{Jikes: High-level low-level Programming with MMTK}}
