@@ -611,18 +611,18 @@ From this, we can state that our solution should have the following properties:
 \chaplabel{state_tailoring}
 \minitoc
 
-Application runtime tailoring is the specialization of an application runtime in order that it contains only the elements necessary for its execution and no more. In other words, tailoring is a technique that generates a specialized application runtime so it can better adapt to devices with constrained memory.
-This chapter starts by identifying the problem that motivates application tailoring: code bloat~(Section \ref{sec:footprint_problems}). Code bloat is mainly caused by unused code units appearing in general purpose libraries.
-We illustrate this problem through an example.
+Application runtime tailoring is the specialization of an application runtime so it contains only the elements necessary for its execution and no more. In other words, tailoring is a technique that generates a specialized application runtime so it can better adapt to devices with constrained memory.
+This chapter starts by identifying the problem that motivates application tailoring: code bloat. Code bloat is mainly caused by unused code units appearing in general purpose libraries.
+We illustrate this problem through an example~(Section \ref{sec:footprint_problems}).
 
 Existing application extraction or \emph{Tailoring} techniques build deployment artifacts containing a subset of the original code units inside an application. However, these existing techniques are not completely efficient because they have to overcome many different challenges such as reflection or the absence of type annotations in dynamically-typed languages~(Section \ref{sec:challenges}). We present an evaluation criteria that allows us to compare this different existing solutions~(Section \ref{sec:tailoring_criteria}).
 
-Finally, this chapter concludes by presenting and comparing this techniques, grouped in four different categories: 
+Finally, this chapter concludes by presenting and comparing existing techniques, grouped in four different categories: 
 \begin{description}
 \item[Dedicated platforms.] Pre-built tailored platforms with specialized \VMs and language runtimes~(Section \ref{section:static_selection_rw}).
-\item[Static techniques.] Tailoring techniques that depend only on static program information such as the source code and type annotations~(Section \ref{section:static_rw}).
-\item[Dynamic techniques.] Tailoring techniques that make use only of runtime information~(Section \ref{section:dynamic_rw}).
-\item[Hybrid techniques.] Tailoring techniques that complement both dynamic and static techniques~(Section \ref{section:hybrid_rw}).
+\item[Static techniques.] Automatic tailoring techniques that depend only on static program information such as the source code and type annotations~(Section \ref{section:static_rw}).
+\item[Dynamic techniques.] Automatic tailoring techniques that make use only of runtime information~(Section \ref{section:dynamic_rw}).
+\item[Hybrid techniques.] Automatic tailoring techniques that complement both dynamic and static techniques~(Section \ref{section:hybrid_rw}).
 \end{description}
 
 
@@ -633,18 +633,14 @@ Third party libraries and frameworks are designed in a generic fashion that allo
 Examples are logging libraries, web application frameworks or object-relational mappers.
 
 Unused deployed code units have an undesired impact when targeting a constrained infrastructure. 
-Constrained devices may constrain applications due to a restrictive hardware such as low primary or secondary memory~\cite{Mart12a}, or even software impositions such as the Android's Dalvik VM restriction to deploy only 65536 methods\footnote{According to dalvik's bytecode documentation~(\url{http://source.android.com/devices/tech/dalvik/dalvik-bytecode.html}), the source register accepts values between 0 and 65535.}. Big JavaScript mashup applications have an impact on loading time due to network speed and parsing time on the client.
+Some devices may constrain applications due to a restrictive hardware such as low primary or secondary memory~\cite{Mart12a}, or even software impositions such as the Android's Dalvik VM restriction to deploy only 65536 methods\footnote{According to dalvik's bytecode documentation~(\url{http://source.android.com/devices/tech/dalvik/dalvik-bytecode.html}), the source register accepts values between 0 and 65535.}. Big JavaScript mashup applications have an impact on loading time due to network speed and parsing time on the client.
 These limitations may forbid the deployment of applications that contain lots of code units, or limit the amount of applications and content a user can have in its device.
 
 Existing solutions to this problem propose to eliminate dead code by extracting used code units of an application, and thus reduce application size in secondary memory and primary memory footprint. The majority of the solutions in the field propose to automatically detect and extract used code units, so called \emph{tailoring}, with static call graph construction as the most dominant technique~\cite{Grov97a}. 
-These static approaches present limitations in the presence of dynamic features such as reflection~\cite{Livs05a}, or in the absence of static type annotations. Additionally, they do not allow the user to customize the process of selection to cover different levels of an application's code \ie if third-party or base-language libraries are shared amongst several applications, a user may want to extract only the used application specific code and let others untouched; another user may want apply the process to the whole application.
+These static approaches present limitations in the presence of dynamic features such as reflection~\cite{Livs05a}, or in the absence of static type annotations. Additionally, they do not allow the user to customize the process of selection to cover different levels of an application's code \ie if third-party or base-language libraries are shared amongst several applications, a user may want to extract only the used application specific code and let the shared ones untouched; another user may want apply the process to the whole application.
 
 
 %\section{A Motivating Example} \label{sec:example_intro}
-
-To clearly show the problem, consider the application using a logging library in Figure~\ref{fig:example_dead_code}. In this figure, we emphasize in gray the unused code units that can safely be removed.
-%An interface is present in the diagram to show polymorphism between two classes that do not share a class inheritance hierarchy. 
-%However, some languages, such as the dynamically typed ones, may not need to represent it in the source code.
 
 \begin{figure}[ht]
 \begin{center}
@@ -653,7 +649,9 @@ To clearly show the problem, consider the application using a logging library in
 \end{center}
 \end{figure}
 
-Figure~\ref{fig:code_example1} shows the code of this application, written in the Pharo language. This application contains a \ct{MainApp} class with a \ct{start} method, which is the entry point of our application. The \ct{start} method creates an instance of \ct{Stdout\-Logger} and logs the application's start and end. In turn, the \ct{StdoutLogger} uses the \ct{stdout} global instance to log in the standard output the current time and the message. To print the time, the \ct{StdoutLogger} makes use of the \ct{Time} class from the base libraries of the language. Note that for the sake of clarity, we didn't include in the example all base libraries, though, in modern programming languages they represent a large codebase with several features going from networking to multithreading. For example, Java 8 SE contains 4240 classes\footnote{according to the javadoc API}, and the development edition of Pharo 3.0~\cite{Blac09a} contains 4115 classes and traits.
+To clearly show the problem, consider the application using a logging library in Figure~\ref{fig:example_dead_code}. In this figure, we emphasize in gray the unused code units that can safely be removed. Figure~\ref{fig:code_example1} shows the code of this application, written in the Pharo language. This application contains a \ct{MainApp} class with a \ct{start} method, which is the entry point of our application. The \ct{start} method creates an instance of \ct{Stdout\-Logger} and logs the application's start and end. In turn, the \ct{StdoutLogger} uses the \ct{stdout} global instance to log in the standard output the current time and the message. To print the time, the \ct{StdoutLogger} makes use of the \ct{Time} class from the base libraries of the language. Note that for the sake of clarity, we didn't include in the example all base libraries, though, in modern programming languages they represent a large codebase with several features going from networking to multithreading. For example, Java 8 SE contains 4240 classes\footnote{according to the javadoc API}, and the development edition of Pharo 3.0~\cite{Blac09a} contains 4115 classes and traits.
+%An interface is present in the diagram to show polymorphism between two classes that do not share a class inheritance hierarchy. 
+%However, some languages, such as the dynamically typed ones, may not need to represent it in the source code.
 
 \begin{figure}[ht]
 \begin{code}
@@ -710,7 +708,7 @@ In this context of dynamically-typed and object-oriented programs that may use r
 
 \item[Dynamic typing.] Dynamically-typed languages cannot benefit from the most powerful static analysis due to the absence of type annotations. Name-based static analyses~(static analyses that build a simpler call graph based only on method names) can be used on them, but are not as efficient. Static techniques to detect code unit usage, such as call-graph analysis, need the support of more dynamic techniques \eg tracking runtime information, following the application's execution flow, or performing symbolic execution.
 
-For example, an approach just following method names would not eliminate the \ct{asString} method from the \ct{Object} or \ct{String} classes in the following code, as it cannot predict that only integer classes are used in the program.
+For example, an approach just following method names would not eliminate the \ct{asString} method from the \ct{Object} or \ct{String} classes in the following code, as it cannot predict that the only \ct{asString} method used is the method from the \ct{Integer} class.
 
 \begin{code}
 MainApp >> start
@@ -771,23 +769,23 @@ This section presents properties that we consider the most relevant to evaluate 
 
 \begin{description}
 
-\item[Base Library Specialization.] A programming language contains several base libraries covering very common and generic code. Not all the code units in these libraries are used in every application. An ideal tailoring solution should tailor base libraries of the language to reduce an application's deployment memory footprint.
+\item[Base-Library Specialization.] A programming language contains several base libraries covering very common and generic code. Not all the code units in these libraries are used in every application. An ideal tailoring solution must tailor base libraries of the language to reduce an application's deployment memory footprint.
 
-\item[Third Party Libraries Specialization.] Applications use several third-party libraries and frameworks covering several aspects of application development such as user interfaces, persistence or publication of services. Third party libraries contain large code bases and many dependencies. Thus, an ideal tailoring solution should tailor third-party libraries and frameworks too.
+\item[Third-Party Libraries Specialization.] Applications use several third-party libraries and frameworks covering several aspects of application development such as user interfaces, persistence or publication of services. Third party libraries contain large code bases and many dependencies. Thus, an ideal tailoring solution must tailor third-party libraries and frameworks too.
 
-\item[Legacy Code.] An ideal tailoring solution should be applicable on already existing applications and not require modifications on them, independently of the size of their code-base.
+\item[Legacy Code.] An ideal tailoring solution must be applicable on already existing applications and not require modifications on them, independently of the size of their code-base.
 
-\item[Reflection Support.] An ideal tailoring solution should handle correctly reflective code and resolve the unanticipated code executions in the same way as the application would do during runtime.
+\item[Reflection Support.] An ideal tailoring solution must handle correctly reflective code and resolve the unanticipated code executions in the same way as the application would do during runtime.
 
-\item[General Purpose Infrastructure.] An ideal tailoring solution should produce a version of the application that is able to run on the official production infrastructure~(such as the VM) without overhead.
+\item[General Purpose Infrastructure.] An ideal tailoring solution must produce a version of the application that is able to run on the official production infrastructure~(such as the VM) without overhead.
 
-\item[Flexibility.] An ideal solution for tailoring an application should support many different levels of application. Some applications may not need to tailor base libraries because they are shared with other applications. However, tailoring base libraries may be useful on applications residing alone in constrained devices.
+\item[Flexibility.] An ideal solution for tailoring an application must support many different levels of application. Some applications may not need to tailor base libraries because they are shared with other applications. However, tailoring base libraries may be useful on applications residing alone in constrained devices.
 
-\item[Dynamic typing.] An ideal tailoring solution should be applicable and effective in dynamically-typed languages \ie with no type annotations.
+\item[Dynamic typing.] An ideal tailoring solution must be applicable and effective in dynamically-typed languages \ie with no type annotations.
 
-\item[Minimality.] An ideal tailoring solution achieves at selecting the minimal set of elements that a deployable application should contains. That is, it does not contain extra code units.
+\item[Minimality.] An ideal tailoring solution must succeed at selecting the minimal set of elements that a deployable application should contains. That is, it must not contain extra~(non used) code units.
 
-\item[Completeness.] An ideal tailoring solution guarantees that the deployable application contains all the elements it needs to run without failing.
+\item[Completeness.] An ideal tailoring solution must guarantee that the deployable application contains all the elements it needs to run without failing.
 
 \end{description}
 
