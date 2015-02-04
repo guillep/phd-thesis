@@ -136,18 +136,21 @@ This section presents the features we consider relevant to include in a runtime 
 
 \begin{description}
 
-\item[Manipulate Language Elements.] An application runtime manipulation solution must support the creation and modification of elements that conform the language runtime\eg create and modify of classes and methods.
-\item[Manipulate Execution Elements.] An application runtime manipulation solution must also provide support to manipulate those elements related to a program's execution\eg the creation, pausing and resumption of threads; the introspection of such threads to understand a program's execution.
-\item[Manipulate Objects.] An ideal application runtime manipulation should provide access to objects. It should support class instantiation, and object manipulation.
-\item[Safety.] An application runtime manipulation solution should guarantee that both incorrect modifications cannot be applied, and that correct modifications can be safely applied without leaving the system in an inconsistent state.
+\item[Manipulate Language Elements.] An application runtime manipulation solution must support the creation and modification of elements that conform the language runtime \eg create and modify of classes and methods.
+\item[Manipulate Execution Elements.] An application runtime manipulation solution must provide support to manipulate elements related to a program's execution \eg the creation, pausing and resumption of threads; the introspection of such threads to understand a program's execution.
+\item[Manipulate Objects.] An ideal application runtime manipulation must provide access to objects. It should support class instantiation, and the manipulation of such objects, including access to their fields.
 
-\item[Users level of abstraction.] Whether the user of an application runtime manipulation solution is written in a high-level or low-level language. A solution available to a high-level language enables its users to benefit from the abstractions and expression power of such language.
+\item[Safety.] An ideal application runtime manipulation solution must guarantee that both incorrect modifications cannot be applied, and that correct modifications can be safely applied without leaving the system in an inconsistent state.
+
+\item[Users level of abstraction.] An ideal application runtime manipulation solution must provide its user with the possibility to express its manipulations in a high-level language. In such a way, users can benefit from the abstractions and expression power of such language.
 
 \item[API level of abstraction.] The API of an ideal application runtime manipulation solution must provide the abstractions to manipulate the application runtime in terms of the runtime's constructions.
 
-\item[Mixture of concerns.] The solution should clearly separate the interface to modify the application runtime from other concerns such as the \GC or the JIT compiler.
+\item[Separation of concerns.] The solution should clearly separate \VM and language concerns to avoid transmitting to the language developer the complexities of \VM technology such as the \GC or the JIT compiler.
 
 \end{description}
+
+In the following sections we explore and compare three different categories of solutions that pursue different kind of application runtime manipulation. Such a comparison is based in the criteria developed in this section.
 
 \section{Reflection and Metaprogramming Models}\label{sec:related_work_changing}
 
@@ -740,6 +743,8 @@ This section presents properties that we consider the most relevant to evaluate 
 \item[Completeness.] An ideal tailoring solution guarantees that the deployable application contains all the elements it needs to run without failing.
 
 \end{description}
+
+In the following sections we explore and compare four different categories of solutions that pursue minimizing application memory footprint through application tailoring. Such a comparison is based in the criteria developed in this section.
 
 %The reduction of the deployment footprint of object-oriented applications has been subject of interest both in industry and research since many years. In such regard, we identified four different families of solutions for dead code elimination: dedicated platforms~(cf. Section \ref{section:static_selection_rw}), static analyses~(cf. Section \ref{section:static_rw}), dynamic analyses~(cf. Section \ref{section:dynamic_rw}) and hybrid analyses~(cf. Section \ref{section:hybrid_rw}).
 
