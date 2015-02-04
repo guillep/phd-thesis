@@ -154,6 +154,55 @@ In the following sections we explore and compare three different categories of s
 
 \section{Reflection and Metaprogramming Models}\label{sec:related_work_changing}
 
+Reflection is the capability of a program to reason about and act upon itself.
+Typically we distinguish two forms of reflective access: structural and behavioral \cite{Maes87a}.
+Structural reflection is concerned with the static structure of a program, while behavioral reflection focuses on the dynamic part of a running program.
+Orthogonally to the previous categorization we distinguish between introspection and intercession.
+Introspection refers to the access to a particular reified representation of a program's element, whereas for intercession we mean to alter the reified representation.
+
+\begin{description}
+\item[Structural Reflection.] Structural reflection refers to the access to the static structure of a program.
+A typical example\footnote{Throughout this dissertation we use \PH code examples. The syntax and the basic semantics are explained in \secref{pharo}} is to access the class of an object at runtime.
+
+\begin{code}
+'a string' class.
+\end{code}
+
+An example of structural intercession is to reflectively modify an instance variable of an object.
+
+\begin{code}
+aCar instVarNamed: #driver put: Person new.
+\end{code}
+
+\item[Behavioral Reflection.] Behavioral Reflection means to directly interact with the running program.
+For instance this includes reflectively activating a method.
+
+\begin{code}
+#Dictionary asClass perform: #new
+\end{code}
+
+Another more complex example to dynamically switch the execution context and resend the current method with another receiver.
+
+\begin{code}
+thisContext restartWithNewReceiver: Object new 
+\end{code}
+
+Accessing the receiver of the current method through the execution context is an example of behavioral introspection.
+
+\begin{code}
+thisContext receiver. 
+\end{code}
+\end{description}
+
+There is not always a clear separation between the two types of reflection possible.
+For instance it is possible to add new methods which requires structural reflection.
+At the same we alter the future program execution which also implies that the action was behavior reflection.
+Typically we see that behavioral reflection stops at the granularity of a method.
+For instance in \PH by default it is not possible to directly alter execution on a sub-method level \cite{Denk06a}.
+
+Reflection provides by default most of the characteristics that we need for runtime manipulation, such as the ability to manipulate the execution of a program or the objects themselves.
+In the following sections we present several existing models implementing reflective behavior, making emphasis in each of their weaknesses and strengths.
+
 \subsection*{\textsc{Tower of Interpreters Model}}
 
 The original model of reflection as defined by Smith~\cite{Smit82c} is based on meta-level interpretation. A program is interpreted by an interpreter, such interpreter is interpreted by a meta-interpreter and so on, possibly ad-infinitum. This leads to a tower of interpreters, where each floor defines the semantics of the program~(interpreter of application) it interprets~(Figure \ref{fig:tower_of_interpreters}).
