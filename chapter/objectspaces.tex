@@ -52,7 +52,7 @@ An object space manipulates the virtualized runtime directly, changing the targe
 
 \section{Object Spaces: First-class Application Runtimes} \label{sec:object_space}
 
-An object space is a first-class representation of an object oriented application runtime, meant for its manipulation and control. An object space encapsulates an application runtime and provides with a clear and explicit interface to manipulate it. This interface is split in two different kind of objects: an \ct{objectSpace} object provides with general operations on the virtualized runtime while mirror objects~\cite{Brac04b} provide with operations to manipulate individual objects that reside inside it~(Figure \ref{fig:objectSpaceMirrors}). Specific mirrors, such as the \ct{ClassMirror}, are meant for the manipulation of elements that have a different object-format or runtime representation.
+An object space is a first-class representation of an object oriented application runtime, meant for its manipulation and control. An object space encapsulates an application runtime and provides with a clear and explicit interface to manipulate it. This interface is split in two different kind of objects: an \ct{objectSpace} object provides general operations on the virtualized runtime while mirror objects~\cite{Brac04b} provide operations to manipulate individual objects that reside inside it~(Figure \ref{fig:objectSpaceMirrors}). Specific mirrors, such as the \ct{ClassMirror}, manipulate elements with a different object-format or runtime representation to enforce their internal representation.
 
 \begin{figure}[htb]
 \begin{center}
