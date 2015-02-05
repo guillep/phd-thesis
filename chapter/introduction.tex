@@ -18,12 +18,11 @@
 
 An application runtime is the set of software elements that denote an application during its execution. Narrowing to high-level object-oriented applications, an application runtime includes \eg loaded libraries, classes and methods, created objects and threads. Within an application runtime, we find the \emph{language runtime}. The language runtime is the subset of the application runtime that defines the concepts and behavior available in the language we use \ie the set of structures and constructs that describe the language internals. The language runtime implements the model that the language proposes to the developers.
 
-Manipulating and modifying these language runtimes, and therefore their models, is becoming important in the last years. Multicore hardware brought new problems on concurrency and parallelism; the \emph{cloud} increases the need of software adaptation for application migration and resource tailoring; new resource constrained devices such as phones are widely spread, making ubiquitous computing a real concern. These new technologies present new challenges to software and language developers. The software we use, and in particular the programming languages and tools we use should be easily tailorable to support many of the new challenges that come with new technology and needs.
+Manipulating and modifying these application and language runtimes, and therefore their language models, is becoming important in the last years. Multicore hardware brought new problems on concurrency and parallelism; the \emph{cloud} increases the need of software adaptation for application migration and resource tailoring; new resource constrained devices such as phones are widely spread, making ubiquitous computing a real concern. These new technologies present new challenges to software and language developers. The software we use, and in particular the programming languages and tools we use should be easily tailorable to support many of the new challenges that come with new technology and needs.
 
 We observe, however, that software is not usually designed and thought to easily accept changes. Applications and languages should be either engineered from scratch with change in mind, or a lot of reengineering effort should be invested in them to perform changes. We need tools and methodologies that support such changes~\cite{Nier08b}. The languages and applications we develop should be adaptable to new situations and scenarios.
 
-To address this goal we propose \emph{\Vtt}: a runtime virtualization infrastructure. \Vtt virtualizes an application runtime for its control and manipulation with the ultimate goal of generating specialized versions of it. Manipulations are transparent for the virtualized runtime. We show how \Vtt simplifies the generation of application and language runtimes in two different approaches: language runtime (re)creation by bootstrapping allows us to modify and redefine the concepts a language proposes to its uses; application runtime extraction reduces the memory consumption caused by the code units of an application.
-
+To address this goal we propose \emph{\Vtt}: a runtime virtualization infrastructure. \Vtt virtualizes an application runtime for its control and manipulation with the ultimate goal of generating specialized versions of it. Manipulations are transparent for the virtualized runtime. We show how \Vtt simplifies the generation of application and language runtimes in two different approaches: language runtime (re)creation by bootstrapping allows us to modify and redefine the concepts a language proposes to its users; application runtime extraction reduces the memory consumption caused by the code units of an application.
 
 %For example, an application runtime should be easily tailorable to consume less resources. We can observe that deployed applications contain a set of \emph{code units} such as classes and methods that tend to occupy more memory~(primary and secondary) than necessary.
 %This problem shows itself more evident and harder to control under the usage of third party software. 
@@ -48,7 +47,7 @@ To address this goal we propose \emph{\Vtt}: a runtime virtualization infrastruc
 % =============================================================================
 
 In the context of application runtime manipulation, we face the following question: \emph{What are the elements of high-level programming languages we should focus on?} High-level programs are inherent complex pieces of software. 
-This section proposes a dissection of a high-level language application runtime and states with it the terminology used during the rest of this dissertation. We made this dissection with the objective of understanding the relationship between the software elements. We believe that understanding this relationship is important in the context of this thesis. Figure \ref{fig:whatToEvolve} shows an schema of this dissection.
+This section proposes a dissection of a high-level language application runtime and states with it the terminology used during the rest of this dissertation. We made this dissection with the objective of understanding the relationship between the software elements. We believe that understanding these relationships is important in the context of this thesis. Figure \ref{fig:whatToEvolve} shows a schema of this dissection.
 
 \begin{figure}[!ht]
 \begin{center}
@@ -57,15 +56,15 @@ This section proposes a dissection of a high-level language application runtime 
 \end{center}
 \end{figure}
 
-We identify inside a running application the following elements. First, the application runtime contains the \emph{application specific} and the \emph{language} runtimes that represent respectively the elements of the application under execution and the language that provides support for it. The \VM provides as well an execution support for the application runtime. The overlapping shows the interrelations between these three components. 
+We identify inside a running application the following elements. First, the application runtime contains the \emph{application specific} and the \emph{language} runtimes that represent respectively the elements of the application under execution and the language that provides support for it. The Virtual Machine~(\VM) provides as well an execution support for the application runtime. The overlapping shows the interrelations between these three components. 
 
-Note that some authors may include the \VM inside a more broader runtime system. In this thesis, however, we narrow our study to those programs that run on top of a \VM and their representation during execution. This is the reason why we use the terminology \emph{application runtime} instead of runtime system and we consider this component separately from the \VM.
+Note that some authors may include the \VM inside a broader runtime system. In this thesis, however, we narrow our study to those programs that run on top of a \VM because most of modern object-oriented languages~(\eg Java, Python, Ruby, JavaScript, C\#) are \VM-based. Additionally, this is the reason why we use the terminology \emph{application runtime} instead of runtime system and we consider this component separately from the \VM.
 
 \subsection{Application Runtime}
 
-The application runtime is the set of software elements that constitute an application during its execution. An application runtime includes software elements that describe the application's structure during its execution, such as its libraries, classes and methods, and elements related with the application's execution, such as threads, the execution stack with its activation records and created objects. In the context of this thesis, we do not consider the Virtual Machine(\VM) as a part of the application runtime, but as a machine that supports its execution.
+The application runtime is the set of software elements that constitute an application during its execution. An application runtime includes software elements that describe the application's structure during its execution, such as its libraries, classes and methods, and elements related with the application's execution, such as threads, the execution stack with its activation records and created objects. In the context of this thesis, we do not consider the Virtual Machine as part of the application runtime, but as a machine that supports its execution.
 
-The subset of the application runtime that describes the language we use is the \emph{language runtime}. The language runtime includes the set of structures and constructs that describe the language concepts and behavior. This language runtime is the representation at runtime of the model that the language proposes to the developers. For example, Smalltalk and Ruby propose that an application is structured in classes with implicit metaclasses \ie a class is instance of a (\emph{meta})class that describes its behavior. Therefore, they also contain structures that represent the concepts of a \ct{Class} and \ct{Metaclass} and control the implicit creation of a metaclass for each new class. Additionally, a language runtime is not only composed of classes but it also includes objects. For example, it contains a table of unique strings or \emph{symbols} used to univocally name objects. A language runtime is usually common to different applications in the same language: it is always present and contains always the same elements.
+The subset of the application runtime that describes the language we use is the \emph{language runtime}. The language runtime includes the set of structures and constructs that describe the language concepts and behavior. This language runtime is the representation at runtime of the model that the language proposes to the developers. For example, Smalltalk and Ruby propose that an application is structured in classes with implicit metaclasses \ie a class is instance of a (\emph{meta-})class that describes its behavior. Therefore, they also contain structures that represent the concepts of a \ct{Class} and \ct{Metaclass} and control the implicit creation of a metaclass for each new class. Additionally, a language runtime is not only composed of classes but it also includes objects. For example, it contains a table of unique strings or \emph{symbols} used to univocally name objects. A language runtime is usually common to different applications in the same language: it is always present and contains always the same elements.
 
 Within an application runtime we identify also the \emph{application specific runtime}. The application specific runtime is the subset of the application runtime that includes the elements that belong to the particular application. It contains, in other words, the classes written by the application developer. The application specific runtime follows the model and concepts imposed by the language \ie it is expressed in terms of the language runtime, and thus coupled to it. For example, the application specific classes of a Smalltalk or Ruby application have an implicitly created metaclass.
 
@@ -97,34 +96,43 @@ Garbage Collectors (\GC) evolved from simple helpers to complex software artifac
 %These constraints denote the \emph{execution model} of a \VM \ie the contract required to a language runtime to execute it.
 %This execution model includes the format in which the runtime elements are layout in memory~(objects, classes, methods), the followed object model (\eg class-based or prototype-based) and the instruction set that the runtime must implement.
 
+\section{Motivation: Changing Technologies}
+
 \section{Problem Statement}
 
-This thesis focuses in the generation of specialized object-oriented high-level application and language runtimes for languages that run on a \VM. In such context, we identify a main question: \newline
+This thesis focuses on the generation of specialized high-level object-oriented application and language runtimes for languages that run on a \VM. In this context, we observe the following problems:
 
-\blockquote{\emph{What is the infrastructure that may allow to create application runtimes that are specialized to perform in new scenarios?}}\newline
-
-We lack an infrastructure for safe application runtime manipulation. This infrastructure must allow both the specialization and extension of application and language runtimes. We identify these more concrete problems that such an infrastructure should solve:
 \begin{description}
-\item[Unclear \VM-Language interface.] The relation between the language and the \VM, particularly its execution model, remains often unclear in \VM hardcoded assumptions in the multiple \VM components. This unclear interface impacts on its clients, which are exposed to the complexities of the \VM internals to change the application runtime.
 
-\item[Core runtime changes remain low-level.] Changing a language or application runtime representation often forces us to modify such representation without the proper level of abstraction. Instead we should work on low-level concerns such as direct memory manipulation.
+\item[The \VM defines the language model.] Often, the \VM is the software component in charge of initializing the application and language runtime~(and thus its language model). Changing it requires us to have access to the \VM code, and forces us to modify such representation without the proper level of abstraction.
+
+\item[Unclear \VM-Language interface.] The relationship between the language and the \VM, particularly its execution model, often remains unclear. This unclear interface comes from hardcoded assumptions in the multiple \VM components. Its clients are exposed to the complexities of the \VM internals when it comes to change the application runtime.
+
 
 %\item[Mismatch between a language model and the \VM execution model.] The execution model imposed by a \VM is often more general than the particular languages that run of top of it. This means that a \VM can support different language models on top of it as long as they satisfy its execution model. However, the \VM often fixes the language model during its language initialization step, preventing us to easily modify it.
 
 \end{description}
 
+\noindent Then, we pose the following research question:
+
+\begin{center}\emph{What is an infrastructure that can better support the creation of specialized application runtimes?}
+\end{center}
+
+We would like to have an infrastructure featuring safe application runtime manipulation, and allowing both the specialization and extension of application and language runtimes.
+
 \section{Contributions}
 
-To solve the stated problems, we base our work on the following claim: \newline
+To solve the stated problems, we make the following claim: \newline
 
-\blockquote{\emph{First-class runtimes support the manipulation of Application Runtimes and thus, the generation of specialized versions of them.}}\newline
+\begin{center}\blockquote{\emph{First-class runtimes support better the manipulation of Application Runtimes and thus, the generation of specialized versions of them.}}
+\end{center}
 
 First-class runtimes should provide a clear and high-level \VM-Language interface. This interface must hide the internal details of the \VM complexities and allow us to easily manipulate the elements inside an application runtime. At the same time, it should ensure that the \VM execution model is honored during such manipulations.
 
 The contribution of this thesis is three-fold. The main contribution is \Vtt, an \emph{infrastructure for application runtime virtualization}. This infrastructure allows us to manipulate and control a virtualized application runtime through a first-class runtime object, namely an object space.
 We validate this language virtualization infrastructure by exploring two approaches for application runtime generation:
 \begin{description}
-\item[Language Runtime Bootstrapping.] We developed a bootstrapping process for an object-oriented high-level language. Bootstrapping is an explicit process that describes how a language runtime is created using the same language that it generates at the end. Bootstrapping provides us with full control on what are the elements installed on the application runtime at the end.
+\item[Language Runtime Bootstrapping.] We developed a bootstrapping process for an object-oriented high-level language. Bootstrapping is an explicit process that describes how a language runtime is created using the same language that it generates at the end. Bootstrapping provides us with full control on what are the elements installed in the application runtime at the end.
 \item[Application Runtime Tailoring.] We developed a novel dynamic application runtime tailoring approach named Run-Fail-Grow~(RFG). RFG starts with an empty application runtime and it installs elements inside it as they are needed during at runtime. With RFG we can create a specialized runtime that contains only the used elements of an application.
 \end{description}
 
