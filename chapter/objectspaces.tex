@@ -33,7 +33,7 @@ This chapter focuses on the model of our solution and presents its core ideas. T
 
 \section{\Vtt Architecture} \label{sec:virtualization_overview}
 
-\Vtt presents an architecture where multiple application runtimes can run on the same process independently. They do not share any \VM or language state \ie each one has its own interpreter, stack, classes and objects. In this setting, a virtualized application runtime is an application runtime that is monitored by another application runtime. The application runtime that takes the role of controlling the virtualized runtime is the hypervisor runtime. The hypervisor runtime is a full-fledged application runtime, providing us with the expression power and abstractions of a high-level language to express our runtime hypervisor. The hypervisor runtime includes a first-class representation of an \emph{object space} and \emph{runtime hypervisor}. The first-class object space represents the virtualized runtime and provides operations for its manipulation. A first-class runtime hypervisor object is the client of such object space implementing a particular manipulation on it \eg runtime update or failure detection. Figure \ref{fig:objectSpaceOverview_architecture} provides an overview of the \Vtt's architecture.
+\Vtt presents an architecture where multiple application runtimes can co-exist on the same process independently from each other. They do not share any \VM or language state \ie each one has its own interpreter, stack, classes and objects. In this setting, a virtualized application runtime is an application runtime that is monitored by another application runtime. The application runtime that takes the role of controlling the virtualized runtime is the hypervisor runtime. The hypervisor runtime is a full-fledged application runtime, providing us with the expression power and abstractions of a high-level language to express our runtime hypervisor. A first-class object space object represents the virtualized runtime and provides operations for its manipulation. A first-class runtime hypervisor object uses the object space and implements a particular manipulation on it \eg runtime update, failure detection, browsing and debugging. Figure \ref{fig:objectSpaceOverview_architecture} provides an overview of the \Vtt's architecture.
 
 \begin{figure}[htb]
 \begin{center}
@@ -42,12 +42,12 @@ This chapter focuses on the model of our solution and presents its core ideas. T
 \end{center}
 \end{figure}
 
-An object space manipulates the virtualized runtime directly, changing the application runtime's state and manipulating the \VM-language interface. All modifications are applied from the outside of the target virtualized runtime, in contrast with reflective architectures where such changes are applied from the same application runtime under modification. Doing so provides \Vtt with the following properties:
+An object space manipulates the virtualized runtime directly, changing the target's application runtime state and manipulating the \VM-language interface. All modifications are applied from the outside of the target virtualized runtime, in contrast with reflective architectures where such changes are applied from the same application runtime under modification. Doing so provides \Vtt with the following properties:
 
 \begin{description}
 \item[Transparency.] Our solution does not require any changes in the applications residing inside the virtualized runtime. Thus, we can virtualize existing application runtimes without modifying them \ie \Vtt does not require virtualized applications to include particular libraries, use particular interfaces nor change their execution model.
 
-\item[Application independence.] Our solution does not depend on the particular application inside the virtualized runtime. Different runtime hypervisors can be written for different use cases, including application specific and general ones. The limitation of this approach is, however, its dependance on the \VM imposed execution model.
+\item[Application independence.] Our solution does not depend on the particular application inside the virtualized runtime. Different runtime hypervisors can be written for different use cases, including application specific and general ones. The limitation of this approach is, however, its dependance on the execution model imposed by the \VM.
 \end{description}
 
 \section{Object Spaces: First-class Application Runtimes} \label{sec:object_space}
