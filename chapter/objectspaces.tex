@@ -17,10 +17,10 @@ This chapter presents the model of our Virtualization Application Runtime infras
 \end{center}
 \end{figure}
 
-The runtime hypervisor runs in the same process than the virtualized runtime to monitor and manipulate it directly. However, the runtime hypervisor runs inside a different application runtime than the virtualized runtime it supervises \ie basic objects, classes and \VM structures are not shared between the runtime hypervisor and the virtualized runtime. This no sharing strategy pursues to allow the hypervisor to change any part of the virtualized runtime without affecting itself~(cf. Figure \ref{fig:virtualization_introduction}).
+The runtime hypervisor runs in the same process than the virtualized runtime to monitor and manipulate it directly. However, the runtime hypervisor does not share the same application runtime than the virtualized runtime it supervises \ie basic objects, classes and \VM structures are not shared between the runtime hypervisor and the virtualized runtime. Instead, both the virtualized and hypervisor runtimes contain their own copies of those elements. This no sharing strategy pursues to allow the hypervisor to change any part of the virtualized runtime without affecting itself as it happens in reflective architectures~(cf. Figure \ref{fig:virtualization_introduction}).
 
-A first class runtime hypervisor manipulates the virtualized runtime through an object space. This hypervisor can also perform cross-runtime message-sends by injecting processes, as the direct message-send \VM mechanism would fail the method lookup~(Section \ref{sec:isolation}).
-Finally, a more granular control can be made through virtual execution. A virtual code interpreter gives us full intercession power over the execution of the virtualized application for usages such as tracing or debugging~(Section \ref{sec:interpretation}).
+A first class runtime hypervisor manipulates the virtualized runtime through a first-class object space object. This hypervisor can also perform cross-runtime message-sends by injecting processes, as the direct message-send \VM mechanism would fail the method lookup~(Section \ref{sec:isolation}).
+Finally, a more granular control can be made through virtual execution. For this, a virtual code interpreter provides full intercession power over the execution of the virtualized application for usages such as tracing or debugging~(Section \ref{sec:interpretation}).
 
 This chapter focuses on the model of our solution and presents its core ideas. The following \chapref{prototype} will present the particular implementation details of our prototype implementation of \Vtt on Pharo.
 
