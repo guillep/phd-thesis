@@ -67,20 +67,14 @@ These objects make explicit through the operations they expose two important par
 
 The \VM setup is the configuration the \VM needs to run.
 For example, a \VM may need the boolean objects \ct{true} and \ct{false} to push them as the result of a boolean operation at runtime.
-This configuration is usually done only during the language initialization, before execution, as the \VM cannot anticipate the usage of such elements in a program from beforehand.
+This configuration is usually done only during the language runtime initialization, before execution of a program, as the \VM cannot easily anticipate the usage of such elements in a program from beforehand.
 The \VM setup interface allows us to configure the following kind of elements:
 
 \begin{description}
 \item[Well-known objects of the language.] Objects such as \ct{nil}, \ct{true} or \ct{false} are needed at runtime for different purposes. For example, the garbage collection needs \ct{nil} at runtime to update weak references. Other particular objects may be held by the \VM as prototypes to speed-up instantiation time of commonly used objects.
-\item[Special classes.] Special classes are those needed by the \VM at runtime to make safety checks, create instances or handle special cases such as immediate objects. For example, when mutating a \ct{String} object the Pharo \VM checks that the introduced object is a \ct{Character} object, to avoid putting the \ct{String} into an invalid state. Also, the \VM requires references to those classes that it instantiates~(instead of being created through the \ct{new} message in program). For example, the Pharo \VM instantiates a \ct{Block} object when it founds the bytecodes that correspond a block expression at runtime. Finally, immediate objects are objects that are encoded inside an object reference instead of occupying a place inside the heap. Immediate objects do not include a reference to their class and therefore the \VM needs to know how to map each particular reference encoding to its corresponding class to perform the method-lookup. 
-\item[Special messages.] Special messages are callbacks that the \VM will invoke into the application to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(the equivalent to \eg Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will send a \ct{doesNotUnderstand} message to the receiver object and let the user program decide what to do in such a case.
-\end{description}
-
-This \VM setup interface avoids to hardcode particular knowledge of a language inside the \VM. This gives us the possibility to easily change particular language internals such as renaming special messages or changing the class hierarchy of special classes without leaving the runtime in an inconsistent state. In the extreme, we could port another language to this VM, as long as they share similar execution semantics \ie the \VM execution model is compatible with the given language. We present an example of such an interface for the Pharo language. The \ct{objectSpace} object contains the \VM setup interface. \gp{how should I write such an interface in a smalltalkish way? (note I want to emphasize that they receive as parameter mirrors and return mirrors as well)}
 
 \begin{code}
 ObjectSpace {
-    "Well-known objects"
     mirror getNil();
     mirror getTrue();
     mirror getFalse();
@@ -88,18 +82,29 @@ ObjectSpace {
     void setNil(mirror aNilObject);
     void setTrue(mirror aTrueObject);
     void setFalse(mirror aFalseObject);
-    
-    "Special Classes"
-    void setArrayClass(classMirror anArrayClass);
-    void setBlockClass(classMirror aBlockClass);
-    ...
-    ...
-    
-    "Special Messages"
-    void setDoesNotUnderstandSelector(mirror aSelector);
-    ...
 }
 \end{code}
+
+\item[Special classes.] Special classes are those needed by the \VM at runtime. They are needed to perform safety checks, create instances or handle special cases such as immediate objects. For example, when mutating a \ct{String} object the Pharo \VM checks that the introduced object is a \ct{Character} object, to avoid putting the \ct{String} into an invalid state. Also, the \VM requires references to those classes that it instantiates directly~(instead of being created through the \ct{new} message in program). For example, the Pharo \VM instantiates a \ct{BlockClosure} object when it founds the bytecodes that correspond a block expression at runtime. Finally, immediate objects are objects that are encoded inside an object reference instead of occupying a place inside the heap. Immediate objects do not include a reference to their class and therefore the \VM needs to know how to map each particular reference encoding to its corresponding class to perform the method-lookup. 
+
+\begin{code}
+ObjectSpace {
+    void setArrayClass(classMirror anArrayClass);
+    void setBlockClass(classMirror aBlockClass);
+}
+\end{code}
+
+\item[Special messages.] Special messages are callbacks that the \VM will invoke into the application to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(the equivalent to \eg Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will send a \ct{doesNotUnderstand} message to the receiver object and let the user program decide what to do in such a case.
+
+\begin{code}
+ObjectSpace {
+    void setDoesNotUnderstandSelector(mirror aSelector);
+}
+\end{code}
+
+\end{description}
+
+This \VM setup interface avoids to hardcode particular knowledge of a language inside the \VM. This gives us the possibility to easily change particular language internals such as renaming special messages or changing the class hierarchy of special classes without leaving the runtime in an inconsistent state. Being radical, we could think on porting another language to this VM, as long as they share similar execution semantics \ie the \VM execution model is compatible with the given language and we configure this interface accordingly.
 
 
 %In our particular implementation the list of classes exposed through this interface are those of literal objects and those related with the internal \VM execution model. For the sake of completeness the list of classes is the following: \ct{Array}, \ct{Association}, \ct{BlockClosure}, \ct{ByteArray}, \ct{ByteString}, \ct{ByteSymbol}, \ct{Character}, \ct{Context}, \ct{Float}, \ct{SmallInteger}, \ct{LargePositiveInteger}, \ct{LargeNegativeInteger}, \ct{Message}, \ct{CompiledMethod}, \ct{MethodDictionary}, \ct{Semaphore}, \ct{WeakFinalizationList}.
