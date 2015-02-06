@@ -39,12 +39,9 @@ In addition, an unclear separation between the \VM and language concerns in the 
 
 %In this context we pose the following question: \emph{How do we build and change language runtimes?}
 Notice that this language initialization step is often baptized as the language bootstrapping step. However, we use for it the name \emph{language initialization} and present the concept of \textbf{bootstrapping} as it is known in the context of compilers~(where a compiler can compile itself). We explore and expand this concept in the context of object-oriented languages. We can then see bootstrapping as a high-level low-level programming approach for  language runtime generation~\cite{Fram09a}~(cf. Section \ref{sec:bootstrapping}).
-
 Setting up a bootstrap process requires a circular definition of the language runtime we are defining. This circular definition provides the abstraction power and tools of the language itself for its definition~(cf. Section \ref{sec:circular_definition}). Additionally, this definition states the required steps to build a language runtime from scratch~(cf. Section \ref{sec:bootstrapping_process}).
 
-\gp{add a line on bootstrapping without spell}
-
-Finally, we show how \Vtt represents a robust infrastructure that helps solving the issues that arise from defining a language issues~(cf. Section \ref{sec:bootstrapping_infrastructure}). Our \Vtt based bootstrap uses mirrors to manipulate objects while they cannot execute code by themselves because the runtime is under creation~(\eg send a message when no methods are yet installed). Additionally, our infrastructure allows us to trace the execution of the bootstrap code to detect the impact that a change in the language may have in the bootstrap process.
+We briefly present a first prototype implementation of such a bootstrap without the support of \Vtt~(cf. Section \ref{sec:bootstrapping_no_espell}). Afterwards, we show how \Vtt represents a robust infrastructure that helps solving the language runtime bootstrapping and leverages the problems that appears from it~(cf. Section \ref{sec:bootstrapping_infrastructure}). Our \Vtt based bootstrap uses a special bootstrapping interpreter to manipulate objects while they cannot execute code by themselves because the runtime is under creation \ie we cannot send a message when no methods are yet installed~(cf. Section \ref{sec:ast_interpreter}). Additionally, our infrastructure allows us to trace the execution of the bootstrap code to detect the impact that a change in the language may have in the bootstrap process~(cf. Section \ref{sec:continuous_bootstrapping}).
 
 
 % ===========================================================================
@@ -272,7 +269,7 @@ This step provides the possibility to swap incorrect references with the right o
 This approach's main limitation is that it prevents us to fully use the power of the language before the serialization because it may lead to undesired side effects due to the incorrect references.
 In other words, we cannot use and test completely the bootstrapped runtime before its serialization.
 
-\section{Bootstrapping with \Vtt}
+\section{Bootstrapping with \Vtt}\label{sec:bootstrapping_infrastructure}
 
 Following those principles, we developed a bootstrap architecture for an object-oriented language based on \Vtt~(Figure \ref{fig:bootstrapping_overview}). This architecture presents three explicit components that decouple the initialization of the language runtime from the \VM initialization so we can define different languages on top of the same \VM. Additionally we can modify the language runtime using the abstractions and tools of the high-level language.
 
