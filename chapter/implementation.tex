@@ -69,11 +69,11 @@ In \Vtt, we modified part of the green thread mechanism to allow the scheduling 
 \end{center}
 \end{figure*}
 
-Finally, the window time control was implemented reusing the existing process preemption mechanism in the \VM. A separate thread, namely the \emph{heartbeat}, is awaken every 200 milliseconds and activating a flag that indicates a preemption may occur. When the \VM code interpreter arrives to one of the safe suspension points (\ie a point where suspending the current execution will not leave the current process in a incoherent state) the code interpreter preempts the active process if the corresponding flag was activated. Such safe suspension points are in our implementation the back jump and message-send bytecodes. These suspension points avoid to suspend the execution in between of \eg operations that perform stack alignment. In \Vtt we modified the preemption code to activate another application runtime if available.
+Finally, the window time control was implemented reusing the existing process preemption mechanism in the \VM. A separate thread, namely the \emph{heartbeat}, is awaken every 200 milliseconds and activates a flag that indicates a preemption may occur. When the \VM code interpreter arrives to one of the safe suspension points (\ie a point where suspending the current execution will not leave the current process in a incoherent state) the code interpreter preempts the active process if the corresponding flag was activated. Such safe suspension points are in our implementation the back jump and message-send bytecodes. These suspension points avoid to suspend the execution in between of \eg operations that perform stack alignment. In \Vtt we modified the preemption code to activate another application runtime if available.
 
 \section{Mirror Implementation}\label{sec:implementation_mirrors}
 
-Our mirror implementation manipulate the objects inside an object space by using already Pharo \VM primitives. A primitive in Pharo is a function executed at the \VM level. To execute a primitive from the language, this primitive should be available as a method. Then, we have to send the corresponding message to the object subject of the primitive:
+Our mirror implementation manipulate the objects inside an object space by using already existing Pharo \VM primitives. A primitive in Pharo is a function executed at the \VM level. To execute a primitive from the language, this primitive should be available as a method. Then, we have to send the corresponding message to the object subject of the primitive:
 
 \begin{code}
 Array >> size [
@@ -89,7 +89,7 @@ We want however, to avoid cross-runtime message-sends, we bypass the message-sen
 	\item \textbf{Execute a primitive on an object.} It is possible to send a message to an object, so a primitive is executed on the receiver. This primitive is implemented in Pharo's \ct{ProtoObject} class as \textbf{\ct{tryPrimitive:withArgs:}} with number 118 and receives as argument the number of the primitive and an array or arguments.
 \end{description}
 
-We use primitive \ct{receiver:withArguments:executeMethod:} to execute the primitive method \ct{tryPrimitive:withArgs:} on the object from the virtualized runtime, avoiding the \emph{cross image-message send} and executing directly the primitive on the given object.
+We use primitive \ct{receiver:withArguments:executeMethod:} to execute the primitive method \ct{tryPrimitive:withArgs:} on the object from the virtualized runtime, avoiding the \emph{cross image-message send} and executing directly the primitive on the given object. The first avoids performing a message-send to the object inside the virtualized runtime. The second provides the ability to execute any arbitrary primitive.
 
 \begin{code}
 CompiledMethod
@@ -98,14 +98,14 @@ CompiledMethod
        executeMethod: (ProtoObject >> #tryPrimitive:withArgs:)
 \end{code}
 
-Our \Vtt prototype includes one mirror per type of object supported by the Pharo \VM. Notice that as some runtime elements such as methods, activation records or even processes are reified as objects in Pharo, we can manipulate them through mirrors without developing new support for them in the \VM:
+Using this mechanism, \Vtt prototype implements one mirror per type of object supported by the Pharo \VM. Notice that as some runtime elements such as methods, activation records or even processes are reified as objects in Pharo, we can manipulate them through mirrors without developing new support for them in the \VM:
 
 \begin{description}
 \item[Object mirrors.] Mirrors for objects containing just object references such as an \ct{Array} or an \ct{OrderedCollection}.
-\item[Word mirrors.] Mirrors for objects containing only non-reference word fields such as a \ct{Float} or a \ct{WordArray} object.
+\item[Word mirrors.] Mirrors for objects containing only non-reference word size fields such as a \ct{Float} or a \ct{WordArray} object.
 \item[Byte mirrors.] Mirrors for objects containing non-reference byte size fields such as a \ct{ByteArray} or a \ct{ByteString}. 
-\item[Class mirror.] Mirrors for class like objects. They control the manipulation of classes and honor the format of a class in the Pharo \VM which should necessary have as its first three instance variables the superclass of the class, its format and method dictionary.
-\item[Method dictionary mirror.] Mirrors for method dictionaries honoring the \VM invariants for method installation \ie using the identity hash of the key object instead for doing the lookup in the method dictionary.
+\item[Class mirror.] Mirrors for class like objects. They control the manipulation of classes and enforce the format of a class in the Pharo \VM which should necessary have as its first three instance variables the superclass of the class, its format and method dictionary.
+\item[Method dictionary mirror.] Mirrors for method dictionaries enforcing the \VM invariants for method installation \ie using the identity as a hash for the key object for doing the lookup in the method dictionary.
 \item[Method mirror.] Mirrors for method objects. Method objects in the Pharo \VM are objects with a mixed format. They contain object references to their literals, and byte fields with their bytecode.
 \item[Context mirror.] Mirror for context objects. A context object is reified lazily by the Pharo \VM and contains a variable amount of fields denoting the local variables of a scope.
 \item[Process mirror.] Mirror for process objects. Process objects are used to manage the execution of a Pharo runtime. They can be resumed, suspended or finalized.
