@@ -273,9 +273,9 @@ In \Vtt and because of the shared garbage collection, it may happen that a GC ac
 % ===========================================================================
 \section{Conclusion and Summary}
 
-This chapter explores the implementation aspect of our \Vtt prototype on the Pharo programming language. Our prototype includes a language-side library written for the Pharo and modifications in the Pharo \VM. We based our prototype in the \emph{Stack} Pharo \VM flavor. This \VM is the same as the production Pharo \VM except by the absence of a JIT compiler.
+This chapter explores the implementation aspect of our \Vtt prototype on the Pharo programming language. Our prototype includes a language-side library written for the Pharo and modifications in the Pharo \VM. We based our prototype in the \emph{Stack} Pharo \VM flavor. This \VM is the same as the production Pharo \VM except for the absence of a JIT compiler.
 
-We implemented the \VM Setup interface by exposing Pharo's special object array, an array object referencing those particular objects that the \VM access directly at runtime. This special array contains also the state of the code interpreter, as it contains a reference to the process scheduler of the language. Thus, by exchanging the special objects array of the \VM code interpreter we can make a context switch between different application runtimes.
+We implemented the \VM Setup interface by exposing Pharo's special object array, an array object referencing objects that the \VM access directly at runtime. This special array contains also the state of the code interpreter, as it contains a reference to the process scheduler of the language. Thus, by exchanging the special objects array of the \VM code interpreter we can make a context switch between different application runtimes.
 
 Mirrors are implemented by the combination of existing \VM primitives and do not require new \VM support for their implementation. Our mirror hierarchy covers all kind of objects that the \VM support. Particularly, the already existing reification of execution-related elements such as processes and contexts allows us to implement their manipulation through mirrors and use the same mechanisms as for regular objects.
 
