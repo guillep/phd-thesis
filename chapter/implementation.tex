@@ -116,12 +116,12 @@ Our \Vtt prototype includes one mirror per type of object supported by the Pharo
 
 \section{Memory Layout} \label{sec:memory}
 
-In \Vtt, all objects belonging to the different language runtimes share a unique object heap. Objects are mixed in this heap and are objects from the same language runtime not necessarily contiguous, as shown in Figure \ref{fig:heap}. However, Although they are mixed, they are logically separated as they conform different object graphs. Pharo being a safe-language~\cite{Hawb98a,Hawb02a} prevents us to forge references~(\ie creating references from numbers using pointer arithmetic) and isolates the object graphs of each runtime system.
+In \Vtt, all objects belonging to the different application runtimes share a unique object heap. Objects are mixed in this heap and are objects from the same application runtime not necessarily contiguous, as shown in Figure \ref{fig:heap}. However, Although they are mixed, they are logically separated as they conform different object graphs. Pharo being a safe-language~\cite{Hawb98a,Hawb02a} prevents us to forge references~(\ie creating references from numbers using pointer arithmetic) and isolates the object graphs of each runtime system.
 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.9\linewidth]{object_spaces_heap}
-\caption{\textbf{A unique heap containing objects from different language runtimes.} Objects from the language runtime I and language runtime II are mixed in the heap. In this figure, after the \ct{nil}, \ct{true} and \ct{false} instances that belong to language runtime I, follow the corresponding ones of the language runtime II, which can in order be followed by objects of the former, like the string \textbf{`hi'}. \label{fig:heap}}
+\caption{\textbf{A unique heap containing objects from different application runtimes.} Objects from the application runtime I and application runtime II are mixed in the heap. In this figure, after the \ct{nil}, \ct{true} and \ct{false} instances that belong to application runtime I, follow the corresponding ones of the application runtime II, which can in order be followed by objects of the former, like the string \textbf{`hi'}. \label{fig:heap}}
 \end{center}
 \end{figure}
 
@@ -254,32 +254,32 @@ For the sake of completion, we document in this subsection the aspects that have
 
 \subsection{JIT Compilation}
 
-Just In Time~(JIT) compilation is available in the production distribution of the Pharo \VM. The existing JIT compiler doubles the performance of Pharo Stack \VM while adding yet another complex component in the \VM machinery. To reach such performance, it makes assumptions on the memory layout of the running language runtime. For example, it requires highly accessed objects such as \ct{nil}, \ct{true} or \ct{false} to remain in the same memory position to optimize their access.
+Just In Time~(JIT) compilation is available in the production distribution of the Pharo \VM. The existing JIT compiler doubles the performance of Pharo Stack \VM while adding yet another complex component in the \VM machinery. To reach such performance, it makes assumptions on the memory layout of the running application runtime. For example, it requires highly accessed objects such as \ct{nil}, \ct{true} or \ct{false} to remain in the same memory position to optimize their access.
 
-However, these assumptions that are broken by \Vtt, as it introduces more than one language runtime in the same heap. Therefore, more than one version of special objects such as \ct{nil} are present in the same heap. Moreover, these objects can be moved in memory on GC compaction. Supporting JIT compilation in \Vtt would require a complete reengineering of the existing JIT compiler and possible the \VM.
+However, these assumptions that are broken by \Vtt, as it introduces more than one application runtime in the same heap. Therefore, more than one version of special objects such as \ct{nil} are present in the same heap. Moreover, these objects can be moved in memory on GC compaction. Supporting JIT compilation in \Vtt would require a complete reengineering of the existing JIT compiler and possible the \VM.
 
 \subsection{Plugin and Native Libraries State}
 
-Pharo \VM allows one to access resources from outside the language runtime through native libraries and \VM plugins. A \VM plugin is a native library that satisfies a particular interface to communicate with the \VM. A native library may keep its own state and may not be thought to be loaded several times in the same process. The same problem appears in \VM plugins, which are often developed assuming the existence of only one application runtime so their state is global for the whole \VM.
+Pharo \VM allows one to access resources from outside the application runtime through native libraries and \VM plugins. A \VM plugin is a native library that satisfies a particular interface to communicate with the \VM. A native library may keep its own state and may not be thought to be loaded several times in the same process. The same problem appears in \VM plugins, which are often developed assuming the existence of only one application runtime so their state is global for the whole \VM.
 
 The main \VM modifications we made in our prototype to support the basic execution of several application runtimes do not include modification on \VM plugins, nor it handles the case of loading multiple versions of the same native library from different runtimes. The usage of some of these elements in \Vtt may not be fully working.
 
 \subsection{Finalization of External Resources}
 
-Pharo \VM supports the concept of weak references. If an object is only referenced by a weak reference, this object will be garbage collected and this weak reference replaced by a reference to \ct{nil}. However, before garbage collecting the object, the \emph{finalization mechanism} will send the \ct{finalize} message to the object about to be collected to release any resources it may be holding. Finalization is useful to release resources external to the language runtime such as files or sockets. In Pharo, this finalization process is activated from the \VM but executed by the language runtime.
+Pharo \VM supports the concept of weak references. If an object is only referenced by a weak reference, this object will be garbage collected and this weak reference replaced by a reference to \ct{nil}. However, before garbage collecting the object, the \emph{finalization mechanism} will send the \ct{finalize} message to the object about to be collected to release any resources it may be holding. Finalization is useful to release resources external to the application runtime such as files or sockets. In Pharo, this finalization process is activated from the \VM but executed by the application runtime.
 
-In \Vtt and because of the shared garbage collection, it may happen that a GC activated by one language runtime (the active language runtime) collects an object from another suspended language runtime. In such case, the \VM will activate only the finalization of the active language runtime. Then, the collected object from the suspended language runtime does not have the possibility to finalize its resources. This may cause external resource leaks, since they can be garbage collected but not properly finalized and released.
+In \Vtt and because of the shared garbage collection, it may happen that a GC activated by one application runtime (the active application runtime) collects an object from another suspended application runtime. In such case, the \VM will activate only the finalization of the active application runtime. Then, the collected object from the suspended application runtime does not have the possibility to finalize its resources. This may cause external resource leaks, since they can be garbage collected but not properly finalized and released.
 
 % ===========================================================================
 \section{Conclusion and Summary}
 
 This chapter explores the implementation aspect of our \Vtt prototype on the Pharo programming language. Our prototype includes a language-side library written for the Pharo and modifications in the Pharo \VM. We based our prototype in the \emph{Stack} Pharo \VM flavor. This \VM is the same as the production Pharo \VM except by the absence of a JIT compiler.
 
-We implemented the \VM Setup interface by exposing Pharo's special object array, an array object referencing those particular objects that the \VM access directly at runtime. This special array contains also the state of the code interpreter, as it contains a reference to the process scheduler of the language. Thus, by exchanging the special objects array of the \VM code interpreter we can make a context switch between different language runtimes.
+We implemented the \VM Setup interface by exposing Pharo's special object array, an array object referencing those particular objects that the \VM access directly at runtime. This special array contains also the state of the code interpreter, as it contains a reference to the process scheduler of the language. Thus, by exchanging the special objects array of the \VM code interpreter we can make a context switch between different application runtimes.
 
 Mirrors are implemented by the combination of existing \VM primitives and do not require new \VM support for their implementation. Our mirror hierarchy covers all kind of objects that the \VM support. Particularly, the already existing reification of execution-related elements such as processes and contexts allows us to implement their manipulation through mirrors and use the same mechanisms as for regular objects.
 
-Regarding the chosen memory layout, in \Vtt all running language runtimes share the same object heap. This decision ease our prototype implementation as no special support for cross-runtime references is needed. However, this has an impact in the time consumed by the GC over a bigger heap.
+Regarding the chosen memory layout, in \Vtt all running application runtimes share the same object heap. This decision ease our prototype implementation as no special support for cross-runtime references is needed. However, this has an impact in the time consumed by the GC over a bigger heap.
 
 The benchmarks we run show that the execution cycle control has an acceptable overhead that is for the majority of our benchmarks below the 10\%. However, a fully engineered solution should improve on that an other points, specifically the JIT compiler, the state of native libraries and plugins, the shared GC and the problems in object finalization.
 
