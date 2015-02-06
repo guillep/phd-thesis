@@ -61,7 +61,7 @@ An object space is a first-class representation of an object oriented applicatio
 \end{center}
 \end{figure}
 
-These objects make explicit through the operations they expose two important parts of a \VM-language interface, explained in detail in the following subsections. First, The \VM setup interface exposes the elements of the language that should be initialized so it can run a program. Second, the runtime manipulation interface exposes operations that take part at runtime to manipulate runtime structures such as objects, classes, threads, the execution stack.
+These objects make explicgugh the operations they expose two important parts of a \VM-language interface, explained in detail in the following subsections. First, The \VM setup interface exposes the elements of the language that should be initialized so it can run a program. Second, the runtime manipulation interface exposes operations that take part at runtime to manipulate runtime structures such as objects, classes, threads, the execution stack.
 
 \subsection{\VM Setup Interface}
 
@@ -144,7 +144,7 @@ Mirror {
     void setInstVar(String varName, mirror anObject);
     
     "Primitive execution"
-    mirror executePrimitive(primitiveID id, mirror receiver, Array args);
+    mirror executePrimitive(primitiveID id, Array args);
 }
 \end{code}
 
@@ -278,7 +278,15 @@ To achieve this kind of communication, we observe however the following challeng
 
 \end{description}
 
-To overcome these problems we base the cross-runtime communication on \emph{process injection}. We create a new process/thread inside the virtualized runtime containing the expression to execute. The new process is installed in the virtualized runtime and executed in cycles until it is finished. Once finished we can access the result of the expression through a mirror. The objects that conform the message-send signature and other literals~(\eg strings, numbers) are translated from their representation in the hypervisor runtime to their corresponding representation in the virtualized runtime. Global object references such as classes are mapped to their corresponding references in the virtualized runtime. Non-global non-literal objects can be specified explicitly as an argument:
+To overcome these problems we base the cross-runtime communication on \emph{process injection} \ie we create a new process/thread inside the virtualized runtime containing the expression to execute. This new process executes in cycles until it is finished. Once finished, from the hypervisor runtime we can access the result of the execution through a mirror on the process~(cf. Figure \ref{fig:process_injection}).
+
+\begin{figure}[ht]
+\center
+\includegraphics[width=.9\linewidth]{process_injection}
+\caption{\textbf{Process injection.} The hypervisor can install and manipulate a process through a mirror. The result can accessed from the mirror.\label{fig:process_injection}}
+\end{figure}
+
+To perform process injection, we need to marshall the arguments, literals and the returned object between their representation in the hypervisor runtime from/to their equivalent representation in the virtualized runtime. For example, marshaling a \ct{String} object means to create a new \ct{String} object in the other runtime with its corresponding class and copying all its bytes. Global object references such as classes are mapped to their corresponding references in the virtualized runtime. Non-global non-literal objects can be specified explicitly as an argument with their corresponding mirrors.
 
 \begin{code}
 objectSpace
@@ -296,11 +304,11 @@ This solution for cross-runtime communication solves both problems observed befo
 "newMethod is a method that fixes the bug"
 interpreter := VirtualCodeInterpreter newOn: anObjectSpace.
 interpreter
-	execute: 'Object methodDictionary at: #brokenSelector put: newMethod'
+	execute: [ Object methodDictionary at: #brokenSelector put: newMethod ]
 	with: newMethod.
 \end{code}
 
-The virtual code interpreter has three main points of communication with an object space:
+The virtual code interpreter has three main points of interaction with an object space:
 
 \begin{description}
 \item[Instance Variable Access.] Accessing or writing an object's instance variable is mapped by the code interpreter to a field access or write in the mirror representing the receiver object.
@@ -331,10 +339,9 @@ VirtualCodeInterpreter >> lookupSelector: selector
 
 \begin{code}
 VirtualCodeInterpreter >> invokePrimitiveMethod: aMethod
-    ^ self objectSpace
+    ^ self receiver
          executePrimitive: aMethod primitive
-         receiver: self receiver
-         arguments: self arguments
+         withArguments: self arguments
 \end{code}
 
 \end{description}
@@ -358,6 +365,6 @@ The execution of the virtualized runtime is organized in cycles. In between cycl
 
 Besides the direct manipulation through mirrors, a runtime hypervisor can perform cross-runtime message-sends for a richer communication using process injection. Process injection prevents failures in the method lookup and avoids stack traversing techniques such as exception to leak cross-runtime references. Additionally, a virtual code interpreter allows us to execute code on the virtualized runtime with full intercession. A virtual code interpreter is a first class entity, allowing us to easily specialize and change it.
 
-In following chapters we will show how this infrastructure supports the evolution of a programming application runtime in two different scenarios. First, the recreation of a application runtime using an explicit bootstrap process. Second, an application tailoring technique that specializes an application runtime to contain only elements that are used during runtime.
+In following chapters we will show our prototype implementation of this infrastructure and how this infrastructure supports the evolution of a programming application runtime in two different scenarios. First, the recreation of a application runtime using an explicit bootstrap process. Second, an application tailoring technique that specializes an application runtime to contain only elements that are used during runtime.
 
 \input{chapter-footer.tex}
