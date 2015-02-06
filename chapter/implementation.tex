@@ -121,11 +121,11 @@ In \Vtt, all objects belonging to the different application runtimes share a uni
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.9\linewidth]{object_spaces_heap}
-\caption{\textbf{A unique heap containing objects from different application runtimes.} Objects from the application runtime I and application runtime II are mixed in the heap. In this figure, after the \ct{nil}, \ct{true} and \ct{false} instances that belong to application runtime I, follow the corresponding ones of the application runtime II, which can in order be followed by objects of the former, like the string \textbf{`hi'}. \label{fig:heap}}
+\caption{\textbf{A unique heap containing objects from different application runtimes.} Objects from the application runtime I and application runtime II are mixed in the heap. In this figure, after the \ct{nil}, \ct{true} and \ct{false} instances that belong to application runtime I, follow the corresponding ones of the application runtime II, which can in order be followed by objects of the former, like the string \textbf{`hi!'}. \label{fig:heap}}
 \end{center}
 \end{figure}
 
-This decision is funded on minimizing the changes made to the virtual machine, to minimize the complexity in our prototype implementation. Our decision, while easing the development of our solution, has the following impact on it:
+This decision is funded on minimizing the changes made to the virtual machine, to leverage the complexity in our prototype implementation. Our decision, while easing the development of our solution, has the following impact on it:
 
 \begin{description}
 	\item[Reuse memory handling mechanisms.] We use the same existing memory infrastructure as when \Vtt is not used. Existing mechanisms for allocating objects or growing the object memory when a limit is reached can be reused transparently by our implementation. 
@@ -211,8 +211,8 @@ We executed each of these benchmarks ten times in two different setups. Results 
  \begin{table}[ht]
 
  	\centering
- 	\begin{tabular}{|l|c|c|}%c|c|}
-			\hline
+ 	\begin{tabular}{lcc}%c|c|}
+			\toprule
 			\textbf{Benchmark}
  			& \textbf{Vanilla Pharo \VM (1x)}
 			& \textbf{Null Hypervisor}\\
@@ -223,19 +223,19 @@ We executed each of these benchmarks ten times in two different setups. Results 
 %			& \textbf{}\\
 %			& \textbf{Hypervisor}
 %			& \textbf{Hypervisor}\\
-		\hline
-		RegexDNA & 5711ms +/-22 & 5878ms +/-18 \\\hline% & 6142ms +/-11 & 6555ms +/-424 \\\hline
-		KNucleotide & 94.00ms +/-0.85 & 100.1ms +/-3.4\\\hline% & 105.8ms +/-3.2 & 134.4ms +/-3.7 \\\hline
-		SpectralNorm & 79.8ms +/-1.4 & 86.6ms +/-1.4\\\hline% & 92.7ms +/-6.0 & 110.7ms +/-1.7 \\\hline
-		BinaryTrees & 36.80ms +/-0.65 & 37.10ms +/-0.83 \\\hline%& 35.30ms +/-0.66 & 65.20ms +/-0.93 \\\hline
-		Mandelbrot & 422.3ms +/-1.4 & 488.0ms +/-6.5 \\\hline%& 494.9ms +/-3.4 & 632ms +/-23 \\\hline
-		ReverseComplement & 5.40ms +/-0.48 & 6.80ms +/-0.24 \\\hline%& 6.80ms +/-0.59 & 8.00ms +/-0.60 \\\hline
-		ThreadRing & 2.50ms +/-0.41 & 2.50ms +/-0.56\\\hline% & 2.70ms +/-0.90 & 3.20ms +/-0.80 \\\hline
-		PiDigits & 0.90ms +/-0.69 & 0.70ms +/-0.66 \\\hline%& 0.70ms +/-0.66 & 0.90ms +/-0.69 \\\hline
-		Meteor & 2260.2ms +/-2.6 & 2398.2ms +/-8.5 \\\hline%& 2479ms +/-16 & 3677ms +/-267 \\\hline
-		NBody & 21.10ms +/-0.57 & 21.70ms +/-0.66 \\\hline%& 22.6ms +/-1.4 & 37.7ms +/-1.5 \\\hline
-%		FannkuchRedux & 0.00ms +/-0.00 & 0.00ms +/-0.00 & 0.20ms +/-0.36 & 0.00ms +/-0.00 \\\hline
-		Fasta & 4.30ms +/-0.54 & 5.20ms +/-0.65 \\\hline%& 5.70ms +/-0.61 & 9.30ms +/-0.39 \\\hline
+		\midrule
+		RegexDNA & 5711ms +/-22 & 5878ms +/-18 \\\midrule% & 6142ms +/-11 & 6555ms +/-424 \\\midrule
+		KNucleotide & 94.00ms +/-0.85 & 100.1ms +/-3.4\\\midrule% & 105.8ms +/-3.2 & 134.4ms +/-3.7 \\\midrule
+		SpectralNorm & 79.8ms +/-1.4 & 86.6ms +/-1.4\\\midrule% & 92.7ms +/-6.0 & 110.7ms +/-1.7 \\\midrule
+		BinaryTrees & 36.80ms +/-0.65 & 37.10ms +/-0.83 \\\midrule%& 35.30ms +/-0.66 & 65.20ms +/-0.93 \\\midrule
+		Mandelbrot & 422.3ms +/-1.4 & 488.0ms +/-6.5 \\\midrule%& 494.9ms +/-3.4 & 632ms +/-23 \\\midrule
+		ReverseComplement & 5.40ms +/-0.48 & 6.80ms +/-0.24 \\\midrule%& 6.80ms +/-0.59 & 8.00ms +/-0.60 \\\midrule
+		ThreadRing & 2.50ms +/-0.41 & 2.50ms +/-0.56\\\midrule% & 2.70ms +/-0.90 & 3.20ms +/-0.80 \\\midrule
+		PiDigits & 0.90ms +/-0.69 & 0.70ms +/-0.66 \\\midrule%& 0.70ms +/-0.66 & 0.90ms +/-0.69 \\\midrule
+		Meteor & 2260.2ms +/-2.6 & 2398.2ms +/-8.5 \\\midrule%& 2479ms +/-16 & 3677ms +/-267 \\\midrule
+		NBody & 21.10ms +/-0.57 & 21.70ms +/-0.66 \\\midrule%& 22.6ms +/-1.4 & 37.7ms +/-1.5 \\\midrule
+%		FannkuchRedux & 0.00ms +/-0.00 & 0.00ms +/-0.00 & 0.20ms +/-0.36 & 0.00ms +/-0.00 \\\midrule
+		Fasta & 4.30ms +/-0.54 & 5.20ms +/-0.65 \\\bottomrule%& 5.70ms +/-0.61 & 9.30ms +/-0.39 \\\hline
  	\end{tabular}
 	\vspace*{0.2cm}
  	\caption{\small\textbf{Language Virtualization Overhead.} Comparing the cycle overhead from a non virtualized Pharo VM to a virtualized one.\label{tb:benchmarks}}
@@ -254,19 +254,19 @@ For the sake of completion, we document in this subsection the aspects that have
 
 \subsection{JIT Compilation}
 
-Just In Time~(JIT) compilation is available in the production distribution of the Pharo \VM. The existing JIT compiler doubles the performance of Pharo Stack \VM while adding yet another complex component in the \VM machinery. To reach such performance, it makes assumptions on the memory layout of the running application runtime. For example, it requires highly accessed objects such as \ct{nil}, \ct{true} or \ct{false} to remain in the same memory position to optimize their access.
+Just In Time~(JIT) compilation is available in the production distribution of the Pharo \VM. The existing JIT compiler doubles the performance of Pharo Stack \VM while adding yet another complex component in the \VM machinery. To reach such performance, it makes assumptions on the memory layout of the running application runtime. For example, it requires commonly accessed objects such as \ct{nil}, \ct{true} or \ct{false} to remain in the same memory position to optimize their access.
 
-However, these assumptions that are broken by \Vtt, as it introduces more than one application runtime in the same heap. Therefore, more than one version of special objects such as \ct{nil} are present in the same heap. Moreover, these objects can be moved in memory on GC compaction. Supporting JIT compilation in \Vtt would require a complete reengineering of the existing JIT compiler and possible the \VM.
+However, \Vtt introduces more than one application runtime in the same heap \eg more than one version of special objects such as \ct{nil} are present in the same heap. Moreover, these objects can be moved in memory on GC compaction. This breaks the \JIT assumptions. Thus, supporting JIT compilation in \Vtt would require a complete reengineering of the existing JIT compiler and possibly the \VM.
 
 \subsection{Plugin and Native Libraries State}
 
-Pharo \VM allows one to access resources from outside the application runtime through native libraries and \VM plugins. A \VM plugin is a native library that satisfies a particular interface to communicate with the \VM. A native library may keep its own state and may not be thought to be loaded several times in the same process. The same problem appears in \VM plugins, which are often developed assuming the existence of only one application runtime so their state is global for the whole \VM.
+Pharo \VM allows one to access resources from outside the application runtime through native libraries and \VM plugins. A \VM plugin is a native library that satisfies a particular interface to communicate with the \VM. Native libraries may keep its own state and may not be thought to be loaded several times in the same process. In particular, \VM plugins are often developed assuming the existence of only one application runtime so their state is global for the whole \VM.
 
 The main \VM modifications we made in our prototype to support the basic execution of several application runtimes do not include modification on \VM plugins, nor it handles the case of loading multiple versions of the same native library from different runtimes. The usage of some of these elements in \Vtt may not be fully working.
 
 \subsection{Finalization of External Resources}
 
-Pharo \VM supports the concept of weak references. If an object is only referenced by a weak reference, this object will be garbage collected and this weak reference replaced by a reference to \ct{nil}. However, before garbage collecting the object, the \emph{finalization mechanism} will send the \ct{finalize} message to the object about to be collected to release any resources it may be holding. Finalization is useful to release resources external to the application runtime such as files or sockets. In Pharo, this finalization process is activated from the \VM but executed by the application runtime.
+Pharo \VM supports the concept of weak references. If an object is only referenced by a weak reference, this object will be garbage collected and this weak reference replaced by a reference to \ct{nil}. However, before garbage collecting the object, the \emph{finalization mechanism} will send the \ct{finalize} message to a finalizer object in charge of releasing any resources it may be holding. Finalization is useful to release resources external to the application runtime such as files or sockets. In Pharo, this finalization process is activated from the \VM but executed by the application runtime.
 
 In \Vtt and because of the shared garbage collection, it may happen that a GC activated by one application runtime (the active application runtime) collects an object from another suspended application runtime. In such case, the \VM will activate only the finalization of the active application runtime. Then, the collected object from the suspended application runtime does not have the possibility to finalize its resources. This may cause external resource leaks, since they can be garbage collected but not properly finalized and released.
 
