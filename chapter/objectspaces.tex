@@ -34,14 +34,14 @@ Additionally, a more granular control can be made through virtual execution. A s
 
 \section{\Vtt Architecture} \label{sec:virtualization_overview}
 
-\Vtt presents an architecture where multiple application runtimes can co-exist independently from each other. They do not share any \VM or language state \ie each one has its own interpreter, stack, classes and objects. In this setting, the hypervisor runtime monitors and controls a virtualized application runtime. Both the virtualized runtime and the hypervisor are full-fledged high-level application runtimes. That means we can use the expressiveness, abstractions and tools of a high-level language to express them both. A first-class object space object resides inside the hypervisor and represents the virtualized runtime. A first-class hypervisor object uses the object space and implements a particular manipulation on it \eg runtime update, failure detection, browsing and debugging. Figure \ref{fig:objectSpaceOverview_architecture} provides an overview of the \Vtt's architecture.
+\Vtt presents an architecture where multiple application runtimes can co-exist independently from each other. They do not share any \VM or language state \ie each one has its own interpreter, stack, classes and objects. In this setting, the hypervisor runtime monitors and controls a virtualized application runtime. Both the virtualized runtime and the hypervisor are full-fledged high-level application runtimes. That means we can use the expressiveness, abstractions and tools of a high-level language to express them both. A first-class object space object resides inside the hypervisor and represents the virtualized runtime. A first-class hypervisor object uses the object space and implements a particular manipulation on it \eg runtime update, failure detection, browsing and debugging. %Figure \ref{fig:objectSpaceOverview_architecture} provides an overview of the \Vtt's architecture.
 
-\begin{figure}[htb]
-\begin{center}
-\includegraphics[width=1\linewidth]{object_space_overview3}
-\caption{\textbf{\VTT Overview.} A runtime hypervisor in the runtime I (left) manipulates the runtime II (right) through an object space.\label{fig:objectSpaceOverview_architecture}}
-\end{center}
-\end{figure}
+%\begin{figure}[htb]
+%\begin{center}
+%\includegraphics[width=1\linewidth]{object_space_overview3}
+%\caption{\textbf{\VTT Overview.} A runtime hypervisor in the runtime I (left) manipulates the runtime II (right) through an object space.\label{fig:objectSpaceOverview_architecture}}
+%\end{center}
+%\end{figure}
 
 An object space manipulates the virtualized runtime directly, changing the target's application runtime state and manipulating the \VM-language interface. All modifications are applied from the outside of the target virtualized runtime, in contrast with reflective architectures where such changes are applied from the same application runtime under modification. Doing so provides \Vtt with the following properties:
 
@@ -66,9 +66,9 @@ These objects make explicgugh the operations they expose two important parts of 
 
 \subsection{\VM Setup Interface}
 
-The \VM setup is the configuration the \VM needs to run.
+The \VM setup is the configuration required by the \VM to run.
 For example, a \VM may need the boolean objects \ct{true} and \ct{false} to push them as the result of a boolean operation at runtime.
-This configuration is usually done only during the language runtime initialization, before execution of a program, as the \VM cannot easily anticipate the usage of such elements in a program from beforehand.
+This configuration is usually done only during the language runtime initialization and before the execution of a program, as the \VM cannot execute it before such elements exist.
 The \VM setup interface allows us to configure the following kind of elements:
 
 \begin{description}
@@ -76,30 +76,30 @@ The \VM setup interface allows us to configure the following kind of elements:
 
 \begin{code}
 ObjectSpace {
-    mirror getNil();
-    mirror getTrue();
-    mirror getFalse();
+    getNil -> Mirror
+    getTrue -> Mirror
+    getFalse -> Mirror
 
-    void setNil(mirror aNilObject);
-    void setTrue(mirror aTrueObject);
-    void setFalse(mirror aFalseObject);
+    setNil: Mirror -> Void
+    setTrue: Mirror -> Void
+    setFalse: Mirror -> Void
 }
 \end{code}
 
-\item[Special classes.] Special classes are those needed by the \VM at runtime. They are needed to perform safety checks, create instances or handle special cases such as immediate objects. For example, when mutating a \ct{String} object the Pharo \VM checks that the introduced object is a \ct{Character} object, to avoid putting the \ct{String} into an invalid state. Also, the \VM requires references to those classes that it instantiates directly~(instead of being created through the \ct{new} message in program). For example, the Pharo \VM instantiates a \ct{BlockClosure} object when it founds the bytecodes that correspond a block expression at runtime. Finally, immediate objects are objects that are encoded inside an object reference instead of occupying a place inside the heap. Immediate objects do not include a reference to their class and therefore the \VM needs to know how to map each particular reference encoding to its corresponding class to perform the method-lookup. 
+\item[Special classes.] Special classes are those needed by the \VM at runtime. They are needed to perform safety checks, create instances or handle special cases such as immediate objects. For example, when mutating a \ct{String} object the Pharo \VM checks that the introduced object is a \ct{Character} object, to avoid putting the \ct{String} into an invalid state. Also, the \VM requires references to those classes that it instantiates directly~(instead of being created through the \ct{new} message in program). For example, the Pharo \VM instantiates a \ct{BlockClosure} object when it founds the bytecodes that correspond a block expression at runtime. Finally, immediate objects are objects that are encoded inside an object reference instead of occupying extra memory inside the heap. Immediate objects include a tag in the reference that the \VM knows how to map to its corresponding class to perform the method-lookup. 
 
 \begin{code}
 ObjectSpace {
-    void setArrayClass(classMirror anArrayClass);
-    void setBlockClass(classMirror aBlockClass);
+    setArrayClass: ClassMirror -> Void
+    setBlockClass: ClassMirror -> Void
 }
 \end{code}
 
-\item[Special messages.] Special messages are callbacks that the \VM will invoke into the application to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(the equivalent to \eg Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will send a \ct{doesNotUnderstand} message to the receiver object and let the user program decide what to do in such a case.
+\item[Special messages.] Special messages are callbacks that the \VM will invoke into the application to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(and its equivalent Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will send a \ct{doesNotUnderstand} message to the receiver object and let the user program decide what to do in such a case.
 
 \begin{code}
 ObjectSpace {
-    void setDoesNotUnderstandSelector(mirror aSelector);
+    setDoesNotUnderstandSelector: Mirror -> Void
 }
 \end{code}
 
@@ -111,7 +111,7 @@ This \VM setup interface avoids to hardcode particular knowledge of a language i
 %In our particular implementation the list of classes exposed through this interface are those of literal objects and those related with the internal \VM execution model. For the sake of completeness the list of classes is the following: \ct{Array}, \ct{Association}, \ct{BlockClosure}, \ct{ByteArray}, \ct{ByteString}, \ct{ByteSymbol}, \ct{Character}, \ct{Context}, \ct{Float}, \ct{SmallInteger}, \ct{LargePositiveInteger}, \ct{LargeNegativeInteger}, \ct{Message}, \ct{CompiledMethod}, \ct{MethodDictionary}, \ct{Semaphore}, \ct{WeakFinalizationList}.
 
 \subsection{Runtime Manipulation Interface} 
-The runtime manipulation interface includes operations to monitor and modify the application runtime during execution. This interface provides access to the application runtime internal elements and encapsulate the implementation details behind them~(\ie the object-format imposed by the \VM). This interface provides the following kind of operations:
+The runtime manipulation interface includes operations to monitor and modify the application runtime during execution. This interface provides access to the application runtime internal elements and encapsulates implementation details behind them~(\ie the object-format imposed by the \VM). This interface provides the following kind of operations:
 
 \begin{description}
 \item[Runtime Global Access.] An object space offers operations to query and modify the global state of the runtime. For example, it provides access to the loaded classes or the running threads/processes. It exposes as well operations to install new and remove existing ones.
@@ -119,45 +119,48 @@ The runtime manipulation interface includes operations to monitor and modify the
 \begin{code}
 ObjectSpace {
     "Classes"
-    mirror createClass(String name, int formatOfInstances);
-    List<mirror> getClasses();
-    mirror getClass(String name);
-    void removeClass(String name);
+    createClassNamed: String withFormat: Integer -> ClassMirror
+    getClasses -> List<Mirror>
+    getClassNamed: String -> Mirror
+    removeClassNamed: String -> Void
     ...
 
     "Threads"
-    List<mirror> getThreads();
-    List<mirror> instalThread(threadMirror thread);
+    getThreads -> List<Mirror>
+    installThread: ThreadMirror -> Void
     ...
 }
 \end{code}
 
-\item[Runtime Object Access.] Mirrors~\cite{Brac04b} expose the operations to query or alter a particular object or element in the runtime. Different kind of mirrors enforce the object-format of the different type of objects we can manipulate. For example, we expose specific mirrors for normal objects, classes, methods, activation records or processes. Notice that these mirrors are low-level mirrors as they expose operations to mutate and access objects in their \VM representation. Additionally, through mirrors we can execute \VM primitives on objects, providing the correct primitive ID~(an integer or native function pointer, depending on the implementation) and the corresponding arguments. These primitives are operations that the \VM exposes normally to the language.
+\item[Runtime Object Access.] Mirrors~\cite{Brac04b} expose operations to query or alter a particular object or element in the runtime. Different kind of mirrors enforce the object-format of the different type of objects we can manipulate. For example, we expose specific mirrors for normal objects, classes, methods, activation records or processes. Notice that these mirrors are low-level mirrors as they expose operations to mutate and access objects in their \VM representation. Additionally, through mirrors we can execute \VM primitives on objects, providing the correct primitive ID~(an integer or native function pointer, depending on the implementation) and the corresponding arguments. These primitives are operations that the \VM exposes normally to the language.
 
 \begin{code}
 Mirror {
     "Class access"
-    classMirror getClass();
-    void setClass(classMirror aClass);
+    getClass -> ClassMirror
+    setClass: ClassMirror -> Void
 
     "Field Access"
-    mirror getInstVar(String varName);
-    void setInstVar(String varName, mirror anObject);
+    getInstanceVariableNamed: String -> Mirror
+    setInstanceVariableNamed: String varName withValue: Mirror -> Void
+    ...
     
     "Primitive execution"
-    mirror executePrimitive(primitiveID id, Array args);
+    executePrimitive: PrimitiveID withArguments: Array -> Mirror
 }
 \end{code}
 
 \begin{code}
 ClassMirror {
     "Instantiation"
-    mirror instantiate();
-    mirror instantiate(int aSize);
+    instantiate -> Mirror
+    instantiateWithSize: Integer -> Mirror
+    ...
 
     "Method manipulation"    
-    void compileMethod(String sourceCode);
-    void removeMethod(String selector);
+    compileMethod: String -> Void
+    removeMethodNamed: String -> Void
+    ...
 }
 \end{code}
 
