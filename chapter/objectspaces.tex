@@ -8,7 +8,8 @@
 \introduction
 % ===========================================================================
 
-This chapter presents the model of our Virtualization Application Runtime infrastructure, namely \VTT~(cf. Section \ref{sec:virtualization_overview}). In \VTT, an application runtime is virtualized by residing inside a controlled space, namely an \emph{object space}, that encapsulates the access to it. A first-class representation of this object space provides a high-level API to easily query and manipulate the application runtime~(cf. Section \ref{sec:object_space}). The client of an object space is a \emph{runtime hypervisor}~(cf. Section\ref{sec:hypervisor}).
+This chapter presents our Virtualization Application Runtime infrastructure, namely \VTT~(cf. Section \ref{sec:virtualization_overview}). It focuses on the model of our solution and presents its core ideas. \VTT supports virtualization through the co-existence of application runtimes with two well-defined roles. One application runtime is a \emph{virtualized runtime} subject of virtualization. The other is the \emph{runtime hypervisor} that controls and manipulates the virtualized runtime.
+The hypervisor manipulates the virtualized runtime through a first-class \emph{object space} object. An \emph{object space} encapsulates the access to an application runtime and provides a high-level API to easily query and manipulate it~(cf. Section \ref{sec:object_space}). Figure \ref{fig:virtualization_introduction} shows a simplified schema of the solution.
 
 \begin{figure}[htb]
 \begin{center}
@@ -17,12 +18,12 @@ This chapter presents the model of our Virtualization Application Runtime infras
 \end{center}
 \end{figure}
 
-The runtime hypervisor runs in the same process than the virtualized runtime to monitor and manipulate it directly. However, the runtime hypervisor does not share the same application runtime than the virtualized runtime it supervises \ie basic objects, classes and \VM structures are not shared between the runtime hypervisor and the virtualized runtime. Instead, both the virtualized and hypervisor runtimes contain their own copies of those elements. This no sharing strategy pursues to allow the hypervisor to change any part of the virtualized runtime without affecting itself as it happens in reflective architectures~(cf. Figure \ref{fig:virtualization_introduction}).
+A hypervisor manages a virtualized runtime by directly manipulating its state and by controlling its execution. Direct manipulation is achieved through the object space API. Execution control is achieved by splitting the execution of the virtualized runtime in managed cycles. The hypervisor can hook the execution in between cycles and execute its own code~(cf. Section\ref{sec:hypervisor}).
+%The runtime hypervisor runs in the same process than the virtualized runtime to monitor and manipulate it directly. However, 
+The hypervisor and the virtualized runtime do not share the objects of their application runtimes. Each of them contain, instead, an object graph isolated from each other \eg each one has its own \ct{Object} and \ct{String} class and their own set of unique interned strings~(the symbols). This isolation strategy pursues to allow the hypervisor to change any part of the virtualized runtime without affecting itself as it happens in reflective architectures.
 
-A first class runtime hypervisor manipulates the virtualized runtime through a first-class object space object. This hypervisor can also perform cross-runtime message-sends by injecting processes, as the direct message-send \VM mechanism would fail the method lookup~(Section \ref{sec:isolation}).
-Finally, a more granular control can be made through virtual execution. For this, a virtual code interpreter provides full intercession power over the execution of the virtualized application for usages such as tracing or debugging~(Section \ref{sec:interpretation}).
-
-This chapter focuses on the model of our solution and presents its core ideas. The following \chapref{prototype} will present the particular implementation details of our prototype implementation of \Vtt on Pharo.
+Although being isolated, \Vtt presents a richer message-based communication channel. The hypervisor can perform cross-runtime message-sends by injecting processes. Injected processes can execute isolated and their result can be cleanly retrieved by the hypervisor~(Section \ref{sec:isolation}).
+Additionally, a more granular control can be made through virtual execution. For this, a virtual code interpreter provides full intercession power over the execution of the virtualized application for usages such as tracing or debugging~(Section \ref{sec:interpretation}).
 
 %On one side, this means that the hypervisor can freely manipulate the virtualized language runtime without affecting itself. On the other side, this no-sharing strategy poses an extra effort in communication~(cf. Section \emph{sec:isolation}) mainly in object marshaling.
 
