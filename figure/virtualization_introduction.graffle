@@ -7,7 +7,7 @@
 	<key>ApplicationVersion</key>
 	<array>
 		<string>com.omnigroup.OmniGrafflePro</string>
-		<string>139.17.0.185490</string>
+		<string>139.18.0.187838</string>
 	</array>
 	<key>AutoAdjust</key>
 	<true/>
@@ -60,7 +60,54 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
-			<string>{{241.5, 60}, {57, 42}}</string>
+			<string>{{135.83750530395514, 119.48748562316882}, {88.675010681152344, 28.350021362304688}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Font</key>
+				<string>Courier-Bold</string>
+				<key>Size</key>
+				<real>9</real>
+			</dict>
+			<key>ID</key>
+			<integer>299</integer>
+			<key>Rotation</key>
+			<real>270</real>
+			<key>Shape</key>
+			<string>Rectangle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>Width</key>
+					<real>2</real>
+				</dict>
+			</dict>
+			<key>Text</key>
+			<dict>
+				<key>Text</key>
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
+
+\f0\b\fs18 \cf0 Object Space}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Bounds</key>
+			<string>{{221.35364532470703, 84}, {57, 42}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -94,8 +141,8 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -120,8 +167,8 @@ control}</string>
 			<integer>292</integer>
 			<key>Points</key>
 			<array>
-				<string>{240.0250244140625, 115.75569235959097}</string>
-				<string>{299.97500606689459, 115.99998311386099}</string>
+				<string>{195.35002125637016, 133.66653686390688}</string>
+				<string>{297.97500651367932, 133.69386220676984}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -139,10 +186,15 @@ control}</string>
 					<string>0</string>
 				</dict>
 			</dict>
+			<key>Tail</key>
+			<dict>
+				<key>ID</key>
+				<integer>299</integer>
+			</dict>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{299.97500606689459, 81.999999326324371}, {159.35000610351562, 68}}</string>
+			<string>{{298.97500606689459, 76.999999326324371}, {141.73228454589844, 113.38582611083984}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -200,8 +252,8 @@ control}</string>
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -210,7 +262,7 @@ control}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{80.675018273925843, 81.999997007751404}, {159.35000610351562, 68}}</string>
+			<string>{{58.999999963378968, 76.999997007751404}, {141.73228454589844, 113.38582611083984}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -244,62 +296,19 @@ control}</string>
 			</dict>
 			<key>Text</key>
 			<dict>
-				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
-{\colortbl;\red255\green255\blue255;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
-
-\f0\b\fs24 \cf0 Language Hypervisor}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>Bounds</key>
-			<string>{{64, 43}, {412, 123.00000762939453}}</string>
-			<key>Class</key>
-			<string>ShapedGraphic</string>
-			<key>FontInfo</key>
-			<dict>
-				<key>Font</key>
-				<string>Courier</string>
-				<key>Size</key>
-				<real>18</real>
-			</dict>
-			<key>ID</key>
-			<integer>255</integer>
-			<key>Shape</key>
-			<string>Rectangle</string>
-			<key>Style</key>
-			<dict>
-				<key>shadow</key>
-				<dict>
-					<key>Draws</key>
-					<string>NO</string>
-				</dict>
-				<key>stroke</key>
-				<dict>
-					<key>CornerRadius</key>
-					<real>2</real>
-					<key>Pattern</key>
-					<integer>1</integer>
-					<key>Width</key>
-					<real>2</real>
-				</dict>
-			</dict>
-			<key>Text</key>
-			<dict>
 				<key>Align</key>
 				<integer>0</integer>
+				<key>Pad</key>
+				<integer>25</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fmodern\fcharset0 Courier;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f0\fs36 \cf0 Process}</string>
+\f0\b\fs24 \cf0 Hypervisor\
+  Runtime}</string>
 			</dict>
-			<key>TextPlacement</key>
-			<integer>0</integer>
 		</dict>
 	</array>
 	<key>GridInfo</key>
@@ -349,7 +358,7 @@ control}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2015-01-04 14:32:32 +0000</string>
+	<string>2015-02-09 10:16:51 +0000</string>
 	<key>Modifier</key>
 	<string>Guille</string>
 	<key>NotesVisible</key>
@@ -444,7 +453,7 @@ control}</string>
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{-422, -11}, {1402, 805}}</string>
+		<string>{{-422, -9}, {1402, 802}}</string>
 		<key>Zoom</key>
 		<real>1</real>
 		<key>ZoomValues</key>
