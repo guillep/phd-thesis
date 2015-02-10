@@ -26,7 +26,7 @@ For example, a seed that includes all base libraries makes the tailoring process
 The dynamic nature of our solution allows its usage in dynamically-typed languages, and applications using reflection. Our solution does not need to modify the original application thanks to its run-fail-grow approach.
 It also successfully deals with applications that make use of programming language features such as reflection or open classes.
 
-We developed Tornado, an RFG implementation using \Vtt~(Section~\ref{sec:implementation}). In Tornado, the nurtured application resides inside a virtualized runtime. With \Vtt, we can monitor the execution of the nurtured application to detect whether a code unit is missing or not. Using \Vtt's mirrors we can also install the required code units.
+We developed Tornado, an RFG implementation using \Vtt~(Section~\ref{sec:rfg_implementation}). In Tornado, the nurtured application resides inside a virtualized runtime. With \Vtt, we can monitor the execution of the nurtured application to detect whether a code unit is missing or not. Using \Vtt's mirrors we can also install the required code units.
 
 \section{Run Fail Grow: Dynamic dead code elimination}\label{sec:rfg_model}
 
@@ -59,7 +59,7 @@ The dynamic nature of RFG tackles all our challenges. Missing code units are det
 
 
 \section{Run-Fail-Grow through an example}\label{sec:rfg_example}
-We illustrate in this section the ideas behind RFG with the example introduced in Section~\ref{sec:example_intro}. For the sake of clarity, in this example we will tailor the application's code units and not the base libraries \ie the seed includes the base libraries.
+We illustrate in this section the ideas behind RFG with the example introduced originally in~\chapref{state_tailoring}. For the sake of clarity, in this example we will tailor the application's code units and not the base libraries \ie the seed includes the base libraries.
 
 \paragraph{Setup of the Environment} First, we launch the reference application~(cf. Figure~\ref{fig:example_reference}) and the nurtured application~(cf. Figure~\ref{fig:example_all} Step 0). We fill the nurtured application with a seed containing the language base libraries. Thus, each application has its own copy of the base libraries, as shown in this case with the \ct{Date} and \ct{Time} classes and the \ct{stdout} object.
 
@@ -201,7 +201,7 @@ Figure \ref{fig:nurturing_map_model} presents the tailoring map showing two exam
 
 We implemented our RFG technique as a tool called \emph{Tornado}. Tornado is implemented using \Vtt, to tailor applications written in the Pharo programming language.
 %Pharo is a reflective and dynamic programming language inspired from Smalltalk.
-Tornado's architecture combines \Vtt~(cf. Section \ref{sec:oz}) and Ghost proxies~(cf. Section \ref{sec:proxies}) illustrated in Figure \ref{fig:tornado_code units}. The nurtured and reference applications application are hosted inside virtualized runtimes. Tornado provides with a hypervisor that initiates and pauses the reference and nurtured applications. Tornado's hypervisor runs and monitors the nurtured application. It installs traps on the nurtured application as Ghost proxies, and use the object space interface to query and install code units it. Following, we detail how we fulfilled each of RFG's requirements in our solution:
+Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~(cf. Section \ref{sec:proxies}) illustrated in Figure \ref{fig:tornado_code units}. The nurtured and reference applications application are hosted inside virtualized runtimes. Tornado provides with a hypervisor that initiates and pauses the reference and nurtured applications. Tornado's hypervisor runs and monitors the nurtured application. It installs traps on the nurtured application as Ghost proxies, and use the object space interface to query and install code units it. Following, we detail how we fulfilled each of RFG's requirements in our solution:
 
 \begin{figure}[ht]
 \begin{center}
