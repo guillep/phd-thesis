@@ -15,11 +15,11 @@
 
 Generating an application runtime requires the basic ability to manipulate such runtime \eg create and modify classes and methods; instantiate objects; begin and stop threads in it. This chapter explores the state of the art on application runtime manipulation. We identify three main concerns that arise when we attempt to modify an application runtime~(Section \ref{sec:bootstrapping_problems}): how easily a change can be applied to a language runtime, how coupled are the application runtime and \VM concerns, and what is the existing tool support to modify such application runtime.
 
-Based on those concerns, we created an evaluation criteria for application runtime manipulation solutions~(Section \ref{sec:runtime_modification_criteria}). Finally, we present different techniques for application runtime manipulation and we compare the most relevant of them with our criteria:
+Based on those concerns, we defined a criteria to evaluate existing application runtime manipulation solutions~(Section \ref{sec:runtime_modification_criteria}). We also classified the different techniques for application runtime manipulation in three main categories:
 
 \begin{description}
 
-\item[Reflection models.] The literature presents several language runtime manipulation solutions based on metaprogramming and \emph{reflection}~(Section \ref{sec:related_work_changing}). These metaprogramming models allow either the modification of the language interpreter semantics or the scoping of modifications with one main objective: performing such modifications safely \ie avoid breaking the application runtime they are running on.
+\item[Reflection models.] The literature presents several language runtime manipulation solutions based on metaprogramming and \emph{reflection}~(Section \ref{sec:related_work_changing}). These metaprogramming models allow either the modification of the language interpreter semantics or the scoping of modifications with one main objective: performing such modifications safely \ie without breaking the application runtime they are running on.
 
 \item[Metacircular runtimes.] Metacircular runtimes aim at easing the modification of a runtime by means of simplifying the language-\VM relation for development~(Section \ref{sec:metacircular_runtimes}). This simplification comes usually by expressing a \VM in the same language it interprets at the end. Metacircular runtimes mostly focus on the simplification of complexity in \VM technology and not on the manipulation of the language runtime elements.
 
@@ -29,12 +29,12 @@ Based on those concerns, we created an evaluation criteria for application runti
 
 \section{Concerns of Application Runtime Manipulation} \label{sec:bootstrapping_problems}
 
-We identify three main concerns when we aim at changing or replacing an application and language runtime. First, how flexible its language runtime is to be changed and adapted without running into inconsistent states. Second, how clear is the separation between the \VM and language concerns to extract the language concerns. Finally, which is the abstraction levels and tool support to manipulate an application runtime.
+We identify three main concerns when we aim at changing or replacing an application and language runtime. First, how flexible its language runtime is to be changed and adapted without running into inconsistent states. Second, how clear is the separation between the \VM and language concerns to extract the language concerns. Finally, what are the abstraction level and the tool support needed to manipulate an application runtime.
 
 
 \subsection*{Flexibility to Safely Change a Language Runtime}
 
-The \VM is often the component in charge of initializing the application runtime and particularly the language runtime. This decision is indeed practical as the \VM can safely initialize the language structures, solve the language bootstrapping issues avoiding recursions~\cite{Kicz91a}~(\eg create the first class or the first string without a class) and ensure the created language runtime complies to its execution model. This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions. A consequence of this is that the \VM fixes the initial structures of the language runtime. Figure \ref{code:ruby_hierarchy} illustrates this problem: Ruby's initial class hierarchy is imprinted inside the \VM code, fixing \ct{BasicObject} as the top superclass and followed by \ct{Object}, \ct{Module} and \ct{Class} respectively.
+The \VM is often the component in charge of initializing the application runtime and particularly the language runtime. This decision is indeed practical as the \VM can safely initialize the language structures, solve the language bootstrapping issues avoiding recursions~\cite{Kicz91a}~(\eg create the first class or the first string without a class) and ensure the created language runtime complies to its execution model. This coupling is indeed necessary to run a program but does often remain hidden in hardcoded assumptions. A consequence of this is that the \VM fixes the initial structures of the language runtime. Figure \ref{code:ruby_hierarchy} illustrates this problem: Ruby's initial class hierarchy is imprinted inside the \VM code, fixing \ct{BasicObject} as the top superclass and followed by \ct{Object}, \ct{Module} and \ct{Class} respectively\footnote{Taken from the version 2.1 of the Ruby VM in \url{http://svn.ruby-lang.org/repos/ruby}}.
 
 \begin{figure}[ht!]
 \begin{code}
@@ -55,7 +55,7 @@ void Init_class_hierarchy(void) {
 \end{figure}
 
 A second problem arises as the \VM includes code to manipulate objects that belong to the application runtime, introducing a duplication between the \VM code and the language code. 
-To illustrate this second problem, let us consider the code at the left of Figure~\ref{code:logic_dup} that creates a \ct{Dictionary} object~(a hash map object) in Smalltalk. If our language runtime is defined by a \ct{Dictionary} object keeping \eg a map of global objects, we must execute that code to create the corresponding instance during the language initialization. However, since the language runtime and the \VM are in middle of their initialization, the \VM cannot execute this code as it is, and thus it cannot enforce its own invariants. Production \VMs will provide an alternative low-level representation of the same code respecting the same invariants, exemplified at the right of the same figure. This introduces a redundancy: the \VM and the language have different code to honor the same invariants.
+To illustrate this second problem, let us consider the code to the left of Figure~\ref{code:logic_dup} that creates a \ct{Dictionary} object~(a hash map object) in Smalltalk. If our language runtime is defined by a \ct{Dictionary} object keeping \eg a map of global objects, we must execute that code to create the corresponding instance during the language initialization. However, since the language runtime and the \VM are in the middle of their initialization, the \VM cannot execute this code as it is, and thus it cannot enforce its own invariants. Production \VMs will provide an alternative low-level representation of the same code respecting the same invariants, exemplified at the right of the same figure. This introduces a redundancy: the \VM and the language have different code to honor the same invariants.
 
 \begin{figure}[ht]
 \begin{subfigure}{.5\linewidth}
@@ -81,7 +81,7 @@ void* createDictionaryWithSize(int n){
 }
 \end{code}
 \end{subfigure}
-\caption{\textbf{Code to create a \ct{Dictionary} object.} To the left, the code is written in Smalltalk. To the right, a function with the similar semantics, but written in C, duplicates this behavior at the \VM level.\label{code:logic_dup}}
+\caption{\textbf{Code to create a \ct{Dictionary} object.} To the left, the code is written in Smalltalk and used by the application runtime. To the right, a C function duplicates this behavior at the \VM level.\label{code:logic_dup}}
 \end{figure}
 
 
@@ -89,7 +89,7 @@ void* createDictionaryWithSize(int n){
 
 Once the application runtime is initialized, reflective languages~\cite{Smit84a} such as LISP or Smalltalk provide means to modify themselves at runtime. These languages are based on a reflective architecture presenting the notion of causal connection~\cite{Maes87a}: a link between a programming element and its representation that keeps both in synchronization. However, as these languages contain meta-circular definitions in their kernel~\cite{Chib96a}, this can result in a metastability problem \ie a change in the language runtime may introduce a meta-call recursion and turn the system unusable~\cite{Kicz91a}.% In this context, Reflectivity~\cite{Denk08b} is a framework that scopes reflection to avoid meta-call recursions.  Reflectivity succeeds to control behavioural reflection by accounting the level of \emph{metaness} of the execution in a program and executing reflective operations when it is in the correct meta-level. The main limitation of Reflectivity is that it does not allow structural reflective changes in the language runtime.
 
-Finally, snapshot-based languages offer different means to evolve a language runtime. Instead of being reinitialized each time we need it, the state of the whole graph of objects that denotes the running program can be suspended and saved as a snapshot in a file. Later on, the program in this snapshot can be restarted from the point it was suspended. As a consequence of this persistency property, some snapshot-based languages such as Squeak\gp{cite?} or Pharo\gp{cite?} do not have the infrastructure to be reinitialized from scratch. Indeed, their current deliverable snapshots are the result of a chain of side effects (updates and migrations) applied to the original Smalltalk-80 snapshot. Thus, even if we can change the application runtime during execution, they cannot ensure a reproducible initial state for their users.
+Finally, snapshot-based languages offer different means to evolve a language runtime. Instead of being reinitialized each time we need it, the state of the whole graph of objects that denotes the running program can be suspended and saved as a snapshot in a file. Later on, the program in this snapshot can be restarted from the point it was suspended. As a consequence of this persistency property, some snapshot-based languages such as Squeak~\cite{Inga97a} or Pharo~\cite{Blac09a} do not have the infrastructure to be reinitialized from scratch. Indeed, their current deliverable snapshots are the result of a chain of side effects (updates and migrations) applied to the original Smalltalk-80 snapshot. Thus, even if we can change the application runtime during execution, they cannot ensure a reproducible initial state for their users.
 
 \subsection*{Separation of \VM and Language Concerns}
 
@@ -112,7 +112,7 @@ private static void finishBooting() {
     runClassInitializer("gnu.java.nio.charset.EncodingHelper");
 }
 \end{code}
-\caption{\textbf{Code of the JikesRVM that initializes loads the initial classes of the runtime (excerpt).} The code performing the initial class loading is mixed with the code that initializes the memory manager of the \VM.\label{code:jikes_vm_initialization}}
+\caption{\textbf{Code of the JikesRVM that loads and initialized the initial classes of the runtime (excerpt).} The code performing the initial class loading is mixed with the code that initializes the memory manager of the \VM.\label{code:jikes_vm_initialization}}
 \end{figure}
 
 Snapshot-based languages, on the other side, show that language initialization and \VM initialization can be orthogonal. Indeed, languages such as Pharo, LISP or the V8 flavor of Javascript can restart their system from a snapshot. The \VM loads atomically the snapshot and binds it to the current executing \VM. Loading a snapshot clarifies the \VM startup steps as it replaces the runtime initialization phase. Moreover, as long as the snapshot satisfies the \VM execution model, it can run any language model, as it is the case of Pharo and Newspeak that run on the same \VM.
@@ -124,7 +124,7 @@ Snapshot-based languages, on the other side, show that language initialization a
 
 \subsection*{Abstraction Level and Tool Support}
 
-When defining the language runtime at the \VM level, we rely on the tools and abstractions available to develop the \VM to change the language. That means that the language developer uses often low-level abstractions to express higher-level concerns. This \emph{mismatch} impacts the \VM/language developer efficiency, as the tools are not adequate for the task to accomplish. This problem is indeed aggravated with the complexity of such pieces of software, including elements such as the \GC or the JIT that cross-cut every \VM concern.
+When defining the language runtime at the \VM level, we rely on the tools and abstractions available to develop the \VM to change the language. That means that the language developer uses often low-level abstractions to express higher-level concerns. This \emph{mismatch} impacts on the \VM/language developer efficiency, as the tools are not adequate for the task to accomplish. This problem is indeed aggravated with the complexity of such pieces of software, including elements such as the \GC or the JIT that cross-cut every \VM concern.
 
 Indeed the developer would benefit from the productivity that a high-level language brings. In this sense, reflective languages support naturally the usage of the language abstractions and tools to modify the language runtime. Reflective languages benefit from the reification of the language concepts to be able to change them from the language itself. Languages such as Smalltalk show how debuggers and code browsers can be built using such features\gp{cite}.
 
@@ -132,25 +132,25 @@ Indeed the developer would benefit from the productivity that a high-level langu
 
 \section{Evaluation Criteria}\label{sec:runtime_modification_criteria}
 
-This section presents the features we consider relevant to include in a runtime manipulation solution. These features serve as a criteria to compare the state of the art we selected in the following sections.
+This section presents the features we consider relevant to include in a runtime manipulation solution. These features serve as criteria to compare the state of the art we selected in the following sections.
 
 \begin{description}
 
-\item[Manipulate Language Elements.] An application runtime manipulation solution must support the creation and modification of elements that conform the language runtime \eg create and modify of classes and methods.
-\item[Manipulate Execution Elements.] An application runtime manipulation solution must provide support to manipulate elements related to a program's execution \eg the creation, pausing and resumption of threads; the introspection of such threads to understand a program's execution.
 \item[Manipulate Objects.] An ideal application runtime manipulation must provide access to objects. It should support class instantiation, and the manipulation of such objects, including access to their fields.
+\item[Manipulate Language Elements.] An application runtime manipulation solution must support the creation and modification of elements that are part the language runtime \eg create and modify of classes and methods.
+\item[Manipulate Execution Elements.] An application runtime manipulation solution must provide support to manipulate elements related to a program's execution \eg the creation, pausing and resumption of threads; the introspection of such threads to understand a program's execution.
 
 \item[Safety.] An ideal application runtime manipulation solution must guarantee that both incorrect modifications cannot be applied, and that correct modifications can be safely applied without leaving the system in an inconsistent state.
 
-\item[Users level of abstraction.] An ideal application runtime manipulation solution must provide its user with the possibility to express its manipulations in a high-level language. In such a way, users can benefit from the abstractions and expression power of such language.
+\item[Users abstraction level.] An ideal application runtime manipulation solution must provide its user with the possibility to express its manipulations in a high-level language. In such a way, users can benefit from the abstractions and expressiveness of such a language.
 
-\item[API level of abstraction.] The API of an ideal application runtime manipulation solution must provide the abstractions to manipulate the application runtime in terms of the runtime's constructions.
+\item[API abstraction level.] The API of an ideal application runtime manipulation solution must provide the abstractions to manipulate the application runtime in terms of the runtime's constructions.
 
 \item[Separation of concerns.] The solution should clearly separate \VM and language concerns to avoid transmitting to the language developer the complexities of \VM technology such as the \GC or the JIT compiler.
 
 \end{description}
 
-In the following sections we explore and compare three different categories of solutions that pursue different kind of application runtime manipulation. Such a comparison is based in the criteria developed in this section.
+In the following sections we explore and compare three different categories of solutions that pursue different kind of application runtime manipulation. This comparison is based on the criteria defined in this section.
 
 \section{Reflection and Metaprogramming Models}\label{sec:related_work_changing}
 
@@ -162,7 +162,7 @@ Introspection refers to the access to a particular reified representation of a p
 
 \begin{description}
 \item[Structural Reflection.] Structural reflection refers to the access to the static structure of a program.
-A typical example\footnote{Throughout this dissertation we use \PH code examples. The syntax and the basic semantics are explained in \secref{pharo}} is to access the class of an object at runtime.
+A typical example\footnote{Throughout this dissertation we use \PH code examples. The syntax and the basic semantics are explained in Appendix \ref{appendixa}} is to access the class of an object at runtime.
 
 \begin{code}
 'a string' class.
@@ -195,17 +195,17 @@ thisContext receiver.
 \end{description}
 
 There is not always a clear separation between the two types of reflection possible.
-For instance it is possible to add new methods which requires structural reflection.
-At the same we alter the future program execution which also implies that the action was behavior reflection.
+For instance adding new methods requires structural reflection.
+At the same time, adding a new method alter the future program execution, implying that it is also behavioral reflection.
 Typically we see that behavioral reflection stops at the granularity of a method.
-For instance in \PH by default it is not possible to directly alter execution on a sub-method level \cite{Denk06a}.
+For instance in \PH by default it is not possible to directly alter the execution on a sub-method level~\cite{Denk06a}.
 
 Reflection provides by default most of the characteristics that we need for runtime manipulation, such as the ability to manipulate the execution of a program or the objects themselves.
-In the following sections we present several existing models implementing reflective behavior, making emphasis in each of their weaknesses and strengths.
+In the following sections we present several existing models implementing reflective behavior, and for each of them we put emphasis on their weaknesses and strengths.
 
 \subsection*{\textsc{Tower of Interpreters Model}}
 
-The original model of reflection as defined by Smith~\cite{Smit82c} is based on meta-level interpretation. A program is interpreted by an interpreter, such interpreter is interpreted by a meta-interpreter and so on, possibly ad-infinitum. This leads to a tower of interpreters, where each floor defines the semantics of the program~(interpreter of application) it interprets~(Figure \ref{fig:tower_of_interpreters}).
+The original model of reflection as defined by Smith~\cite{Smit82c} is based on meta-level interpretation. A program is interpreted by an interpreter, such interpreter is interpreted by a meta-interpreter and so on, possibly \emph{ad infinitum}. This leads to a tower of interpreters, where each floor defines the semantics of the program~(interpreter of application) it interprets~(Figure \ref{fig:tower_of_interpreters}).
 
 \begin{figure}[ht]
 \begin{center}
@@ -216,7 +216,7 @@ The original model of reflection as defined by Smith~\cite{Smit82c} is based on 
 \end{center}
 \end{figure}
 
-The tower of interpreters presents a model where one can define and redefine the semantics of the program it is executing. We can modify the behavior of our program~(in the floor zero) by jumping one level above it in the tower and modifying the interpreter running in that floor. In the same sense, we can jump one level above this interpreter to change also its behavior and so on. This allows the \emph{indirect modification} of a program's behavior \ie a change in an interpreter in a level \emph{n} changes the behavior of the interpreter level \emph{n - 1}, which impacts in the interpreter below it and so on, up to the base level.
+The tower of interpreters presents a model where one can define and redefine the semantics of the program it is executing. We can modify the behavior of our program~(in the floor zero) by jumping one level above it in the tower and modifying the interpreter running in that floor. In the same sense, we can jump one level above this interpreter to change also its behavior and so on. This allows the \emph{indirect modification} of a program's behavior \ie a change in an interpreter in a level \emph{n} changes the behavior of the interpreter in the level \emph{n - 1}, which impacts on the interpreter below it and so on, up to the base level.
 
 Smith's tower of interpreters model is flexible and coherent regarding the manipulation of the reflective behavior of a program. The tower does not present a limit on the amount of interpreters we can stack, presenting a problematic infinite potential. This idea collides with the non-infinite amount resources in current hardware. On one side, limited memory prevents us to have a tower of infinite interpreters running at the same time. On the other side, above certain limit of interpreters, this approach becomes too slow and impractical. We will show in the following subsections other reflective models that try to overcome these deficiencies while trying to keep some of the good properties of this model.
 
@@ -235,7 +235,7 @@ Black avoids the infinite regression by limiting the real levels of interpretati
 \end{center}
 \end{figure}
 
-By limiting the levels of interpretation, the model presented by Black forbids \emph{indirect modification}. Changing the interpreter in a level \emph{n} above the first level does not impact any more the interpreters below it, as they are directly-executed in the machine and not by the modified interpreter. Black supports, however, the modification of the first level of interpretation with the introduction of hooks inside the machine code. A hook detects whether a function in the interpreter~(written in directly-executed code) is changed, and interprets it by a meta-level interpreter written also in directly executed code. Hooks degrade the performance in comparison of a non-hooked interpreter, but it allows in exchange to change and specialize the behavior of the directly-executed code.
+By limiting the levels of interpretation, the model presented by Black forbids \emph{indirect modification}. Changing the interpreter in a level \emph{n} above the first level does not impact any more the interpreters below it, as they are directly-executed in the machine and not by the modified interpreter. Black supports, however, the modification of the first level of interpretation with the introduction of hooks inside the machine code. A hook detects whether a function in the interpreter~(written in directly-executed code) is changed, and interprets it by a meta-level interpreter written also in directly executed code. Hooks degrade the performance in comparison of a non-hooked interpreter, but it enables to change and specialize the behavior of the directly-executed code.
 
 \subsection*{\textsc{Reflectivity: scoping reflection in Reflective Architectures}}
 
@@ -243,7 +243,7 @@ To enable reflection in mainstream languages such as Java, Ruby or JavaScript, t
 
 
 In languages presenting reflective architectures, reflection is controlled by meta-objects that live in the same environment of the object it reflects upon.
-One problematic corollary of this is that meta-objects rely on the same code and infrastructure than the objects they reflect upon \eg if a class has a \ct{Set} with its subclasses, changing the  implementation of \ct{Set} impacts the reflective behavior in addition of the base-application behavior.
+One problematic corollary of this is that meta-objects rely on the same code and infrastructure as the objects they reflect upon \eg if a class stores its subclasses in a \ct{Set}, changing the  implementation of \ct{Set} impacts the reflective behavior in addition of the base-application behavior.
 Therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon~(Figure \ref{fig:reflectivity_meta_recursion}).
 
 \begin{figure}[ht]
@@ -301,13 +301,13 @@ To facilitate the interaction with the pure C part, Slang supports inline C expr
 A great achievement of the Squeak \VM is a simulator environment that enables programmers to interact dynamically with a simulated version of the running \VM.
 The simulator is capable of running a complete Squeak Smalltalk image including graphical user interface.
 This means that programmers can change the sources of the running \VM and see the immediate effects in the simulator.
-The \VM developer has complete access and control to the \VM internals and the application runtime it contains. It can, for example, change any object and class inside the simulated application runtime. However, to apply such a change it depends on a memory oriented interface. Additionally, once the \VM is generated, this low-level interface disappears and is not accessible for the developer.
+The \VM developer has complete access and control to the \VM internals and the application runtime it contains. It can, for example, change any object and class inside the simulated application runtime. However, to apply such a change it depends on a memory oriented interface. Additionally, once the \VM is generated, this low-level interface disappears and it is not accessible for the developer anymore.
 
 % ---------------------------------------------------------------------------
 \subsection*{\textsc{Jikes: High-level low-level Programming with MMTK}}
 \seclabel{background-jikes}
 % ---------------------------------------------------------------------------
-Jikes (former Jalapeño) is an early metacircular research \VM for Java written in Java~\cite{Alpe00a}.
+Jikes (formerly Jalapeño) is an early metacircular research \VM for Java written in Java~\cite{Alpe00a}.
 The Jikes \VM features several different garbage collectors and does not execute bytecodes but directly compiles to native code.
 With metacircularity in mind Jikes does not resort to a low-level programming language such as C for these typically low-level \VM components.
 Instead they are written in Java as well using a high-level low-level programming framework.
@@ -316,7 +316,7 @@ The Jikes \VM had performance as a major goal, hence direct unobstructed interac
 %The goal of high-level low-level programming is to provide high-level abstractions to simplify low-level programming.
 %Essentially this is the same motivation that drives the metacircular \VM community.
 
-Frampton et al. present a high-level low-level framework packaged as \ttt{org.vmmagic}, which is used as a system interface for Jikes. This framework introduces highly controlled low-level interaction in a statically type context. This framework provides a memory-oriented API to manipulate runtime entities at \VM generation time, which is used to implement \VM concerns. Once the \VM is generated, the interface exposed by the \ttt{org.vmmagic} framework is translated into native code and this interface is not available for the developer.
+Frampton et al. present a high-level low-level framework packaged as \ttt{org.vmmagic}, which is used as a system interface for Jikes. This framework introduces highly controlled low-level interaction in a statically type context. This framework provides a memory-oriented API to manipulate runtime entities at \VM generation time, which is used to implement \VM concerns. Once the \VM is compiled to native code, the interface exposed by the \ttt{org.vmmagic} framework is also compiled into native code and not accessible from Java programs executed on the top of the Jikes VM.
 
 
 % ---------------------------------------------------------------------------
@@ -397,11 +397,11 @@ The Maxine project follows an approach where reflection is used at compile-time 
 \urlfootnote{Klein}{http://kleinvm.sourceforge.net/} is a metacircular \VM for the Self programming language that has no separation into \VM and language \cite{Unga05a}.
 A main difference between Klein and the already seen metacircular \VM projects is that the reification of the \VM-level elements survives the code generation or compilation time.
 Instead the \VM structures are exposed to the language as Self objects, exposing them to the language and thus allowing their manipulation from the application runtime.
-Klein also supports advanced mirror-based debugging tools to inspect and modify a remote \VM.
+Klein also supports advanced mirror-based~\cite{Brac04b} debugging tools to inspect and modify a remote \VM.
 %Hence the Klein \VM supports true \VM-level reflection since there is only a single code base.
 
 Additionally to the advances in reflection and metacircularity, Klein focuses on fast compilation turnarounds and incremental modifications for a responsive development process.
-For comparison, the generation process of a Squeak \VM takes minutes on modern hardware.
+For comparison, the generation process of a Squeak \VM takes minutes on modern hardware. The long compilation time prevents the Squeak \VM developer to perform fast and incremental development cycles on the \VM.
 
 Development on the Klein \VM stopped in 2009 and left the Klein \VM in fairly usable state.
 Yet, it proved that it is possible and build a language-runtime without the classical separation of the language-side and the \VM.
@@ -475,11 +475,11 @@ To allow the safe co-existence of several scripts, Caja removes the Javascript g
 
 \subsection*{KaffeOS}
 
-KaffeOS~\cite{Back00a} is a multi-application Java Runtime System centered in application co-existence, isolation and resource accounting. The KaffeOS runtime allows the isolated co-existence of Java applications so they cannot access each other's data, nor interfere in their execution. To avoid the latter, the KaffeOS \VM accounts the application's consumption of CPU and memory.
+KaffeOS~\cite{Back00a} is a multi-application Java Runtime System that supports application co-existence, isolation and resource accounting. The KaffeOS runtime allows the isolated co-existence of Java applications so they cannot access each other's data, nor interfere in their execution. To avoid the latter, the KaffeOS \VM accounts the application's consumption of CPU and memory.
 
 KaffeOS adds the process abstraction in the Java language, as in the sense of a process for an operating system. Each KaffeOS process owns a separate memory region~(a process heap) where its object's are allocated. Shared objects reside in special shared memory regions. A \emph{kernel heap} makes a distinction between code that runs in user mode or kernel mode. Regarding process communication, cross-process references become cross-heap references and are handled specially by the \VM. Resources are accounted and controlled at the \VM level for each process, so no process starves other processes.
 
-KaffeOS succeeds to make several Java applications to run side by side taking care on hardware resource consumption in addition of application's data. However, this solution is still limited with respect to base language classes. For example, the class \ct{java.lang.Object} must be shared between different processes to allow their communication because of the type system checks.
+KaffeOS succeeds to make several Java applications to run side by side taking care of hardware resource consumption in addition of application's data. However, this solution is still limited with respect to base language classes. For example, the class \ct{java.lang.Object} must be shared between different processes to allow their communication because of the type system checks.
 
 %J-Kernel \cite{Hawb98a} and Luna \cite{Hawb02a} present a solution similar to ours regarding the memory usage. They are Java solution for isolating object graphs with security purposes. In them, each object graph is called a \emph{protection domain}. All protection domains loaded in a system, and their objects, share the same memory space. 
 %
@@ -500,12 +500,12 @@ JVMTI exposes C functions to manipulate a Java VM~(Figure \ref{fig:jvmti}). The 
 
 JVMTI provides introspection and some limited intercession facilities at VM and language level. In particular it provides memory and heap management, thread control, execution stack manipulation, object and class manipulation and breakpoint support. JVMTI is used mainly with for debugging, monitoring and analysing purposes, particularly profiling and thread analysis.
 
-In the context of this thesis, we identify in JVMTI's architecture a similarity to a virtualization system. While the Java \VM takes the place of a the virtualized operating system and the agent is its hypervisor and can control.
+In the context of this thesis, we identify in JVMTI's architecture a similarity to a virtualization system. The Java \VM takes the place of the virtualized operating system and the agent is its hypervisor.
 
 \subsection*{MVM: a Multi User Virtual Machine}
 The Multi-user Virtual Machine~\cite{Czaj03a,Czaj01a} is a general purpose virtual machine for the Java language that allows the co-existence of different applications, potentially from different users. Each application running on top of the MVM is an \emph{isolate} based on the Java Application Isolation API specification~\cite{JSR121}. This Java Application Isolation API defines a uniform mechanism to control the life-cycle of Java applications.
 
-Many isolates co-exist not interfering each other, as they believe they own their private JVM: the runtime is modified, so state is not shared between them by default. MVM allows several communication mechanisms to securely communicate isolates: from standard mechanisms such as sockets, up to \emph{links}, a low-level isolate-to-isolate mechanism introduced by the Isolate API.
+Many isolates co-exist not interfering each other, as they believe they own their private JVM: the runtime is modified, so state is not shared between them by default. MVM allows several communication mechanisms to securely communicate between isolates: from standard mechanisms such as sockets, up to \emph{links}, a low-level isolate-to-isolate mechanism introduced by the Isolate API.
 
 MVM can run unmodified Java applications. The main difference between MVM and other co-existence solutions is that MVM-aware applications can use its high-level API to control the life-cycle~(\eg creation, suspension, resuming and and termination) and the available resources of other isolates. Notice that differently from JVMTI, this control API is available to the applications running on the JVM and not only to native agents.
 
@@ -536,7 +536,7 @@ The master interpreter modifies the behavior of a safe interpreter by providing 
 
 \section{Conclusion and Summary}
 
-In this chapter we studied the state of the art of application runtime manipulation techniques. We focus this study on three main concerns: the flexibility to change an application and language runtime, the mixture of low-level and high-level concerns and the tool support to do it. Based on these three concerns, we developed an evaluation criteria made of seven aspects. With this criteria in mind, we studied the state of the art on application runtime manipulation organizing it in three categories: reflection models, metacircular runtimes and virtualization techniques. Table \ref{tb:comparison_runtime_manipulation} shows how our evaluation criteria matches each of these categories.
+In this chapter we studied the state of the art of application runtime manipulation techniques. We focus this study on three main concerns: the flexibility to change an application and language runtime, the mixture of low-level and high-level concerns and the tool support to do it. Based on these three concerns, we defined a criteria to present, evaluate and compare different work related to application runtime manipulation. We organized our state of the art in three categories: reflection models, metacircular runtimes and virtualization techniques. Table \ref{tb:comparison_runtime_manipulation} shows how our evaluation criteria matches each of these categories.
 
 \begin{table}[ht]
  \small
@@ -568,7 +568,7 @@ In this chapter we studied the state of the art of application runtime manipulat
 		Safety
  			& \textasciitilde & + & + \\
 		\hline
-		Language Abstraction
+		User Abstraction
 		Level
  			& + & + & \textasciitilde \\
 		\hline
@@ -581,7 +581,7 @@ In this chapter we studied the state of the art of application runtime manipulat
  	 \bottomrule
  	\end{tabular}
 	\includegraphics[width=.7\linewidth]{runtime_manipulation_criteria_overview}
- 	\caption{Evaluation criteria applied to related work on deployment code unit tailoring techniques}
+ 	\caption{Classification of application runtime manipulation into three different families of approaches and their evaluation based on the criteria defined in Section \ref{sec:runtime_modification_criteria}.}
  	\label{tb:comparison_runtime_manipulation}
  \end{table}
 
@@ -589,7 +589,7 @@ First, we studied different reflection and metaprogramming models such as the on
 
 Metacircular \VMs explore the idea of expressing a \VM in the same language it supports at the end, under the principles of \emph{high-level low-level programming}. High-level low-level programming aims at enhancing a developer's productivity by using the abstractions of high-level languages to express lower-level concerns. Metacircular \VMs have the same power as non metacircular \VMs: they can freely manipulate the application runtime that runs on them. They have the support for manipulating runtime objects, language and execution-related elements. Application runtime manipulations can be safely applied as they are atomic for the application runtime being executed. However, the main advantage of metacircular \VMs over regular low-level \VMs is that they are expressed in high-level languages and thus, we can express our manipulations with the expression power of such language. Not all metacircular \VMs provide with an API written in terms of the runtime elements we want to manipulate, they do provide instead a memory-oriented API. Finally, metacircular \VMs do often mix language and \VM concerns, as they do not focus in the application runtime initialization but on the enhancements of \VM technology~(\eg the JIT compiler, the GC).
 
-Virtualization techniques applied to application runtimes provide with application co-existence and application runtime control. Application co-existence is used mainly with isolation purposes by allowing one to load several applications~(potentially several versions of the same application) to run at the same time and be able to communicate. These application co-existence solutions are available to the high-level language developer. Application control solutions provide mainly support to control an application's life cycle: start, pause or stop it. They often provide an API expressed in terms of such elements, hiding the low-level details of such manipulations. Particularly JVMTI provides fine grained manipulation and control covering also object and language elements manipulations. It's main drawback is however that JVMTI agents are expressed in a low-level language, limiting the application of our solutions.
+Virtualization techniques applied to application runtimes provide with application co-existence and application runtime control. Application co-existence is used mainly with isolation purposes by allowing one to load several applications~(potentially several versions of the same application) to run at the same time and be able to communicate. These application co-existence solutions are provided to the high-level language developer. Application control solutions provide mainly support to control an application's life cycle: start, pause or stop it. They often provide an API expressed in terms of such elements, hiding the low-level details of such manipulations. Particularly JVMTI provides fine grained manipulation and control covering also object and language elements manipulations. It's main drawback is however that JVMTI agents are expressed in a low-level language, limiting the application of our solutions.
 
 From this, we can state that our solution should have the following properties:
 
@@ -599,7 +599,7 @@ From this, we can state that our solution should have the following properties:
 
 \item[Metaprogramming support.] Metaprogramming supports generally all kind of manipulations that we desire for our solution. Making visible execution elements such as threads and the execution stack provides with control over a program's execution.
 
-\item[To manipulate a co-existing application runtime.] Manipulate a co-existing application runtime provides with the safety and atomicity of making such modifications from the \VM as it avoids to modify itself. Additionally, co-existing runtimes provide support to su such manipulations from a high-level language runtime.
+\item[To manipulate a co-existing application runtime.] Manipulate a co-existing application runtime provides with the safety and atomicity of making such modifications from the \VM as it avoids to modify itself. Additionally, co-existing runtimes provide support to such manipulations from a high-level language runtime.
 
 \end{description}
 
