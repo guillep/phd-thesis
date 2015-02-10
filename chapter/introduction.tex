@@ -96,7 +96,13 @@ Garbage Collectors (\GC) evolved from simple helpers to complex software artifac
 %These constraints denote the \emph{execution model} of a \VM \ie the contract required to a language runtime to execute it.
 %This execution model includes the format in which the runtime elements are layout in memory~(objects, classes, methods), the followed object model (\eg class-based or prototype-based) and the instruction set that the runtime must implement.
 
-\section{Motivation: Changing Technologies}
+\section{Motivation Through an Example}
+
+Advances in computing technology both in hardware and software architectures demand that our applications and languages adapt themselves better to them. Let's take for example the migration of an application runtime from a 32 bit \VM to another \VM in 64 bit architecture. Let's also suppose that the list of application classes and objects included in such application runtime and their relationships do not change from one architecture to the other. What changes is the internal representation of those classes and objects: object references are larger and can address more objects; object headers are also larger and can contain more object meta-information.
+
+Such migration requires the transformation of objects...
+
+This problem replicates in many other cases as modifying the reflection support in a language or changing how a program's behavior is expressed in a language~(\eg changing from classes to mixins).
 
 \section{Problem Statement}
 
