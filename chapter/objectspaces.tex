@@ -71,7 +71,7 @@ Notice that the hypervisor and the virtualized runtime do not share any \VM or l
 
 An object space is a first-class representation of an object oriented application runtime, meant for its manipulation and control. An object space encapsulates an application runtime and provides with a clear and explicit interface to manipulate it. This interface is split in two different kind of objects: an \ct{objectSpace} object provides general operations on the virtualized runtime while mirror objects~\cite{Brac04b} provide operations to manipulate individual objects that reside inside it~(Figure \ref{fig:objectSpaceMirrors}). Specific mirrors manipulate elements with a different object-format or runtime representation to enforce their internal representation, such as the \ct{ClassMirror}.
 
-\begin{figure}[htb]
+\begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.9\linewidth]{object_space_mirrors}
 \caption{\textbf{Mirrors in Object Spaces.} An object space is the main entry point for runtime manipulation. An object space provides with mirrors to modify particular objects. \label{fig:objectSpaceMirrors}}
@@ -89,6 +89,7 @@ The \VM setup interface allows us to configure the following kind of elements:
 
 \begin{description}
 \item[Well-known objects of the language.] Objects such as \ct{nil}, \ct{true} or \ct{false} are needed at runtime for different purposes. For example, the garbage collection needs \ct{nil} at runtime to update weak references. Other particular objects may be held by the \VM as prototypes to speed-up instantiation time of commonly used objects.
+
 
 \begin{code}
 ObjectSpace {
