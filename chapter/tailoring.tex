@@ -372,7 +372,7 @@ We evaluate Tornado by conducting five experiments that tailor different Pharo a
 \item \textbf{Preparing the application entry points.} This step consists in the installation of the one or more processes that will run our application.
 \item \textbf{Run the application.} The application is run, its threads executed. In particular in our last experiment~(an interactive web application), we interact with our application through a web browser. 
 \item \textbf{Stop and extract the application.} Once the tailoring process finishes, we stop Tornado and extract the resulting application by making a snapshot of it in a Pharo image file. We test the generated snapshots to verify they work properly, either by using the application or debugging them when they involve no I/O. We evaluate the behavior of the tailored application under the assumption that only the features we used during the tailoring should work.
-\item \textbf{Perform measurements.} Finally, to present our results we measure the size of the generated snapshots files and compare them against two different Pharo distributions prepared for production, as we present in Section \ref{sec:results_discussion}.
+\item \textbf{Perform measurements.} Finally, we measure the size of the generated snapshots files and compare them against two different Pharo distributions prepared for production~(cf. Section \ref{sec:results_discussion}).
 \end{enumerate}
 
 Additionally, we present an evaluation of Tornado according to the evaluation criteria stated in \chapref{state_virtualization}. Our evaluation includes a comparison with the already presented related work on application tailoring~(Section~\ref{sec:rfg_evaluation}).
@@ -463,7 +463,7 @@ Our last experiment consists is tailoring a web application using Seaside applic
 
 For this case, we proceeded to do two different experiences, with two different seeds. We first used the empty seed~(\emph{Seaside Web Application A}), as in the previous experiments, and then used a seed containing all Pharo base libraries~(\emph{Seaside Web Application B}). For reasons of space, the details of how the entry points are initialized for these both seeds can be found in our technical report~\cite{Poli14a}.
 
-\subsection*{Results} \label{sec:results_discussion}
+\section{Results} \label{sec:results_discussion}
 
 We gathered our experiments' results into Table \ref{tb:results}. This table shows:
 \begin{description}
