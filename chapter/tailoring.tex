@@ -478,10 +478,9 @@ saved = 100 - \frac{100*(nurtured - seed)}{reference - seed}
 \end{equation*}
 
 \begin{table}[ht]
- \small
  	\centering
- 	\begin{tabular}{|l|cccc>{\columncolor[gray]{0.8}}c|}
-		\hline
+ 	\begin{tabular}{lccccc}
+		\toprule
 			Experiment
  			& \textbf{Reference App}
 			& \textbf{Seed}
@@ -494,42 +493,42 @@ saved = 100 - \frac{100*(nurtured - seed)}{reference - seed}
 			& \textbf{App}
 			& \textbf{Code}
 			& \textbf{}\\
-		\hline
+		\toprule
 		Sum Two
  			&  3799 (12873) & 10 & 11 & 1 & \textbf{99.97\%}\\
 		Numbers (I)
  			& &&&&\\
-		\hline
+		\midrule
 		Fact 10 (II)
  			& 3799 (12873) & 10 & 15 & 5 & \textbf{99.87\%}\\
-		\hline
+		\midrule
 		Fact 100 (III)
  			& 3799 (12873) & 10 & 18 & 8 & \textbf{99.79\%}\\
-		\hline
+		\midrule
 		Reflective
  			& 3799 (12873) & 10 & 32 & 22 & \textbf{99.42\%}\\
 		App (IV)&&&&&\\
-		\hline
+		\midrule
 		(I) + I/O
  			& 3799 (12873) & 10 & 81 & 71 & \textbf{98.13\%}\\
-		\hline
+		\midrule
 		(II) + I/O
  			& 3799 (12873) & 10 & 82 & 72 & \textbf{98.10\%}\\
-		\hline
+		\midrule
 		(III) + I/O
  			& 3799 (12873) & 10 & 89 & 79 & \textbf{97.92\%}\\
-		\hline
+		\midrule
 		(IV) + I/O
  			& 3799 (12873) & 10 & 95 & 85 & \textbf{97.76\%}\\
-		\hline
+		\midrule
 		Seaside Web
  			& 20254 (17250) & 10 & 573 & 563 & \textbf{96.73\%}\\
 		App A&&&&&\\
-		\hline
+		\midrule
 		Seaside Web
  			& 20254 (17250) & 12872 & 13090 & 218 & \textbf{95.02\%}\\
 		App B&&&&&\\
-		\hline
+		\bottomrule
  	\end{tabular}
  	\caption{\small\textbf{Results of the tailored experiments.} Sizes are displayed in KB. The percentage of saved space does not take into account the seed, as it is not subject of Tornado and it is shared by both the reference and nurtured application.}
  	\label{tb:results}
@@ -541,17 +540,16 @@ Note that we subtract the size of the seed from both the nurtured and reference 
 \end{description}
 
  \begin{table}[ht]
- \small
  	\centering
- 	\begin{tabular}{|lc|}
-			\hline
+ 	\begin{tabular}{lc}
+			\toprule
 			\textbf{Component}
  			& \textbf{Size~(KB)}\\
-		\hline
-		Pharo Base Libraries & 12872\\\hline
-		Seaside Application Framework Libraries & 4378\\\hline
-		Seaside Web App & 47\\\hline
-		Reflective Invocations App & 104\\\hline
+		\toprule
+		Pharo Base Libraries & 12872\\\midrule
+		Seaside Application Framework Libraries & 4378\\\midrule
+		Seaside Web App & 47\\\midrule
+		Reflective Invocations App & 104\\\bottomrule
  	\end{tabular}
  	\caption{\small\textbf{Component sizes in our experiments. Size presented in KB.} \label{tb:tailored_components}}
  	\label{tb:basic_sizes}
@@ -559,14 +557,14 @@ Note that we subtract the size of the seed from both the nurtured and reference 
 
 Table \ref{tb:tailored_components} shows the size in KB of the code units from we used in our experiments. This table details the size of the Pharo base libraries, third party libraries such as Seaside and our particular experiments, which aid in the understanding of the results. We obtained this sizes by measuring the size of the code units once loaded in memory.
 
-\paragraph{Discussion of Results}
+\subsection{Discussion of Results}
 Our experiments show that Tornado aggressively reduces the size of code units required for an application. Our examples save from 95\% to 99\% of space, compared with their reference application~(which contains all base libraries and third party libraries in case of Seaside). Our first three experiments (the sum of two numbers, and the factorial of 10 and 100) show that Tornado succeeds to create minimal deployment versions of our applications, having into account that our seed forces a minimal of 10KB in each of them. The reflective application is indeed also minimal, but bigger than the other three, as Tornado installs inside the nurtured application (a) all the code that is accessed by reflection and (b) code from the collections package to iterate the methods of a class.
 
 We detect a notorious grow in size when adding I/O to our experiments, which varies from 63KB to 71KB extra. According to the list of installed code units, we identity a problem in the design of the I/O streams library from Pharo: a set of character tables meant for character encoding and conversion are initialized, even if not all of them are later on used by the application. This problem shows that this part of Pharo base libraries should be rethought.
 
 The Seaside experiments show that Tornado can be used in a complex setting such as a web application that runs a web server, while still achieving good results. It is interesting to note, from the comparison of both experiments, that more of half of the size of the final nurtured application in \emph{Seaside Web Application A} seems to be in the base libraries, as the amount of installed code is reduced when introducing the base libraries seed.
 
-\paragraph{Comparison with a Dedicated Platform}
+\subsection{Comparison with a Dedicated Platform}
 
 To have a broader view of our results, we compare them to MicroSqueak~\cite{Malo11a}. MicroSqueak is a dedicated platform that runs on the Pharo platform \ie a specialized platform containing an alternative implementation of base libraries, as Java Micro Edition~(J2ME)~\cite{JavaME} is for Java. MicroSqueak was designed with the explicit goal to be the smallest practical Squeak kernel. It contains a total of 49 classes with a reduced set of methods. It offers a minimal core of the language, a basic collection library and basic file IO support. MicroSqueak presents a minimal memory footprint of 80KB, when we build an application that performs no computation.
 
@@ -574,59 +572,57 @@ On one side, Tornado ensures smaller memory footprints when working on small app
 
 \section{Evaluation of Tornado}\label{sec:rfg_evaluation}
 
-We start this section evaluating Tornado according to the criteria we defined in Section \ref{sec:criteria}, so we can in the following sections discuss it and compare it with other approaches. Table~\ref{tb:comparison} shows an overview of the criteria defined in Section~\ref{sec:criteria} and their possible values to evaluate tailoring solutions.
+We start this section evaluating Tornado according to the criteria we presented in \chapref{state_tailoring}, so we can in the following sections discuss it and compare it with other approaches. Table~\ref{tb:comparison} shows an overview of the criteria presented in \chapref{state_tailoring} and their possible values to evaluate tailoring solutions.
 In this section we focus on the evaluation of Tornado that is summarized in the latest column of Table~\ref{tb:comparison}.
 
-\belowrulesep=0pt
-\aboverulesep=0pt
-
 \begin{table}[ht]
- \small
  	\centering
- 	\begin{tabular}{ccccc>{\columncolor[gray]{0.8}}c}
+ 	\begin{tabular}{cccccc}
 	
 \toprule
  			& \textbf{Dedicated}
  			& \textbf{Static}
 			& \textbf{Hybrid}
  			& \textbf{Dynamic}
- 			& \textbf{Tornado} \\
+			& \textbf{Tornado}  \\
  			& \textbf{platforms}
  			& \textbf{Analysis}
 			& \textbf{Analysis}
- 			& \textbf{Analysis}
- 			& \\
-
-\midrule
+ 			& \textbf{Analysis} &\\
+ \toprule
 
 		Base Libraries
- 			& + & + & + & + & +\\
-\midrule
+ 			& + & + & + & + & \textbf{+}\\
+		\midrule
 		Third-Party
-		& & & & & \\Libraries
- 			& - & + & + & + & +\\
-\midrule
+		& & & & \\Libraries
+ 			& - & + & + & + & \textbf{+}\\
+		\midrule
 		Legacy Code
- 			& - & + & + & + & + \\
-\midrule
+ 			& - & + & + & \textasciitilde  & \textbf{+}\\
+		\midrule
 		Reflection Support
- 			& + & - & - & + & + \\
-\midrule
-		Dedicated Deploy
-			& & & & & \\
+ 			& + & - & - & +  & \textbf{+}\\
+		\midrule
+		General Purpose
+			& & & & \\
 		Infrastructure
- 			& - & + & - & - & + \\
-\midrule
-		Flexibility
- 			& - & - & - & - & +  \\
-\midrule
-		Ensures
-		& & & & & \\
+ 			& + & - & - & \textasciitilde   & \textbf{+}\\
+		\midrule
+		Configurability
+ 			& - & - & - & \textasciitilde    & \textbf{+}\\
+		\midrule
+		Dynamic typing
+ 			& + & - & - & +  & \textbf{+}\\
+		\midrule
+		Minimality
+ 			& - & + & + & \textasciitilde  & \textbf{+}\\
+		\midrule
 		Completeness
- 			& - & - & - & - & -  \\
+ 			& + & - & - & \textasciitilde  & \textbf{-}\\
 \bottomrule
  	\end{tabular}
-	\includegraphics[width=.9\linewidth]{criteria_overview}
+	\includegraphics[width=.7\linewidth]{runtime_manipulation_criteria_overview}
  	\caption{Evaluation criteria applied to related work on deployment code unit tailoring techniques}
  	\label{tb:comparison}
  \end{table}
