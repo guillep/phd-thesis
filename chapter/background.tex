@@ -276,9 +276,9 @@ Reflectivity succeeds to modify and scope behavioral reflection for different me
 \section{Metacircular Runtimes and \VMs}\label{sec:metacircular_runtimes}
 
 The increased complexity of the \VMs leads to more novel approaches on how to build \VMs and therefore, their runtimes.
-Metacircular \VMs are \VMs programmed in the same language they support in the end \eg a Java \VM written in Java or a Smalltalk \VM written in Smalltalk. This approach is based on the principles of \emph{high-level low-level programming} \ie expressing low-level concerns using high-level languages~\cite{Fram09a}. Metacircular \VMs benefits from the abstraction power and tooling of a high-level language to manipulate their own \VMs. 
+Metacircular \VMs are \VMs programmed in the same language they support in the end \eg a Java \VM written in Java or a Smalltalk \VM written in Smalltalk. This approach is based on the principles of \emph{high-level low-level programming} \ie expressing low-level concerns using high-level languages~\cite{Fram09a}. Metacircular \VMs benefits from the abstraction power and tooling of a high-level language to manipulate their own \VMs. This also means that during the build-time of a metacircular \VM, we can express the manipulations of its application runtime in terms of the high-level language.
 
-These projects are biased towards \VM building techniques and not to the manipulation of the application runtimes that run on top of them. However, even if we do not focus on the modification of \VMs,  in this thesis we briefly study metacircular runtimes and \VMs with the objective of understanding more concretely the benefits of their high-level low-level approach.
+However, these projects are biased towards \VM building techniques and not to the manipulation of the application runtimes that run on top of them. We can see this in the fact that most of the high-level manipulations inside a metacircular \VMs do not survive the \VM generation \ie once the \VM is built we cannot access its high-level representations any more.  Even if we do not focus on the modification of \VMs, in this thesis we briefly study metacircular runtimes and \VMs with the objective of understanding more concretely the benefits of their high-level low-level approach.
 
 \subsection*{\textsc{Squeak Smalltalk \VM}}
 \seclabel{background-squeak}
@@ -429,7 +429,7 @@ With the objective of doing application runtime manipulation, we study in the fo
 %\subsection{Application Co-existence}\label{sec:virtualization_coexistence}
 
 \subsection*{\textsc{Class Loaders}}
-In Java, classes are loaded dynamically through a class loader~\cite{Lian98a}. A class loader is a first-class entity responsible of loading classes: create their runtime representation, loading their methods and linking their class references. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load classes with the same name. These classes will be isolated in the sense that they will not be visible to the others statically.
+In Java, application co-existence can be achieved to some degree with class loaders. A class loader is a first-class entity responsible of dynamically loading classes: create their runtime representation, loading their methods and linking their class references~\cite{Lian98a}. A class loader remembers all classes it loaded, and it is responsible for loading all classes related to  them. Class loaders define namespaces: different class loaders can load classes with the same name. These classes will be isolated in the sense that they will not be visible to the others statically.
 
 Class loaders can be specialized and extended to provide custom behavior. For example, Fong et. al.~\cite{Fong10a} use the class loading mechanism to enforce scoping rules and determine the visibility of names in various region of the program. They allow the user to control untrusted
 namespaces and classes and they have defined a language to define security policy. Jensen et. al.~\cite{Jens98a} provide a formalization of the class loader with the means to enforce security. They also use a bytecode verifier on class loading to check if a class' bytecode doesn't try to perform overflow or underflow operations.
@@ -454,7 +454,7 @@ Changeboxes model proves sound to update and migrate application and framework c
 
 \subsection*{\textsc{Caja\textbackslash Cajita} - Object Capability Languages}
 
-Caja~\cite{Mill08a} is an object-capability language~\cite{Levy84a,Mill03a,Spoo00a} subset of Javascript with the objective of bringing script isolation in Javascript. Caja was thought in the context of the web, where untrusted scripts can be loaded in any webpage and profit from any data available in the webpage. Caja defines a safe Javascript subset that removes elements from the language such as \ct{with} or \ct{eval} because their semantics are "strange" and in some cases unpredictable. Caja includes Cajita, a subset of Caja without the \ct{this} keyword. Caja is meant for transforming and migrating already existing Javascript code, while Cajita is meant for newly written code.
+Caja~\cite{Mill08a} is an object-capability language~\cite{Levy84a,Mill03a,Spoo00a} subset of Javascript that pursues the safe co-existence of isolated Javascript scripts. Caja was thought in the context of the web, where untrusted scripts can be loaded in any webpage and profit from any data available in the webpage. Caja defines a safe Javascript subset that removes elements from the language such as \ct{with} or \ct{eval} because their semantics are "strange" and in some cases unpredictable. Caja includes Cajita, a subset of Caja without the \ct{this} keyword. Caja is meant for transforming and migrating already existing Javascript code, while Cajita is meant for newly written code.
 
 Caja works with a combination of static and dynamic techniques. First, a static verifier checks and transforms Caja code into sanitized Javascript. This sanitized Javascript contains runtime checks that complement the static verifications. All these changes are meant to avoid exploits and vulnerabilities from untrusted sources. Caja also adds some new features to the Javascript libraries with support to freeze objects and turn them immutable. 
 
@@ -475,7 +475,7 @@ To allow the safe co-existence of several scripts, Caja removes the Javascript g
 
 \subsection*{KaffeOS}
 
-KaffeOS~\cite{Back00a} is a multi-application Java Runtime System centered in application isolation and resource accounting. The KaffeOS runtime allows the isolated co-existence of Java applications so they cannot access each other's data, nor interfere in their execution. To avoid the latter, the KaffeOS \VM accounts the application's consumption of CPU and memory.
+KaffeOS~\cite{Back00a} is a multi-application Java Runtime System centered in application co-existence, isolation and resource accounting. The KaffeOS runtime allows the isolated co-existence of Java applications so they cannot access each other's data, nor interfere in their execution. To avoid the latter, the KaffeOS \VM accounts the application's consumption of CPU and memory.
 
 KaffeOS adds the process abstraction in the Java language, as in the sense of a process for an operating system. Each KaffeOS process owns a separate memory region~(a process heap) where its object's are allocated. Shared objects reside in special shared memory regions. A \emph{kernel heap} makes a distinction between code that runs in user mode or kernel mode. Regarding process communication, cross-process references become cross-heap references and are handled specially by the \VM. Resources are accounted and controlled at the \VM level for each process, so no process starves other processes.
 
@@ -510,7 +510,7 @@ Many isolates co-exist not interfering each other, as they believe they own thei
 MVM can run unmodified Java applications. The main difference between MVM and other co-existence solutions is that MVM-aware applications can use its high-level API to control the life-cycle~(\eg creation, suspension, resuming and and termination) and the available resources of other isolates. Notice that differently from JVMTI, this control API is available to the applications running on the JVM and not only to native agents.
 
 \section*{\textsc{Safe-Tcl}}
-Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke another interpreter and specialize its behavior. Both the master and child interpreters run isolated from each other~(Figure \ref{fig:safetcl_twin_interpreters}).
+Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the execution of Tcl scripts in a safe environment, with restricted permissions and attributions. Safe-Tcl achieves this by using co-existing \emph{twin interpreters} \ie a normal Tcl interpreter~(the master interpreter) can invoke another interpreter and specialize its behavior. Both the master and child interpreters run isolated from each other~(Figure \ref{fig:safetcl_twin_interpreters}).
 
 \begin{figure}[ht]
 \begin{center}
@@ -521,7 +521,7 @@ Safe-Tcl~\cite{Levy97a, Bore94a} is a variation of Tcl whose main purpose is the
 \end{center}
 \end{figure}
 
-The master interpreter modifies the behavior of a safe interpreter by providing a security policy. A security policy grants or removes privileges to the scripts executed on an interpreter. Commands can be aliased so the untrusted interpreter call an aliased method and the command is fully implemented by a trusted interpreter. The twin interpreter is an interesting solution to have co-existing independent application runtimes where one has the power to manipulate the second one.
+The master interpreter modifies the behavior of a safe interpreter by providing a security policy. A security policy grants or removes privileges to the scripts executed on an interpreter. Commands can be aliased so the untrusted interpreter call an aliased method and the command is fully implemented by a trusted interpreter. The twin interpreter is an interesting solution to have co-existing independent application runtimes where one has the power to manipulate the second one at the level of the interpreter.
 
 %Safe-Tcl twin interpretation allows us to change the behavior of a program running on a specialized interpreter, without the limitations of the infinite tower of interpreters. However, in contrast with the solutions we already presented, Safe-Tcl does not provide with the ability to change completely the semantics of the language but just to override or provide new commands, with a focus on security.
 
