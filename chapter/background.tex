@@ -617,7 +617,7 @@ We illustrate this problem through an example~(Section \ref{sec:footprint_proble
 
 Existing application extraction or \emph{Tailoring} techniques build deployment artifacts containing a subset of the original code units inside an application. However, these existing techniques are not completely efficient because they have to overcome many different challenges such as reflection or the absence of type annotations in dynamically-typed languages~(Section \ref{sec:challenges}). We present an evaluation criteria that allows us to compare this different existing solutions~(Section \ref{sec:tailoring_criteria}).
 
-Finally, this chapter concludes by presenting and comparing existing techniques, grouped in four different categories: 
+Finally, this chapter concludes by presenting and comparing existing techniques, grouped into four different categories: 
 \begin{description}
 \item[Dedicated platforms.] Pre-built tailored platforms with specialized \VMs and language runtimes~(Section \ref{section:static_selection_rw}).
 \item[Static techniques.] Automatic tailoring techniques that depend only on static program information such as the source code and type annotations~(Section \ref{section:static_rw}).
@@ -637,7 +637,7 @@ Some devices may constrain applications due to a restrictive hardware such as lo
 These limitations may forbid the deployment of applications that contain lots of code units, or limit the amount of applications and content a user can have in its device.
 
 Existing solutions to this problem propose to eliminate dead code by extracting used code units of an application, and thus reduce application size in secondary memory and primary memory footprint. The majority of the solutions in the field propose to automatically detect and extract used code units, so called \emph{tailoring}, with static call graph construction as the most dominant technique~\cite{Grov97a}. 
-These static approaches present limitations in the presence of dynamic features such as reflection~\cite{Livs05a}, or in the absence of static type annotations. Additionally, they do not allow the user to customize the process of selection to cover different levels of an application's code \ie if third-party or base-language libraries are shared amongst several applications, a user may want to extract only the used application specific code and let the shared ones untouched; another user may want apply the process to the whole application.
+These static approaches present limitations in the presence of dynamic features such as reflection~\cite{Livs05a}, or in the absence of static type annotations. Additionally, they do not allow the user to customize the process of selection to cover different levels of an application's code \ie if third-party or base-language libraries are shared amongst several applications, a developer may want to extract only the used application specific code and let the shared ones untouched; another developer may want apply the process to the whole application.
 
 
 %\section{A Motivating Example} \label{sec:example_intro}
@@ -708,7 +708,7 @@ In this context of dynamically-typed and object-oriented programs that may use r
 
 \item[Dynamic typing.] Dynamically-typed languages cannot benefit from the most powerful static analysis due to the absence of type annotations. Name-based static analyses~(static analyses that build a simpler call graph based only on method names) can be used on them, but are not as efficient. Static techniques to detect code unit usage, such as call-graph analysis, need the support of more dynamic techniques \eg tracking runtime information, following the application's execution flow, or performing symbolic execution.
 
-For example, an approach just following method names would not eliminate the \ct{asString} method from the \ct{Object} or \ct{String} classes in the following code, as it cannot predict that the only \ct{asString} method used is the method from the \ct{Integer} class.
+For example, an approach just following method names would not eliminate the \ct{asString} method from the \ct{Object} or \ct{String} classes in the following code, as it cannot predict that only the \ct{asString} method of the \ct{Integer} class is used.
 
 \begin{code}
 MainApp >> start
@@ -757,9 +757,9 @@ MainApp >> start
 \end{code}
 
 \item[Reflection.] Reflection makes static analysis inoperative by allowing an application to execute unanticipated pieces of code. 
-Any \ct{String} resulting from a program execution or program configuration can denote a message send\footnote{We refer method invocations as message sends because they represent better from our understanding the dynamic property of the invocation.}, the name of a class to be instantiated, or even a script to be executed. Reflection is indeed important to cover, since it is a broadly used tool in industrial applications with object relational mappers such as Hibernate\footnote{\url{http://hibernate.org/}} or Glorp\footnote{\url{https://sites.google.com/site/glorpsite/}} and web frameworks such as Ruby On Rails\footnote{\url{http://rubyonrails.org/}}, Struts\footnote{\url{https://struts.apache.org/}} or Seaside\footnote{\url{http://www.seaside.st/}}.
+Any \ct{String} resulting from a program execution or program configuration can denote a message send, the name of a class to be instantiated, or even a script to be executed. We refer method invocations as message sends because they represent better from our understanding the dynamic property of the invocation. Reflection is indeed important to cover, since it is a broadly used tool in industrial applications with object relational mappers such as Hibernate\footnote{\url{http://hibernate.org/}} or Glorp\footnote{\url{https://sites.google.com/site/glorpsite/}} and web frameworks such as Ruby On Rails\footnote{\url{http://rubyonrails.org/}}, Struts\footnote{\url{https://struts.apache.org/}} or Seaside\footnote{\url{http://www.seaside.st/}}.
 
-\item[Intrusive approaches.] Intrusive approaches that force to change the application source code by forcing it to use different APIs or particular interfaces are not always feasible. This poses a problem when facing legacy code and already existing large code bases.
+\item[Intrusive approaches.] Intrusive tailoring approaches requires to change the application source code by forcing it to use different APIs or particular interfaces. This is not a suitable option when facing legacy code and already existing large code bases.
 
 \end{description}
 
@@ -779,34 +779,34 @@ This section presents properties that we consider the most relevant to evaluate 
 
 \item[General Purpose Infrastructure.] An ideal tailoring solution must produce a version of the application that is able to run on the official production infrastructure~(such as the VM) without overhead.
 
-\item[Flexibility.] An ideal solution for tailoring an application must support many different levels of application. Some applications may not need to tailor base libraries because they are shared with other applications. However, tailoring base libraries may be useful on applications residing alone in constrained devices.
+\item[Configurability.] An ideal solution for tailoring an application must support many different levels of application. Some applications may not need to tailor base libraries because they are shared with other applications. However, tailoring base libraries may be useful on applications residing alone in constrained devices.
 
 \item[Dynamic typing.] An ideal tailoring solution must be applicable and effective in dynamically-typed languages \ie with no type annotations.
 
-\item[Minimality.] An ideal tailoring solution must succeed at selecting the minimal set of elements that a deployable application should contains. That is, it must not contain extra~(non used) code units.
+\item[Minimality.] An ideal tailoring solution must succeed at selecting the minimal set of elements that a deployable application must contain. That is, it must not contain extra~(non used) code units.
 
-\item[Completeness.] An ideal tailoring solution must guarantee that the deployable application contains all the elements it needs to run without failing.
+\item[Completeness.] An ideal tailoring solution must guarantee that the deployable application contains all the elements it needs to run without failure in all its possible execution paths.
 
 \end{description}
 
-In the following sections we explore and compare four different categories of solutions that pursue minimizing application memory footprint through application tailoring. Such a comparison is based in the criteria developed in this section.
+In the following sections we explore and compare four different categories of solutions that pursue minimizing application memory footprint through application tailoring. Such a comparison is based on the criteria presented in this section.
 
 %The reduction of the deployment footprint of object-oriented applications has been subject of interest both in industry and research since many years. In such regard, we identified four different families of solutions for dead code elimination: dedicated platforms~(cf. Section \ref{section:static_selection_rw}), static analyses~(cf. Section \ref{section:static_rw}), dynamic analyses~(cf. Section \ref{section:dynamic_rw}) and hybrid analyses~(cf. Section \ref{section:hybrid_rw}).
 
 \section{Dedicated platforms}%Pre-conceived specialized application-independent platforms}
 \label{section:static_selection_rw}
 
-Dedicated platforms are platforms containing frameworks and/or libraries customized to run under specific circumstances. For example, Java Micro Edition~(J2ME)~\cite{JavaME} is a dedicated version of the Java platform and Cocoa Touch is one for the Cocoa framework\footnote{\url{https://developer.apple.com/technologies/ios/cocoa-touch.html}}. These specialized platforms are reduced platforms to run applications inside mobile and constrained devices. These platforms provide a reduced and fixed set of base libraries defined a priori and in a not customizable way. On one side, this means that applications written for this platforms will never miss a code unit and fail at runtime. On the other side, completeness comes at the cost of minimality: the final application includes more code units than the ones required at runtime.
+Dedicated platforms are platforms containing frameworks and/or libraries customized to run under specific circumstances. For example, Java Micro Edition~(J2ME)~\cite{JavaME} is a dedicated version of the Java platform and Cocoa Touch is one for the Cocoa framework\footnote{\url{https://developer.apple.com/technologies/ios/cocoa-touch.html}}. These specialized platforms are reduced platforms to run applications inside mobile and constrained devices. These platforms provide a reduced and fixed set of base libraries defined \emph{a priori} and in a not customizable way. On one side, this means that applications written for this platforms will never miss a code unit and fail at runtime. On the other side, completeness comes at the cost of minimality: the final application includes more code units than the ones required at runtime.
 
-Applications have to be written especially for them, and thus legacy code and third-party libraries not written especially for it are not compatible. Reflection is not a problem if the dedicated platform provides it. This is because the statically tailored base libraries are not built in an automatic fashion and the application code is not tailored.
+Applications have to be written especially for for and with these dedicated platforms. Thus, legacy code and third-party libraries not written with them are not compatible and cannot be deployed. Reflection is not a problem if the dedicated platform provides it. This is because the statically tailored base libraries are not built in an automatic fashion and the application code is not tailored.
 
 \section{Static Analysis-Based Techniques}\label{section:static_rw}
 
-Static analysis approaches for dead code elimination make use of the static information of a program to select the minimal subset of used elements. The bibliography describes four different algorithms to achieve this goal: unique name, class hierarchy analysis~(CHA), rapid type analysis~(RTA) and reachable members analysis~(RMA) \cite{Baco96a, Titz06a}. These techniques share a common approach, selecting an entry point method of an application and following from it the execution flow using the available static information \ie type annotations, and class and method names, building a call-graph~\cite{Grov97a}.
+Static analysis approaches for dead code elimination make use of the static information of a program to select the minimal subset of used elements. The bibliography describes four different algorithms to achieve this goal: unique name, class hierarchy analysis~(CHA), rapid type analysis~(RTA) and reachable members analysis~(RMA) \cite{Baco96a, Titz06a}. These techniques share a common approach. They select an application's entry point method and deduce the execution flow from the available static information. For example, they use the available type annotations and class and method names. This information is often used to build a call-graph~\cite{Grov97a}.
 
-These techniques have been studied and applied in many environments and languages. Rayside et al.~\cite{Rays02a}, Jax~\cite{Tip03a} and the ExoVM System~\cite{Titz06a} propose application extraction tools using these techniques for Java applications. Sallenave et al.~\cite{Sall10a} apply RTA to produce smaller .NET assemblies for embedded systems. Bournoutian et al.~\cite{Bour14a} use CHA to optimize on-device Objective-C applications. Ole Agesen~\cite{Ages96a} presents in his thesis a static technique applied to Self, a dynamically-typed language. Ole Agesen uses type inference to obtain type information and use it to select which objects to extract.
+These techniques have been studied and applied in many environments and languages. Rayside et al.~\cite{Rays02a}, Jax~\cite{Tip03a} and the ExoVM System~\cite{Titz06a} propose application extraction tools using these techniques for Java applications. Sallenave et al.~\cite{Sall10a} apply RTA to produce smaller .NET assemblies for embedded systems. Bournoutian et al.~\cite{Bour14a} use CHA to optimize on-device Objective-C applications. Ole Agesen~\cite{Ages96a} presents in his thesis a static technique applied to Self, a dynamically-typed language. To achieve this, Ole Agesen uses type inference to obtain type information and use it to select which objects to extract.
 
-In summary, these approaches are based on the static types found either in the source code or byte code. Thus, they are not applicable \emph{efficiently} in dynamic languages with no static type declarations \ie some code units whose usage cannot be anticipated by these techniques will stay even if they are really not used during the application execution. However, these solutions are valuable as they allow one to tailor base and third-party libraries, and legacy code. Their tailoring approach generates new deployment units that can run on the standard runtime infrastructure. The main drawback appears in the presence of reflection and configuration files, which will only work with a subset of reflective invocations through complementary analyses on the strings found in the source code. Also, existing solutions in this family lack the flexibility to declare and identify levels of tailoring, making it an "all or nothing".
+In summary, these approaches are based on the static types found either in the source code or byte code. Thus, they are not applicable \emph{efficiently} on dynamic languages with no static type declarations \ie some code units whose usage cannot be anticipated by these techniques will stay even if they are really not used during the application execution. However, these solutions are valuable as they allow one to tailor base and third-party libraries, and legacy code. Their tailoring approach generates new deployment units that can run on the standard runtime infrastructure. The main drawback appears in the presence of reflection and configuration files, which will only work with a subset of reflective invocations through complementary analyses on the strings found in the source code. Also, existing solutions in this family lack the possibility to configure the level of tailoring, making it an "all or nothing" approach.
 
 \section{Dynamic Analysis-Based Techniques}\label{section:dynamic_rw}
 
@@ -823,7 +823,7 @@ Dynamic analysis techniques use exclusively runtime information~(\ie execution f
 
 \end{description}
 
-All solutions inside this category except by Marea share one main property: they require to run the application inside a dedicated infrastructure to apply their techniques \eg dedicated VMs implementing remote lazy loading, code collection or special bytecode sets. The main challenge of these solutions resides on applying these techniques while minimizing their impact on performance during the runtime. Additionally, these solutions require their applications to run exclusively inside their infrastructure. Contrastingly, Marea solves this challenges with minimal overhead by using the existing reflective features of Pharo.
+All solutions inside this category except for Marea share one main property: they require to run the application inside a dedicated infrastructure to apply their techniques \eg dedicated VMs implementing remote lazy loading, code collection or special bytecode sets. The main challenge of these solutions resides on applying these techniques while minimizing their impact on performance during the runtime. Additionally, these solutions require their applications to run exclusively inside their infrastructure. Contrastingly, Marea solves this challenges with minimal overhead by using the existing reflective features of Pharo.
 
 Regarding dynamic features such as reflection, these solutions are the ones that can, potentially, handle it in the best way since they have in runtime all the information needed to resolve it. JUCE and OLIE and Marea, handle naturally reflection as they do not change the runtime representation (which programs make assumptions of, when they use metaprogramming). SlimVM on the other side, had to change the reflection support because they changed the object and class representation on their VM.
 
@@ -833,14 +833,14 @@ The minimality of these approaches depends on the granularity of their loading m
 
 \section{Hybrid Analysis-Based Techniques}\label{section:hybrid_rw}
 
-Hybrid analysis techniques mix static and dynamic~(\ie runtime) information to provide better results. The common approach of these is to start an application and pause it after some minimal runtime information is available \ie call stacks are created, some classes are loaded and initialized, and some objects are instantiated. Then, it uses the built stack of alive objects to perform a static analysis, as described in Section \ref{section:static_rw}, with concrete type information.
+Hybrid analysis techniques partially mix static and dynamic~(\ie runtime) information. Their common approach is to start an application and pause it after some minimal runtime information is available \ie call stacks are created, some classes are loaded and initialized, and some objects are instantiated. Then, it uses the built stack of alive objects to perform a static analysis, as described in Section \ref{section:static_rw}, with concrete type information. During the rest of the analysis, no more dynamic information is used.
 
 Java in The Small (JITS)~\cite{Cour10a} uses a hybrid approach to select the used parts of a program, and then loads them inside a binary image. A dedicated VM loads the binary image at startup. JITS's approach tailors base and third-party libraries as well as application specific code. It does not require modifications on the existent application to tailor it, so a legacy application could theoretically be tailored with this approach. JITS does not offer the possibility to configure the tailoring level, since it was designed to be used only in embedded devices where no more than one application would be running. Regarding reflection, JITS presents the same drawbacks as the other static call graph analysis approaches since not all the runtime information about the reflective invocations can be deduced.
 
 \section{Conclusion and Summary}
 
 Tailoring is a cross-cutting process that may affect any element of an application runtime, and thus, it requires particular support to detect and extract used code units. Several existing techniques were applied in the past with several results.
-Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given the criteria we defined in Section~\ref{sec:tailoring_criteria}.
+Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given the criteria we presented in Section~\ref{sec:tailoring_criteria}.
 
 \begin{table}[ht]
  \small
@@ -876,7 +876,7 @@ Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given
 		Infrastructure
  			& + & - & - & \textasciitilde  \\
 		\hline
-		Flexibility
+		Configurability
  			& - & - & - & \textasciitilde   \\
 		\hline
 		Dynamic typing
@@ -895,13 +895,13 @@ Table~\ref{tb:comparison_intro} presents a comparison of these techniques, given
  	\label{tb:comparison_intro}
  \end{table}
 
-Dedicated platforms are a first useful attempt to produce a specialized application runtime. They contain a pre-selection of base libraries that application developers must rely upon. Dedicated platforms are not tailored by an automatic process: that means that all the developed code will be part of the deployable distribution. This lack of automatic tailoring process means on one side that the usage of reflection will not affect the result of the deploy artifact. On the other side it means, however, that it does not offer the possibility to really tailor third-party libraries, legacy code nor even the developed application code. This is why we also consider dedicated platforms to ensure completeness while they are not as efficient to ensure minimality as other techniques.
+Dedicated platforms are a first useful attempt to produce a specialized application runtime. They contain a pre-selection of base libraries that application developers must rely upon. Dedicated platforms are not tailored by an automatic process: that means that all the developed code will be part of the deployable distribution. This lack of automatic tailoring process means on one side that the usage of reflection will not affect the result of the deployed artifact. On the other side it means, however, that it does not offer the possibility to really tailor third-party libraries, legacy code nor even the developed application code. This is why we also consider dedicated platforms to ensure completeness while they are not as efficient to ensure minimality as other techniques.
 
-We also see that automatic tailoring techniques, in contrast with dedicated platforms, base their tailoring on the existing application code: they can tailor base and third-party libraries as well as legacy code. Amongst them, dynamic-analysis based techniques, and hybrid-analisys ones in some grade, are able to handle reflective calls properly. We can see an almost general lack of support of flexibility to select whether a code unit should be subject to the tailoring or not.
+We also see that automatic tailoring techniques, in contrast with dedicated platforms, base their tailoring on the existing application code: they can tailor base and third-party libraries as well as legacy code. Amongst them, dynamic-analysis based techniques, and hybrid-analysis ones in some grade, are able to handle reflective calls properly. We can see an almost general lack of support to configure whether a code unit should be subject to the tailoring or not.
 
-Regarding minimality, automatic techniques are more efficient when they have more information at their disposal. Dynamic techniques use runtime information to know the concrete types of objects while static techniques use the types annotations in the source code. Between the two, dynamic techniques are more 
+Regarding minimality, automatic techniques are more efficient when they have more information at their disposal. Dynamic techniques use runtime information to know the concrete types of objects while static techniques use the types annotations in the source code. Between the two, dynamic techniques are more efficient because they benefit from more accurate information.
 
-Concluding, it is important to notice that none of the automatic tailoring techniques ensure completeness by themselves. We cannot anticipate the use of reflection and other dynamic techniques in complex scenarios. For this purpose, several techniques such as lazy loading or remote calls can be used to complement tailoring techniques. \chapref{chap:rfg} explores a new dynamic tailoring technique based on \Vtt. We show how our technique succeeds to tailor even in the existence of reflection and allows flexibility while others do not. 
+Concluding, it is important to notice that none of the automatic tailoring techniques ensure completeness by themselves. We cannot anticipate the use of reflection and other dynamic techniques in complex scenarios. For this purpose, several techniques such as lazy loading or remote calls can be used to complement tailoring techniques. \chapref{chap:rfg} explores a new dynamic tailoring technique based on \Vtt. We show how our technique succeeds to tailor even in the existence of reflection and adds configurability while others do not. 
 
 
 \input{chapter-footer.tex}
