@@ -25,7 +25,7 @@ Figure \ref{fig:virtualization_introduction} shows a simplified schema of the so
 \end{center}
 \end{figure}
 
-A hypervisor can perform four basic kind of manipulations on an object space, each with its own tradeoffs. First, it can directly manipulate its state through the object space VM-language interface~(cf. Section \ref{sec:object_space}). The other three manipulation mechanisms are based on this direct manipulation. Second, it can hook into the execution of an object space to execute its own code~(cf. Section\ref{sec:hypervisor}). Third, it can inject code to execute through code-injection  can execute isolated and their result can be cleanly retrieved by the hypervisor~(Section \ref{sec:isolation}). Finally, it can execute code inside an object space through a virtual code interpreter, providing full intercession power over the execution of the virtualized application for usages such as tracing or debugging~(Section \ref{sec:interpretation}).
+A hypervisor can perform four basic kind of manipulations on an object space, each with its own tradeoffs. First, it can directly manipulate its state through the object space VM-language interface~(cf. Section \ref{sec:object_space}). The other three manipulation mechanisms are based on this direct manipulation. Second, it can hook into the execution of an object space to execute its own code~(cf. Section\ref{sec:hypervisor}). Third, we can execute arbitrary expressions inside an object space through process injection and virtual interpretation~(Section \ref{sec:isolation}). % can execute isolated and their result can be cleanly retrieved by the hypervisor~(Section \ref{sec:isolation}). Finally, it can execute code inside an object space through a virtual code interpreter, providing full intercession power over the execution of the virtualized application for usages such as tracing or debugging~(Section \ref{sec:interpretation}).
 
 
 %Although being isolated, \Vtt presents a richer message-based communication channel. The hypervisor can perform cross-runtime message-sends by injecting processes. Injected processes can execute isolated and their result can be cleanly retrieved by the hypervisor~(Section \ref{sec:isolation}).
@@ -276,7 +276,10 @@ A hypervisor may benefit from the execution of an arbitrary expression or statem
 objectSpace execute: [ Logger disable ].
 \end{code}
 
-To achieve this kind of communication, we observe however the following challenges in using a plain \VM's message-send mechanism with our no sharing strategy.
+To achieve this kind of communication \Vtt provides two mechanisms: process injection and virtual interpretation.
+
+\subsection{Process Injection}
+Our no-sharing strategy prevents us to easily perform a message-send between our co-existing application runtimes. Using the existing message-send mechanism provided by the \VM has the following challenges:
 
 \begin{description}
 
@@ -316,9 +319,11 @@ objectSpace
 
 This solution for cross-runtime communication solves both problems observed before. In a first place, it prevents the method-lookup failure by translating the objects part of the method signature. Second, the new process executes in its own stack ensuring none of the objects from the hypervisor are leaked to the object space.
 
-\section{Virtual Execution through Interpretation} \label{sec:interpretation}
+\subsection{Virtual Interpretation} \label{sec:interpretation}
 
-\Vtt allows a \emph{virtual execution} mode through interpretation. Virtual execution takes place by doing code interpretation of either abstract syntax trees~(ASTs) or bytecode. In \Vtt a virtual code interpreter is a first-class entity that resides inside the hypervisor and interprets code of an object space. The virtual code interpreter has full control on the interpreted code. The virtual interpreter is useful in cases where the object space is in an incoherent or buggy state and it cannot execute code by itself. In those cases, the virtual interpreter can be used to fix the problem in the object space before it can continue its own execution. For example, we can use the virtual code interpreter to replace a broken method in the basic class hierarchy:
+It may happen that an object space is in an state where it cannot execute code by itself. For example, it may have become buggy due to a change, or it may be under construction (as in the subject of this thesis). In those cases, we cannot delegate the execution to the object space and thus, we cannot use the process injection mechanism.  For such cases \Vtt allows to execute an expression through the \emph{virtual interpretation} of \eg abstract syntax trees~(ASTs) or bytecodes. Virtual interpretation allows the execution of an expresion inside an object space but within the context of the hypervisor.
+
+A virtual code interpreter is a first-class entity that resides inside the hypervisor and interprets code inside an object space. The virtual code interpreter uses an object space to execute the interpreted code. Then, we can use a virtual interpreter to put an object space back into a stable state before it can continue its own execution. For example, we can use the virtual interpreter to replace a broken method in the basic class hierarchy:
 
 \begin{code}
 "newMethod is a method that fixes the bug"
