@@ -70,7 +70,7 @@ Finally, the window time control was implemented reusing the existing process pr
 
 When the \VM interpreter arrives to one of the safe suspension points (\ie a point where suspending the current execution will not leave the current process in a incoherent state) the code interpreter preempts the active process if the heartbeat signalled so~\cite{Deut84a}. Our safe suspension points correspond to the Cog \VM suspension points: back jump and message-send bytecodes~\cite{Mira11a}. This suspension points are designed on one side to minimize the execution overhead and on the other side to not suspend a process in between of a bytecode combination that could be unknown by the debugger. The suspension point before a message-send corresponds with the \VM's stack-overflow check and the one in backjumps allows preemption to happen in the case of long run (possible infinite) cycles. In \Vtt we modified the preemption code to activate another application runtime if available.
 
-\section{Mirror Implementation}\label{sec:implementation_mirrors}
+\section{\Vtt Mirror Implementation}\label{sec:implementation_mirrors}
 
 \gp{add that mirrors reference directly to objects in an object space}
 Our mirror implementation manipulate the objects inside an object space by using already existing Pharo \VM primitives. A primitive in Pharo is a function executed at the \VM level. The \VM assigns to each primitive an id, generally an integer index. To call a primitive at the language level we must add a method describing that it calls a primitive with a given id. Then, we have to send the corresponding message to the object subject of the primitive. The following code snippet shows an example where the size of an array is calculated by invoking a primitive. Primitive \textbf{62} is the primitive that returns the amount of variable fields of an object \eg the amount of fields of an array. For it, we make a method \ct{size} available in the \ct{Array} class implemented as a primitive invocation with a \emph{pragma} or annotation \ie the message-like expression between angle brackets~(<>). When sending the message \ct{size} to an array object, this method is looked up and found in this object class hierarchy, and the VM activates the primitive on the receiver object.
@@ -124,7 +124,9 @@ Using this mechanism, \Vtt prototype implements one mirror per type of object su
 
 %Using Oz, we can also create and install new processes inside an \objectspace given a code expression. The creation of a process requires the creation of a compiled method with the code~(bytecode) corresponding to the desired expression and a method context. The compiled method with the code to run is obtained by compiling the expression in the host and creating an \objectspace compiled method. The \objectspace compiled method is then provided with the compiled bytecode and its corresponding literals.
 
-\section{Memory Layout} \label{sec:memory}
+\section{\Vtt Virtual Interpreter} \label{sec:memory}
+
+\section{\Vtt Memory Layout} \label{sec:memory}
 
 In \Vtt, all objects belonging to the different application runtimes share a unique object heap. Objects are mixed in this heap and objects from the same application runtime are not necessarily contiguous, as shown in Figure \ref{fig:heap}. However, Although they are mixed, they are logically separated as they belong to different object graphs. Pharo being a safe-language~\cite{Hawb98a,Hawb02a} prevents us to forge references~(\ie creating references from numbers using pointer arithmetic) and isolates the object graphs of each runtime system.
 
@@ -141,6 +143,7 @@ This decision is funded on minimizing the changes made to the virtual machine, t
 	\item[Reuse memory handling mechanisms.] We use the same existing memory infrastructure as when \Vtt is not used. Existing mechanisms for allocating objects or growing the object memory when a limit is reached can be reused transparently by our implementation. 
 	\item[Simplify the object reference mechanism.] Cross-runtime references are normal object references. No extra support from the virtual machine was developed in this regard. Isolation is ensured at the language level through mirrors.
 	\item[Shared garbage collection.] Since objects from the different runtimes are mixed in the object memory, and their boundaries are not clear from the memory point of view, the garbage collector~(GC) is shared between them. Every GC run must iterate over all their objects, increasing its time to run.
+	\item[Only two co-existent application runtimes.] \gp{write up}
 \end{description}
 
 %This solution seems suitable  J-Kernel \cite{Hawb98a} and Luna \cite{Hawb02a} present a solution similar to ours regarding the memory usage. They are Java solution for isolating object graphs with security purposes. In them, each object graph is called a \emph{protection domain}. All protection domains loaded in a system, and their objects, share the same memory space. 
@@ -255,6 +258,11 @@ For example, the incoming version of the Pharo \VM~(Spur) features segmented mem
 \gp{not sure what else put in here, since I cannot exactly explain why the overhead is there. One is the shared object memory hence shared GC hence biggest GC time}
 
 
+\gp{make micro-benchmarks!}
+\gp{of mirrors}
+\gp{of cross-runtime message-send}
+\gp{of virtual interpreter}
+
 \section{Non Implemented Aspects} \label{sec:not_yet_implemented}
  
 For the sake of completion, we document in this subsection the aspects that have not been yet implemented in our prototype solution.
@@ -267,7 +275,7 @@ However, \Vtt introduces more than one application runtime in the same heap \eg 
 
 \subsection{Plugin and Native Libraries State}
 
-Pharo \VM allows one to access resources from outside the application runtime through native libraries and \VM plugins. A \VM plugin is a native library that satisfies a particular interface to communicate with the \VM. Native libraries may keep its own state and may not be thought to be loaded several times in the same process. In particular, \VM plugins are often developed assuming the existence of only one application runtime so their state is global for the whole \VM.
+Pharo \VM allows one to access resources from outside the application runtime through native libraries and \VM plugins. A \VM plugin is a native library that satisfies a particular interface to communicate with the \VM. Native libraries may keep their own state and may not be designed to be loaded several times in the same process. In particular, \VM plugins are often developed assuming the existence of only one application runtime so their state is global for the whole \VM.
 
 The main \VM modifications we made in our prototype to support the basic execution of several application runtimes do not include modification on \VM plugins, nor it handles the case of loading multiple versions of the same native library from different runtimes. The usage of some of these elements in \Vtt may not be fully working.
 
@@ -276,6 +284,10 @@ The main \VM modifications we made in our prototype to support the basic executi
 Pharo \VM supports the concept of weak references. If an object is only referenced by a weak reference, this object will be garbage collected and this weak reference replaced by a reference to \ct{nil}. However, before garbage collecting the object, the \emph{finalization mechanism} will send the \ct{finalize} message to a finalizer object in charge of releasing any resources it may be holding. Finalization is useful to release resources external to the application runtime such as files or sockets. In Pharo, this finalization process is activated from the \VM but executed by the application runtime.
 
 In \Vtt and because of the shared garbage collection, it may happen that a GC activated by one application runtime (the active application runtime) collects an object from another suspended application runtime. In such case, the \VM will activate only the finalization of the active application runtime. Then, the collected object from the suspended application runtime does not have the possibility to finalize its resources. This may cause external resource leaks, since they can be garbage collected but not properly finalized and released.
+
+\subsection{Memory Separation}
+
+\gp{write up}
 
 % ===========================================================================
 \section{Conclusion and Summary}
