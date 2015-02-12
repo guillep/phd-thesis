@@ -58,22 +58,29 @@ The Pharo \VM has single threaded execution \ie only one operating system thread
 
 In \Vtt, we modified part of the green thread mechanism to allow the scheduling of different application runtimes. We call \emph{context switch} the mechanism that changes from one application runtime to another. A virtualized application runtime runs for a window of time after which it gets preempted if another runtime with higher priority~(the language hypervisor runtime) is waiting. Internally, the \VM has a single bytecode interpreter shared amongst the different running runtimes. To perform the context switch, we exchange the special objects array of the \VM interpreter by the one from the application runtime to resume, and then resume the \VM execution~(cf. Figure \ref{fig:context_switch}). This solution keeps the single threaded nature of the \VM: the application runtime under execution is the \emph{active} application runtime while the others are considered as \emph{suspended} ones. This implementation has the benefit of avoiding concurrency problems between the different application runtimes, allowing us to focus on the runtime modification features.
 
-
-\begin{figure*}[htb]
+\begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.8\linewidth]{object_space_context_switch}
 \caption{\textbf{Context Switch Internals.}To perform a context switch, we change the special objects array of the \VM's interpreter.\label{fig:context_switch}}
 \end{center}
-\end{figure*}
+\end{figure}
 
-Finally, the window time control was implemented reusing the existing process preemption mechanism in the \VM. A separate \VM thread independent of the application runtimes, namely the \emph{heartbeat}, is awaken with a frequency of 5Hz~(\ie every 200 milliseconds) and activates a flag that indicates a preemption may occur. The frequency chosen is indeed important as it determines the precision of the clock measurements and how often the \VM checks for events such as delays or semaphores being signalled. If the frequency is unstable or low the clock resolution will be poor, delays will fire erratically and input won't be responded to promptly.
+Finally, the window time control was implemented hooking into the existing process preemption mechanism in the \VM. A separate \VM thread independent of the application runtimes, namely the \emph{heartbeat}, is awaken with a frequency of 5Hz~(\ie every 200 milliseconds) and activates a flag that indicates a preemption may occur. The chosen frequency is indeed important as it determines the precision of the clock measurements and how often the \VM checks for events such as delays or semaphores being signalled. If the frequency is unstable or low the clock resolution will be poor, delays will fire erratically and input from outside the \VM won't be responded to promptly.
 
 When the \VM interpreter arrives to one of the safe suspension points (\ie a point where suspending the current execution will not leave the current process in a incoherent state) the code interpreter preempts the active process if the heartbeat signalled so~\cite{Deut84a}. Our safe suspension points correspond to the Cog \VM suspension points: back jump and message-send bytecodes~\cite{Mira11a}. This suspension points are designed on one side to minimize the execution overhead and on the other side to not suspend a process in between of a bytecode combination that could be unknown by the debugger. The suspension point before a message-send corresponds with the \VM's stack-overflow check and the one in backjumps allows preemption to happen in the case of long run (possible infinite) cycles. In \Vtt we modified the preemption code to activate another application runtime if available.
 
 \section{\Vtt Mirror Implementation}\label{sec:implementation_mirrors}
 
-\gp{add that mirrors reference directly to objects in an object space}
-Our mirror implementation manipulate the objects inside an object space by using already existing Pharo \VM primitives. A primitive in Pharo is a function executed at the \VM level. The \VM assigns to each primitive an id, generally an integer index. To call a primitive at the language level we must add a method describing that it calls a primitive with a given id. Then, we have to send the corresponding message to the object subject of the primitive. The following code snippet shows an example where the size of an array is calculated by invoking a primitive. Primitive \textbf{62} is the primitive that returns the amount of variable fields of an object \eg the amount of fields of an array. For it, we make a method \ct{size} available in the \ct{Array} class implemented as a primitive invocation with a \emph{pragma} or annotation \ie the message-like expression between angle brackets~(<>). When sending the message \ct{size} to an array object, this method is looked up and found in this object class hierarchy, and the VM activates the primitive on the receiver object.
+We implement mirrors in \Vtt through the direct manipulation of the objects inside an object space. A \Vtt mirror includes a direct reference to its \emph{target}, an object inside an object space. The isolation between the hypervisor and the object space is handled by mirrors. The only object with grants to reference an object from other runtime is a mirror. To accomplish this, the operations on mirrors may yield either another mirror or objects that belong to the hypervisor runtime~(marshaled from their representation inside the object space).
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.8\linewidth]{object_space_mirror_reference}
+\caption{\textbf{Mirrors .}To perform a context switch, we change the special objects array of the \VM's interpreter.\label{fig:mirror_reference}}
+\end{center}
+\end{figure}
+
+Mirrors manipulate their targets through \VM primitives. A primitive in Pharo is a function executed at the \VM level. The \VM assigns to each primitive an id, generally an integer index. To call a primitive at the language level we must add a method describing that it calls a primitive with a given id. Then, we have to send the corresponding message to the object subject of the primitive. The following code snippet shows an example where the size of an array is calculated by invoking a primitive. Primitive \textbf{62} is the primitive that returns the amount of variable fields of an object \eg the amount of fields of an array. For it, we make a method \ct{size} available in the \ct{Array} class implemented as a primitive invocation with a \emph{pragma} or annotation \ie the message-like expression between angle brackets~(<>). When sending the message \ct{size} to an array object, this method is looked up and found in this object class hierarchy, and the VM activates the primitive on the receiver object.
 
 \begin{code}
 Array >> size
@@ -126,6 +133,56 @@ Using this mechanism, \Vtt prototype implements one mirror per type of object su
 
 \section{\Vtt Virtual Interpreter} \label{sec:memory}
 
+We implemented a virtual code interpreter for \Vtt by extending the existing Pharo's AST interpreter. Pharo's AST is able to parse Pharo code into AST, and execute it into the application runtime it belongs to by using reflection. We extended this AST interpreter with the purpose of executing the given AST inside an object space instead of inside the current application runtime. Our extensions include the following main points:
+
+\begin{description}
+\item[Name Resolution.] Names inside the source code representing \eg classes or globals must be resolved to the corresponding elements inside an object space. For this, we provide an alternative source of bindings to the AST semantic analysis process.
+
+\item[Instance Variable Access.] Accessing or writing an object's instance variable is mapped by the code interpreter to a field access or write in the mirror representing the receiver object.
+
+\begin{code}
+VirtualCodeInterpreter >> readInstanceVariableNumber: index
+    ^ self receiver instanceVariableAtIndex: index
+    
+VirtualCodeInterpreter >> writeInstanceVariableNumber: index with: aMirror
+    ^ self receiver instanceVariableAtIndex: index put: aMirror
+\end{code}
+
+\item[Method Lookup.] On a message-send, the virtual code interpreter performs the method lookup by inspecting the class hierarchy of the receiver object. The receiver object state is exposed to the interpreter by a mirror. Following, we illustrate this with a simplified method lookup:
+
+\begin{code}
+VirtualCodeInterpreter >> lookupSelector: selector
+    | classToLookup |
+    "classToLookup is a class mirror"
+    classToLookup := self receiver getClass.
+    [ classToLookup isNotNil ] whileTrue: [
+        (self class: classToLookup hasSelector: selector)
+        	    ifTrue: [ ^ classToLookup ].
+	classToLookup := classToLookup superclass.
+    ]
+\end{code}
+
+\item[Primitive Execution.] In the leaves of the execution, message-sends invoke the language primitives. These language primitives are executed through the object space interface.
+
+\begin{code}
+VirtualCodeInterpreter >> invokePrimitiveMethod: aMethod
+    ^ self receiver
+         executePrimitive: aMethod primitive
+         withArguments: self arguments
+\end{code}
+
+\end{description}
+
+Being a first-class entity, we can specialize the code interpreter to instrument code execution in order to override normal behavior or trace the execution. We can for example trace all instance variable writes by overwriting one of the methods above.
+
+\begin{code}
+TracingCodeInterpreter >> writeInstanceVariableNumber: index with: aMirror
+    | result |
+    result := super writeInstanceVariableNumber: index with: aMirror.
+    !\emph{self logWriteIn: self receiver atIndex: index with: aMirror.}!
+    ^ result
+\end{code}
+
 \section{\Vtt Memory Layout} \label{sec:memory}
 
 In \Vtt, all objects belonging to the different application runtimes share a unique object heap. Objects are mixed in this heap and objects from the same application runtime are not necessarily contiguous, as shown in Figure \ref{fig:heap}. However, Although they are mixed, they are logically separated as they belong to different object graphs. Pharo being a safe-language~\cite{Hawb98a,Hawb02a} prevents us to forge references~(\ie creating references from numbers using pointer arithmetic) and isolates the object graphs of each runtime system.
@@ -143,7 +200,7 @@ This decision is funded on minimizing the changes made to the virtual machine, t
 	\item[Reuse memory handling mechanisms.] We use the same existing memory infrastructure as when \Vtt is not used. Existing mechanisms for allocating objects or growing the object memory when a limit is reached can be reused transparently by our implementation. 
 	\item[Simplify the object reference mechanism.] Cross-runtime references are normal object references. No extra support from the virtual machine was developed in this regard. Isolation is ensured at the language level through mirrors.
 	\item[Shared garbage collection.] Since objects from the different runtimes are mixed in the object memory, and their boundaries are not clear from the memory point of view, the garbage collector~(GC) is shared between them. Every GC run must iterate over all their objects, increasing its time to run.
-	\item[Only two co-existent application runtimes.] \gp{write up}
+	\item[Limited to two co-existent application runtimes.] The current memory layout limits our prototype to two co-existent application runtimes due to the intervention of the CG and weak references. When the GC collects weak references, it replaces the reference to a reference to \ct{nil}. In the context of \Vtt, the GC should not replace weak reference to a unique \ct{nil} reference: it should replace it by a reference to the nil object from the correct application runtime. We can conclude that indeed, we need some kind of ownership mechanism \ie the GC may know to which application runtime an object belongs to correctly replace object references. In our prototype implementation we \emph{mark} ownership with only one available bit in the object header of objects. We look forward to replace this mechanism in the future by an alternative and more flexible implementation \eg separate memory regions per application runtime or extra object headers to represent ownership.
 \end{description}
 
 %This solution seems suitable  J-Kernel \cite{Hawb98a} and Luna \cite{Hawb02a} present a solution similar to ours regarding the memory usage. They are Java solution for isolating object graphs with security purposes. In them, each object graph is called a \emph{protection domain}. All protection domains loaded in a system, and their objects, share the same memory space. 
@@ -284,11 +341,6 @@ The main \VM modifications we made in our prototype to support the basic executi
 Pharo \VM supports the concept of weak references. If an object is only referenced by a weak reference, this object will be garbage collected and this weak reference replaced by a reference to \ct{nil}. However, before garbage collecting the object, the \emph{finalization mechanism} will send the \ct{finalize} message to a finalizer object in charge of releasing any resources it may be holding. Finalization is useful to release resources external to the application runtime such as files or sockets. In Pharo, this finalization process is activated from the \VM but executed by the application runtime.
 
 In \Vtt and because of the shared garbage collection, it may happen that a GC activated by one application runtime (the active application runtime) collects an object from another suspended application runtime. In such case, the \VM will activate only the finalization of the active application runtime. Then, the collected object from the suspended application runtime does not have the possibility to finalize its resources. This may cause external resource leaks, since they can be garbage collected but not properly finalized and released.
-
-\subsection{Memory Separation}
-
-\gp{write up}
-
 % ===========================================================================
 \section{Conclusion and Summary}
 

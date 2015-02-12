@@ -322,64 +322,27 @@ This solution for cross-runtime communication solves both problems observed befo
 
 \subsection{Virtual Interpretation} \label{sec:interpretation}
 
-It may happen that an object space is in an state where it cannot execute code by itself. For example, it may have become buggy due to a change, or it may be under construction (as in the subject of this thesis). In those cases, we cannot delegate the execution to the object space and thus, we cannot use the process injection mechanism.  For such cases \Vtt allows to execute an expression through the \emph{virtual interpretation} of \eg abstract syntax trees~(ASTs) or bytecodes. Virtual interpretation allows the execution of an expresion inside an object space but within the context of the hypervisor.
+It may happen that an object space is in an state where it cannot execute code by itself. An object space may be in a buggy state due to a change, or it may be under construction (as in the subject of this thesis). In those cases, we cannot delegate the execution to the object space and thus, we cannot use the process injection mechanism. Let's for example consider that we accidentally break or remove the \ct{at:put:} method from the \ct{MethodDictionary} class. Since that method is the one used to install new methods, from that moment on we cannot install methods in classes using process injection any more. Moreover, we cannot use process injection not even to solve this problem.
 
-A virtual code interpreter is a first-class entity that resides inside the hypervisor and interprets code inside an object space. The virtual code interpreter uses an object space to execute the interpreted code. Then, we can use a virtual interpreter to put an object space back into a stable state before it can continue its own execution. For example, we can use the virtual interpreter to replace a broken method in the basic class hierarchy:
+\begin{code}
+methodDictionaryClass := objectSpace classNamed: #MethodDictionary.
+methodDictionaryClass remoteMethod: #at:put:.
+
+"now we cannot install methods using process injection any more"
+\end{code}
+
+For such cases \Vtt allows to execute an expression inside an object space within the context of the hypervisor through the \emph{virtual interpretation} of \eg abstract syntax trees~(ASTs) or bytecodes. A virtual code interpreter is a first-class entity that resides inside the hypervisor and interprets code inside an object space. As it is a first-class entity, we can easily modify its implementation details such as the method lookup or the execution of primitives. These kind of modifications allows us to handle the special cases that cannot be handled by process injection. Then, we can use a virtual interpreter to execute an AST equivalent to the \ct{at:put:} method to install back our corresponding method. This puts the object space in our example back into a stable state before it can continue its own execution.
 
 \begin{code}
 "newMethod is a method that fixes the bug"
+newMethod := objectSpace compileMethod: 'at: aKey put: aMethod ....'.
+
 interpreter := VirtualCodeInterpreter newOn: anObjectSpace.
 interpreter
 	execute: [ Object methodDictionary at: #brokenSelector put: newMethod ]
 	with: newMethod.
-\end{code}
-
-The virtual code interpreter has three main points of interaction with an object space:
-
-\begin{description}
-\item[Instance Variable Access.] Accessing or writing an object's instance variable is mapped by the code interpreter to a field access or write in the mirror representing the receiver object.
-
-\begin{code}
-VirtualCodeInterpreter >> readInstanceVariableNumber: index
-    ^ self receiver instanceVariableAtIndex: index
-    
-VirtualCodeInterpreter >> writeInstanceVariableNumber: index with: aMirror
-    ^ self receiver instanceVariableAtIndex: index put: aMirror
-\end{code}
-
-\item[Method Lookup.] On a message-send, the virtual code interpreter performs the method lookup by inspecting the class hierarchy of the receiver object. The receiver object state is exposed to the interpreter by a mirror. Following, we illustrate this with a simplified method lookup:
-
-\begin{code}
-VirtualCodeInterpreter >> lookupSelector: selector
-    | classToLookup |
-    "classToLookup is a class mirror"
-    classToLookup := self receiver getClass.
-    [ classToLookup isNotNil ] whileTrue: [
-        (self class: classToLookup hasSelector: selector)
-        	    ifTrue: [ ^ classToLookup ].
-	classToLookup := classToLookup superclass.
-    ]
-\end{code}
-
-\item[Primitive Execution.] In the leaves of the execution, message-sends invoke the language primitives. These language primitives are executed through the object space interface.
-
-\begin{code}
-VirtualCodeInterpreter >> invokePrimitiveMethod: aMethod
-    ^ self receiver
-         executePrimitive: aMethod primitive
-         withArguments: self arguments
-\end{code}
-
-\end{description}
-
-Being a first-class entity, we can specialize the code interpreter to instrument code execution in order to override normal behavior or trace the execution. We can for example trace all instance variable writes by overwriting one of the methods above.
-
-\begin{code}
-TracingCodeInterpreter >> writeInstanceVariableNumber: index with: aMirror
-    | result |
-    result := super writeInstanceVariableNumber: index with: aMirror.
-    !\emph{self logWriteIn: self receiver atIndex: index with: aMirror.}!
-    ^ result
+	
+"now we can continue working with process injection"
 \end{code}
 
 % =============================================================================
