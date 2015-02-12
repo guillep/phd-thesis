@@ -238,7 +238,7 @@ Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~(cf. 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=0.8\linewidth]{tornado_components2}
-\caption{\small\textbf{Tornado's architecture overview.} Tornado controls both the reference and nurtured applications through Oz. Traps are installed into the nurtured application with the Ghost library.\label{fig:tornado_code units}}
+\caption{\small\textbf{Tornado's architecture overview.} Tornado controls both the reference and nurtured applications through Espell. Traps are installed into the nurtured application with the Ghost library.\label{fig:tornado_code units}}
 \end{center}
 \end{figure}
 
@@ -348,7 +348,7 @@ Tornado's seeds specify the level of tailoring. The seeds are in charge of initi
 
 \subsection{Preparing the Application for Deployment}\label{sec:deploy}
 
-Once Tornado is stopped, the nurtured application contains all the code units needed to run. Tornado procceeds to prepare the application for deployment \ie it removes all trap leftovers and extracts the nurtured application. Tornado identifies the traps by the presence of proxies and replaces the references to those proxies by references to another object, defaulting to the \ct{nil} object. Proxy objects do not then represent a drawback in space consumption because they are garbage collected. Once the traps are removed, the nurtured application keeps no dependencies to Tornado nor its infrastructure. Thus, the application can run outside the Oz infrastructure with no performance penalties.
+Once Tornado is stopped, the nurtured application contains all the code units needed to run. Tornado procceeds to prepare the application for deployment \ie it removes all trap leftovers and extracts the nurtured application. Tornado identifies the traps by the presence of proxies and replaces the references to those proxies by references to another object, defaulting to the \ct{nil} object. Proxy objects do not then represent a drawback in space consumption because they are garbage collected. Once the traps are removed, the nurtured application keeps no dependencies to Tornado nor its infrastructure. Thus, the application can run outside the Espell infrastructure with no performance penalties.
 
 Finally, Tornado extracts the application code units using one of two different techniques: (a) the creation of a snapshot file containing all code units and already initialized objects; or (b) build a static description of the application containing the code for all classes and methods that should be part of it.
 
