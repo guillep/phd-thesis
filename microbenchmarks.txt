@@ -1,0 +1,46 @@
+ Report for: EspellBenchs
+Benchmark NormalArraySetting
+NormalArraySetting total: iterations=10 runtime: 1.70ms +/-0.54
+
+Benchmark MirrorPrimitive
+MirrorPrimitive total: iterations=10 runtime: 89.40ms +/-0.82
+
+Benchmark MirrorArraySetting
+MirrorArraySetting total: iterations=10 runtime: 63.00ms +/-0.97
+
+Benchmark ReflectiveAccess
+ReflectiveAccess total: iterations=10 runtime: 2.70ms +/-0.61
+
+Benchmark NormalAccess
+NormalAccess total: iterations=10 runtime: 2.00ms +/-0.47
+
+Benchmark MirrorAccess
+MirrorAccess total: iterations=10 runtime: 104.5ms +/-1.1
+
+Benchmark ReflectiveSetting
+ReflectiveSetting total: iterations=10 runtime: 2.80ms +/-0.53
+
+Benchmark MirrorInstantiation
+MirrorInstantiation total: iterations=10 runtime: 383.9ms +/-2.1
+
+Benchmark NormalInstantiation
+NormalInstantiation total: iterations=10 runtime: 3.20ms +/-0.93
+
+Benchmark NormalArrayAccessing
+NormalArrayAccessing total: iterations=10 runtime: 1.80ms +/-0.59
+
+Benchmark ReflectivePrimitive
+ReflectivePrimitive total: iterations=10 runtime: 3.50ms +/-0.78
+
+Benchmark NormalSetting
+NormalSetting total: iterations=10 runtime: 2.90ms +/-0.63
+
+Benchmark MirrorSetting
+MirrorSetting total: iterations=10 runtime: 62.80ms +/-0.70
+
+Benchmark MirrorArrayAccessing
+MirrorArrayAccessing total: iterations=10 runtime: 105.20ms +/-0.45
+
+Benchmark NormalPrimitive
+NormalPrimitive total: iterations=10 runtime: 1.60ms +/-0.67
+

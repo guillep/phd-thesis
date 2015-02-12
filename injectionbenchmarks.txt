@@ -1,0 +1,12 @@
+Report for: EspellInjectionBenchs
+Benchmark InjectSimpleProcess
+InjectSimpleProcess total: iterations=10 runtime: 39212ms +/-1145
+
+Benchmark InjectLongProcessProcessToLiteralString
+InjectLongProcessProcessToLiteralString total: iterations=10 runtime: 814ms +/-53
+
+Benchmark NormalSimpleProcess
+NormalSimpleProcess total: iterations=10 runtime: 770ms +/-19
+
+Benchmark InjectSimpleProcessToLiteralString
+InjectSimpleProcessToLiteralString total: iterations=10 runtime: 42204ms +/-1067
