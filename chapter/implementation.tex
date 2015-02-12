@@ -263,7 +263,7 @@ This decision is funded on minimizing the changes made to the virtual machine, t
 
 \section{Benchmarks}
 
-We present in this section a series of benchmarks we applied to our implementation. The intent of these benchmarks is to provide an idea of the overhead that imply using our implementation of mirrors, process injection and the execution cycle.
+We present in this section a series of benchmarks we applied to our implementation. The intent of these benchmarks is to provide an idea of the overhead that imply using our implementation of mirrors, process injection and the execution cycle. However, notice that the focus of this thesis is not on the performance of our technique for its extensive usage. Instead we focused on its flexibility for application runtime generation. We acknowledge that there is still pending work in the optimization of the techniques we used.
 
 \subsection{Mirrors Micro-Benchmarks}
 
@@ -371,10 +371,11 @@ With the objective of testing the execution cycle overhead, we executed a series
 \begin{table}[ht]
 
  	\centering
- 	\begin{tabular}{lcc}%c|c|}
+ 	\begin{tabular}{lccc}%c|c|}
 			\toprule
 			\textbf{Benchmark}
- 			& \textbf{Vanilla Pharo \VM (1x)}
+ 			& \textbf{Vanilla Pharo \VM}
+			& \textbf{No Hypervisor}
 			& \textbf{Null Hypervisor}\\
 %			& \textbf{File Checking}
 %			& \textbf{Stack Checking}\\
@@ -384,18 +385,18 @@ With the objective of testing the execution cycle overhead, we executed a series
 %			& \textbf{Hypervisor}
 %			& \textbf{Hypervisor}\\
 		\midrule
-		RegexDNA & 5711ms +/-22 & 5878ms +/-18 \\\midrule% & 6142ms +/-11 & 6555ms +/-424 \\\midrule
-		KNucleotide & 94.00ms +/-0.85 & 100.1ms +/-3.4\\\midrule% & 105.8ms +/-3.2 & 134.4ms +/-3.7 \\\midrule
-		SpectralNorm & 79.8ms +/-1.4 & 86.6ms +/-1.4\\\midrule% & 92.7ms +/-6.0 & 110.7ms +/-1.7 \\\midrule
-		BinaryTrees & 36.80ms +/-0.65 & 37.10ms +/-0.83 \\\midrule%& 35.30ms +/-0.66 & 65.20ms +/-0.93 \\\midrule
-		Mandelbrot & 422.3ms +/-1.4 & 488.0ms +/-6.5 \\\midrule%& 494.9ms +/-3.4 & 632ms +/-23 \\\midrule
-		ReverseComplement & 5.40ms +/-0.48 & 6.80ms +/-0.24 \\\midrule%& 6.80ms +/-0.59 & 8.00ms +/-0.60 \\\midrule
-		ThreadRing & 2.50ms +/-0.41 & 2.50ms +/-0.56\\\midrule% & 2.70ms +/-0.90 & 3.20ms +/-0.80 \\\midrule
-		PiDigits & 0.90ms +/-0.69 & 0.70ms +/-0.66 \\\midrule%& 0.70ms +/-0.66 & 0.90ms +/-0.69 \\\midrule
-		Meteor & 2260.2ms +/-2.6 & 2398.2ms +/-8.5 \\\midrule%& 2479ms +/-16 & 3677ms +/-267 \\\midrule
-		NBody & 21.10ms +/-0.57 & 21.70ms +/-0.66 \\\midrule%& 22.6ms +/-1.4 & 37.7ms +/-1.5 \\\midrule
+		RegexDNA & 5711ms +/-22 & 5905ms +/-11 & 5878ms +/-18 \\\midrule% & 6142ms +/-11 & 6555ms +/-424 \\\midrule
+		KNucleotide & 94.00ms +/-0.85 & 95.60ms +/-0.77 & 100.1ms +/-3.4\\\midrule% & 105.8ms +/-3.2 & 134.4ms +/-3.7 \\\midrule
+		SpectralNorm & 79.8ms +/-1.4 & 84.9ms +/-1.1 & 86.6ms +/-1.4\\\midrule% & 92.7ms +/-6.0 & 110.7ms +/-1.7 \\\midrule
+		BinaryTrees & 36.80ms +/-0.65 & 34.60ms +/-0.40 & 37.10ms +/-0.83 \\\midrule%& 35.30ms +/-0.66 & 65.20ms +/-0.93 \\\midrule
+		Mandelbrot & 422.3ms +/-1.4 & 468.8ms +/-2.9 & 488.0ms +/-6.5 \\\midrule%& 494.9ms +/-3.4 & 632ms +/-23 \\\midrule
+		ReverseComplement & 5.40ms +/-0.48 & 6.00ms +/-0.71 & 6.80ms +/-0.24 \\\midrule%& 6.80ms +/-0.59 & 8.00ms +/-0.60 \\\midrule
+		ThreadRing & 2.50ms +/-0.41 & 2.20ms +/-0.59 & 2.50ms +/-0.56\\\midrule% & 2.70ms +/-0.90 & 3.20ms +/-0.80 \\\midrule
+		PiDigits & 0.90ms +/-0.69 & 0.70ms +/-0.66 & 0.70ms +/-0.66 \\\midrule%& 0.70ms +/-0.66 & 0.90ms +/-0.69 \\\midrule
+		Meteor & 2260.2ms +/-2.6 & 2373ms +/-12 & 2398.2ms +/-8.5 \\\midrule%& 2479ms +/-16 & 3677ms +/-267 \\\midrule
+		NBody & 21.10ms +/-0.57 & 20.80ms +/-0.80 & 21.70ms +/-0.66 \\\midrule%& 22.6ms +/-1.4 & 37.7ms +/-1.5 \\\midrule
 %		FannkuchRedux & 0.00ms +/-0.00 & 0.00ms +/-0.00 & 0.20ms +/-0.36 & 0.00ms +/-0.00 \\\midrule
-		Fasta & 4.30ms +/-0.54 & 5.20ms +/-0.65 \\\bottomrule%& 5.70ms +/-0.61 & 9.30ms +/-0.39 \\\hline
+		Fasta & 4.30ms +/-0.54 & 4.80ms +/-0.70 & 5.20ms +/-0.65 \\\bottomrule%& 5.70ms +/-0.61 & 9.30ms +/-0.39 \\\hline
  	\end{tabular}
 	\vspace*{0.2cm}
  	\caption{\textbf{Language Virtualization Overhead.} Comparing the cycle overhead from a non virtualized Pharo VM to a virtualized one.\label{tb:benchmarks}}
