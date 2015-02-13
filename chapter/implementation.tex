@@ -315,7 +315,7 @@ As we can notice, this mirror implementation introduce a considerable overhead i
 
 \subsection{Process Injection Overhead}
 
-To measure the overhead introduced by process injection over a normal message send, we present three different scenarios. The two first measure the injection of message sends that take a short time by only sending the \ct{yourself} message to an object. In the first case, the message is sent to a global object. In the second case the message is sent to a literal string, implying its marshalling to inside the object space. The third scenario is the execution of a process that takes longer time~(the calculation of factorial of 5000). We compare each of these scenarios by executing them in out of the Espell infrastructure and by injecting them inside an object space. Benchmarks are run with a problem size of 5000 to have visible measurements \ie we run each benchmark 5000 times between measurements. Table \ref{tb:benchmarks_injection} shows our results.
+To measure the overhead introduced by process injection over a normal message send, we present three different scenarios. The two first measure the injection of message sends that take a short time by only sending the \ct{yourself} message to an object. In the first case, the message is sent to a global object. In the second case the message is sent to a literal string, implying its marshalling to inside the object space during the injection of the process. The third scenario is the execution of a process that takes longer time~(the calculation of factorial of 5000). We compare each of these scenarios by executing them in out of the Espell infrastructure and by injecting them inside an object space. Benchmarks are run with a problem size of 5000 to have visible measurements \ie we run each benchmark 5000 times between measurements. Table \ref{tb:benchmarks_injection} shows our results.
 
 \begin{table}[ht]
 
@@ -326,15 +326,15 @@ To measure the overhead introduced by process injection over a normal message se
  			& \textbf{Normal Execution}
 			& \textbf{Process Injection}\\
 		\midrule
-		Single message-send (1) &0.40ms +/-0.48 & 38028ms +/-4014 \\\midrule
-		(1) with literal marshaling & 0.40ms +/-0.48 & 36734ms +/-142 \\\midrule
-		Long message-send & 438764ms +/-17551 & 521441ms +/-30847\\\midrule
+		Single message-send (1) &0.40ms +/-0.48 & 38s +/-4 \\\midrule
+		(1) with literal marshaling & 0.40ms +/-0.48 & 37s +/-0.1 \\\midrule
+		Long message-send & 438s +/-18 & 521s +/-31\\\midrule
  	\end{tabular}
 	\vspace*{0.2cm}
  	\caption{\textbf{Process Injection Benchmarks.} Measuring the overhead included in the execution by process injection.\label{tb:benchmarks_injection}}
  \end{table}
 
-The results we obtained are measured in terms of a problem size of 5000, meaning that they are several orders of magnitude bigger than a single process injection. We then \emph{estimate} the overhead of process injection performing the following simple calculation~(cf. Table \ref{tb:benchmarks_injection_comparison}). Notice that we don't include in this calculation the confidence of the result. We can also see that the overhead is bigger in the case of smaller computations: this is explained by the cost of process injection. However, we see that in longer computations the cost of process injection is diluted.
+The results we obtained are measured in terms of a problem size of 5000, meaning that they are several orders of magnitude bigger than a single process injection. We then \emph{estimate} the overhead of process injection performing the following simple calculation~(cf. Table \ref{tb:benchmarks_injection_comparison}). Notice that we don't include in this calculation the confidence of the result. We can also see that the overhead is bigger in the case of smaller computations. This is explained by the cost of process injection, which depends on mirrors to create and install processes. However, the cost of process injection is payed only once per process injected when the process is created. We can see that in longer computations this cost is diluted.
 
 \begin{equation*}
 estimatedOverhead = \frac{processInjection}{normalExecution}
@@ -356,7 +356,7 @@ estimatedOverhead = \frac{processInjection}{normalExecution}
  \end{table}
 
 \subsection{Execution Cycle Overhead}
-With the objective of testing the execution cycle overhead, we executed a series of more complex benchmarks. We chose a subset of the computer language benchmarks game\footnote{\url{http://benchmarksgame.alioth.debian.org/}}. We executed each of these benchmarks ten times in three different setups. Results are found in Table \ref{tb:benchmarks}. We first benchmarked the Vanilla JIT-less Pharo \VM without any of our changes, to make it a fair base of comparison with our JIT-less solution. Following, we benchmarked a non-virtualized solution running on our modified VM. Finally, we executed the same series of benchmarks using a Null hypervisor \ie an hypervisor that takes the execution control on each cycle and returns it to the object space without performing any particular action.
+With the objective of testing the execution cycle overhead, we executed a series of more complex benchmarks. We chose a subset of the computer language benchmarks game\footnote{\url{http://benchmarksgame.alioth.debian.org/}}. We executed each of these benchmarks ten times in three different setups. We first benchmarked the Vanilla JIT-less Pharo \VM without any of our changes, to make it a fair base of comparison with our JIT-less solution. Following, we benchmarked a non-virtualized solution running on our modified VM. Finally, we executed the same series of benchmarks using a Null hypervisor \ie an hypervisor that takes the execution control on each cycle and returns it to the object space without performing any particular action. Table \ref{tb:benchmarks} presents the results of our benchmarks, indicating the corresponding problem size of each benchmark.
 
 %We executed each of these benchmarks in four different setups. Results are found in Table \ref{tb:benchmarks}. We first benchmarked the Vanilla JIT-less Pharo \VM without any of our changes, to make it a fair base of comparison. Afterwards, we benchmarked our solution in three different setups:
 
@@ -367,13 +367,12 @@ With the objective of testing the execution cycle overhead, we executed a series
 %\end{description}
 
 %\begin{landscape}
-\gp{I also benchmarked other kind of hypervisors: one that checks the existence of a file (does not use the mirrors) and one that checks if a context was suspended in a particular point (forces mirrors creation for processes, contexts, methods and literals in the method)}
 \begin{table}[ht]
 
  	\centering
  	\begin{tabular}{lccc}%c|c|}
 			\toprule
-			\textbf{Benchmark}
+			\textbf{Benchmark (problem size)}
  			& \textbf{Vanilla Pharo \VM}
 			& \textbf{No Hypervisor}
 			& \textbf{Null Hypervisor}\\
@@ -385,34 +384,53 @@ With the objective of testing the execution cycle overhead, we executed a series
 %			& \textbf{Hypervisor}
 %			& \textbf{Hypervisor}\\
 		\midrule
-		RegexDNA & 5711ms +/-22 & 5905ms +/-11 & 5878ms +/-18 \\\midrule% & 6142ms +/-11 & 6555ms +/-424 \\\midrule
-		KNucleotide & 94.00ms +/-0.85 & 95.60ms +/-0.77 & 100.1ms +/-3.4\\\midrule% & 105.8ms +/-3.2 & 134.4ms +/-3.7 \\\midrule
-		SpectralNorm & 79.8ms +/-1.4 & 84.9ms +/-1.1 & 86.6ms +/-1.4\\\midrule% & 92.7ms +/-6.0 & 110.7ms +/-1.7 \\\midrule
-		BinaryTrees & 36.80ms +/-0.65 & 34.60ms +/-0.40 & 37.10ms +/-0.83 \\\midrule%& 35.30ms +/-0.66 & 65.20ms +/-0.93 \\\midrule
-		Mandelbrot & 422.3ms +/-1.4 & 468.8ms +/-2.9 & 488.0ms +/-6.5 \\\midrule%& 494.9ms +/-3.4 & 632ms +/-23 \\\midrule
-		ReverseComplement & 5.40ms +/-0.48 & 6.00ms +/-0.71 & 6.80ms +/-0.24 \\\midrule%& 6.80ms +/-0.59 & 8.00ms +/-0.60 \\\midrule
-		ThreadRing & 2.50ms +/-0.41 & 2.20ms +/-0.59 & 2.50ms +/-0.56\\\midrule% & 2.70ms +/-0.90 & 3.20ms +/-0.80 \\\midrule
-		PiDigits & 0.90ms +/-0.69 & 0.70ms +/-0.66 & 0.70ms +/-0.66 \\\midrule%& 0.70ms +/-0.66 & 0.90ms +/-0.69 \\\midrule
-		Meteor & 2260.2ms +/-2.6 & 2373ms +/-12 & 2398.2ms +/-8.5 \\\midrule%& 2479ms +/-16 & 3677ms +/-267 \\\midrule
-		NBody & 21.10ms +/-0.57 & 20.80ms +/-0.80 & 21.70ms +/-0.66 \\\midrule%& 22.6ms +/-1.4 & 37.7ms +/-1.5 \\\midrule
+		RegexDNA (10000) & 5711ms +/-22 & 5905ms +/-11 & 5878ms +/-18 \\\midrule% & 6142ms +/-11 & 6555ms +/-424 \\\midrule
+		KNucleotide (1000)& 94.00ms +/-0.85 & 95.60ms +/-0.77 & 100.1ms +/-3.4\\\midrule% & 105.8ms +/-3.2 & 134.4ms +/-3.7 \\\midrule
+		SpectralNorm (100) & 79.8ms +/-1.4 & 84.9ms +/-1.1 & 86.6ms +/-1.4\\\midrule% & 92.7ms +/-6.0 & 110.7ms +/-1.7 \\\midrule
+		BinaryTrees (9) & 36.80ms +/-0.65 & 34.60ms +/-0.40 & 37.10ms +/-0.83 \\\midrule%& 35.30ms +/-0.66 & 65.20ms +/-0.93 \\\midrule
+		Mandelbrot (200) & 422.3ms +/-1.4 & 468.8ms +/-2.9 & 488.0ms +/-6.5 \\\midrule%& 494.9ms +/-3.4 & 632ms +/-23 \\\midrule
+		ReverseComplement (1000) & 5.40ms +/-0.48 & 6.00ms +/-0.71 & 6.80ms +/-0.24 \\\midrule%& 6.80ms +/-0.59 & 8.00ms +/-0.60 \\\midrule
+		ThreadRing (1000) & 2.50ms +/-0.41 & 2.20ms +/-0.59 & 2.50ms +/-0.56\\\midrule% & 2.70ms +/-0.90 & 3.20ms +/-0.80 \\\midrule
+		PiDigits (27) & 0.90ms +/-0.69 & 0.70ms +/-0.66 & 0.70ms +/-0.66 \\\midrule%& 0.70ms +/-0.66 & 0.90ms +/-0.69 \\\midrule
+		Meteor (2098) & 2260.2ms +/-2.6 & 2373ms +/-12 & 2398.2ms +/-8.5 \\\midrule%& 2479ms +/-16 & 3677ms +/-267 \\\midrule
+		NBody (1000) & 21.10ms +/-0.57 & 20.80ms +/-0.80 & 21.70ms +/-0.66 \\\midrule%& 22.6ms +/-1.4 & 37.7ms +/-1.5 \\\midrule
 %		FannkuchRedux & 0.00ms +/-0.00 & 0.00ms +/-0.00 & 0.20ms +/-0.36 & 0.00ms +/-0.00 \\\midrule
-		Fasta & 4.30ms +/-0.54 & 4.80ms +/-0.70 & 5.20ms +/-0.65 \\\bottomrule%& 5.70ms +/-0.61 & 9.30ms +/-0.39 \\\hline
+		Fasta (1000) & 4.30ms +/-0.54 & 4.80ms +/-0.70 & 5.20ms +/-0.65 \\\bottomrule%& 5.70ms +/-0.61 & 9.30ms +/-0.39 \\\hline
  	\end{tabular}
 	\vspace*{0.2cm}
- 	\caption{\textbf{Language Virtualization Overhead.} Comparing the cycle overhead from a non virtualized Pharo VM to a virtualized one.\label{tb:benchmarks}}
+ 	\caption{\textbf{Execution Cycle Benchmarks.} Comparing the cycle overhead from a non virtualized Pharo VM to a virtualized one.\label{tb:benchmarks}}
  \end{table}
-%\end{landscape}
+ 
+Given that each benchmark is executed as many times as big is its problem size between measurements, this measurements do not estimate the cost of one execution of it. Instead, we do a comparison of these times to \emph{estimate} the overhead of the execution cycle during each of these benchmarks~(Table \ref{tb:benchmarks_comparison}). Note that the biggest the time the benchmark takes, the more diluted the cost of process injection is. Notice also that we don't include in this estimation the confidence of the result, which in cases such as the PhDigits benchmark show that the results are spread. We do our estimations with the following calculation.
 
-These results show that our prototype implementation poses an overhead between 0-9\% for the majority of these benchmarks. Special cases are Mandelbrot~(16\% overhead), ReverseComplement~(26\% overhead) and Fasta~(20\% overhead).
-There is however room for improvements due to the absence of a JIT compiler, shared garbage collection and the single threaded nature of the system.
-For example, the incoming version of the Pharo \VM~(Spur) features segmented memory, and an improved garbage collector, leaving an open door to host object spaces in several memory regions without affecting others. 
-\gp{not sure what else put in here, since I cannot exactly explain why the overhead is there. One is the shared object memory hence shared GC hence biggest GC time}
+\begin{equation*}
+estimatedOverheadOf(X) = \frac{measurementOn(X)}{normalExecution}
+\end{equation*}
 
+\begin{table}[ht]
 
-\gp{make micro-benchmarks!}
-\gp{of mirrors}
-\gp{of cross-runtime message-send}
-\gp{of virtual interpreter}
+ 	\centering
+ 	\begin{tabular}{lccc}%c|c|}
+			\toprule
+			\textbf{Benchmark}
+ 			& \textbf{Espell VM Overhead}
+			& \textbf{Hypervisor Overhead}\\
+		\midrule
+		RegexDNA & 1.03x & 1.03x \\\midrule
+		KNucleotide & 1.02x & 1.06x \\\midrule
+		SpectralNorm & 1.06x & 1.09x \\\midrule
+		BinaryTrees & 0.94x & 1.01x  \\\midrule
+		Mandelbrot & 1.11x & 1.16x \\\midrule
+		ReverseComplement & 1.11x & 1.26x \\\midrule
+		ThreadRing & 0.88x & 1x \\\midrule
+		PiDigits & 0.77x & 0.77x \\\midrule
+		Meteor & 1.05x & 1.06x \\\midrule
+		NBody & 0.99x & 1.03x \\\midrule
+		Fasta & 1.12x & 1.21x \\\bottomrule
+ 	\end{tabular}
+	\vspace*{0.2cm}
+ 	\caption{\textbf{Execution Cycle Overhead.} Comparing the cycle overhead from a non virtualized Pharo VM to a virtualized one.\label{tb:benchmarks_comparison}}
+\end{table}
 
 \section{Non Implemented Aspects} \label{sec:not_yet_implemented}
  
@@ -446,7 +464,7 @@ Mirrors are implemented by the combination of existing \VM primitives and do not
 
 Regarding the chosen memory layout, in \Vtt all running application runtimes share the same object heap. This decision ease our prototype implementation as no special support for cross-runtime references is needed. However, this has an impact in the time consumed by the GC over a bigger heap.
 
-The benchmarks we run show that the execution cycle control has an acceptable overhead that is for the majority of our benchmarks below the 10\%. However, a fully engineered solution should improve on that an other points, specifically the JIT compiler, the state of native libraries and plugins, the shared GC and the problems in object finalization.
+The benchmarks we run let us make several conclusions. First, that there are improvements to make in our mirror implementation. Second, that our process injection implementations introduces an important overhead for the injection of smaller computations while it shows an acceptable overhead in the case of more longer computations. Finally, the game benchmark suite shows that the execution cycle control has an acceptable overhead that is for the majority of our benchmarks below the 10\%. We would also like to note that our implementation was biased towards its flexibility and no real effort was spent on optimizations, where there is still room for improvement. A fully engineered solution should improve on that an other points, specifically the JIT compiler, the state of native libraries and plugins, the shared GC and the problems in object finalization.
 
 % =============================================================================
 \input{chapter-footer.tex}
