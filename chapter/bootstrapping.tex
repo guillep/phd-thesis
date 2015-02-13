@@ -2,13 +2,14 @@
 % ===========================================================================
 \part{Bootstrapping: Explicit Application Runtime Generation}
 % ===========================================================================
-\chapter{Bootstrapping an Object-Oriented Language}
+\chapter{Bootstrapping Object-Oriented Languages}
 \chaplabel{bootstrapping}
+\minitoc
 \introduction
 % ===========================================================================
 
 The language initialization is the step during the execution of a program where the application and language runtime of our program is generated \ie the initial structures and constructs of a language runtime are set up.
-As described in The Art of the Metaobject Protocol~(AMOP)~\cite{Kicz91a}, a language initialization solves the \emph{bootstrapping issues} of a language runtime. With this purpose the language initialization is often located in the virtual machine~(VM), where it can solve these issues without depending on running code on the language under construction.
+As described in The Art of the Metaobject Protocol~(AMOP)~\cite{Kicz91a}, a language initialization solves the \emph{bootstrapping issues} of a language runtime. To achieve this the language initialization is often located in the virtual machine~(VM), where it can solve these issues without depending on running code on the language under construction.
 
 \begin{figure}[ht!]
 \begin{code}
@@ -28,7 +29,7 @@ void Init_class_hierarchy(void) {
 \caption{\textbf{Code of the Ruby \VM that initializes the class hierarchy (excerpt).} The \VM code fixes the language class hierarchy.\label{code:ruby_hierarchy}}
 \end{figure}
 
-For example, Figure \ref{code:ruby_hierarchy} shows an excerpt of the code that initializes the class hierarchy in the Ruby \VM written in C\footnote{Taken from the version 2.1 of the Ruby \VM in \url{http://svn.ruby-lang.org/repos/ruby}}. From this code, Ruby's basic class hierarchy is composed by \ct{BasicObject} as its root, followed by \ct{Object}, \ct{Module} and \ct{Class}. These classes are first created manually without a class, and once the class \ct{Class} is available, their class references are updated. As we stated in \chapref{background}, this has many negative consequences. First, the \VM~(the Ruby \VM in this case) fixes this basic class hierarchy and prevents us to change it without changing the \VM.
+For example, Figure \ref{code:ruby_hierarchy} shows an excerpt of the code that initializes the class hierarchy in the Ruby \VM written in C\footnote{Taken from the version 2.1 of the Ruby \VM in \url{http://svn.ruby-lang.org/repos/ruby}}. From this code, Ruby's basic class hierarchy is composed by \ct{BasicObject} as its root, followed by \ct{Object}, \ct{Module} and \ct{Class}. These classes are first created manually without instantiating any class, and once the class \ct{Class} is available, their class references are updated. As we stated in \chapref{state_modifying}, this has many negative consequences. First, the \VM~(the Ruby \VM in this case) fixes this basic class hierarchy and prevents us to change it without changing the \VM.
 In addition, an unclear separation between the \VM and language concerns in the \VM code makes harder to change and adapt the language to other circumstances. Finally, when this \VM is written in a low-level language, we rely on the tools and abstractions this low-level language provides instead of the more powerful ones from the high-level language. 
 
 %We developed a bootstrap process for an object-oriented language based on the following ideas: we introduce (a) the language definition as a self-description of the bootstrapped language~(a description of its elements and how to build itself, written in itself), (b) a \textbf{first-class runtime} that provides a clear \VM-language interface for its manipulation, and (c) a specialized code interpreter~(the \emph{bootstrapping interpreter}) that executes the language definition~(Figure \ref{fig:bootstrapping_overview}) to initialize the language runtime in the reified runtime through its clear \VM-language interface. These three explicit components allows the separation of concerns and decouple the initialization of the language runtime from the \VM initialization.
@@ -40,9 +41,9 @@ In addition, an unclear separation between the \VM and language concerns in the 
 
 %In this context we pose the following question: \emph{How do we build and change language runtimes?}
 Notice that this language initialization step is often baptized as the language bootstrapping step. However, we use for it the name \emph{language initialization} and present the concept of \textbf{bootstrapping} as it is known in the context of compilers~(where a compiler can compile itself). We explore and expand this concept in the context of object-oriented languages. We can then see bootstrapping as a high-level low-level programming approach for  language runtime generation~\cite{Fram09a}~(cf. Section \ref{sec:bootstrapping}).
-Setting up a bootstrap process requires a circular definition of the language runtime we are defining. This circular definition provides the abstraction power and tools of the language itself for its definition~(cf. Section \ref{sec:circular_definition}). Additionally, this definition states the required steps to build a language runtime from scratch~(cf. Section \ref{sec:bootstrapping_process}).
+Setting up a bootstrap process requires a circular definition of the language runtime \ie a language that expresses its own initialization in itself. This circular definition provides the abstraction power and tools of the language itself for its own definition~(cf. Section \ref{sec:circular_definition}). Additionally, this definition states the required steps to build a language runtime from scratch~(cf. Section \ref{sec:bootstrapping_process}).
 
-We briefly present a first prototype implementation of such a bootstrap without the support of \Vtt~(cf. Section \ref{sec:bootstrapping_no_espell}). Afterwards, we show how \Vtt represents a robust infrastructure that helps solving the language runtime bootstrapping and leverages the problems that appears from it~(cf. Section \ref{sec:bootstrapping_infrastructure}). Our \Vtt based bootstrap uses a special bootstrapping interpreter to manipulate objects while they cannot execute code by themselves because the runtime is under creation \ie we cannot send a message when no methods are yet installed~(cf. Section \ref{sec:ast_interpreter}). Additionally, our infrastructure allows us to trace the execution of the bootstrap code to detect the impact that a change in the language may have in the bootstrap process~(cf. Section \ref{sec:continuous_bootstrapping}).
+In this chapter we show how \Vtt represents a robust infrastructure for language runtime bootstrapping and tackles the problems that appears from it~(cf. Section \ref{sec:bootstrapping_infrastructure}). Using \Vtt, the bootstrapped application runtime is hosted inside an object space and the bootstrap process takes the role of an hypervisor. The object space is initially empty and the bootstrap hypervisor fills it with objects gradually. A special bootstrapping interpreter manipulates objects while they cannot execute code by themselves because the runtime is under creation \ie we cannot send a message when no methods are yet installed~(cf. Section \ref{sec:ast_interpreter}). Additionally, our infrastructure allows us to trace the execution of the bootstrap code to detect the impact that a change in the language may have in the bootstrap process~(cf. Section \ref{sec:continuous_bootstrapping}). Throughout this chapter, we will use the bootstrap of the Pharo language to illustrate each of the sections.
 
 
 % ===========================================================================
@@ -53,7 +54,7 @@ The idea of a \emph{bootstrap} is well known in the context of compilers, where 
 Bootstrapping an object-oriented language runtime does not have to be mistaken with just writing a compiler of the language in the same language. The compiler of a high-level object-oriented language uses to output the bytecode of a class or method, which is an incomplete view of it: it does not describe other objects that are indeed needed to run this program nor the relation of this compiled code with other objects during runtime. However, following the idea of the C compiler we can then define the bootstrap process of an object-oriented language runtime as follows:
 
 \begin{definition}[Language runtime Bootstrap]
-It is a process whose input is the definition of a language behavior written in the same language, and whose output is a runtime representation of this language: the language runtime. 
+It is a process whose input is the definition of a language written in the same language, and whose output is a runtime for this language.
 \end{definition}
 
 This definition applied to an object-oriented high-level language implies the following:
@@ -64,14 +65,169 @@ This definition applied to an object-oriented high-level language implies the fo
 
 \item[The procedure to create the language elements is also self-described.] The input definition must also include the knowledge to recreate itself: the basic operations to create its classes and methods, or initialize the basic structures of the language runtime \eg the runtime table of symbols or its threads. From now on we will call the entities in charge of this task the \emph{meta-level} entities.
 
-\item[The output is a graph of objects.] The runtime representation that outputs this process must be made of a graph of objects \ie the classes, methods, threads and other objects that allow programs to run. These elements of this graph are the elements created by the bootstrap. It is a graph because these objects are interconnected as a result of the bootstrap process.
+\item[The output is a graph of objects.] The runtime representation that outputs this process must be made of a graph of objects \ie the classes, methods, threads and other objects that allow programs to run. These elements are created by the bootstrap. They form a graph because these objects are interconnected as a result of the bootstrap process.
 
 \end{description}
 
 %============================================================================
+\section{Bootstrapping Through an Example}\label{sec:bootstrapping_process}
+
+In this section we illustrate the idea of bootstrapping through an example. We chose for this example the bootstrap process for the Pharo language. Notice that a bootstrap process may be different for different languages, as they may contain different meta-models and concepts. The language definition~(\ie the description of the elements of the language and the procedure to create them) is expressed in Pharo. The language definition is available in source code files. The bootstrap loads this language definition as input to create the bootstrapped application runtime. Figure \ref{fig:example_language_definition} shows an excerpt of Pharo's language definition. Notice that while such a bootstrap is not difficult to express per se, it raises the question of \emph{how it can be executed}. This is challenging especially, since for example we need classes to be defined to execute this exact bootstrap description. This question leads to ask ourselves about the infrastructure required to be able to manage this and other different bootstraps. The following sections describes how \Vtt provides an infrastructure that tackles these problems.
+
+\begin{figure}[ht]
+\begin{code}
+nilObject := UndefinedObject basicNew.
+trueObject := True basicNew.
+falseObject := False basicNew.
+
+globalTable := GlobalTable basicNew.
+globalTable
+    at: #GlobalTable
+    put: globalTable.
+    
+SymbolTable initialize.
+...
+...
+
+nil subclass: #ProtoObject
+    instanceVariableNames: ''.
+
+ProtoObject subclass: #Object
+    instanceVariableNames: ''.
+    
+Object subclass: #UndefinedObject
+    instanceVariableNames: ''.
+...
+...
+
+ProtoObject >> isNil
+   ^ false
+
+UndefinedObject >> isNil
+   ^ true
+...
+...
+    
+Float initialize.
+Processor initialize.
+...
+...
+\end{code}
+\caption{\textbf{Excerpt of the Pharo bootstrap language definition.}\label{fig:example_language_definition}}
+\end{figure}
+
+Before we bootstrap a language, we have an empty application runtime. The bootstrap process gradually creates objects inside this empty application runtime until the language is completely initialized. Following, we describe the steps required to bootstrap a language such as Pharo. Each step shows also side by side a code snippet corresponding to that step and a picture illustrating the state of the application runtime after the execution of such code snippet.
+
+\paragraph{\textbf{Step 1: Create the first well-known objects}}\label{sec:create_nil}
+
+%When the bootstrap process starts, the bootstrapped language runtime is empty \ie there are no objects inside it. 
+The first step of the process is to create the \ct{nil}, \ct{true} and \ct{false} objects needed for execution~(cf. Figure \ref{fig:nil_creation}). It is important to create the \ct{nil} object first in Pharo, as the rest of the objects we create will have their fields initialized to it. \ct{true} and \ct{false} are required for code execution.
+
+\begin{figure}[ht]
+\begin{subfigure}{.4\linewidth}
+\begin{code}
+nilObject := UndefinedObject basicNew.
+trueObject := True basicNew.
+falseObject := False basicNew.
+\end{code}
+\end{subfigure}
+\begin{subfigure}{.6\linewidth}
+\includegraphics[width=.99\linewidth]{nil_creation}
+\end{subfigure}
+\caption{\textbf{Step 1: create the first well-known objects.} The \ct{nil}, \ct{true} and \ct{false} instances are created inside the application runtime.\label{fig:nil_creation}}
+\end{figure}
+
+
+\paragraph{\textbf{Step 2: Create basic language structures}}
+
+The basic language structures are the minimal structure we need to create all the rest of the language elements~(cf. Figure \ref{fig:basic_structure_creation}). For example, creating a class requires the existence of a table of global objects to install the class, and a table of unique strings or symbols to have a unique identifier for it. We must create these basic structures from the very beginning, as the rest of the process rely on them.
+
+\begin{figure}[ht]
+\begin{subfigure}{.45\linewidth}
+\begin{code}
+globalTable := GlobalTable basicNew.
+globalTable
+    at: #GlobalTable
+    put: globalTable.
+    
+SymbolTable initialize.
+\end{code}
+\end{subfigure}
+\begin{subfigure}{.55\linewidth}
+\includegraphics[width=.99\linewidth]{basic_structure_creation}
+\end{subfigure}
+\caption{\textbf{Step 2: Create basic language structures.} We create those structures that are required to create the rest of the language elements, such as the symbol and global tables. In the figure we can see that the global table references itself as a global and the symbol table references the \ct{GlobalTable} symbol.\label{fig:basic_structure_creation}}
+\end{figure}
+
+\paragraph{\textbf{Step 3: Create classes}}
+We create all the classes that the language definition requires in the language runtime~(cf. Figure \ref{fig:class_creation}). Pharo already includes a \emph{class builder} object that knows how classes should be created in the application runtime. The class builder validates that a class can be created, creates it and installs it inside the global table. The class builder encapsulates the complexity of class creation \eg first-class layouts, traits, first class instance variables. In this step we do not install a class' methods, since they can reference classes that are not created. We will create all methods at once in a next step once all classes are created.
+
+\begin{figure}[ht]
+\begin{subfigure}{.4\linewidth}
+\begin{code}
+nil subclass: #ProtoObject
+    instanceVariableNames: ''.
+
+ProtoObject
+    subclass: #Object
+    instanceVariableNames: ''.
+\end{code}
+\end{subfigure}
+\begin{subfigure}{.6\linewidth}
+\includegraphics[width=.99\linewidth]{class_creation}
+\end{subfigure}
+\caption{\textbf{Step 3: Create classes.} Classes are created by the class builder and installed inside the global table. \label{fig:class_creation}}
+\end{figure}
+
+\paragraph{\textbf{Step 4: Installing methods}}
+
+We compile~(if needed) and install each of the methods present in the language definition into their respective classes. Method literals are bound to their corresponding literals or global objects~(\eg classes).
+
+\begin{figure}[ht]
+\begin{subfigure}{.4\linewidth}
+\begin{code}
+ProtoObject >> isNil
+   ^ false
+
+UndefinedObject >> isNil
+   ^ true
+\end{code}
+\end{subfigure}
+\begin{subfigure}{.6\linewidth}
+\includegraphics[width=.99\linewidth]{method_installation}
+\end{subfigure}
+\caption{\textbf{Step 4: Installing methods} The methods that appear in language definition are installed inside the application runtime. In this example the \ct{ProtoObject} and \ct{UndefinedObject} classes contain each an \ct{isNil} method.\label{fig:method_installation}}
+\end{figure}
+
+
+\paragraph{\textbf{Step 5: Initialization}}
+%With all the classes and methods from the language specification installed, the structural part of the language is already set up. 
+This last step consists in the execution of the class initializers. In Pharo, it consists into sending the message \ct{initialize} to those classes that require some kind of extra initialization. For example, at this point we create well-known float values~(\eg NaN or Infinity) and the thread machinery. At the end of this step, the language runtime is able to execute code by itself.
+
+\begin{figure}[ht]
+\begin{subfigure}{.4\linewidth}
+\begin{code}
+Float initialize.
+Processor initialize.
+\end{code}
+\end{subfigure}
+%\begin{subfigure}{.6\linewidth}
+%\includegraphics[width=.99\linewidth]{bootstrap_step4}
+%\end{subfigure}
+\caption{\textbf{Step 5: Initialization.} Class initializers are executed to setup the state of the class. In this example we initialize the \ct{Float} and \ct{ProcessScheduler} classes sending them the \ct{initialize} message.\label{fig:method_installation}}
+\end{figure}
+
+
+%\begin{figure}[ht]
+%\begin{center}
+%\includegraphics[width=0.6\linewidth]{bootstrap_step4}
+%\caption{State of method literal resolution in the initial bootstrap.\label{fig:bootstrap_step4}}
+%\end{center}
+%\end{figure}
+
 \section{The Circular Language Definition}\label{sec:circular_definition}
 
-Bootstrapping requires a language runtime to be self-described. That is, there should exist a definition of the language expressed in the language it defines. This language definition includes the \textbf{base-level} entities of the language~(its classes and methods), and the \textbf{meta-level} entities with the means to define itself from scratch~(\eg a compiler or compiler interface to create methods and classes). The latter includes in addition the code of the bootstrapping process \ie the steps that must be followed to create a coherent and well formed language runtime~(Figure \ref{fig:language_definition}).
+Bootstrapping requires a language runtime to be self-described. That is, there should exist a definition of the language expressed in the language it defines. This language definition includes the \textbf{base-level} entities of the language~(\eg its classes and methods), and the \textbf{meta-level} entities with the means to define itself from scratch~(\eg a compiler or compiler interface to create methods and classes). The latter includes in addition the code of the bootstrapping process \ie the steps that must be followed to create a coherent and well formed language runtime~(Figure \ref{fig:language_definition}).
 
 \begin{figure}[ht]
 \center
@@ -82,9 +238,14 @@ Bootstrapping requires a language runtime to be self-described. That is, there s
 Notice that although we use the language meta-level for bootstrapping purposes, it may just be needed at bootstrapping time and not at runtime. Bootstrapping does not require to inject the self-representation of the language into the language runtime. We consider that as a special case: a language runtime that includes its self-description is a \emph{reflective language runtime}.
 A language that contains both introspection and full intercession facilities is a fully reflective language. A fully reflective language does not only have the minimal set of elements to run, but also the minimal to be autonomous: it can create/load classes and methods without any external component~(compiler, class builder, interpreter).
 
-Thus, this language definition has direct impact on the design of the language we bootstrap. Figure \ref{fig:phases} shows the stages of a bootstrap process as it installs classes or packages inside the language runtime. When the bootstrap process starts, the language runtime is not yet able to execute code by itself \eg it cannot resolve the method lookup because the class hierarchy is not created. As we install packages or classes, we arrive at the point where the language runtime contains already the minimal set of elements it needs for execution, the \emph{execution point}. Later on, we can install reflective features into the language runtime to get inside the \emph{reflective spectrum} of languages. 
+Thus, this language definition has direct impact on the design of the language we bootstrap. Figure \ref{fig:phases} shows the stages of a bootstrap process as it installs classes or packages inside the language runtime. When the bootstrap process starts, the language runtime is not yet able to execute code by itself \eg it cannot resolve the method lookup because the class hierarchy is not created. As we install packages or classes, we arrive at the point where the language runtime contains already the minimal set of elements it needs for execution, the \emph{execution point}. Later on, we can install reflective features into the language runtime to get it inside the \emph{reflective spectrum}.
 
 %When bootstrapping a reflective language, the language definition must ensure the causal connections that exist between the program and its representation~\cite{Maes87a}.
+
+\gp{AST}
+The builder takes as input the specification of the guest language, parses them and generates abstract syntax trees~(ASTs) of the new language's elements~(\eg classes and methods). 
+These AST objects provide to the bootstrap process with (a) the format and shape of classes and objects, (b) the source code of methods to be compiled inside the object space and used by the AST interpreter and (c) compile-time information such as instance and class variable names.
+\gp{AST!}
 
 
 \begin{figure}[ht]
@@ -101,174 +262,7 @@ Thus, this language definition has direct impact on the design of the language w
 \section{The Bootstrapping Process}\label{sec:bootstrapping_process}
 The bootstrapping process requires a particular order as it sets up very interrelated dependencies amongst the language elements. In the case of reflective languages these dependencies are meta-circular~\cite{Stra14a,Chib96a,Maes87a,Smit84a}. The order and specifics to build the language must be described in the language definition. This process presents also which are the elements that will be introduced into the built language: it is here where we decide if the output language runtime will be reflective or not.
 
-Following we describe a bootstrap process we developed to bootstrap the Pharo language. A bootstrap process may be different for different languages, as they may contain different meta-models and concepts. As an example, Figure \ref{code:process} shows an excerpt of our particular bootstrap process applied to the Pharo language.
-
-\begin{figure}[ht]
-\begin{code}
-Bootstrap >> bootstrap
-    "Create the basic language structures"
-    nilObject := UndefinedObject basicNew.
-    trueObject := True basicNew.
-    falseObject := False basicNew.
-    
-    globalTable := GlobalTable basicNew.
-    globalTable at: #GlobalTable put: smalltalk.
-    
-    SymbolTable initialize.
-    
-    "Solve the class creation bootstrapping issue"
-    Class
-        instVarAt: 4
-        put: (FixedClassLayout
-            withInstVars: #(superclass methodDict format layout ...)).
-    
-    "Create classes"
-    ClassBuilder new
-        superclass: nilObject
-        subclass: #ProtoObject
-        instanceVariableNames: ''.
-    ClassBuilder new
-        superclass: ProtoObject
-        subclass: #Object
-        instanceVariableNames: ''.
-    ...
-\end{code}
-\caption{\textbf{Code (excerpt) of the Pharo language definition.}\label{code:process}}
-\end{figure}
-
-%In \cite{Poli13b} Polito et at. 
-%we provided a detailed process to bootstrap an object-oriented reflective language such as Pharo. The bootstrap process is not the contribution of this paper. However, for the sake of completion and to aid the understanding of the rest of the paper, we briefly explain in this section the bootstrap process by the means of an example consisting in the bootstrap of the Pharo language. \gp{send them to read our report with the full blown process}
-
-
-%\paragraph{Step 1: Generate the guest language AST definitions.}
-%
-%The builder takes as input the specification of the guest language, parses them and generates abstract syntax trees~(ASTs) of the new language's elements~(\eg classes and methods). 
-%These AST objects provide to the bootstrap process with (a) the format and shape of classes and objects, (b) the source code of methods to be compiled inside the object space and used by the AST interpreter and (c) compile-time information such as instance and class variable names.
-
-\paragraph{\textbf{Step 1: Create the first well-known objects}}\label{sec:create_nil}
-
-When the bootstrap process starts, the bootstrapped language runtime is empty \ie there are no objects inside it. 
-The first step of the process is to create the \ct{nil}, \ct{true} and \ct{false} objects needed for execution. It is important to create the \ct{nil} object first as the rest of the objects will have their fields initialized to it. \ct{true} and \ct{false} are required for code execution.
-%%that are created inside the object space 
-%will initially have their fields pointing to the \ct{nil} object from the guest language runtime. Then, the first object that the bootstrap process creates is the \ct{nil} object.
-%
-%In a class based object-oriented language\footnote{These same problems appear in the case of prototype based languages}, the expected way to create the \ct{nil} instance would be to instantiate it from its class. However, the \ct{nil} class does not exist yet in the guest language runtime. Creating it poses some recursive questions: (a) if the a class is an object, how could we create a class without another class for it? and (b) if that class must be initialized with references to \ct{nil}, how can we reference the correct \ct{nil} object if there is no \ct{nil} instance yet? To solve this issue, a \ct{nil} object is created in the guest kernel without linking it to a class, using an unsafe operation and breaking the language's invariants temporarily.
-
-%An \emph{unsafe} \ct{createAnonymousObject} operation to create an object with no class. This operation takes as input the format describing the object to be created, creates the corresponding object, and outputs a mirror on that object. In our particular implementation, this operation introduces a temporary anonymous class in the guest and creates an object from it. This temporary class keeps some references to the \ct{nil} object from the host, breaking temporarily the isolation property. Using this operation, the guest \ct{nil} object is created. Later on, when the corresponding class of \ct{nil} is created, its class relationship is replaced, the temporary class is discarded (unreferenced and garbage collected), and the isolation is restored~(cf. Section \ref{sec:well_known}). The method responsible of the creation of the \ct{nil} object is shown in Figure \ref{code:nil_creation}. Figure \ref{fig:nil_creation} depicts the state of the guest language after this step.
-
-
-
-%\begin{figure}[ht]
-%\includegraphics[width=.98\linewidth]{nil_creation}
-%\caption{\textbf{State of the guest language after the creation of the classless nil object.} The \ct{nil} object is the only instance in the guest language. It is an object whose class is an anonymous class, marked in gray, pointing to the \ct{nil} object from the host.\label{fig:nil_creation} \cam{I would expect the anonymous class to appear outside the guest system rather than inside}}
-%\end{figure}
-
-
-\paragraph{\textbf{Step 2: Create basic language structures}}
-
-The basic language structures of a language runtime is the minimal structure needed to create all the rest of the elements in the language. For example, the language may have a table of globally accessible objects, and a table of unique strings or symbols. These basic structures should be created from the very beginning, as the rest of the process can rely on them.
-%
-%
-%To explain it by example, we take the well-know example of Smalltalk~(Figure \ref{fig:pharo_metaclass_metacircularity}). In Smalltalk each class has a metaclass, instance of a \ct{Metaclass} class. The \ct{Metaclass} class is an instance of a \ct{Metaclass} metaclass. According to this model, the \ct{Metaclass} class and \ct{Metaclass} metaclass should be created before any other class, and thus, it is for us the \emph{basic metacircularity}. It is worth saying that languages such as Pharo or Ruby~\cite{Mats01a} present similar models. \gp{In JavaScript... ?}
-%
-%\begin{figure}[ht]
-%\begin{center}
-%\includegraphics[width=.8\linewidth]{pharo_metaclass_circularity}
-%\caption{\textbf{Metaclass metacircularity in Pharo.}\label{fig:pharo_metaclass_metacircularity}}
-%\end{center}
-%\end{figure}
-%
-%The creation of the first \ct{Metaclass} class and \ct{Metaclass} metaclass is mutually dependent: each one is an instance of the other, and thus, each one needs the other to be created. To overcome this, we use again the same strategy as for the \ct{nil} object. The builder creates the corresponding \ct{Metaclass} class and metaclass, not linking them to each other. Once both of them are available, we update their class links.
-
-\paragraph{\textbf{Step 3: Create classes}}
-We create all the classes that the language definition requires in the language runtime. The bootstrapping interpreter uses the corresponding class building mechanism in the meta-level of the language to create the corresponding classes from their descriptions. Methods are not yet installed in their classes.
-%Creating a class is a complex operation at this stage. For example, a class has a name which is a symbol\footnote{a Symbol is a string unique in the system}, which in turn cannot be created yet because the Symbol class does not exist yet. Another example is the usage of complex collections such as Dictionaries in the class definitions for class variables.
-%by taking each class' AST from the specification, instantiating a metaclass from the \ct{Metaclass} class and the corresponding class from the new metaclass.
-% The \ct{asClassMirror} message is sent to the metaclass mirror, so the builder can instantiate the corresponding class from this metaclass. This sub step is shown in Figure~\ref{code:class_creation}. Once the bootstrap process creates all classes in this way, the guest language contains all its classes but they are still not initialized. Classes are yet not related between them and have no methods installed. Figure \ref{fig:class_creation} shows an example of the state of the guest language after this step is finished. 
-%In this step the builder doesn't initialize all classes. It lets their fields referencing to the guest \ct{nil} object. No methods are installed yet.
-
-%\begin{figure}[ht]
-%\begin{code}
-%newMetaclass := metaclass basicNew asClassMirror.
-%newMetaclass format: aClassDefinition classSide format.
-% 
-%newClass := newClassMetaclass basicNew asClassMirror.
-%newClass format: aClassDefinition format.
-%\end{code}
-%\caption{\textbf{Class creation inside the object space.} The mirror to the \emph{metaclass} allows the instantiation of a new metaclass. This new metaclass is afterwards used to instantiate the corresponding class. Each of these classes contain their corresponding formats. This task is repeated for all the classes defined in the specification. \label{code:class_creation}}
-%\end{figure}
-%
-%\begin{figure}[ht]
-%\begin{center}
-%\includegraphics[width=.98\linewidth]{class_creation}
-%\caption{\textbf{State of classes in the guest language after class creation.}  The metaclass metacircularity is set up. Other classes, such as \ct{Object} or the correct \ct{UndefinedObject} are instances of their respective metaclass, which in turn are  instances of \ct{Metaclass}. All slots of these classes~(in particular the slot indicating the \emph{superclass}) reference the guest \ct{nil} object. At this point, two \ct{UndefinedObject} classes exist in the guest, in gray the one created in section \ref{sec:create_nil} referencing to the host language, in white the one we created in this step. \label{fig:class_creation}}
-%\end{center}
-%\end{figure}
-
-%\paragraph{Step 5: Initialize well-known instances.}\label{sec:well_known}
-%
-%In this step the well known instances of the language runtime are instantiated and initialized.
-%We set the class link of the \ct{nil} object with its corresponding class which was created in the last step. We create also other well known instances such as the \ct{true} and \ct{false} objects.% The process uses the \ct{setClass:} operation of the mirrors to set the \ct{nil} object its corresponding class and restore the isolation of the new language. The \ct{true} and \ct{false} instances are instantiated using their corresponding classes in the object space. 
-%The code executing this step is shown Figure~\ref{code:nil_fixation}. 
-%After this step, \ct{nil} is not a \emph{classless} object anymore. Also, the guest language is \textbf{transitively closed}, although it is not completely initialized as shown in Figure \ref{fig:well_known_instances}.
-
-%\begin{figure}[ht]
-%\begin{code}
-%theNil setClass: nilClass.
-%theTrue := trueClass basicNew.
-%theFalse := falseClass basicNew.
-%\end{code}
-%\caption{\textbf{initialising the nil, true and false instances.} Fixing the nil reference to the new nil class that was just created. The \ct{setClass:} operation of the mirrors is used. Also, the \ct{true} and \ct{false} instances are created by instantiating their corresponding classes. \label{code:nil_fixation}}
-%\end{figure}
-
-%\begin{figure}[ht]
-%\begin{center}
-%\includegraphics[width=.98\linewidth]{well_known_instances}
-%\caption{\textbf{The guest language is finally transitively closed.} After setting the \ct{nil} object with its corresponding class from the guest language, the graph is transitively closed.\label{fig:well_known_instances}}
-%\end{center}
-%\end{figure}
-
-%\begin{figure}[ht]
-%\includegraphics[width=.98\linewidth]{class_initialization}
-%\caption{\textbf{State of classes in the guest language after class initialization.}  Each class references to its corresponding superclass. The superclass of \ct{Object} is \ct{nil} as it is the root of the inheritance chain. Class state is initialized~(\eg their names initialized as symbols) except their methods. \label{fig:class_initialization}}
-%\end{figure}
-
-\paragraph{\textbf{Step 4: Installing methods}}
-
-We compile~(if needed) and install each of the methods present in the language definition into their respective classes. Method literals are bound to their corresponding literals or global objects (\eg classes).
-
-%\begin{figure}[ht]
-%\includegraphics[width=.98\linewidth]{method_installation}
-%\caption{\textbf{State of classes after method installation.} Each class has a method dictionary. Each method dictionary references the installed methods. A method object contains the bytecode and references the literals it uses.\label{fig:method_installation}}
-%\end{figure}
-
-
-\paragraph{\textbf{Step 5: initialization}}
-%With all the classes and methods from the language specification installed, the structural part of the language is already set up. 
-This last step consists in the execution of the class initialize methods to set up elements such as character tables, well-known float values~(\eg NaN or Infinity) and the thread machinery. This means that at this point, our language runtime should be able to execute code by itself.
-\newline
-
-While such a bootstrap is not difficult to express per se, it raises the question of how it can be executed. This is challenging especially, since for example we need classes to be defined to execute this exact bootstrap description. This question leads to ask ourselves about the infrastructure required to be able to manage this and other different bootstraps. The following sections describes the infrastructure we built to solve this problem.
-
-\section{Bootstrapping without \Vtt}\label{sec:bootstrapping_no_espell}
-
-We developed a first prototype of a bootstrap process without the support of \Vtt~\cite{Poli14c}. This prototype version was successful to generate different application runtimes while presenting some limitations. With the absence of object spaces, the two application runtimes (the one under construction and the one constructing it) share the same application runtime. Thus, the bootstrapped application runtime cannot use its own version of special classes as they are not recognized by the \VM. For example, Figure \ref{fig:bootstrap_step4} shows the state of our bootstrap containing already the classes \ct{Point}, \ct{Rectangle} and the method \ct{Point>>corner:}. This method is an instance of the \ct{CompiledMethod} of the source runtime because the Virtual Machine does not support multiple versions of this class.
-This new method also refers to the class \ct{Rectangle}, for which an \ct{Association} is built.
-The association is kept as an instance of the source runtime also.
-However, it references to the \ct{Rectangle} class in the new environment.
-
-\begin{figure}[ht]
-\begin{center}
-\includegraphics[width=0.9\linewidth]{bootstrap_step4}
-\caption{State of method literal resolution in the initial bootstrap.\label{fig:bootstrap_step4}}
-\end{center}
-\end{figure}
-
-This problem is present for every object required by the \VM's execution model, including most of literal objects~(nil, true, false, strings and numbers), causing that the object graphs of both runtime systems end up mixed.
-In this first bootstrap implementation we solve these limitations with the introduction of an extra serialization step at the end of the bootstrap.
-This step provides the possibility to swap incorrect references with the right ones during the serialization graph traversal. For example, at serialization time we need to replace all references to the source Pharo's \ct{nil} to the newly created \ct{nil} object.
-This approach's main limitation is that it prevents us to fully use the power of the language before the serialization because it may lead to undesired side effects due to the incorrect references.
-In other words, we cannot use and test completely the bootstrapped runtime before its serialization.
+\gp{extend in here}
 
 \section{Bootstrapping with \Vtt}\label{sec:bootstrapping_infrastructure}
 
@@ -320,7 +314,7 @@ The bootstrapping interpreter is a virtual code interpreter that interprets code
 \begin{description}
 \item[Alternative method lookup.] Before reaching the execution point, the class hierarchy of the language runtime is incomplete, or part of its methods are not yet installed. The bootstrapping interpreter implements an alternative method lookup mechanism to allow message sending before we reach the execution point: methods are looked up in the definition of the language instead of the hierarchy in the language runtime; a mapping is kept between classes created in the language runtime and their definitions in the language definition to know where the lookup should start.
 
-\item[Automatic class stubs.] The bootstrapping interpreter does also solve most of the well known bootstrapping issues~(\eg how to create a class before a class exists) in a generic way by using class stubs. When an inexistent class is needed during the bootstrap process, the interpreter creates an empty class to take its place respecting the \VM format for it. The interpreter will be able to create instances of this class and map it to its corresponding definition to perform the method lookup. This class cannot, however, initially perform reflective operations as it does not contain any reflective information. When the real class is created later on in the process, it replaces the stub. For this purpose, we extended the object space interface with one operation that allows the creation of an object whose class pointer is not initialized.
+\item[Automatic class stubs.] The bootstrapping interpreter does also solve most of the well known bootstrapping issues~(\eg how to create an instance before a class exists) in a generic way by using class stubs. When an inexistent class is needed during the bootstrap process, the interpreter creates an empty class to take its place respecting the \VM format for it. The interpreter will be able to create instances of this class and map it to its corresponding definition to perform the method lookup. This class cannot, however, initially perform reflective operations as it does not contain any reflective information. When the real class is created later on in the process, it replaces the stub. For this purpose, we extended the object space interface with one operation that allows the creation of an object whose class pointer is not initialized.
 
 \begin{code}
 objectSpace {
@@ -340,7 +334,7 @@ Figure \ref{fig:interpretation} illustrates with an example the behavior of the 
 
 
 
-By using the bootstrapping interpreter to bootstrap, all the executed logic comes from a single source: the language definition. This avoids  major code and logic duplications between \VM and language, as the only one point for extension or modification of the bootstrapped language is its definition. Figure~\ref{code:logic_dup3} illustrates how we can use the interpreter to use the \ct{Dictionary} definition from the language and avoid duplications in native code as shown in \chapref{background}.
+By using the bootstrapping interpreter to bootstrap, all the executed logic comes from a single source: the language definition. This avoids  major code and logic duplications between \VM and language, as the only one point for extension or modification of the bootstrapped language is its definition. Figure~\ref{code:logic_dup3} illustrates how we can use the interpreter to use the \ct{Dictionary} definition from the language and avoid duplications in native code as shown in \chapref{state_modifying}.
 
 
 \begin{figure}[ht]
@@ -351,7 +345,7 @@ Bootstrap>>createDictionaryWith: n
             execute: 'Dictionary new: size'
             binding: { 'size' -> n }.
 \end{code}
-\caption{\textbf{Avoiding logic duplications with the bootstrapping interpreter.} This example shows how the bootstrapping interpreter does not duplicate the logic of the \ct{Dictionary>>initialize} method, but uses it instead.\label{code:logic_dup3}}
+\caption{\textbf{Avoiding logic duplications with the bootstrapping interpreter.} This example shows how the bootstrapping interpreter does not duplicate the logic of the \ct{Dictionary>>new:} method, but uses it instead.\label{code:logic_dup3}}
 \end{figure}
 
 
@@ -362,10 +356,10 @@ Building continuously a language runtime provides the language engineers with th
 \begin{figure}[ht]
 \center
 \includegraphics[width=0.7\linewidth]{impact}
-\caption{\textbf{How a change impacts the bootstrap process.} A change in the language may impact directly in the definition of the language, which in turn impacts in the bootstrapped language.\label{fig:impact}}
+\caption{\textbf{How a change impacts the bootstrap process.} A change in the language may impact directly the definition of the language, which in turn impacts the bootstrap process.\label{fig:impact}}
 \end{figure}
 
-However, not every change in the language definition may impact the bootstrap process: some code is only meant to be in the result of the bootstrap process but it is not used by the bootstrapping interpreter \eg changing the set of final classes introduced by the bootstrap does not alter the bootstrap process. To identify the impact of a change in the language in the bootstrap process we introduced as a second output of our bootstrapping interpreter an execution trace containing all the language elements that were used to bootstrap: any change on these elements may have an impact on the process. Then, to produce useful feedback for the changes made by a language developer, an \emph{impact resolver} measures the impact of a change on the bootstrap process by comparing the introduced change to the previous bootstrap execution~(Figure \ref{fig:resolving_impact}).
+However, not every change in the language definition may impact the bootstrap process: some code is only meant to be in the result of the bootstrap process but it is not used by the bootstrapping interpreter \eg changing the set of final classes introduced by the bootstrap does not alter the bootstrap process. To identify the impact of a change on the language in the bootstrap process we introduced as a second output of our bootstrapping interpreter an execution trace containing all the language elements that were used to bootstrap: any change on these elements may have an impact on the process. Then, to produce useful feedback for the changes made by a language developer, an \emph{impact resolver} measures the impact of a change on the bootstrap process by comparing the introduced change to the trace of previous bootstrap execution~(Figure \ref{fig:resolving_impact}).
 
 Our bootstrapping infrastructure measures the impact by making a diff between the traced and changed language elements. In case a change breaks the bootstrap process, the language engineer has hints that helps him spotting the problem and act on it. We are working to obtain in the future more information through a smarter impact analysis.
 
@@ -387,6 +381,7 @@ In this chapter we explored the bootstrap of an object-oriented language using \
 
 % ===========================================================================
 \chapter{Bootstrapping Validation} \label{sec:bootstrapping_validation}
+\minitoc
 \introduction
 
 In this chapter we present our results while bootstrapping three different case study languages.
