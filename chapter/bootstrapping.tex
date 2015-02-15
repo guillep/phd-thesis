@@ -452,8 +452,15 @@ In this chapter we explored the bootstrap of an object-oriented language using \
 \minitoc
 \introduction
 
-In this chapter we present our results while bootstrapping three different case study languages.
-To reuse the parsing infrastructure and the bootstrapping interpreter, the three bootstrapped languages share also the same syntax: a Smalltalk syntax. Although these similarities, each of the three language runtimes possess different model and semantics: Pharo is a fully-reflective language composed of classes and traits with first class slots and object layouts \cite{Verw11a}; \emph{Metatalk}~\cite{Papo11a} is a language that fully decomposes the meta-level from the base-level using mirrors, allowing us to bootstrap a reflective and a non-reflective version of it; \emph{Candle} is a partially reflective \ct{Smalltalk-80} based mini-kernel that includes introspection and some self-modification features. Figure \ref{fig:languages_spectrum} shows how these three languages are placed in the language spectrum.% These results show that our process can produce different systems when fed with different specifications. The resulting bootstrapped systems are available at \url{http://ci.inria.fr/rmod/view/Oz/}.
+In this chapter we present our results while bootstrapping four different case study languages.
+To reuse the parsing infrastructure and the bootstrapping interpreter, the four bootstrapped languages share also the same syntax: a Smalltalk syntax. Although these similarities, each of the four language runtimes possess different model and semantics: Pharo is a fully-reflective language composed of classes and traits with first class slots and object layouts \cite{Verw11a}; \emph{Metatalk}~\cite{Papo11a} is a language that fully decomposes the meta-level from the base-level using mirrors, allowing us to bootstrap a reflective and a non-reflective version of it; \emph{Candle} is a partially reflective \ct{Smalltalk-80} based mini-kernel that includes introspection and some self-modification features~(cf. Section \ref{sec:bootstrap_case_studies}).
+
+Finally this chapter presents some measurements~(cf. Section \ref{sec:bootstrap_measurements}). To keep bootstrapping practical, we optimized the critical parts of the process for both the language user and the language engineer. On one side language users do not usually search to modify the language runtime but to use it, independently of the language initialization process it provides. To suit this scenario we do not build the language runtime each time: we generate a snapshot with a cached version of it. On the other side we find language designers/engineers whose job is to change the language runtime. For them the bootstrap process must provide with an acceptable development cycle for activities like debugging. With this case in mind, we optimized the \emph{bootstrapping interpreter} with a dynamic compilation technique. Each of the measurements we present below were made on a 2.2 Ghz Intel Core i7 machine with memory 8 Gb 1333 Mhz DDR3.
+
+\section{Languages Used for Experimentation}\label{sec:bootstrap_case_studies}
+
+Using \Vtt we bootstrapped four different object-oriented languages. These languages share two common properties: the execution model of the \VM and the Smalltalk syntax. They present different programming models for the developer \eg the absence of reflective features, their inclusion through mirrors, first-class variables and traits.
+Figure \ref{fig:languages_spectrum} shows how these four languages are placed in the language spectrum. We explain more in detail these languages in the following subsections.% These results show that our process can produce different systems when fed with different specifications. The resulting bootstrapped systems are available at \url{http://ci.inria.fr/rmod/view/Oz/}.
 
 \begin{figure}[ht]
 \center
@@ -461,9 +468,8 @@ To reuse the parsing infrastructure and the bootstrapping interpreter, the three
 \caption{\textbf{Bootstrapped Languages Spectrum.} How the languages we bootstrapped are placed in the phases and reflective spectrum. In particular, Metatalk with and without its mirrors is in different extremes of the spectrum.\label{fig:languages_spectrum}}
 \end{figure}
 
-Finally this chapter presents some measurements. To keep bootstrapping practical, we optimized the critical parts of the process for both the language user and the language engineer. On one side language users do not usually search to modify the language runtime but to use it, independently of the language initialization process it provides. To suit this scenario we do not build the language runtime each time: we generate a snapshot with a cached version of it. On the other side we find language designers/engineers whose job is to change the language runtime. For them the bootstrap process must provide with an acceptable development cycle for activities like debugging. With this case in mind, we optimized the \emph{bootstrapping interpreter} with a dynamic compilation technique. Each of the measurements we present below were made on a 2.2 Ghz Intel Core i7 machine with memory 8 Gb 1333 Mhz DDR3.
 
-\section{Case Study I: Pharo}\label{sec:bootstrap_pharo}
+\subsection{Case Study I: Pharo}\label{sec:bootstrap_pharo}
 
 Pharo~\cite{Blac09a} is an object-oriented reflective Smalltalk-inspired programming language. As it is a Smalltalk-80 inspired language, its class model includes implicit metaclasses: each class has its own metaclass, an instance of \ct{Metaclass}. Pharo also extends the execution model its \VM provides with traits~\cite{Scha03a} and class extensions~(\ie the ability to add methods to a class that belongs to another package). Finally Pharo has first class instance variables (slots) structured in object layouts \cite{Verw11a}. Figure \ref{fig:pharo_simplified_model} shows how the elements of the language are related to each other; the diagram is not meant to reflect the actual class graph~(which is more complex) but the language concepts.
 
@@ -486,7 +492,7 @@ Pharo is a fully-reflective language, placed at the end of the reflective spectr
 %This is achieved by loading the binary packages of hazelnut and using it's own specification in the building process.
 %Regarding the size of our obtained kernel, which is certainly not yet the minimal possible, our results shows that the design of the language runtime should be refined to create an even cleaner version.
 
-\section{Case Study II: Metatalk} \label{sec:bootstrap_metatalk}
+\subsection{Case Study II and III: Metatalk} \label{sec:bootstrap_metatalk}
 
 Metatalk~\cite{Papo11a} is a reflective language where reflection is fully decomposed in explicit meta-objects, namely mirrors~\cite{Brac04b}. Metatalk makes the usage of reflection explicit: a program's execution takes place in the base-level of the language runtime, and it jumps to a meta-level when a mirror is used. Metatalk class model is simpler than Smalltalk's class model. It does not impose metaclasses. Instead, all classes are instances of the single \ct{Class} class. If there is a need for metaclasses~(to share behavior between classes), the developer can write its own explicit metaclasses~(Figure \ref{fig:metatalk_simplified_model}).
 
@@ -501,7 +507,7 @@ Metatalk mirrors decompose reflective behavior as well as the language meta-info
 Metatalk's can be bootstrapped in two different ways. A non-reflective bootstrap initializes only the main classes of the language but does not create its meta-level. The non-reflective bootstrap does not contain mirrors. A second bootstrap creates a reflective Metatalk, which based on the latter one introduces the mirror instances with their corresponding metadata. We could bootstrap easily Metatalk in such a way due to the clear decomposition of its reflective elements. 
 
 %%%%%%%%%%%%%%%%%%% Case of study and Results 2 %%%%%%%%%%%%%%%%%%%%
-\section{Case Study III: Candle} \label{sec:bootstrap_candle}
+\subsection{Case Study IV: Candle} \label{sec:bootstrap_candle}
 
 Candle is a Smalltalk-based language with a micro language runtime. Its class model includes implicit metaclasses as Smalltalk's and Pharo's one. However, Candle has no support for traits or slots~(Figure \ref{fig:candle_simplified_model}). We built Candle's language runtime by adapting MicroSqueak~\cite{Malo11a} to run on top of the Pharo \VM primitives. This micro language runtime was designed with the explicit goal of being the minimal distribution for the Squeak Smalltalk language.
 
@@ -514,9 +520,9 @@ Candle is a Smalltalk-based language with a micro language runtime. Its class mo
 
 Candle is a partially reflective language defined by a total of 49 classes and a reduced set of methods. Candle includes a minimal core of the language, a basic collection library and basic file IO support. It also provides with object introspection and mutation facilities. It does not include, however, a class builder or compiler to extend itself.%A bootstrapped Candle kernel presents a memory footprint of 80KB, with potential applications in embedded devices with little available memory.\gp{remeasure it. Do we care about size?}
 
-\section{Measurements}
+\section{Measurements}\label{sec:bootstrap_measurements}
 
-In this section we present the benchmarks we did to measure the bootstrap time of each of our three languages using our standard infrastructure. Table \ref{tb:measurements} shows the time to bootstrap each of the three languages using an unoptimized AST interpreter. This time comprehends the entire bootstrap process: from parsing the code in the language definition to its complete setup. We executed each of these benchmarks 10 times. The results table puts also the results in context: it presents how many code entities~(classes, traits, mirrors) and methods are built for each language. Notice that the bootstrapping time depends on the amount of elements it builds and also on their complexity. For example, creating a class in Pharo involves a biggest graph of objects than in the other two languages (because of the introduction of traits and class layouts). Section \ref{sec:optimisations} introduces two optimizations we did based on these measurements, that focus on the startup time and the development cycle of the bootstrap. 
+In this section we present the benchmarks we did to measure the bootstrap time of each of our four languages using our standard infrastructure. Table \ref{tb:measurements} shows the time to bootstrap each of the four languages using an unoptimized AST interpreter. This time comprehends the entire bootstrap process: from parsing the code in the language definition to its complete setup. We executed each of these benchmarks 10 times. The results table puts also the results in context: it presents how many code entities~(classes, traits, mirrors) and methods are built for each language. Notice that the bootstrapping time depends on the amount of elements it builds and also on their complexity. For example, creating a class in Pharo involves a biggest graph of objects than in the other two languages (because of the introduction of traits and class layouts). Section \ref{sec:optimisations} introduces two optimizations we did based on these measurements, that focus on the startup time and the development cycle of the bootstrap. 
 
  \begin{table}[ht]
  \small
@@ -527,10 +533,10 @@ In this section we present the benchmarks we did to measure the bootstrap time o
 			& \xspace\textbf{Code entities / Methods}\xspace
 			& \xspace\textbf{Bootstrap time}\\
 		\toprule
-		Pharo & 626* / 6812 & 9004756ms +/-621265 \\\midrule
-		Candle & 100* / 875 & 86747ms +/-8060 \\\midrule
-		Metatalk w/o mirrors & 25 / 114 & 957ms +/-112 \\\midrule
-		Metatalk reflective & 58* / 166 & 13697ms +/-61 \\\bottomrule
+		Pharo & 626* / 6812 & 2h30m +/-10m \\\midrule
+		Candle & 100* / 875 & 87s +/-8s \\\midrule
+		Metatalk w/o mirrors & 25 / 114 & 0.957s +/-0.112s \\\midrule
+		Metatalk reflective & 58* / 166 & 13.697s +/-0.061s \\\bottomrule
  	\end{tabular}
 		\vspace*{0.2cm}
  	\caption{\small\textbf{Building Benchmarks.} Comparing the execution time of the bootstrapped languages using AST interpretation. (*) Pharo and Candle have implicit metaclasses, meaning that for each created class, an associated metaclass is created even if not necessary. Metatalk introduces a mirror object for each of the classes in the language.\label{tb:measurements}}
@@ -558,9 +564,9 @@ Since the main purpose of the bootstrap process is to easily change the meta-lev
 			& \textbf{Gain}\\
 			&&& \textbf{Factor}\\
 		\toprule
-		Total Bootstrap & 9004756ms +/-621265 & 3158525ms +/-219334 & 2.85x\\\midrule
- 		Initial Setup& 247621ms +/-9875 & 319630ms +/-40333 & 0.77x\\\midrule
-		Creation of one class & 17216ms +/-1401 & 432ms +/-189 & 39.85x\\\bottomrule
+		Total Bootstrap & 2h30m +/-10m & 53m +/-3.65m & 2.85x\\\midrule
+ 		Initial Setup& 4m8s +/-9s & 5m20s +/-40s & 0.77x\\\midrule
+		Creation of one class & 17s +/-1s & 0.432s +/-0.189s & 39.85x\\\bottomrule
  	\end{tabular}
 	\vspace*{0.2cm}
  	\caption{\small\textbf{Comparison of bootstrap time in absence and presence of dynamic compilation.}\label{tb:dynamic_compilation}}
@@ -598,7 +604,7 @@ Implementation-wise, the snapshot we used is a memory dump of the \VM heap. This
 %This chapter presents a bootstrap process for object-oriented languages based on \Vtt. Bootstrapping is a process for generating an application runtime from an explicit description of it. \Vtt supports this generation by providing hosting the runtime under construction inside a virtualized environment. Then, an object space's API exposes the operations needed for such creation.
 
 
-We bootstrapped three different languages have key differences in their meta-models: the core of the Pharo language is defined by traits, class layouts and first-class slots, Candle is a minimal Smalltalk with implicit metaclasses, finally Metatalk decomposes reflection from the base level and stores meta information in the meta level of the language. By using \Vtt these three languages run on top of the same Pharo Virtual Machine.
+We bootstrapped four different languages have key differences in their meta-models: the core of the Pharo language is defined by traits, class layouts and first-class slots, Candle is a minimal Smalltalk with implicit metaclasses, finally Metatalk decomposes reflection from the base level and stores meta information in the meta level of the language. By using \Vtt these four languages run on top of the same Pharo Virtual Machine.
 
 Then, we showed also that bootstrapping can be applied in a real environment. A fast startup can be achieved by caching the language runtime and a fast development cycle can be obtained by optimizing the bootstrapping interpreter.
 % =============================================================================
