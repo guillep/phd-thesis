@@ -610,7 +610,7 @@ Implementation-wise, the snapshot we used is a memory dump of the \VM heap. This
 %This chapter presents a bootstrap process for object-oriented languages based on \Vtt. Bootstrapping is a process for generating an application runtime from an explicit description of it. \Vtt supports this generation by providing hosting the runtime under construction inside a virtualized environment. Then, an object space's API exposes the operations needed for such creation.
 
 
-We bootstrapped four different languages have key differences in their meta-models: the core of the Pharo language is defined by traits, class layouts and first-class slots, Candle is a minimal Smalltalk with implicit metaclasses, finally Metatalk decomposes reflection from the base level and stores meta information in the meta level of the language. By using \Vtt these four languages run on top of the same Pharo Virtual Machine.
+We bootstrapped four different languages that have key differences in their meta-models: the core of the Pharo language is defined by traits, class layouts and first-class slots, Candle is a minimal Smalltalk with implicit metaclasses, finally Metatalk decomposes reflection from the base level and stores meta information in the meta level of the language. By using \Vtt these four languages run on top of the same Pharo Virtual Machine.
 
 Then, we showed also that bootstrapping can be applied in a real environment. A fast startup can be achieved by caching the language runtime and a fast development cycle can be obtained by optimizing the bootstrapping interpreter through dynamic compilation.
 % =============================================================================
