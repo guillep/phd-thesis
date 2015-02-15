@@ -73,10 +73,12 @@ This definition applied to an object-oriented high-level language implies the fo
 
 \end{description}
 
+\noindent In the following sections we will explore how object-oriented language can be bootstrapped starting by an example. Then, we present how the virtualization features of \Vtt provide support for such a task.
+
 %============================================================================
 \section{Bootstrapping Through an Example}\label{sec:bootstrapping_process}
 
-The main component of a bootstrap process is the \emph{language definition} \ie the definition of the elements of the language and the procedure to create them. The language definition of a bootstrap is circular \ie it is written in the same language it defines. In this section we illustrate a bootstrapping process through an example: the bootstrap process for the Pharo language. For this, we will follow the excerpt of Pharo's language definition shown in Figure \ref{fig:example_language_definition}. Notice that while such a language definition is not difficult to express per se, it raises the question of \emph{how it can be executed}. This is specially challenging due to the circularity of the language definition. For example, we need classes to be defined to execute this exact bootstrap description. This question leads to ask ourselves about the infrastructure required to be able to manage this and other different bootstraps. The sections that follow describe how \Vtt provides an infrastructure that tackles these problems.
+The main component of a bootstrap process is the \emph{language definition} \ie the definition of the elements of the language and the procedure to create them. The language definition of a bootstrap is circular \ie it is written in the same language it defines. In this section we illustrate a bootstrapping process through an example: the bootstrap process for the Pharo language. For this, the example follows the excerpt of Pharo's language definition shown in Figure \ref{fig:example_language_definition}. Notice that while such a language definition is not difficult to express \emph{per se}, it raises the question of \emph{how it can be executed}. This is specially challenging due to the circularity of the language definition. For example, we need classes to be defined to execute this exact bootstrap description. This question leads to ask ourselves about the infrastructure required to be able to manage this and other different bootstraps. The sections that follow describe how \Vtt provides an infrastructure that tackles these problems.
 
 \begin{figure}[ht]
 \begin{code}
@@ -120,7 +122,7 @@ Processor initialize.
 \caption{\textbf{Excerpt of the Pharo bootstrap language definition.}\label{fig:example_language_definition}}
 \end{figure}
 
-\paragraph{Setup of the Environment} The first step of a bootstrap process is to start an empty application runtime. The bootstrap process will fill this application runtime as it is executed. This application runtime will contain at the end of the process all the elements of the language runtime we are building.
+\paragraph{Step 0: Setup of the environment} The first step of a bootstrap process is to start an empty application runtime. The bootstrap process will fill this application runtime as it is executed. This application runtime will contain at the end of the process all the elements of the language runtime we are building.
 
 \paragraph{\textbf{Step 1: Create the first well-known objects}}\label{sec:create_nil}
 
@@ -274,9 +276,16 @@ To execute such a language definition, we developed a bootstrap infrastructure f
 
 \section{The Circular Language Definition}\label{sec:circular_definition}
 
-\gp{this is the section I like the less of this capter...}
-The \Vtt-based bootstrap process takes as input this language definition source code and reifies it as abstract syntax trees~(ASTs) of the language elements~(\eg classes and methods).
-ASTs ease the manipulation of the language definition for its compilation, interpretation and extraction of information \eg we can easily extract variable and class names, superclasses, and know how to bind names during compilation. Figure \ref{fig:hazelSpecModel} illustrates our basic AST model. For example, a Class definition contains amongst others its name, its superclass, a list of the instance variables that it defines and the source code of its definition. A method definition contains its selector, a list of its statements and its full source code. For the clarity of the figure, we don't include sub-method nodes such as statements, assignments or message sends in it.
+The language definition describes the language we are bootstrapping. During the bootstrap process, the language runtime under construction traverses several stages until it is finished. When the bootstrap process starts, the language runtime is not yet able to execute code by itself \eg it cannot resolve the method lookup because the class hierarchy is not created. As we install packages or classes the language runtime reaches its \emph{execution point}, where it contains already the minimal set of elements it needs for execution. Later on, we can install reflective features into the language runtime to get it inside the \emph{reflective spectrum}. Figure \ref{fig:phases} illustrates the stages of a language runtime construction during the bootstrap process.
+
+\begin{figure}[ht]
+\center
+\includegraphics[width=.6\linewidth]{bootstrapping_phases}
+\caption{\textbf{Bootstrap Phases.} Initially, a language runtime does not contain the minimal elements to execute code. As the bootstrap process installs elements, it reaches the point of execution where it can run autonomously. Later, when (if) reflective features are installed, it reaches the reflective spectrum.\label{fig:phases}}
+\end{figure}
+
+The \Vtt-based bootstrap process takes as input this language definition source code, parses it and reifies it as abstract syntax trees~(ASTs) of the language elements~(\eg classes and methods).
+ASTs ease the manipulation of the language definition for its compilation, interpretation and extraction of information \eg we can easily extract variable and class names, superclasses, and know how to bind names during compilation. Figure \ref{fig:hazelSpecModel} illustrates our basic AST model. For example, a Class definition contains amongst others its name, its superclass, a list of the instance variables that it defines and the source code of its definition. A method definition contains its selector, a list of its statements and its full source code. For clarity of the figure, we don't include sub-method nodes such as statements, assignments or message sends in it.
 
 \begin{figure}[ht]
 \begin{center}
@@ -285,24 +294,37 @@ ASTs ease the manipulation of the language definition for its compilation, inter
 \end{center}
 \end{figure}
 
-For better understanding of the bootstrap, we can decompose the elements of a language definition in two main sub-components:
+Inside a language definition we can identify two main sub-components, the language base-level entities and the language meta-level ones.
 
-\begin{description}
+\subsection{Language base-level entities}
 
-\item[Language base-level entities.] The classes and methods that a program needs to run. In our example, the base-level entities are represented by the code of classes:
+The language definition contains all those classes and methods that must be built and available to a program to run. We call these the base-level entities of a language definition. The base-level entities describe the basic class hierarchy of the language and basic objects such as strings or integers. The following code snippet illustrates how the base-elements of Pharo are described inside the language definition. Notice that this code snippet has the same responsibility than the Ruby \VM code we showed in the introduction of this chapter.
 
 \begin{code}
+nil subclass: #ProtoObject
+    instanceVariableNames: ''.
+
+ProtoObject >> isNil
+    ^ false
+
 ProtoObject subclass: #Object
     instanceVariableNames: ''.
-    
+
 Object subclass: #UndefinedObject
     instanceVariableNames: ''.
     
 UndefinedObject >> isNil
     ^ true
+    
+Object variableByteSubclass: #String
+    instanceVariableNames: ''.
+    
+...
 \end{code}
 
-\item[Language meta-level entities.] The elements that have the knowledge to create the base-level entities. For example, a compiler or compiler interface~(to an external compiler) that are needed to create methods and classes.
+\subsection{Language meta-level entities}
+The language definition must also include elements that know how to create the base-level entities \eg a compiler or compiler interface~(to an external compiler). We need the language meta-level elements to create methods and classes during the bootstrap. Notice however that a language runtime must not necessarily include these elements at the end of the bootstrap. A bootstrap process that builds and introduces the meta-level elements inside the bootstrapped runtime is a \emph{reflective language runtime}.
+A language that contains both introspection and full intercession facilities is a fully reflective language. A fully reflective language does not only have the minimal set of elements to run, but also the minimal to be autonomous: it can create/load classes and methods without any external component~(compiler, class builder, interpreter).
 
 \begin{code}
 Object subclass: #Compiler
@@ -338,26 +360,11 @@ Float initialize.
 ProcessScheduler initialize.
 \end{code}
 
-\end{description}
-
 %\begin{figure}[ht]
 %\center
 %\includegraphics[width=.8\linewidth]{building_reflective_language}
 %\caption{\textbf{The language definition in the bootstrap process.} The bootstrapping interpreter uses the meta-level of the language to build the base-level of the language~(left-side). Afterwards, it may inject the meta-level to make it a reflective language~(right-side).\label{fig:language_definition}}
 %\end{figure}
-
-Notice that although we use the language meta-level for bootstrapping purposes, this meta-level entities may not be needed at runtime since \eg the language may not provide features to modify itself. Bootstrapping does not require to introduce this self-representation of the language into the language runtime. Introducing it would make it available to end-user programs. We consider that as a special case: a language runtime that includes its self-description is a \emph{reflective language runtime}.
-A language that contains both introspection and full intercession facilities is a fully reflective language. A fully reflective language does not only have the minimal set of elements to run, but also the minimal to be autonomous: it can create/load classes and methods without any external component~(compiler, class builder, interpreter).
-
-Thus, a language definition has direct impact on the design of the language we bootstrap. Figure \ref{fig:phases} shows the stages of a bootstrap process as it installs classes or packages inside the language runtime. When the bootstrap process starts, the language runtime is not yet able to execute code by itself \eg it cannot resolve the method lookup because the class hierarchy is not created. As we install packages or classes, we arrive at the point where the language runtime contains already the minimal set of elements it needs for execution, the \emph{execution point}. Later on, we can install reflective features into the language runtime to get it inside the \emph{reflective spectrum}.
-
-%When bootstrapping a reflective language, the language definition must ensure the causal connections that exist between the program and its representation~\cite{Maes87a}.
-
-\begin{figure}[ht]
-\center
-\includegraphics[width=.6\linewidth]{bootstrapping_phases}
-\caption{\textbf{Bootstrap Phases.} Initially, a language runtime does not contain the minimal elements to execute code. As the bootstrap process installs elements, it reaches the point of execution where it can run autonomously. Later, when (if) reflective features are installed, it reaches the reflective spectrum.\label{fig:phases}}
-\end{figure}
 
 %\begin{description}
 %\item[The base-level language elements.]  We consider here those elements that are part of the \textbf{base-level}~(\eg basic language classes and libraries) of the language and also the ones in the \textbf{meta-level}~(\eg the reifications of the language runtime, a compiler interface, the class builder).
