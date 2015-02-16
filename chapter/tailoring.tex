@@ -171,17 +171,7 @@ Once the \ct{log:} method finishes, the execution returns to the \ct{start} meth
 
 \section{Detecting Missing Code Units}\label{sec:model_detail}
 
-
 RFG depends on getting notified when a missing code unit failure appears. RFG's algorithm is based on traps to achieve this task, as shown in Algorithm~\ref{alg:tailoring_process}. Traps are placeholders that are installed in the nurtured application in the place of real elements. They are triggered whenever the application tries to access them. In case a trap is triggered, we suspend the nurtured application execution, we install the missing code units replacing their corresponding traps, and finally resume the execution from the moment immediately before the trap was triggered. Traps are installed dynamically in the nurtured application following the information flow of the application \eg when a method \ct{A} is installed some traps are installed inside it to capture possible missing code unit failures it may cause.
-
-We identified the following as the basic traps that are necessary to tailor an application:
-
-\begin{description}
-\item[Missing object trap.] A \emph{missing object} trap captures messages sent to objects that do not yet exist inside the nurtured application such as classes. When RFG finds one of these traps, its responsibility is to install the corresponding object. The object installed is a \emph{partial} clone of the original object \ie not all of its state is installed, instead it contains traps to capture the access to its class and fields. When a method refers to a static variable, we install one of this traps for it.
-
-\item[Missing method trap.] A \emph{missing method} trap captures me\-thod invocations whose methods are not defined in the nurtured application yet. When the application execution triggers one of these traps, RFG installs the corresponding method in the class hierarchy of the object. In case of missing classes, RFG installs them too. Missing method traps capture also overridden methods. If an overridden method is not trapped, the method lookup may find a superclass implementation and execute it, resulting into an unexpected behavior. Figure~\ref{fig:need_override} illustrates this problem: the class \ct{B} from the reference application contains an override, while it is not present in the nurtured application. If no trap is placed to capture the override, the method \ct{doSomething} from class \ct{A} would be executed, thus changing the semantics of our application.
-
-\end{description}
 
 \begin{algorithm}[ht]
  %\KwData{this text}
@@ -196,8 +186,30 @@ We identified the following as the basic traps that are necessary to tailor an a
    restart message send;
   }
  }
- \caption{\small An abstract view of the run-fail-grow process \label{alg:tailoring_process}}
+ \caption{\textbf{An abstract view of the run-fail-grow process.}\label{alg:tailoring_process}}
 \end{algorithm}
+
+RFG follows the next rules to install code units inside the nurtured application:
+
+\begin{enumerate}
+\item Classes are installed when we install a method that belongs to them or one of their superclasses.
+\item Methods are installed when they need to be executed, following the rules of the method-lookup in the underlying \VM.
+\item Objects are installed when a message is sent to them, including self and super sends.
+\item Objects are installed when they are needed by the \VM to execute some operation~(\eg primitives and method literals).
+\end{enumerate}
+
+Then, we identify the following as the basic traps that are necessary to tailor an application.
+
+\begin{description}
+\item[Missing object trap.] A \emph{missing object} trap captures messages sent to objects that do not yet exist inside the nurtured application such as classes. When RFG finds one of these traps, its responsibility is to install the corresponding object. The object installed is a \emph{partial} clone of the original object \ie not all of its state is installed, instead it contains traps to capture the access to its class and fields. When a method refers to a static variable, we install one of this traps for it.
+
+\item[Missing method trap.] A \emph{missing method} trap captures me\-thod invocations whose methods are not defined in the nurtured application yet. When the application execution triggers one of these traps, RFG installs the corresponding method in the class hierarchy of the object. In the class that will own the method does not exist, RFG will install it too. Method literals (\eg strings and numbers that are part of the method definition) are installed along with the method that owns them because the \VM can manipulate them directly during the bytecode interpretation.
+
+\item[Missing override traps.] A particular case of missing method traps are \emph{missing override traps}. A missing override trap captures overridden methods. This avoids that the method lookup answers a superclass implementation resulting into an unexpected behavior. Figure~\ref{fig:need_override} illustrates this problem: the class \ct{B} from the reference application contains an override, while it is not present in the nurtured application. If no trap is placed to capture the override, the method \ct{doSomething} from class \ct{A} would be executed, thus changing the semantics of our application.
+
+\end{description}
+
+Note that there is no need for a \emph{missing class trap} as classes are installed when a \emph{missing method trap} is triggered. In the case of languages that expose classes as objects, classes can also be installed by missing object traps when we send a message to them.
 
 
 \begin{figure}[ht]
@@ -211,11 +223,13 @@ We identified the following as the basic traps that are necessary to tailor an a
 
 \section{Customizing Dead Code Elimination with Seeds}\label{sec:seeds}
 
-The level of tailoring of RFG can be specified using seeds. A seed is a collection of code units whose installation is forced into the nurtured application. These code units are available for the nurtured application and thus, accessing them does not trigger missing code unit failures.
+The level of tailoring of RFG can be specified using seeds. A seed is a collection of code units whose installation is forced into the nurtured application. These code units are available for the nurtured application and thus, accessing them does not trigger missing code unit failures. A seed can contain any arbitrary code unit, including package, classes, methods and even already initialized objects. Seeds are useful to cover different tailoring scenarios.
 
-A seed can contain any arbitrary code unit, including package, classes, methods and even already initialized objects. Seeds are useful to cover different tailoring scenarios. Let's take as a first example a smartphone where the base libraries of the language are already available, so they are shared amongst the many applications installed in it. When targeting such a smartphone, base libraries are already present and we do not need to produce an specialized version of them, but specialize only third part libraries and application code. In this case, we use a seed providing the language base libraries. Let's take as a second example a constrained device robot-like which will contain only our application. When targeting this robot as deployment scenario, we want to specialize all the code to deploy including base libraries. In such a case, the seed is empty to allow the RFG algorithm to work on every code unit.
+Let's take as a first example a smartphone where the base libraries of the language are already available, so they are shared amongst the many applications installed in it. When targeting such a smartphone, base libraries are already present and we do not need to produce a specialized version of them. We need to specialize only third-party libraries and application code. In this case, we use a seed providing the language base libraries.
 
-Figure \ref{fig:nurturing_map_model} presents two tailoring maps showing exemplar usages of seeds. Each application contains code units corresponding for the base libraries, third party libraries and application code. In the left the seed covers base and third party libraries, thus RFG applies and selects a subset of the application code units only. In the right, the seed covers only the base libraries, thus RFG applies and select a subset of the code units from the third party libraries and application code.
+Let's take as a second example a constrained device robot-like which will contain only our application. When targeting this robot as deployment scenario, we want to specialize all the code to deploy including base libraries. In such a case, the seed is empty to allow the RFG algorithm to work on every code unit.
+
+Figure \ref{fig:nurturing_map_model} presents two tailoring maps showing exemplar usages of seeds. Each application contains code units corresponding to the base libraries, third-party libraries and application code. To the left the seed covers base and third party libraries, thus RFG applies and selects a subset of the application code units only. To the right, the seed covers only the base libraries, thus RFG applies and select a subset of the code units from the third party libraries and application code.
 
 \begin{figure}[ht]
 \begin{center}

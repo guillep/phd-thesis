@@ -7,7 +7,7 @@
 	<key>ApplicationVersion</key>
 	<array>
 		<string>com.omnigroup.OmniGrafflePro</string>
-		<string>139.17.0.185490</string>
+		<string>139.18.0.187838</string>
 	</array>
 	<key>AutoAdjust</key>
 	<true/>
@@ -87,8 +87,8 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -135,8 +135,8 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -185,8 +185,8 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
@@ -264,8 +264,8 @@ selected by RFG}</string>
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
@@ -315,8 +315,8 @@ not under RFG}</string>
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
@@ -352,222 +352,12 @@ under RFG}</string>
 				<dict>
 					<key>Color</key>
 					<dict>
-						<key>tiff</key>
-						<data>
-						TU0AKgAABAjJycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf//////ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf//////ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ////
-						///Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf//////ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ///////J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf//////ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ///////Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf//
-						////ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ///////Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf//////
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ///////Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf//////ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ///////Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn//////8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ////
-						///Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn//////8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ///////J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn//////8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ///////Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn//////8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ///////Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						/////8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ///////Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/////
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ///////Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn//////8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn//////8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn//////8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf//
-						////AA4BAAADAAAAAQAQAAABAQAD
-						AAAAAQAQAAABAgADAAAABAAABLYB
-						AwADAAAAAQABAAABBgADAAAAAQAC
-						AAABEQAEAAAAAQAAAAgBEgADAAAA
-						AQABAAABFQADAAAAAQAEAAABFgAD
-						AAAAAQAQAAABFwAEAAAAAQAABAAB
-						HAADAAAAAQABAAABUgADAAAAAQAB
-						AAABUwADAAAABAAABL6HcwAHAAAM
-						oAAABMYAAAAAAAgACAAIAAgAAQAB
-						AAEAAQAADKBhcHBsAhAAAG1udHJS
-						R0IgWFlaIAfeAAEAAgAJADEAFGFj
-						c3BBUFBMAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAD21gABAAAAANMt
-						YXBwbAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAEWRlc2MAAAFQAAAA
-						YmRzY20AAAG0AAABiGNwcnQAAAM8
-						AAAAJHd0cHQAAANgAAAAFHJYWVoA
-						AAN0AAAAFGdYWVoAAAOIAAAAFGJY
-						WVoAAAOcAAAAFHJUUkMAAAOwAAAI
-						DGFhcmcAAAu8AAAAIHZjZ3QAAAvc
-						AAAAMG5kaW4AAAwMAAAAPmNoYWQA
-						AAxMAAAALG1tb2QAAAx4AAAAKGJU
-						UkMAAAOwAAAIDGdUUkMAAAOwAAAI
-						DGFhYmcAAAu8AAAAIGFhZ2cAAAu8
-						AAAAIGRlc2MAAAAAAAAACERpc3Bs
-						YXkAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAABt
-						bHVjAAAAAAAAAB4AAAAMc2tTSwAA
-						ABAAAAF4Y2FFUwAAABAAAAF4aGVJ
-						TAAAABAAAAF4cHRCUgAAABAAAAF4
-						aXRJVAAAABAAAAF4aHVIVQAAABAA
-						AAF4dWtVQQAAABAAAAF4a29LUgAA
-						ABAAAAF4bmJOTwAAABAAAAF4Y3ND
-						WgAAABAAAAF4emhUVwAAABAAAAF4
-						ZGVERQAAABAAAAF4cm9STwAAABAA
-						AAF4c3ZTRQAAABAAAAF4emhDTgAA
-						ABAAAAF4amFKUAAAABAAAAF4YXIA
-						AAAAABAAAAF4ZWxHUgAAABAAAAF4
-						cHRQVAAAABAAAAF4bmxOTAAAABAA
-						AAF4ZnJGUgAAABAAAAF4ZXNFUwAA
-						ABAAAAF4dGhUSAAAABAAAAF4dHJU
-						UgAAABAAAAF4ZmlGSQAAABAAAAF4
-						aHJIUgAAABAAAAF4cGxQTAAAABAA
-						AAF4cnVSVQAAABAAAAF4ZW5VUwAA
-						ABAAAAF4ZGFESwAAABAAAAF4AFAA
-						TAAyADQAMAA5AEgARHRleHQAAAAA
-						Q29weXJpZ2h0IEFwcGxlLCBJbmMu
-						LCAyMDE0AFhZWiAAAAAAAADzFgAB
-						AAAAARbKWFlaIAAAAAAAAHlbAAA+
-						ZwAAAYVYWVogAAAAAAAAWUMAAK58
-						AAAXr1hZWiAAAAAAAAAkNwAAEx0A
-						ALn5Y3VydgAAAAAAAAQAAAAABQAK
-						AA8AFAAZAB4AIwAoAC0AMgA2ADsA
-						QABFAEoATwBUAFkAXgBjAGgAbQBy
-						AHcAfACBAIYAiwCQAJUAmgCfAKMA
-						qACtALIAtwC8AMEAxgDLANAA1QDb
-						AOAA5QDrAPAA9gD7AQEBBwENARMB
-						GQEfASUBKwEyATgBPgFFAUwBUgFZ
-						AWABZwFuAXUBfAGDAYsBkgGaAaEB
-						qQGxAbkBwQHJAdEB2QHhAekB8gH6
-						AgMCDAIUAh0CJgIvAjgCQQJLAlQC
-						XQJnAnECegKEAo4CmAKiAqwCtgLB
-						AssC1QLgAusC9QMAAwsDFgMhAy0D
-						OANDA08DWgNmA3IDfgOKA5YDogOu
-						A7oDxwPTA+AD7AP5BAYEEwQgBC0E
-						OwRIBFUEYwRxBH4EjASaBKgEtgTE
-						BNME4QTwBP4FDQUcBSsFOgVJBVgF
-						ZwV3BYYFlgWmBbUFxQXVBeUF9gYG
-						BhYGJwY3BkgGWQZqBnsGjAadBq8G
-						wAbRBuMG9QcHBxkHKwc9B08HYQd0
-						B4YHmQesB78H0gflB/gICwgfCDII
-						RghaCG4IggiWCKoIvgjSCOcI+wkQ
-						CSUJOglPCWQJeQmPCaQJugnPCeUJ
-						+woRCicKPQpUCmoKgQqYCq4KxQrc
-						CvMLCwsiCzkLUQtpC4ALmAuwC8gL
-						4Qv5DBIMKgxDDFwMdQyODKcMwAzZ
-						DPMNDQ0mDUANWg10DY4NqQ3DDd4N
-						+A4TDi4OSQ5kDn8Omw62DtIO7g8J
-						DyUPQQ9eD3oPlg+zD88P7BAJECYQ
-						QxBhEH4QmxC5ENcQ9RETETERTxFt
-						EYwRqhHJEegSBxImEkUSZBKEEqMS
-						wxLjEwMTIxNDE2MTgxOkE8UT5RQG
-						FCcUSRRqFIsUrRTOFPAVEhU0FVYV
-						eBWbFb0V4BYDFiYWSRZsFo8WshbW
-						FvoXHRdBF2UXiReuF9IX9xgbGEAY
-						ZRiKGK8Y1Rj6GSAZRRlrGZEZtxnd
-						GgQaKhpRGncanhrFGuwbFBs7G2Mb
-						ihuyG9ocAhwqHFIcexyjHMwc9R0e
-						HUcdcB2ZHcMd7B4WHkAeah6UHr4e
-						6R8THz4faR+UH78f6iAVIEEgbCCY
-						IMQg8CEcIUghdSGhIc4h+yInIlUi
-						giKvIt0jCiM4I2YjlCPCI/AkHyRN
-						JHwkqyTaJQklOCVoJZclxyX3Jicm
-						VyaHJrcm6CcYJ0kneierJ9woDSg/
-						KHEooijUKQYpOClrKZ0p0CoCKjUq
-						aCqbKs8rAis2K2krnSvRLAUsOSxu
-						LKIs1y0MLUEtdi2rLeEuFi5MLoIu
-						ty7uLyQvWi+RL8cv/jA1MGwwpDDb
-						MRIxSjGCMbox8jIqMmMymzLUMw0z
-						RjN/M7gz8TQrNGU0njTYNRM1TTWH
-						NcI1/TY3NnI2rjbpNyQ3YDecN9c4
-						FDhQOIw4yDkFOUI5fzm8Ofk6Njp0
-						OrI67zstO2s7qjvoPCc8ZTykPOM9
-						Ij1hPaE94D4gPmA+oD7gPyE/YT+i
-						P+JAI0BkQKZA50EpQWpBrEHuQjBC
-						ckK1QvdDOkN9Q8BEA0RHRIpEzkUS
-						RVVFmkXeRiJGZ0arRvBHNUd7R8BI
-						BUhLSJFI10kdSWNJqUnwSjdKfUrE
-						SwxLU0uaS+JMKkxyTLpNAk1KTZNN
-						3E4lTm5Ot08AT0lPk0/dUCdQcVC7
-						UQZRUFGbUeZSMVJ8UsdTE1NfU6pT
-						9lRCVI9U21UoVXVVwlYPVlxWqVb3
-						V0RXklfgWC9YfVjLWRpZaVm4Wgda
-						VlqmWvVbRVuVW+VcNVyGXNZdJ114
-						XcleGl5sXr1fD19hX7NgBWBXYKpg
-						/GFPYaJh9WJJYpxi8GNDY5dj62RA
-						ZJRk6WU9ZZJl52Y9ZpJm6Gc9Z5Nn
-						6Wg/aJZo7GlDaZpp8WpIap9q92tP
-						a6dr/2xXbK9tCG1gbbluEm5rbsRv
-						Hm94b9FwK3CGcOBxOnGVcfByS3Km
-						cwFzXXO4dBR0cHTMdSh1hXXhdj52
-						m3b4d1Z3s3gReG54zHkqeYl553pG
-						eqV7BHtje8J8IXyBfOF9QX2hfgF+
-						Yn7CfyN/hH/lgEeAqIEKgWuBzYIw
-						gpKC9INXg7qEHYSAhOOFR4Wrhg6G
-						cobXhzuHn4gEiGmIzokziZmJ/opk
-						isqLMIuWi/yMY4zKjTGNmI3/jmaO
-						zo82j56QBpBukNaRP5GokhGSepLj
-						k02TtpQglIqU9JVflcmWNJaflwqX
-						dZfgmEyYuJkkmZCZ/JpomtWbQpuv
-						nByciZz3nWSd0p5Anq6fHZ+Ln/qg
-						aaDYoUehtqImopajBqN2o+akVqTH
-						pTilqaYapoum/adup+CoUqjEqTep
-						qaocqo+rAqt1q+msXKzQrUStuK4t
-						rqGvFq+LsACwdbDqsWCx1rJLssKz
-						OLOutCW0nLUTtYq2AbZ5tvC3aLfg
-						uFm40blKucK6O7q1uy67p7whvJu9
-						Fb2Pvgq+hL7/v3q/9cBwwOzBZ8Hj
-						wl/C28NYw9TEUcTOxUvFyMZGxsPH
-						Qce/yD3IvMk6ybnKOMq3yzbLtsw1
-						zLXNNc21zjbOts83z7jQOdC60TzR
-						vtI/0sHTRNPG1EnUy9VO1dHWVdbY
-						11zX4Nhk2OjZbNnx2nba+9uA3AXc
-						it0Q3ZbeHN6i3ynfr+A24L3hROHM
-						4lPi2+Nj4+vkc+T85YTmDeaW5x/n
-						qegy6LzpRunQ6lvq5etw6/vshu0R
-						7ZzuKO6070DvzPBY8OXxcvH/8ozz
-						GfOn9DT0wvVQ9d72bfb794r4Gfio
-						+Tj5x/pX+uf7d/wH/Jj9Kf26/kv+
-						3P9t//9wYXJhAAAAAAADAAAAAmZm
-						AADypwAADVkAABPQAAAKDnZjZ3QA
-						AAAAAAAAAQABAAAAAAAAAAEAAAAB
-						AAAAAAAAAAEAAAABAAAAAAAAAAEA
-						AG5kaW4AAAAAAAAANgAApkAAAFaA
-						AABKAAAAnAAAACVAAAASAAAAUAAA
-						AFRAAAIzMwACMzMAAjMzAAAAAAAA
-						AABzZjMyAAAAAAABDHIAAAX4///z
-						HQAAB7oAAP1y///7nf///aQAAAPZ
-						AADAcW1tb2QAAAAAAAAmzQAAVgwA
-						AA8kyG6AIQAAAAAAAAAAAAAAAAAA
-						AAA=
-						</data>
+						<key>b</key>
+						<string>0.663871</string>
+						<key>g</key>
+						<string>0.663871</string>
+						<key>r</key>
+						<string>0.663871</string>
 					</dict>
 				</dict>
 				<key>shadow</key>
@@ -713,8 +503,8 @@ under RFG}</string>
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -755,8 +545,8 @@ under RFG}</string>
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -787,222 +577,12 @@ under RFG}</string>
 				<dict>
 					<key>Color</key>
 					<dict>
-						<key>tiff</key>
-						<data>
-						TU0AKgAABAjJycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf//////ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf//////ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ////
-						///Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf//////ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ///////J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf//////ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ///////Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf//
-						////ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ///////Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf//////
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ///////Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf//////ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ///////Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn//////8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ////
-						///Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn//////8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ///////J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn//////8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ///////Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn//////8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ///////Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						/////8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ///////Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/////
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ///////Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn//////8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn//////8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn//////8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf//
-						////AA4BAAADAAAAAQAQAAABAQAD
-						AAAAAQAQAAABAgADAAAABAAABLYB
-						AwADAAAAAQABAAABBgADAAAAAQAC
-						AAABEQAEAAAAAQAAAAgBEgADAAAA
-						AQABAAABFQADAAAAAQAEAAABFgAD
-						AAAAAQAQAAABFwAEAAAAAQAABAAB
-						HAADAAAAAQABAAABUgADAAAAAQAB
-						AAABUwADAAAABAAABL6HcwAHAAAM
-						oAAABMYAAAAAAAgACAAIAAgAAQAB
-						AAEAAQAADKBhcHBsAhAAAG1udHJS
-						R0IgWFlaIAfeAAEAAgAJADEAFGFj
-						c3BBUFBMAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAD21gABAAAAANMt
-						YXBwbAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAEWRlc2MAAAFQAAAA
-						YmRzY20AAAG0AAABiGNwcnQAAAM8
-						AAAAJHd0cHQAAANgAAAAFHJYWVoA
-						AAN0AAAAFGdYWVoAAAOIAAAAFGJY
-						WVoAAAOcAAAAFHJUUkMAAAOwAAAI
-						DGFhcmcAAAu8AAAAIHZjZ3QAAAvc
-						AAAAMG5kaW4AAAwMAAAAPmNoYWQA
-						AAxMAAAALG1tb2QAAAx4AAAAKGJU
-						UkMAAAOwAAAIDGdUUkMAAAOwAAAI
-						DGFhYmcAAAu8AAAAIGFhZ2cAAAu8
-						AAAAIGRlc2MAAAAAAAAACERpc3Bs
-						YXkAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAABt
-						bHVjAAAAAAAAAB4AAAAMc2tTSwAA
-						ABAAAAF4Y2FFUwAAABAAAAF4aGVJ
-						TAAAABAAAAF4cHRCUgAAABAAAAF4
-						aXRJVAAAABAAAAF4aHVIVQAAABAA
-						AAF4dWtVQQAAABAAAAF4a29LUgAA
-						ABAAAAF4bmJOTwAAABAAAAF4Y3ND
-						WgAAABAAAAF4emhUVwAAABAAAAF4
-						ZGVERQAAABAAAAF4cm9STwAAABAA
-						AAF4c3ZTRQAAABAAAAF4emhDTgAA
-						ABAAAAF4amFKUAAAABAAAAF4YXIA
-						AAAAABAAAAF4ZWxHUgAAABAAAAF4
-						cHRQVAAAABAAAAF4bmxOTAAAABAA
-						AAF4ZnJGUgAAABAAAAF4ZXNFUwAA
-						ABAAAAF4dGhUSAAAABAAAAF4dHJU
-						UgAAABAAAAF4ZmlGSQAAABAAAAF4
-						aHJIUgAAABAAAAF4cGxQTAAAABAA
-						AAF4cnVSVQAAABAAAAF4ZW5VUwAA
-						ABAAAAF4ZGFESwAAABAAAAF4AFAA
-						TAAyADQAMAA5AEgARHRleHQAAAAA
-						Q29weXJpZ2h0IEFwcGxlLCBJbmMu
-						LCAyMDE0AFhZWiAAAAAAAADzFgAB
-						AAAAARbKWFlaIAAAAAAAAHlbAAA+
-						ZwAAAYVYWVogAAAAAAAAWUMAAK58
-						AAAXr1hZWiAAAAAAAAAkNwAAEx0A
-						ALn5Y3VydgAAAAAAAAQAAAAABQAK
-						AA8AFAAZAB4AIwAoAC0AMgA2ADsA
-						QABFAEoATwBUAFkAXgBjAGgAbQBy
-						AHcAfACBAIYAiwCQAJUAmgCfAKMA
-						qACtALIAtwC8AMEAxgDLANAA1QDb
-						AOAA5QDrAPAA9gD7AQEBBwENARMB
-						GQEfASUBKwEyATgBPgFFAUwBUgFZ
-						AWABZwFuAXUBfAGDAYsBkgGaAaEB
-						qQGxAbkBwQHJAdEB2QHhAekB8gH6
-						AgMCDAIUAh0CJgIvAjgCQQJLAlQC
-						XQJnAnECegKEAo4CmAKiAqwCtgLB
-						AssC1QLgAusC9QMAAwsDFgMhAy0D
-						OANDA08DWgNmA3IDfgOKA5YDogOu
-						A7oDxwPTA+AD7AP5BAYEEwQgBC0E
-						OwRIBFUEYwRxBH4EjASaBKgEtgTE
-						BNME4QTwBP4FDQUcBSsFOgVJBVgF
-						ZwV3BYYFlgWmBbUFxQXVBeUF9gYG
-						BhYGJwY3BkgGWQZqBnsGjAadBq8G
-						wAbRBuMG9QcHBxkHKwc9B08HYQd0
-						B4YHmQesB78H0gflB/gICwgfCDII
-						RghaCG4IggiWCKoIvgjSCOcI+wkQ
-						CSUJOglPCWQJeQmPCaQJugnPCeUJ
-						+woRCicKPQpUCmoKgQqYCq4KxQrc
-						CvMLCwsiCzkLUQtpC4ALmAuwC8gL
-						4Qv5DBIMKgxDDFwMdQyODKcMwAzZ
-						DPMNDQ0mDUANWg10DY4NqQ3DDd4N
-						+A4TDi4OSQ5kDn8Omw62DtIO7g8J
-						DyUPQQ9eD3oPlg+zD88P7BAJECYQ
-						QxBhEH4QmxC5ENcQ9RETETERTxFt
-						EYwRqhHJEegSBxImEkUSZBKEEqMS
-						wxLjEwMTIxNDE2MTgxOkE8UT5RQG
-						FCcUSRRqFIsUrRTOFPAVEhU0FVYV
-						eBWbFb0V4BYDFiYWSRZsFo8WshbW
-						FvoXHRdBF2UXiReuF9IX9xgbGEAY
-						ZRiKGK8Y1Rj6GSAZRRlrGZEZtxnd
-						GgQaKhpRGncanhrFGuwbFBs7G2Mb
-						ihuyG9ocAhwqHFIcexyjHMwc9R0e
-						HUcdcB2ZHcMd7B4WHkAeah6UHr4e
-						6R8THz4faR+UH78f6iAVIEEgbCCY
-						IMQg8CEcIUghdSGhIc4h+yInIlUi
-						giKvIt0jCiM4I2YjlCPCI/AkHyRN
-						JHwkqyTaJQklOCVoJZclxyX3Jicm
-						VyaHJrcm6CcYJ0kneierJ9woDSg/
-						KHEooijUKQYpOClrKZ0p0CoCKjUq
-						aCqbKs8rAis2K2krnSvRLAUsOSxu
-						LKIs1y0MLUEtdi2rLeEuFi5MLoIu
-						ty7uLyQvWi+RL8cv/jA1MGwwpDDb
-						MRIxSjGCMbox8jIqMmMymzLUMw0z
-						RjN/M7gz8TQrNGU0njTYNRM1TTWH
-						NcI1/TY3NnI2rjbpNyQ3YDecN9c4
-						FDhQOIw4yDkFOUI5fzm8Ofk6Njp0
-						OrI67zstO2s7qjvoPCc8ZTykPOM9
-						Ij1hPaE94D4gPmA+oD7gPyE/YT+i
-						P+JAI0BkQKZA50EpQWpBrEHuQjBC
-						ckK1QvdDOkN9Q8BEA0RHRIpEzkUS
-						RVVFmkXeRiJGZ0arRvBHNUd7R8BI
-						BUhLSJFI10kdSWNJqUnwSjdKfUrE
-						SwxLU0uaS+JMKkxyTLpNAk1KTZNN
-						3E4lTm5Ot08AT0lPk0/dUCdQcVC7
-						UQZRUFGbUeZSMVJ8UsdTE1NfU6pT
-						9lRCVI9U21UoVXVVwlYPVlxWqVb3
-						V0RXklfgWC9YfVjLWRpZaVm4Wgda
-						VlqmWvVbRVuVW+VcNVyGXNZdJ114
-						XcleGl5sXr1fD19hX7NgBWBXYKpg
-						/GFPYaJh9WJJYpxi8GNDY5dj62RA
-						ZJRk6WU9ZZJl52Y9ZpJm6Gc9Z5Nn
-						6Wg/aJZo7GlDaZpp8WpIap9q92tP
-						a6dr/2xXbK9tCG1gbbluEm5rbsRv
-						Hm94b9FwK3CGcOBxOnGVcfByS3Km
-						cwFzXXO4dBR0cHTMdSh1hXXhdj52
-						m3b4d1Z3s3gReG54zHkqeYl553pG
-						eqV7BHtje8J8IXyBfOF9QX2hfgF+
-						Yn7CfyN/hH/lgEeAqIEKgWuBzYIw
-						gpKC9INXg7qEHYSAhOOFR4Wrhg6G
-						cobXhzuHn4gEiGmIzokziZmJ/opk
-						isqLMIuWi/yMY4zKjTGNmI3/jmaO
-						zo82j56QBpBukNaRP5GokhGSepLj
-						k02TtpQglIqU9JVflcmWNJaflwqX
-						dZfgmEyYuJkkmZCZ/JpomtWbQpuv
-						nByciZz3nWSd0p5Anq6fHZ+Ln/qg
-						aaDYoUehtqImopajBqN2o+akVqTH
-						pTilqaYapoum/adup+CoUqjEqTep
-						qaocqo+rAqt1q+msXKzQrUStuK4t
-						rqGvFq+LsACwdbDqsWCx1rJLssKz
-						OLOutCW0nLUTtYq2AbZ5tvC3aLfg
-						uFm40blKucK6O7q1uy67p7whvJu9
-						Fb2Pvgq+hL7/v3q/9cBwwOzBZ8Hj
-						wl/C28NYw9TEUcTOxUvFyMZGxsPH
-						Qce/yD3IvMk6ybnKOMq3yzbLtsw1
-						zLXNNc21zjbOts83z7jQOdC60TzR
-						vtI/0sHTRNPG1EnUy9VO1dHWVdbY
-						11zX4Nhk2OjZbNnx2nba+9uA3AXc
-						it0Q3ZbeHN6i3ynfr+A24L3hROHM
-						4lPi2+Nj4+vkc+T85YTmDeaW5x/n
-						qegy6LzpRunQ6lvq5etw6/vshu0R
-						7ZzuKO6070DvzPBY8OXxcvH/8ozz
-						GfOn9DT0wvVQ9d72bfb794r4Gfio
-						+Tj5x/pX+uf7d/wH/Jj9Kf26/kv+
-						3P9t//9wYXJhAAAAAAADAAAAAmZm
-						AADypwAADVkAABPQAAAKDnZjZ3QA
-						AAAAAAAAAQABAAAAAAAAAAEAAAAB
-						AAAAAAAAAAEAAAABAAAAAAAAAAEA
-						AG5kaW4AAAAAAAAANgAApkAAAFaA
-						AABKAAAAnAAAACVAAAASAAAAUAAA
-						AFRAAAIzMwACMzMAAjMzAAAAAAAA
-						AABzZjMyAAAAAAABDHIAAAX4///z
-						HQAAB7oAAP1y///7nf///aQAAAPZ
-						AADAcW1tb2QAAAAAAAAmzQAAVgwA
-						AA8kyG6AIQAAAAAAAAAAAAAAAAAA
-						AAA=
-						</data>
+						<key>b</key>
+						<string>0.663871</string>
+						<key>g</key>
+						<string>0.663871</string>
+						<key>r</key>
+						<string>0.663871</string>
 					</dict>
 				</dict>
 				<key>shadow</key>
@@ -1019,8 +599,8 @@ under RFG}</string>
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -1061,8 +641,8 @@ under RFG}</string>
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -1093,222 +673,12 @@ under RFG}</string>
 				<dict>
 					<key>Color</key>
 					<dict>
-						<key>tiff</key>
-						<data>
-						TU0AKgAABAjJycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf//////ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf//////ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ////
-						///Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf//////ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ///////J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf//////ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ///////Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf//
-						////ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ///////Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf//////
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ///////Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf//////ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ///////Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn//////8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ////
-						///Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn//////8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ///////J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn//////8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ///////Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn//////8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ///////Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						/////8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ///////Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/////
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ///////Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn//////8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn//////8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn//////8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf//
-						////AA4BAAADAAAAAQAQAAABAQAD
-						AAAAAQAQAAABAgADAAAABAAABLYB
-						AwADAAAAAQABAAABBgADAAAAAQAC
-						AAABEQAEAAAAAQAAAAgBEgADAAAA
-						AQABAAABFQADAAAAAQAEAAABFgAD
-						AAAAAQAQAAABFwAEAAAAAQAABAAB
-						HAADAAAAAQABAAABUgADAAAAAQAB
-						AAABUwADAAAABAAABL6HcwAHAAAM
-						oAAABMYAAAAAAAgACAAIAAgAAQAB
-						AAEAAQAADKBhcHBsAhAAAG1udHJS
-						R0IgWFlaIAfeAAEAAgAJADEAFGFj
-						c3BBUFBMAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAD21gABAAAAANMt
-						YXBwbAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAEWRlc2MAAAFQAAAA
-						YmRzY20AAAG0AAABiGNwcnQAAAM8
-						AAAAJHd0cHQAAANgAAAAFHJYWVoA
-						AAN0AAAAFGdYWVoAAAOIAAAAFGJY
-						WVoAAAOcAAAAFHJUUkMAAAOwAAAI
-						DGFhcmcAAAu8AAAAIHZjZ3QAAAvc
-						AAAAMG5kaW4AAAwMAAAAPmNoYWQA
-						AAxMAAAALG1tb2QAAAx4AAAAKGJU
-						UkMAAAOwAAAIDGdUUkMAAAOwAAAI
-						DGFhYmcAAAu8AAAAIGFhZ2cAAAu8
-						AAAAIGRlc2MAAAAAAAAACERpc3Bs
-						YXkAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAABt
-						bHVjAAAAAAAAAB4AAAAMc2tTSwAA
-						ABAAAAF4Y2FFUwAAABAAAAF4aGVJ
-						TAAAABAAAAF4cHRCUgAAABAAAAF4
-						aXRJVAAAABAAAAF4aHVIVQAAABAA
-						AAF4dWtVQQAAABAAAAF4a29LUgAA
-						ABAAAAF4bmJOTwAAABAAAAF4Y3ND
-						WgAAABAAAAF4emhUVwAAABAAAAF4
-						ZGVERQAAABAAAAF4cm9STwAAABAA
-						AAF4c3ZTRQAAABAAAAF4emhDTgAA
-						ABAAAAF4amFKUAAAABAAAAF4YXIA
-						AAAAABAAAAF4ZWxHUgAAABAAAAF4
-						cHRQVAAAABAAAAF4bmxOTAAAABAA
-						AAF4ZnJGUgAAABAAAAF4ZXNFUwAA
-						ABAAAAF4dGhUSAAAABAAAAF4dHJU
-						UgAAABAAAAF4ZmlGSQAAABAAAAF4
-						aHJIUgAAABAAAAF4cGxQTAAAABAA
-						AAF4cnVSVQAAABAAAAF4ZW5VUwAA
-						ABAAAAF4ZGFESwAAABAAAAF4AFAA
-						TAAyADQAMAA5AEgARHRleHQAAAAA
-						Q29weXJpZ2h0IEFwcGxlLCBJbmMu
-						LCAyMDE0AFhZWiAAAAAAAADzFgAB
-						AAAAARbKWFlaIAAAAAAAAHlbAAA+
-						ZwAAAYVYWVogAAAAAAAAWUMAAK58
-						AAAXr1hZWiAAAAAAAAAkNwAAEx0A
-						ALn5Y3VydgAAAAAAAAQAAAAABQAK
-						AA8AFAAZAB4AIwAoAC0AMgA2ADsA
-						QABFAEoATwBUAFkAXgBjAGgAbQBy
-						AHcAfACBAIYAiwCQAJUAmgCfAKMA
-						qACtALIAtwC8AMEAxgDLANAA1QDb
-						AOAA5QDrAPAA9gD7AQEBBwENARMB
-						GQEfASUBKwEyATgBPgFFAUwBUgFZ
-						AWABZwFuAXUBfAGDAYsBkgGaAaEB
-						qQGxAbkBwQHJAdEB2QHhAekB8gH6
-						AgMCDAIUAh0CJgIvAjgCQQJLAlQC
-						XQJnAnECegKEAo4CmAKiAqwCtgLB
-						AssC1QLgAusC9QMAAwsDFgMhAy0D
-						OANDA08DWgNmA3IDfgOKA5YDogOu
-						A7oDxwPTA+AD7AP5BAYEEwQgBC0E
-						OwRIBFUEYwRxBH4EjASaBKgEtgTE
-						BNME4QTwBP4FDQUcBSsFOgVJBVgF
-						ZwV3BYYFlgWmBbUFxQXVBeUF9gYG
-						BhYGJwY3BkgGWQZqBnsGjAadBq8G
-						wAbRBuMG9QcHBxkHKwc9B08HYQd0
-						B4YHmQesB78H0gflB/gICwgfCDII
-						RghaCG4IggiWCKoIvgjSCOcI+wkQ
-						CSUJOglPCWQJeQmPCaQJugnPCeUJ
-						+woRCicKPQpUCmoKgQqYCq4KxQrc
-						CvMLCwsiCzkLUQtpC4ALmAuwC8gL
-						4Qv5DBIMKgxDDFwMdQyODKcMwAzZ
-						DPMNDQ0mDUANWg10DY4NqQ3DDd4N
-						+A4TDi4OSQ5kDn8Omw62DtIO7g8J
-						DyUPQQ9eD3oPlg+zD88P7BAJECYQ
-						QxBhEH4QmxC5ENcQ9RETETERTxFt
-						EYwRqhHJEegSBxImEkUSZBKEEqMS
-						wxLjEwMTIxNDE2MTgxOkE8UT5RQG
-						FCcUSRRqFIsUrRTOFPAVEhU0FVYV
-						eBWbFb0V4BYDFiYWSRZsFo8WshbW
-						FvoXHRdBF2UXiReuF9IX9xgbGEAY
-						ZRiKGK8Y1Rj6GSAZRRlrGZEZtxnd
-						GgQaKhpRGncanhrFGuwbFBs7G2Mb
-						ihuyG9ocAhwqHFIcexyjHMwc9R0e
-						HUcdcB2ZHcMd7B4WHkAeah6UHr4e
-						6R8THz4faR+UH78f6iAVIEEgbCCY
-						IMQg8CEcIUghdSGhIc4h+yInIlUi
-						giKvIt0jCiM4I2YjlCPCI/AkHyRN
-						JHwkqyTaJQklOCVoJZclxyX3Jicm
-						VyaHJrcm6CcYJ0kneierJ9woDSg/
-						KHEooijUKQYpOClrKZ0p0CoCKjUq
-						aCqbKs8rAis2K2krnSvRLAUsOSxu
-						LKIs1y0MLUEtdi2rLeEuFi5MLoIu
-						ty7uLyQvWi+RL8cv/jA1MGwwpDDb
-						MRIxSjGCMbox8jIqMmMymzLUMw0z
-						RjN/M7gz8TQrNGU0njTYNRM1TTWH
-						NcI1/TY3NnI2rjbpNyQ3YDecN9c4
-						FDhQOIw4yDkFOUI5fzm8Ofk6Njp0
-						OrI67zstO2s7qjvoPCc8ZTykPOM9
-						Ij1hPaE94D4gPmA+oD7gPyE/YT+i
-						P+JAI0BkQKZA50EpQWpBrEHuQjBC
-						ckK1QvdDOkN9Q8BEA0RHRIpEzkUS
-						RVVFmkXeRiJGZ0arRvBHNUd7R8BI
-						BUhLSJFI10kdSWNJqUnwSjdKfUrE
-						SwxLU0uaS+JMKkxyTLpNAk1KTZNN
-						3E4lTm5Ot08AT0lPk0/dUCdQcVC7
-						UQZRUFGbUeZSMVJ8UsdTE1NfU6pT
-						9lRCVI9U21UoVXVVwlYPVlxWqVb3
-						V0RXklfgWC9YfVjLWRpZaVm4Wgda
-						VlqmWvVbRVuVW+VcNVyGXNZdJ114
-						XcleGl5sXr1fD19hX7NgBWBXYKpg
-						/GFPYaJh9WJJYpxi8GNDY5dj62RA
-						ZJRk6WU9ZZJl52Y9ZpJm6Gc9Z5Nn
-						6Wg/aJZo7GlDaZpp8WpIap9q92tP
-						a6dr/2xXbK9tCG1gbbluEm5rbsRv
-						Hm94b9FwK3CGcOBxOnGVcfByS3Km
-						cwFzXXO4dBR0cHTMdSh1hXXhdj52
-						m3b4d1Z3s3gReG54zHkqeYl553pG
-						eqV7BHtje8J8IXyBfOF9QX2hfgF+
-						Yn7CfyN/hH/lgEeAqIEKgWuBzYIw
-						gpKC9INXg7qEHYSAhOOFR4Wrhg6G
-						cobXhzuHn4gEiGmIzokziZmJ/opk
-						isqLMIuWi/yMY4zKjTGNmI3/jmaO
-						zo82j56QBpBukNaRP5GokhGSepLj
-						k02TtpQglIqU9JVflcmWNJaflwqX
-						dZfgmEyYuJkkmZCZ/JpomtWbQpuv
-						nByciZz3nWSd0p5Anq6fHZ+Ln/qg
-						aaDYoUehtqImopajBqN2o+akVqTH
-						pTilqaYapoum/adup+CoUqjEqTep
-						qaocqo+rAqt1q+msXKzQrUStuK4t
-						rqGvFq+LsACwdbDqsWCx1rJLssKz
-						OLOutCW0nLUTtYq2AbZ5tvC3aLfg
-						uFm40blKucK6O7q1uy67p7whvJu9
-						Fb2Pvgq+hL7/v3q/9cBwwOzBZ8Hj
-						wl/C28NYw9TEUcTOxUvFyMZGxsPH
-						Qce/yD3IvMk6ybnKOMq3yzbLtsw1
-						zLXNNc21zjbOts83z7jQOdC60TzR
-						vtI/0sHTRNPG1EnUy9VO1dHWVdbY
-						11zX4Nhk2OjZbNnx2nba+9uA3AXc
-						it0Q3ZbeHN6i3ynfr+A24L3hROHM
-						4lPi2+Nj4+vkc+T85YTmDeaW5x/n
-						qegy6LzpRunQ6lvq5etw6/vshu0R
-						7ZzuKO6070DvzPBY8OXxcvH/8ozz
-						GfOn9DT0wvVQ9d72bfb794r4Gfio
-						+Tj5x/pX+uf7d/wH/Jj9Kf26/kv+
-						3P9t//9wYXJhAAAAAAADAAAAAmZm
-						AADypwAADVkAABPQAAAKDnZjZ3QA
-						AAAAAAAAAQABAAAAAAAAAAEAAAAB
-						AAAAAAAAAAEAAAABAAAAAAAAAAEA
-						AG5kaW4AAAAAAAAANgAApkAAAFaA
-						AABKAAAAnAAAACVAAAASAAAAUAAA
-						AFRAAAIzMwACMzMAAjMzAAAAAAAA
-						AABzZjMyAAAAAAABDHIAAAX4///z
-						HQAAB7oAAP1y///7nf///aQAAAPZ
-						AADAcW1tb2QAAAAAAAAmzQAAVgwA
-						AA8kyG6AIQAAAAAAAAAAAAAAAAAA
-						AAA=
-						</data>
+						<key>b</key>
+						<string>0.663871</string>
+						<key>g</key>
+						<string>0.663871</string>
+						<key>r</key>
+						<string>0.663871</string>
 					</dict>
 				</dict>
 				<key>shadow</key>
@@ -1325,8 +695,8 @@ under RFG}</string>
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -1357,222 +727,12 @@ under RFG}</string>
 				<dict>
 					<key>Color</key>
 					<dict>
-						<key>tiff</key>
-						<data>
-						TU0AKgAABAjJycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf//////ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf//////ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ////
-						///Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf//////ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ///////J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf//////ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ///////Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf//
-						////ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ///////Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf//////
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ///////Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf//////ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ///////Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn//////8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ////
-						///Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn//////8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ///////J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn//////8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ///////Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn//////8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ///////Jycn/ycnJ
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						/////8nJyf/Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ///////Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/////
-						/8nJyf/Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ///////Jycn/ycnJ/8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn//////8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						///////Jycn/ycnJ/8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn//////8nJyf/J
-						ycn/ycnJ/8nJyf/Jycn/ycnJ/8nJ
-						yf/Jycn/ycnJ/8nJyf/Jycn/ycnJ
-						/8nJyf/Jycn//////8nJyf/Jycn/
-						ycnJ/8nJyf/Jycn/ycnJ/8nJyf//
-						////AA4BAAADAAAAAQAQAAABAQAD
-						AAAAAQAQAAABAgADAAAABAAABLYB
-						AwADAAAAAQABAAABBgADAAAAAQAC
-						AAABEQAEAAAAAQAAAAgBEgADAAAA
-						AQABAAABFQADAAAAAQAEAAABFgAD
-						AAAAAQAQAAABFwAEAAAAAQAABAAB
-						HAADAAAAAQABAAABUgADAAAAAQAB
-						AAABUwADAAAABAAABL6HcwAHAAAM
-						oAAABMYAAAAAAAgACAAIAAgAAQAB
-						AAEAAQAADKBhcHBsAhAAAG1udHJS
-						R0IgWFlaIAfeAAEAAgAJADEAFGFj
-						c3BBUFBMAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAD21gABAAAAANMt
-						YXBwbAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAEWRlc2MAAAFQAAAA
-						YmRzY20AAAG0AAABiGNwcnQAAAM8
-						AAAAJHd0cHQAAANgAAAAFHJYWVoA
-						AAN0AAAAFGdYWVoAAAOIAAAAFGJY
-						WVoAAAOcAAAAFHJUUkMAAAOwAAAI
-						DGFhcmcAAAu8AAAAIHZjZ3QAAAvc
-						AAAAMG5kaW4AAAwMAAAAPmNoYWQA
-						AAxMAAAALG1tb2QAAAx4AAAAKGJU
-						UkMAAAOwAAAIDGdUUkMAAAOwAAAI
-						DGFhYmcAAAu8AAAAIGFhZ2cAAAu8
-						AAAAIGRlc2MAAAAAAAAACERpc3Bs
-						YXkAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-						AAAAAAAAAAAAAAAAAAAAAAAAAABt
-						bHVjAAAAAAAAAB4AAAAMc2tTSwAA
-						ABAAAAF4Y2FFUwAAABAAAAF4aGVJ
-						TAAAABAAAAF4cHRCUgAAABAAAAF4
-						aXRJVAAAABAAAAF4aHVIVQAAABAA
-						AAF4dWtVQQAAABAAAAF4a29LUgAA
-						ABAAAAF4bmJOTwAAABAAAAF4Y3ND
-						WgAAABAAAAF4emhUVwAAABAAAAF4
-						ZGVERQAAABAAAAF4cm9STwAAABAA
-						AAF4c3ZTRQAAABAAAAF4emhDTgAA
-						ABAAAAF4amFKUAAAABAAAAF4YXIA
-						AAAAABAAAAF4ZWxHUgAAABAAAAF4
-						cHRQVAAAABAAAAF4bmxOTAAAABAA
-						AAF4ZnJGUgAAABAAAAF4ZXNFUwAA
-						ABAAAAF4dGhUSAAAABAAAAF4dHJU
-						UgAAABAAAAF4ZmlGSQAAABAAAAF4
-						aHJIUgAAABAAAAF4cGxQTAAAABAA
-						AAF4cnVSVQAAABAAAAF4ZW5VUwAA
-						ABAAAAF4ZGFESwAAABAAAAF4AFAA
-						TAAyADQAMAA5AEgARHRleHQAAAAA
-						Q29weXJpZ2h0IEFwcGxlLCBJbmMu
-						LCAyMDE0AFhZWiAAAAAAAADzFgAB
-						AAAAARbKWFlaIAAAAAAAAHlbAAA+
-						ZwAAAYVYWVogAAAAAAAAWUMAAK58
-						AAAXr1hZWiAAAAAAAAAkNwAAEx0A
-						ALn5Y3VydgAAAAAAAAQAAAAABQAK
-						AA8AFAAZAB4AIwAoAC0AMgA2ADsA
-						QABFAEoATwBUAFkAXgBjAGgAbQBy
-						AHcAfACBAIYAiwCQAJUAmgCfAKMA
-						qACtALIAtwC8AMEAxgDLANAA1QDb
-						AOAA5QDrAPAA9gD7AQEBBwENARMB
-						GQEfASUBKwEyATgBPgFFAUwBUgFZ
-						AWABZwFuAXUBfAGDAYsBkgGaAaEB
-						qQGxAbkBwQHJAdEB2QHhAekB8gH6
-						AgMCDAIUAh0CJgIvAjgCQQJLAlQC
-						XQJnAnECegKEAo4CmAKiAqwCtgLB
-						AssC1QLgAusC9QMAAwsDFgMhAy0D
-						OANDA08DWgNmA3IDfgOKA5YDogOu
-						A7oDxwPTA+AD7AP5BAYEEwQgBC0E
-						OwRIBFUEYwRxBH4EjASaBKgEtgTE
-						BNME4QTwBP4FDQUcBSsFOgVJBVgF
-						ZwV3BYYFlgWmBbUFxQXVBeUF9gYG
-						BhYGJwY3BkgGWQZqBnsGjAadBq8G
-						wAbRBuMG9QcHBxkHKwc9B08HYQd0
-						B4YHmQesB78H0gflB/gICwgfCDII
-						RghaCG4IggiWCKoIvgjSCOcI+wkQ
-						CSUJOglPCWQJeQmPCaQJugnPCeUJ
-						+woRCicKPQpUCmoKgQqYCq4KxQrc
-						CvMLCwsiCzkLUQtpC4ALmAuwC8gL
-						4Qv5DBIMKgxDDFwMdQyODKcMwAzZ
-						DPMNDQ0mDUANWg10DY4NqQ3DDd4N
-						+A4TDi4OSQ5kDn8Omw62DtIO7g8J
-						DyUPQQ9eD3oPlg+zD88P7BAJECYQ
-						QxBhEH4QmxC5ENcQ9RETETERTxFt
-						EYwRqhHJEegSBxImEkUSZBKEEqMS
-						wxLjEwMTIxNDE2MTgxOkE8UT5RQG
-						FCcUSRRqFIsUrRTOFPAVEhU0FVYV
-						eBWbFb0V4BYDFiYWSRZsFo8WshbW
-						FvoXHRdBF2UXiReuF9IX9xgbGEAY
-						ZRiKGK8Y1Rj6GSAZRRlrGZEZtxnd
-						GgQaKhpRGncanhrFGuwbFBs7G2Mb
-						ihuyG9ocAhwqHFIcexyjHMwc9R0e
-						HUcdcB2ZHcMd7B4WHkAeah6UHr4e
-						6R8THz4faR+UH78f6iAVIEEgbCCY
-						IMQg8CEcIUghdSGhIc4h+yInIlUi
-						giKvIt0jCiM4I2YjlCPCI/AkHyRN
-						JHwkqyTaJQklOCVoJZclxyX3Jicm
-						VyaHJrcm6CcYJ0kneierJ9woDSg/
-						KHEooijUKQYpOClrKZ0p0CoCKjUq
-						aCqbKs8rAis2K2krnSvRLAUsOSxu
-						LKIs1y0MLUEtdi2rLeEuFi5MLoIu
-						ty7uLyQvWi+RL8cv/jA1MGwwpDDb
-						MRIxSjGCMbox8jIqMmMymzLUMw0z
-						RjN/M7gz8TQrNGU0njTYNRM1TTWH
-						NcI1/TY3NnI2rjbpNyQ3YDecN9c4
-						FDhQOIw4yDkFOUI5fzm8Ofk6Njp0
-						OrI67zstO2s7qjvoPCc8ZTykPOM9
-						Ij1hPaE94D4gPmA+oD7gPyE/YT+i
-						P+JAI0BkQKZA50EpQWpBrEHuQjBC
-						ckK1QvdDOkN9Q8BEA0RHRIpEzkUS
-						RVVFmkXeRiJGZ0arRvBHNUd7R8BI
-						BUhLSJFI10kdSWNJqUnwSjdKfUrE
-						SwxLU0uaS+JMKkxyTLpNAk1KTZNN
-						3E4lTm5Ot08AT0lPk0/dUCdQcVC7
-						UQZRUFGbUeZSMVJ8UsdTE1NfU6pT
-						9lRCVI9U21UoVXVVwlYPVlxWqVb3
-						V0RXklfgWC9YfVjLWRpZaVm4Wgda
-						VlqmWvVbRVuVW+VcNVyGXNZdJ114
-						XcleGl5sXr1fD19hX7NgBWBXYKpg
-						/GFPYaJh9WJJYpxi8GNDY5dj62RA
-						ZJRk6WU9ZZJl52Y9ZpJm6Gc9Z5Nn
-						6Wg/aJZo7GlDaZpp8WpIap9q92tP
-						a6dr/2xXbK9tCG1gbbluEm5rbsRv
-						Hm94b9FwK3CGcOBxOnGVcfByS3Km
-						cwFzXXO4dBR0cHTMdSh1hXXhdj52
-						m3b4d1Z3s3gReG54zHkqeYl553pG
-						eqV7BHtje8J8IXyBfOF9QX2hfgF+
-						Yn7CfyN/hH/lgEeAqIEKgWuBzYIw
-						gpKC9INXg7qEHYSAhOOFR4Wrhg6G
-						cobXhzuHn4gEiGmIzokziZmJ/opk
-						isqLMIuWi/yMY4zKjTGNmI3/jmaO
-						zo82j56QBpBukNaRP5GokhGSepLj
-						k02TtpQglIqU9JVflcmWNJaflwqX
-						dZfgmEyYuJkkmZCZ/JpomtWbQpuv
-						nByciZz3nWSd0p5Anq6fHZ+Ln/qg
-						aaDYoUehtqImopajBqN2o+akVqTH
-						pTilqaYapoum/adup+CoUqjEqTep
-						qaocqo+rAqt1q+msXKzQrUStuK4t
-						rqGvFq+LsACwdbDqsWCx1rJLssKz
-						OLOutCW0nLUTtYq2AbZ5tvC3aLfg
-						uFm40blKucK6O7q1uy67p7whvJu9
-						Fb2Pvgq+hL7/v3q/9cBwwOzBZ8Hj
-						wl/C28NYw9TEUcTOxUvFyMZGxsPH
-						Qce/yD3IvMk6ybnKOMq3yzbLtsw1
-						zLXNNc21zjbOts83z7jQOdC60TzR
-						vtI/0sHTRNPG1EnUy9VO1dHWVdbY
-						11zX4Nhk2OjZbNnx2nba+9uA3AXc
-						it0Q3ZbeHN6i3ynfr+A24L3hROHM
-						4lPi2+Nj4+vkc+T85YTmDeaW5x/n
-						qegy6LzpRunQ6lvq5etw6/vshu0R
-						7ZzuKO6070DvzPBY8OXxcvH/8ozz
-						GfOn9DT0wvVQ9d72bfb794r4Gfio
-						+Tj5x/pX+uf7d/wH/Jj9Kf26/kv+
-						3P9t//9wYXJhAAAAAAADAAAAAmZm
-						AADypwAADVkAABPQAAAKDnZjZ3QA
-						AAAAAAAAAQABAAAAAAAAAAEAAAAB
-						AAAAAAAAAAEAAAABAAAAAAAAAAEA
-						AG5kaW4AAAAAAAAANgAApkAAAFaA
-						AABKAAAAnAAAACVAAAASAAAAUAAA
-						AFRAAAIzMwACMzMAAjMzAAAAAAAA
-						AABzZjMyAAAAAAABDHIAAAX4///z
-						HQAAB7oAAP1y///7nf///aQAAAPZ
-						AADAcW1tb2QAAAAAAAAmzQAAVgwA
-						AA8kyG6AIQAAAAAAAAAAAAAAAAAA
-						AAA=
-						</data>
+						<key>b</key>
+						<string>0.663871</string>
+						<key>g</key>
+						<string>0.663871</string>
+						<key>r</key>
+						<string>0.663871</string>
 					</dict>
 				</dict>
 				<key>shadow</key>
@@ -1589,8 +749,8 @@ under RFG}</string>
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -1645,7 +805,7 @@ under RFG}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2014-09-25 13:21:30 +0000</string>
+	<string>2015-02-16 11:27:10 +0000</string>
 	<key>Modifier</key>
 	<string>Guille</string>
 	<key>NotesVisible</key>
@@ -1740,7 +900,7 @@ under RFG}</string>
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{-295, 0}, {1150, 699}}</string>
+		<string>{{-303, 0}, {1164, 696}}</string>
 		<key>Zoom</key>
 		<real>1</real>
 		<key>ZoomValues</key>
