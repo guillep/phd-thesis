@@ -2,7 +2,7 @@
 % ===========================================================================
 \part{Tailoring: Automatic Extraction of Application Runtimes}
 % ===========================================================================
-\chapter{Run-Fail-Grow: a Dynamic Approach}
+\chapter{Run-Fail-Grow: Dynamic Tailoring}
 \chaplabel{chap:rfg}
 \minitoc
 % ===========================================================================
@@ -14,19 +14,19 @@
 This chapter describes the \emph{run-fail-grow} (RFG) technique: an alternative solution to dead code elimination that identifies the code units that are actually used in an application during runtime~(Section~\ref{sec:rfg_model}).
 Using RFG, we launch a \emph{reference} application containing all code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application runtime containing a \emph{seed} \ie a minimal set of code units we want to ensure in our application.
 RFG generates an application runtime by ``growing'' the nurtured application into a deployable specialized version of the reference application. 
-RFG runs the nurtured version of the application and feeds it with the code units that were detected as missing with a failure~(Section \ref{sec:rfg_example}).
+RFG runs the nurtured version of the application and feeds it with the code units that were detected missing through failures~(Section \ref{sec:rfg_example}).
 
 The resulting deployable application only embeds the seed and used code.
 By carefully choosing the seed, the user configures the scope of the tailoring process making possible different levels of tailoring.
-For example, a seed that includes all base libraries makes the tailoring process to only select used code in the application-specific part; whereas an empty seed makes the tailoring process to select used code in all parts: base libraries, application libraries and application-specific part~(Section \ref{sec:seeds}).
+For example, a seed that includes all base libraries makes the tailoring process only select used code in the application-specific part; whereas an empty seed makes the tailoring process select used code in all parts: base libraries, application libraries and application-specific part~(Section \ref{sec:seeds}).
 % For example, if the seed includes the language base libraries, it ensures that the deployed application will have it all whereas an empty seed will result that only part of the base libs 
 % Afterwards, deployment units are created from this shrank application to only contain the used code units.
 % Using these compacted deployment units leverages the targeted device limitations. 
 
-The dynamic nature of our solution allows its usage in dynamically-typed languages, and applications using reflection. Our solution does not need to modify the original application thanks to its run-fail-grow approach.
+The dynamic nature of our solution allows its usage in dynamically-typed languages, and applications using reflection. Our solution does not need to modify the original application thanks to the use of \Vtt runtime virtualization.
 It also successfully deals with applications that make use of programming language features such as reflection or open classes.
 
-We developed Tornado, an RFG implementation using \Vtt~(Section~\ref{sec:rfg_implementation}). In Tornado, the nurtured application resides inside a virtualized runtime. With \Vtt, we can monitor the execution of the nurtured application to detect whether a code unit is missing or not. Using \Vtt's mirrors we can also install the required code units.
+We developed Tornado, an RFG implementation based on \Vtt~(Section~\ref{sec:rfg_implementation}). In Tornado, the nurtured application resides inside a virtualized runtime. With \Vtt, we can monitor the execution of the nurtured application to detect whether a code unit is missing or not. Using \Vtt's mirrors we can also install the required code units.
 
 \section{Run Fail Grow: Dynamic dead code elimination}\label{sec:rfg_model}
 
@@ -46,13 +46,13 @@ On the other side, we fill initially the nurtured application with the \emph{see
 By using a seed that contains all base libraries, RFG will only affect the application specific code units and third-party libraries.
 However, by using an empty seed, it will also tailor base libraries~(cf. Section \ref{sec:seeds}).
 
-Running the nurtured application consists in two main steps. We first install in the nurtured application one or more \emph{application's entry points} in the form of threads, and then we start to run it.
-The execution of these entry points results into sending messages to those objects that start the application. These messages will produce \emph{missing code failures} when the respective classes and methods to resolve the message are not available.
-We detect the missing code failures and solve them by fetching the needed code units from the reference application and install them into the nurtured application. RFG installs only code units on demand \ie the content of installed classes and objects is not installed with them but deferred until it is actually needed; methods are not installed until they are invoked.
-The process repeats until we end it explicitly, so we can interact with the application as part of the process. Ideally, the nurtured application reaches a stable point where it needs no more code units.
+Running the nurtured application consists in two main steps. We first install in the nurtured application one or more \emph{application's entry points} in the form of threads, and then we resume them.
+The execution of these entry points results into sending messages to objects in the seed. These messages will signal \emph{missing code failures} when the respective classes and methods to resolve the message are not available.
+We detect the missing code failures and solve them by fetching the needed code units from the reference application and install them into the nurtured application. RFG installs only code units on demand \ie the content of installed classes and objects is not installed until it is actually needed; methods are not installed until they are invoked.
+The process repeats until we end it explicitly. As part of the process we can interact with the application under construction through \eg its UI. These interactions may signal more missing code failures, complementing the tailoring process. Ideally, the nurtured application reaches a stable point where it needs no more code units.
 The nurtured application is then ready for deployment.
 
-The dynamic nature of RFG tackles all our challenges. Missing code units are detected and resolved at runtime, where two main elements are available: the exact messages that are sent with their corresponding receiver and arguments, and their concrete types\footnote{We consider the exact class of an object its concrete type}. The methods and classes to install can be easily deduced from the available concrete types, \emph{without depending on type declarations} nor \emph{guessing in case of polymorphism or inheritance}. \emph{Application configurations are honored} since the code that reads and interprets them is actually executed, without the need of custom code for them. \emph{Reflection is supported for free} since reflection invocations are treated as simple message sends and executed as any other code, and strings composed dynamically by the application are available at runtime. 
+The dynamic nature of RFG tackles all our challenges. Missing code units are detected and resolved at runtime, where two main elements are available: the exact messages that are sent with their corresponding receiver and arguments, and their concrete types\footnote{We consider the exact class of an object its concrete type}. The methods and classes to install can be easily deduced from the available concrete types, \emph{without depending on type declarations nor their inference}. RFG \emph{takes into account the configuration of the application} such as the ones present in files, since the code that reads and interprets them is actually executed, without the need of custom code for them. \emph{Reflection is supported for free} since reflection invocations are treated as simple message sends and executed as any other code, and strings composed dynamically by the application are available at runtime. 
 
 
 %%%%%%%%%% 
