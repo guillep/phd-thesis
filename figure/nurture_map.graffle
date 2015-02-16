@@ -53,7 +53,7 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
-			<string>{{365.38189697265625, 208.23373413085938}, {104, 22}}</string>
+			<string>{{365.38189697265625, 209.23373413085938}, {104, 22}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -66,11 +66,6 @@
 			<string>Rectangle</string>
 			<key>Style</key>
 			<dict>
-				<key>fill</key>
-				<dict>
-					<key>Draws</key>
-					<string>NO</string>
-				</dict>
 				<key>shadow</key>
 				<dict>
 					<key>Draws</key>
@@ -101,7 +96,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{93.559051513671875, 208.23371887207031}, {99, 22}}</string>
+			<string>{{93.559051513671875, 209.23371887207031}, {99, 22}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -114,11 +109,6 @@
 			<string>Rectangle</string>
 			<key>Style</key>
 			<dict>
-				<key>fill</key>
-				<dict>
-					<key>Draws</key>
-					<string>NO</string>
-				</dict>
 				<key>shadow</key>
 				<dict>
 					<key>Draws</key>
@@ -162,11 +152,6 @@
 			<string>Rectangle</string>
 			<key>Style</key>
 			<dict>
-				<key>fill</key>
-				<dict>
-					<key>Draws</key>
-					<string>NO</string>
-				</dict>
 				<key>shadow</key>
 				<dict>
 					<key>Draws</key>
@@ -241,11 +226,6 @@ selected by RFG}</string>
 			<string>Rectangle</string>
 			<key>Style</key>
 			<dict>
-				<key>fill</key>
-				<dict>
-					<key>Draws</key>
-					<string>NO</string>
-				</dict>
 				<key>shadow</key>
 				<dict>
 					<key>Draws</key>
@@ -292,11 +272,6 @@ not under RFG}</string>
 			<string>Rectangle</string>
 			<key>Style</key>
 			<dict>
-				<key>fill</key>
-				<dict>
-					<key>Draws</key>
-					<string>NO</string>
-				</dict>
 				<key>shadow</key>
 				<dict>
 					<key>Draws</key>
@@ -805,7 +780,7 @@ under RFG}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2015-02-16 11:27:10 +0000</string>
+	<string>2015-02-16 11:40:34 +0000</string>
 	<key>Modifier</key>
 	<string>Guille</string>
 	<key>NotesVisible</key>
