@@ -582,27 +582,48 @@ Since the main purpose of the bootstrap process is to easily change the meta-lev
 The user of a programming language is concerned about writing applications that run on this programming language instead of changing the programming language. From a user perspective the initialization of the language is transparent within the startup of an application. It should be however fast and ensure always the same state.
 The language initialization present in production \VMs provides both properties. Bootstrapping, in the sense of this paper, turns this process slower due to the interpretation step.
 
-For language users, we overcome this slow-down by \emph{caching} the result of our bootstrap process in a snapshot, as it is used in Smalltalk and Lisp\gp{cite}. Thus, we bootstrap a language runtime only when we change it, and otherwise we load the cached version. Caching keeps both properties of application startup: it guarantees the same state and it is faster. Table \ref{tb:startup} shows a comparison in the startup time of our \VM loading Pharo, Metatalk and Candle using snapshots, in contrast with Ruby. We measured the startup times by running each of them 10 times and making an average. From the results, we observe our startup time is bigger than ruby's but still reasonable, under the half of a second.
+For language users, we overcome this slow-down by \emph{caching} the result of our bootstrap process in a snapshot. Thus, we bootstrap a language runtime only when we change it, and otherwise we load the cached version. Caching keeps both properties of application startup: it guarantees the same state and it is faster. Table \ref{tb:startup} shows a comparison in the startup time of four different programs: (a) the Pharo \VM loading no-runtime and quitting to avoid the usage of the snapshot and eliminate its startup time; the Pharo \VM loading (b) Pharo, (c) Metatalk and (d) Candle using snapshots; (e) starting a ruby program that quits Ruby. We benchmarked the startup times by running each of them 10 times and making an average.
 
- \begin{table}[ht]
- \small
+\begin{table}[ht]
  	\centering
  	\begin{tabular}{lc}
 			\toprule
-			\textbf{Language}
+			\textbf{Artifact}
  			& \textbf{Startup time}\\
 		\toprule
-		Ruby &  64ms +/-7.1\\\midrule
+		Pharo VM - no runtime &  166ms +/-13 \\\midrule
 		Pharo & 280.8ms +/-3.4\\\midrule
 		Candle & 186ms +/-7.6\\\midrule
 		Metatalk w/o mirrors &202ms +/-13\\\midrule
 		Metatalk reflective &205ms +/-11\\\bottomrule
+		Ruby &  64ms +/-7.1\\\midrule
  	\end{tabular}
 	\vspace*{0.2cm}
- 	\caption{\small\textbf{Startup time in perspective.} Comparing the startup time of a ruby application with the same in Pharo or Candle using a snapshot.\label{tb:startup}}
+ 	\caption{\small\textbf{Startup time benchmarks.} Benchmarking the startup time of a ruby application with the same in Pharo or Candle using a snapshot.\label{tb:startup}}
  \end{table}
+ 
+From the results, we observe that our startup time is bigger than ruby's but still reasonable, under the half of a second. Additionally, we can see that the startup time of the Pharo \VM itself represents a big part of the startup time of each language~(Figure \ref{tb:startup_overhead}). This particular issue is indeed orthogonal to the fact of the bootstrap and requires the \VM to be reengineered to minimize its startup time.
+ 
+ \begin{table}[ht]
+ 	\centering
+ 	\begin{tabular}{lcc}
+			\toprule
+			\textbf{Artifact}
+			& \textbf{Benchmarked time}
+ 			& \textbf{Pharo \VM Overhead}\\
+		\toprule
+		Pharo & 280.8ms +/-3.4 & 59.12\% \\\midrule
+		Candle & 186ms +/-7.6 & 89.25\% \\\midrule
+		Metatalk w/o mirrors &202ms +/-13 & 82.18\% \\\midrule
+		Metatalk reflective &205ms +/-11 & 80.98\% \\\bottomrule
+ 	\end{tabular}
+	\vspace*{0.2cm}
+ 	\caption{\small\textbf{Startup time in perspective.} Calculating the overhead of the Pharo \VM on the startup time of Pharo, Candle and Metatalk using snapshots.\label{tb:startup_overhead}}
+ \end{table}
+ 
+ 
 
-Implementation-wise, the snapshot we used is a memory dump of the \VM heap. This heap will contain all the objects, classes and methods we created during the bootstrap. At load time, the memory dump is restored into memory and the \VM internals are re-configured to use this heap using the \VM setup interface. This idea is the same used by languages such as Smalltalk, Lisp, Javascript in V8 or the JikesRVM~\cite{Alpe00a}. Loading a binary image is as fast as reading the file and putting its contents inside the \VM's heap.
+Implementation-wise, the snapshot we used is a memory dump of the \VM heap. This heap will contain all the objects, classes and methods we created during the bootstrap. At load time, the memory dump is restored into memory and the \VM internals are re-configured to use this heap using the \VM setup interface. This idea is the same used by languages such as Smalltalk\gp{cite}, Lisp\gp{cite}, Javascript in V8 or the JikesRVM~\cite{Alpe00a}. Loading a binary image is as fast as reading the file and putting its contents inside the \VM's heap.
 
 % ===========================================================================
 \section{Conclusion and Summary}
