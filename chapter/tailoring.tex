@@ -59,7 +59,7 @@ The dynamic nature of RFG tackles all our challenges. Missing code units are det
 
 
 \section{Run-Fail-Grow through an example}\label{sec:rfg_example}
-We illustrate in this section the ideas behind RFG with the example introduced originally in~\chapref{state_tailoring}~(cf. Figure \ref{fig:code_example_again}). For the sake of clarity, in this example we will tailor the application's code units and not the base libraries \ie the seed includes the base libraries.
+We illustrate in this section the ideas behind RFG with the example introduced originally in~\chapref{state_tailoring}~(cf. Figure \ref{fig:code_example_again}). For the sake of clarity, in this example we will tailor the application's code units only~(\ie not the base libraries). This means that in this example the seed includes the base libraries.
 
 \begin{figure}[ht]
 \begin{code}
@@ -93,7 +93,7 @@ StdoutLogger>>log: aMessage
 \end{figure}
 
 
-\paragraph{Setup of the Environment} First, we launch the reference application~(cf. Figure~\ref{fig:example_reference}) and the nurtured application~(cf. Figure~\ref{fig:example_all} Step 0). We fill the nurtured application with a seed containing the language base libraries. Thus, each application has its own copy of the base libraries, as shown in this case with the \ct{Date} and \ct{Time} classes and the \ct{stdout} object.
+\paragraph{Setup of the Environment} First, we launch the reference application~(cf. Figure~\ref{fig:example_reference}) and we load the nurtured application~(cf. Figure~\ref{fig:example_all} Step a). We fill the nurtured application with a seed containing the language base libraries. Thus, each application has its own copy of the base libraries, as shown in this case with the \ct{Date} and \ct{Time} classes and the \ct{stdout} object.
 
 \begin{figure}[ht]
 \begin{center}
@@ -115,7 +115,7 @@ StdoutLogger>>log: aMessage
 \end{center}
 \end{figure*}
 
-\paragraph{Install the application's entry point} We install into the nurtured application our application's entry point \ie a \ct{MainApp} instance~(\ct{aMainApp}) and a process that will execute the statement \ct{"aMainApp start"}~(cf. Figure~\ref{fig:example_all} Step 1). Note that although we are referencing an instance of the class \ct{MainApp}, the \ct{MainApp} class is not installed yet.
+\paragraph{Install the application's entry point} We install into the nurtured application our application's entry point \ie a \ct{MainApp} instance~(\ct{aMainApp}) and a process that will execute the statement \ct{"aMainApp start"}~(cf. Figure~\ref{fig:example_all} Step b). Note that although we are referencing an instance of the class \ct{MainApp}, the \ct{MainApp} class is not installed yet.
 
 %\begin{figure}[ht]
 %\begin{center}
@@ -124,7 +124,7 @@ StdoutLogger>>log: aMessage
 %\end{center}
 %\end{figure}
 
-When the execution starts, the \ct{mainApp} instance receives the \ct{start} message, and we detect the \ct{MainApp} class and its \ct{start} method as a missing code unit failure. We install these two missing code units~(cf. Figure~\ref{fig:example_all} Step 2) and finally the \ct{MainApp>>start} method is activated and starts running.
+When the execution starts, the \ct{mainApp} instance receives the \ct{start} message, and we detect the \ct{MainApp} class and its \ct{start} method as a missing code unit failure. We install these two missing code units~(cf. Figure~\ref{fig:example_all} Step c) and finally the \ct{MainApp>>start} method is activated and starts running.
 
 %\begin{figure}[ht]
 %\begin{center}
@@ -134,7 +134,7 @@ When the execution starts, the \ct{mainApp} instance receives the \ct{start} mes
 %\end{figure}
 
 \paragraph{Activating the start method}
-The method \ct{start} defined in Figure~\ref{fig:code_example1} is executed, as we can see in Figure~\ref{fig:example_all} Step 2. During the execution of its first statement~(line 2 Figure~\ref{fig:code_example1}) we detect a missing code unit failure: The \ct{StdoutLogger} class does not exist. Thus, before continuing, we install a \ct{StdoutLogger} class with the same shape as its reference counterpart~(cf. Figure~\ref{fig:example_all} Step 3). This class does not contain, however, all the methods nor the meta-data (\eg superclass, package, subclasses) from the reference class since they may not be necessary.
+The method \ct{start} defined in Figure~\ref{fig:code_example_again} is executed, as we can see in Figure~\ref{fig:example_all} Step c. During the execution of its first statement~(Figure~\ref{fig:code_example_again} line 2) we detect a missing code unit failure: The \ct{StdoutLogger} class does not exist. Thus, before continuing, we install a \ct{StdoutLogger} class with the same shape as its reference counterpart~(cf. Figure~\ref{fig:example_all} Step d). This class does not contain, however, all the methods nor the meta-data (\eg superclass, package, subclasses) from the reference class since they may not be necessary.
 
 %a \emph{shadow} of the \ct{Formatter} class~(Figure~\ref{fig:example_shadow}).\gp{I don't like the word shadow here, since it does not go with the tailor metaphor} The \ct{Formatter} shadow is a proxy object the tailor will use to know if and when the \ct{Formatter} class is used.
 
@@ -149,10 +149,8 @@ The method \ct{start} defined in Figure~\ref{fig:code_example1} is executed, as 
 
 %Note that copies of classes are treated specially: they contain a method dictionary where methods are installed, but since no instance of \ct{Formatter} received yet a message, its method dictionary is empty.
 
-Once we install the \ct{StdoutLogger} class, we resume the execution. The first statement results into a new \ct{StdoutLogger} instance. Not that the \ct{new} method is not installed because this method is part of the language base library, already available in the seed. 
-% The next expression of the \ct{start} method is now ready to be executed.
-
-During the second statement's execution~(line 3 Figure~\ref{fig:code_example1}), we detect a missing code unit failure on the \ct{log:} message~(cf. Figure~\ref{fig:example_all} Step 4): the corresponding method is not installed in the \ct{StdoutLogger} class. We install the method inside the corresponding class and resume the execution. This time the method is found, and the \ct{log:} method is activated.
+Once we install the \ct{StdoutLogger} class, we resume the execution. The first statement results into a new \ct{StdoutLogger} instance. Note that the \ct{new} method is already installed because it is part of the language base library, already available in the seed. 
+During the second statement's execution~(Figure~\ref{fig:code_example_again} line 3), we detect a missing code unit failure on the \ct{log:} message~(cf. Figure~\ref{fig:example_all} Step e): the corresponding method is not installed in the \ct{StdoutLogger} class. We install it and resume the execution. This time the method is found, and the \ct{log:} method is activated.
 
 %\begin{figure*}[ht]
 %\begin{center}
@@ -162,7 +160,7 @@ During the second statement's execution~(line 3 Figure~\ref{fig:code_example1}),
 %\end{figure*}
 
 
-Once the \ct{log:} method finishes, the execution returns to the \ct{start} method. There, the third statement~(line 5 Figure~\ref{fig:code_example1}) is executed with no intervention of our technique, since the \ct{log:} method is already available. Figure~\ref{fig:example_all} Step 5 shows the final state of the nurtured application: it contains only the methods and classes that are actually used by the application. Leaf objects used during the process have been garbage collected.
+Once the \ct{log:} method finishes, the execution returns to the \ct{start} method. There, the third statement~(Figure~\ref{fig:code_example_again} line 5) is executed with no intervention of our technique, since the \ct{log:} method is already available. Figure~\ref{fig:example_all} Step f shows the final state of the nurtured application: it contains only the methods and classes that are actually used by the application. Leaf objects used during the process have been garbage collected.
 
 %\begin{figure}[ht]
 %\begin{center}
