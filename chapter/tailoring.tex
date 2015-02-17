@@ -393,6 +393,8 @@ Finally, we discuss some aspects and trade-offs of the run-fail-grow approach an
 
 \section{Experiments}\label{sec:rfg_experiments}
 
+This section enumerates the different experiments we conducted to evaluate Tornado RFG. Each of these experiments detail the purpose of the experiment and the particular features that are evaluated.
+
 \subsection*{Experiment I: Adding Two Numbers}
 
 The smallest~(in terms of size) interesting program to tailor is adding two numbers, without the involvement of any I/O \ie an application just executing the \ct{"2 + 3"} statement as entry point. Tailoring this program is challenging because it stresses the infrastructure by installing only the minimal elements an application needs to run. It makes evident how small a tailored application can be. Additionally, it is interesting since it makes use of the following features of the Pharo language and infrastructure:
@@ -473,11 +475,11 @@ In this experiment, besides testing the proper usage of I/O streams such as the 
 
 Our last experiment consists is tailoring a web application using Seaside application framework~\cite{Duca07a}. Seaside is a web application framework featuring continuations thanks to stack reification. We configured it with its default values, without making any customizations. The web application under tailoring has a single webpage that allows one to send requests to the web server to increment or decrement a counter. This experience shows that Tornado works in presence of Pharo's \textbf{multi-threading}. The Seaside application framework makes use of Pharo processes. One process listens incoming connections and opens new processes to handle requests. Seaside uses semaphores to synchronize processes and wait for incoming data from sockets.
 
-For this case, we proceeded to do two different experiences, with two different seeds. We first used the empty seed~(\emph{Seaside Web Application A}), as in the previous experiments, and then used a seed containing all Pharo base libraries~(\emph{Seaside Web Application B}). The details of how the entry points are initialized for these both seeds can be found in our technical report~\cite{Poli14a}.
+For this case, we proceeded to do two different experiences, with two different seeds. We first used the empty seed~(\emph{Seaside Web Application A}), as in the previous experiments, and then used a seed containing all Pharo base libraries~(\emph{Seaside Web Application B}). Appendix \ref{appendixtailoring} details the entry points and list of extracted code units for each of these cases.
 
 \section{Results} \label{sec:results_discussion}
 
-We gathered our experiments' results into Table \ref{tb:results}. This table shows:
+We gathered our experiments' results into Table \ref{tb:results}. Additionally, Appendix \ref{appendixtailoring} presents in detail the entry points and list of selected code units in the cases of usage of I/O and the Seaside Web App. This table shows:
 \begin{description}
 \item[Experiment.] The name of the experiment under evaluation, followed by our measurements.
 \item[Reference Runtime.] The size of the reference runtime containing all of its code units, in KB. We present here the size of the official Pharo distribution prepared for production for each application. This distribution voids some caches and removes some well known objects that are only required at development time.
