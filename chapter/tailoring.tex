@@ -36,7 +36,7 @@ Once finished, the nurtured runtime is ready to be deployed on the target device
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.7\linewidth]{runfail}
-\caption{\small \textbf{Application tailoring with a run-fail-grow approach.} We~(1) run the nurtured runtime and~(2) detect the missing units on failure. For each failure,~(3) we copy missing code units from the reference runtime and then~(4) the execution is resumed (just before the failure point) until the process finishes. \label{fig:runfail}}
+\caption{\textbf{Application tailoring with a run-fail-grow approach.} We~(1) run the nurtured runtime and~(2) detect the missing units on failure. For each failure,~(3) we copy missing code units from the reference runtime and then~(4) the execution is resumed (just before the failure point) until the process finishes. \label{fig:runfail}}
 \end{center}
 \end{figure}
 
@@ -89,7 +89,7 @@ StdoutLogger>>log: aMessage
 !\unusedcode{~~~"creates an instance of socket given some configuration"}!
 \end{code}
 
-\caption{ \small\textbf{Code of the example logging application.} In gray, methods not used by the application.\label{fig:code_example_again}}
+\caption{\textbf{Code of the example logging application.} In gray, methods not used by the application.\label{fig:code_example_again}}
 \end{figure}
 
 
@@ -98,7 +98,7 @@ StdoutLogger>>log: aMessage
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.5\linewidth]{example_reference}
-\caption{\small\textbf{Reference runtime with all code units.}\label{fig:example_reference}}
+\caption{\textbf{Reference runtime with all code units.}\label{fig:example_reference}}
 \end{center}
 \end{figure}
 
@@ -111,7 +111,7 @@ StdoutLogger>>log: aMessage
 \includegraphics[width=.33\linewidth]{example_shadow_trap}
 \includegraphics[width=.325\linewidth]{example_dnu_trap}
 \includegraphics[width=.33\linewidth]{example_finished}
-\caption{\small\textbf{The nurtured runtime at different steps of tailoring.} \label{fig:example_all}}
+\caption{\textbf{The nurtured runtime at different steps of tailoring.} \label{fig:example_all}}
 \end{center}
 \end{figure*}
 
@@ -210,7 +210,7 @@ Then, we identify the following as the basic traps that are necessary to tailor 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=0.7\linewidth]{need_override}
-\caption{\small\textbf{The need of overriding traps.} Method traps should capture the overridden \ct{doSomething} message-send to avoid the superclass method to be executed wrongly.\label{fig:need_override}}
+\caption{\textbf{The need of overriding traps.} Method traps should capture the overridden \ct{doSomething} message-send to avoid the superclass method to be executed wrongly.\label{fig:need_override}}
 \end{center}
 \end{figure}
 
@@ -232,7 +232,7 @@ Figure \ref{fig:nurturing_map_model} presents two tailoring maps showing exempla
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.7\linewidth]{nurture_map}
-\caption{\small\textbf{Tailoring Map.} A tailoring map describes which code units of an application are included in the seed~(in gray), which ones are subject to the RFG technique~(in white) and the amount of them that are finally selected~(within the thick area).
+\caption{\textbf{Tailoring Map.} A tailoring map describes which code units of an application are included in the seed~(in gray), which ones are subject to the RFG technique~(in white) and the amount of them that are finally selected~(within the thick area).
 \label{fig:nurturing_map_model}}
 \end{center}
 \end{figure}
@@ -248,7 +248,7 @@ Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=0.8\linewidth]{tornado_components2}
-\caption{\small\textbf{Tornado's architecture overview.} Tornado controls both the reference and nurtured runtimes through Espell. Traps are installed into the nurtured runtime with the Ghost library.\label{fig:tornado_code units}}
+\caption{\textbf{Tornado's architecture overview.} Tornado controls both the reference and nurtured runtimes through Espell. Traps are installed into the nurtured runtime with the Ghost library.\label{fig:tornado_code units}}
 \end{center}
 \end{figure}
 
@@ -327,7 +327,7 @@ When Tornado installs an object inside the nurtured runtime, this new object has
 % Figure \ref{fig:character_mapping} shows an example of the mapping of the \ct{Character} class which forces the materialization of the character and digit tables class variables.
 %
 %\begin{figure}[ht]
-%\small
+%
 %\begin{code}
 %Character >> tornadoMappingFor: aTornado
 %	^ (super tornadoMappingFor: aTornado)
@@ -336,7 +336,7 @@ When Tornado installs an object inside the nurtured runtime, this new object has
 %				#DigitValues -> ToMaterializationPropagationStrategy new
 %			}; yourself
 %\end{code}
-%\caption{\small\textbf{Mapping for class \ct{Character}.} Mapping forcing the installation of the character and digit tables needed by the VM. \label{fig:character_mapping}}
+%\caption{\textbf{Mapping for class \ct{Character}.} Mapping forcing the installation of the character and digit tables needed by the VM. \label{fig:character_mapping}}
 %\end{figure}
 
 \subsection{Object Identity and Proxies}
@@ -371,7 +371,7 @@ In this chapter we presented a run-fail-grow~(RFG) approach for application tail
 
 We implemented RFG in a tool called Tornado based in \Vtt. With \Vtt, we are able to monitor the nurtured runtime's execution using the execution cycles. Ghost-like proxies represent traps that detect missing code units during execution. We use Mirrors to install required code and restart the execution as it is needed.
 
-\chapter{Validation}
+\chapter{RFG Validation}
 \minitoc
 \introduction
 
@@ -424,7 +424,6 @@ Following, we experimented with an application whose entry point was the \ct{"10
 The fourth experiment introduces reflective invocations. Figure \ref{fig:reflective_invocations} introduces the code we used for this experiment. The \ct{User} class in our example has two fields (\ct{name} and \ct{age}), and four methods. Two of these methods (\ct{age} and \ct{name}) return directly the field with the same name, the method \ct{hasWritePermissions} is annotated with the \ct{property} annotation (a pragma in Pharo's terminology) and the method \ct{isMinor} is a normal method. We introduce also \ct{PropertyExtractor} class with the responsibility of returning the name of those methods that are properties of an object \ie all methods that only return a field, and all those methods annotated with the \ct{property} annotation. The statement we introduced as the entry point for this experiment is \ct{"PropertyExtractor new extractPropertiesFrom: User new"}.
 
 \begin{figure}[ht]
-\small
 \begin{code}
 Object subclass: #User
 	instanceVariableNames: 'name age'.
@@ -446,7 +445,7 @@ PropertyExtractor>>extractPropertiesFrom: anObject
 		thenCollect: [ :each | each selector ]
 
 \end{code}
-\caption{\small \textbf{Code of the reflective invocations experiment.} The \ct{PropertyExtractor} class does the reflective invocations, the \ct{User} is the class we will be reflecting on.\label{fig:reflective_invocations}}
+\caption{ \textbf{Code of the reflective invocations experiment.} The \ct{PropertyExtractor} class does the reflective invocations, the \ct{User} is the class we will be reflecting on.\label{fig:reflective_invocations}}
 \end{figure}
 
 This experiment evaluates how do we handle the reflective abilities of Tornado's RFG. The \ct{PropertyExtractor} queries the methods from the \ct{User} class, that are included as part of the tailored application~(since they receive the messages \ct{isReturnField} and \ct{pragmas}). These reflective invocations include: (a) access to an object's class, (b) access class methods and (c) query those methods to know if they correspond to the criteria of the \ct{PropertyExtractor}.
@@ -456,14 +455,14 @@ This experiment evaluates how do we handle the reflective abilities of Tornado's
 A fifth experiment introduces I/O to each of the previous experiments, adding a statement printing to the standard output the obtained results. Figure~\ref{fig:hello_world_entry_point} shows the code from our entry point in the case of summing up two numbers. The entry points for the other experiments have the same structure, differing only on the expression that is printed~(the \ct{"1+2"} expression in this case). Notice that the \ct{FileStream} class needs to be initialized before the proper printing into the stdout stream because the code needed for class initialization is not installed by default in the empty seed.
 
 \begin{figure}[ht]
-\small
+
 \begin{code}
 FileStream startUp: true.
 FileStream stdout 
 	nextPutAll: (1 + 2) asString;
 	crlf.
 \end{code}
-\caption{\small \textbf{Entry point of the experiment that sums two numbers and prints the result in the standard output stream.}\label{fig:hello_world_entry_point}}
+\caption{ \textbf{Entry point of the experiment that sums two numbers and prints the result in the standard output stream.}\label{fig:hello_world_entry_point}}
 \end{figure}
 
 In this experiment, besides testing the proper usage of I/O streams such as the standard output stream, we evaluate the ability of Tornado to handle \textbf{platform identification}. The \ct{stdout} stream initialization for Pharo is done by the File package written in Pharo, and it depends on which is the current operating system. This experiment shows that Tornado prepares tailored versions of applications to run on a single operating system or platform.
@@ -481,10 +480,10 @@ For this case, we proceeded to do two different experiences, with two different 
 We gathered our experiments' results into Table \ref{tb:results}. This table shows:
 \begin{description}
 \item[Experiment.] The name of the experiment under evaluation, followed by our measurements.
-\item[Reference Runtime.] The size of the reference runtime containing all of its code units, in KB. We present in here two different sizes: the size of an experimental shrunk version of the Pharo distribution called \emph{PharoKernel}, which was developed independently from us by Pavel Krivanek; and between parenthesis the size of the official Pharo distribution prepared for production: Pharo allows one to prepare a snapshot for production. This option cleans some caches and removes some well known objects and classes from the system, thus, freeing space.
+\item[Reference Runtime.] The size of the reference runtime containing all of its code units, in KB. We present here the size of the official Pharo distribution prepared for production for each application. This distribution voids some caches and removes some well known objects that are only required at development time.
 \item[Seed.] The size in KB of the chosen seed for the experiment.
 \item[Nurtured Runtime.] The final size of the nurtured runtime once Tornado finishes its process and the application is extracted.
-\item[Saved.] The percentage of space saved using the smallest reference runtime size. We chose the smallest reference runtime to avoid biased results in our favor. We calculated this percentage using the following equation:
+\item[Saved.] The percentage of space saved in comparison with the reference application. We calculated this percentage using the following equation:
 
 \begin{equation*}
 saved = 100 - \frac{100*(nurtured - seed)}{reference - seed}
@@ -495,55 +494,55 @@ saved = 100 - \frac{100*(nurtured - seed)}{reference - seed}
  	\begin{tabular}{lccccc}
 		\toprule
 			Experiment
- 			& \textbf{Reference App}
+ 			& \textbf{Reference}
 			& \textbf{Seed}
 			& \textbf{Nurtured}
 			& \textbf{Installed}
 			& \textbf{Saved(\%)}\\
 			
- 			& \textbf{\emph{Shrunk(Prod.)}}
+ 			& \textbf{App}
 			& \textbf{Size}
 			& \textbf{App}
 			& \textbf{Code}
 			& \textbf{}\\
 		\toprule
 		Sum Two
- 			&  3799 (12873) & 10 & 11 & 1 & \textbf{99.97\%}\\
+ 			&  12873 & 10 & 11 & 1 & \textbf{99.99\%}\\
 		Numbers (I)
  			& &&&&\\
 		\midrule
 		Fact 10 (II)
- 			& 3799 (12873) & 10 & 15 & 5 & \textbf{99.87\%}\\
+ 			& 12873 & 10 & 15 & 5 & \textbf{99.96\%}\\
 		\midrule
 		Fact 100 (III)
- 			& 3799 (12873) & 10 & 18 & 8 & \textbf{99.79\%}\\
+ 			& 12873 & 10 & 18 & 8 & \textbf{99.94\%}\\
 		\midrule
 		Reflective
- 			& 3799 (12873) & 10 & 32 & 22 & \textbf{99.42\%}\\
+ 			& 12873 & 10 & 32 & 22 & \textbf{99.83\%}\\
 		App (IV)&&&&&\\
 		\midrule
 		(I) + I/O
- 			& 3799 (12873) & 10 & 81 & 71 & \textbf{98.13\%}\\
+ 			& 12873 & 10 & 81 & 71 & \textbf{99.45\%}\\
 		\midrule
 		(II) + I/O
- 			& 3799 (12873) & 10 & 82 & 72 & \textbf{98.10\%}\\
+ 			& 12873 & 10 & 82 & 72 & \textbf{99.44\%}\\
 		\midrule
 		(III) + I/O
- 			& 3799 (12873) & 10 & 89 & 79 & \textbf{97.92\%}\\
+ 			& 12873 & 10 & 89 & 79 & \textbf{99.39\%}\\
 		\midrule
 		(IV) + I/O
- 			& 3799 (12873) & 10 & 95 & 85 & \textbf{97.76\%}\\
+ 			& 12873 & 10 & 95 & 85 & \textbf{99.34\%}\\
 		\midrule
 		Seaside Web
- 			& 20254 (17250) & 10 & 573 & 563 & \textbf{96.73\%}\\
+ 			& 17250 & 10 & 573 & 563 & \textbf{96.73\%}\\
 		App A&&&&&\\
 		\midrule
 		Seaside Web
- 			& 20254 (17250) & 12872 & 13090 & 218 & \textbf{95.02\%}\\
+ 			& 17250 & 12872 & 13090 & 218 & \textbf{95.02\%}\\
 		App B&&&&&\\
 		\bottomrule
  	\end{tabular}
- 	\caption{\small\textbf{Results of the tailored experiments.} Sizes are displayed in KB. The percentage of saved space does not take into account the seed, as it is not subject of Tornado and it is shared by both the reference and nurtured runtimes.}
+ 	\caption{\textbf{Results of the tailored experiments.} Sizes are displayed in KB. The percentage of saved space does not take into account the seed, as it is not subject of Tornado and it is shared by both the reference and nurtured runtimes.}
  	\label{tb:results}
  \end{table}
 
@@ -564,24 +563,94 @@ Note that we subtract the size of the seed from both the nurtured and reference 
 		Seaside Web App & 47\\\midrule
 		Reflective Invocations App & 104\\\bottomrule
  	\end{tabular}
- 	\caption{\small\textbf{Component sizes in our experiments. Size presented in KB.} \label{tb:tailored_components}}
+ 	\caption{\textbf{Component sizes in our experiments. Size presented in KB.} \label{tb:tailored_components}}
  	\label{tb:basic_sizes}
  \end{table}
 
 Table \ref{tb:tailored_components} shows the size in KB of the code units from we used in our experiments. This table details the size of the Pharo base libraries, third party libraries such as Seaside and our particular experiments, which aid in the understanding of the results. We obtained this sizes by measuring the size of the code units once loaded in memory.
 
-\subsection{Discussion of Results}
+%\subsection{Discussion of Results}
 Our experiments show that Tornado aggressively reduces the size of code units required for an application. Our examples save from 95\% to 99\% of space, compared with their reference runtimes~(which contains all base libraries and third party libraries in case of Seaside). Our first three experiments (the sum of two numbers, and the factorial of 10 and 100) show that Tornado succeeds to create minimal deployment versions of our applications, having into account that our seed forces a minimal of 10KB in each of them. The reflective application is indeed also minimal, but bigger than the other three, as Tornado installs inside the nurtured runtime (a) all the code that is accessed by reflection and (b) code from the collections package to iterate the methods of a class.
 
 We detect a notorious grow in size when adding I/O to our experiments, which varies from 63KB to 71KB extra. According to the list of installed code units, we identity a problem in the design of the I/O streams library from Pharo: a set of character tables meant for character encoding and conversion are initialized, even if not all of them are later on used by the application. This problem shows that this part of Pharo base libraries should be rethought.
 
 The Seaside experiments show that Tornado can be used in a complex setting such as a web application that runs a web server, while still achieving good results. It is interesting to note, from the comparison of both experiments, that more of half of the size of the final nurtured runtime in \emph{Seaside Web Application A} seems to be in the base libraries, as the amount of installed code is reduced when introducing the base libraries seed.
 
-\subsection{Comparison with a Dedicated Platform}
+\section{Comparison with a Dedicated Platform}
 
-To have a broader view of our results, we compare them to MicroSqueak~\cite{Malo11a}. MicroSqueak is a dedicated platform that runs on the Pharo platform \ie a specialized platform containing an alternative implementation of base libraries, as Java Micro Edition~(J2ME)~\cite{JavaME} is for Java. MicroSqueak was designed with the explicit goal to be the smallest practical Squeak kernel. It contains a total of 49 classes with a reduced set of methods. It offers a minimal core of the language, a basic collection library and basic file IO support. MicroSqueak presents a minimal memory footprint of 80KB, when we build an application that performs no computation.
+To have a broader view of our results, we compare them our results also to two dedicated platforms that exist in Pharo's infrastructure.
 
-On one side, Tornado ensures smaller memory footprints when working on small applications. On the other side, MicroSqueak presents crucial differences with Pharo base libraries: it does not provide the same libraries~(\eg it does not contain socket support) and it does not ensure the same API of those libraries that it contains. Thus, applications such as the one in our Seaside experiment cannot run on top of MicroSqueak without a dedicated version of the Seaside framework.
+\begin{description}
+\item[Candle.] Candle~(\chapref{bootstrapping_validation}) is a dedicated platform that runs on the Pharo platform based on MicroSqueak~\cite{Malo11a}. It is a specialized platform containing an alternative implementation of base libraries, as Java Micro Edition~(J2ME)~\cite{JavaME} is for Java. MicroSqueak and thus, Candle, were designed with the explicit goal to be the smallest practical Squeak kernel. It contains a total of 49 classes with a reduced set of methods. It offers a minimal core of the language, a basic collection library and basic file IO support. Candle presents a minimal memory footprint of 80KB, when we build an application that performs no computation.
+Candle presents crucial differences with Pharo base libraries: it does not provide the same libraries~(\eg it does not contain socket support) and it does not ensure the same API of those libraries that it contains. Thus, applications such as the one in our Seaside experiment cannot run on top of MicroSqueak without a dedicated version of the Seaside framework.
+
+\item[PharoKernel.] The PharoKernel is a shrunk version of Pharo official distribution. PharoKernel shrinking is an ad-hoc process \ie there is a script that hardcodes the knowledge of which objects should be removed from the distribution for its deployment. On one side, PharoKernel conserves compatibility with Pharo: we can still load Pharo code on it and most of the APIs are not broken. On the other side, PharoKernel does not achieve minimality as PharoCandle does. We can, for example, install the Seaside application framework on PharoKernel.
+
+\end{description}
+
+Table \ref{tb:results_dedicated} shows a comparison between our results and dedicated platforms. On one side, we can see that Tornado ensures smaller memory footprints than the dedicated runtimes when working on small applications. We can see a degradation on the used memory when starting using I/O. This problem comes from the fact that a simple I/O operation in regular Pharo requires a lot of objects and methods. Candle on the other side uses a dedicated implementation of I/O.
+
+Regarding the seaside web application, we can observe that while Seaside can be installed inside PharoKernel, its memory footprint grows even bigger than then one in Pharo's official distribution prepared for production. On the other hand, we do not compare the our solution applied to Seaside with Candle, as we cannot install Seaside under Candle.
+
+\begin{table}[ht]
+ 	\centering
+ 	\begin{tabular}{lcccc}
+		\toprule
+			Experiment
+ 			& \textbf{PharoKernel}
+			& \textbf{Candle}
+			& \textbf{Tornado}
+			& \textbf{Tornado}\\
+			
+ 			& 
+			& 
+			& \textbf{Vs}
+			& \textbf{Vs}\\
+			
+ 			& 
+			& 
+			& \textbf{PharoKernel}
+			& \textbf{Candle}\\
+		\toprule
+		Sum Two
+ 			&  3799 & 80 & \textbf{99.97\%} & \textbf{86.25\%}\\
+		Numbers (I)
+ 			& &&&\\
+		\midrule
+		Fact 10 (II)
+ 			& 3799 & 80 & \textbf{99.87\%} & \textbf{77.5\%}\\
+		\midrule
+		Fact 100 (III)
+ 			& 3799 & 80 & \textbf{99.79\%} & \textbf{60\%}\\
+		\midrule
+		Reflective
+ 			& 3799 & 80 & \textbf{99.42\%} & \textbf{72.5\%}\\
+		App (IV)&&&&\\
+		\midrule
+		(I) + I/O
+ 			& 3799 & 80 & \textbf{98.13\%} & \textbf{-1.25\%}\\
+		\midrule
+		(II) + I/O
+ 			& 3799 & 80 & \textbf{98.10\%} & \textbf{-2.5\%}\\
+		\midrule
+		(III) + I/O
+ 			& 3799 & 80 & \textbf{97.92\%} & \textbf{-11.25\%}\\
+		\midrule
+		(IV) + I/O
+ 			& 3799 & 80 & \textbf{97.76\%} & \textbf{-18.75\%}\\
+		\midrule
+		Seaside Web
+ 			& 20254 & n/a & \textbf{97.17\%}  & \textbf{n/a}\\
+		App A&&&&\\
+		\midrule
+		Seaside Web
+ 			& 20254 & n/a & \textbf{35.37\%}  & \textbf{n/a}\\
+		App B&&&&\\
+		\bottomrule
+ 	\end{tabular}
+ 	\caption{\textbf{Comparison with two dedicated platforms.} Sizes are displayed in KB. The percentage of saved space compares the full deployable runtime.}
+ 	\label{tb:results_dedicated}
+ \end{table}
 
 \section{Evaluation of Tornado}\label{sec:rfg_evaluation}
 
