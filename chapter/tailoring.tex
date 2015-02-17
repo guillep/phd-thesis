@@ -398,25 +398,25 @@ Finally, we discuss some aspects and trade-offs of the run-fail-grow approach an
 The smallest~(in terms of size) interesting program to tailor is adding two numbers, without the involvement of any I/O \ie an application just executing the \ct{"2 + 3"} statement as entry point. Tailoring this program is challenging because it stresses the infrastructure by installing only the minimal elements an application needs to run. It makes evident how small a tailored application can be. Additionally, it is interesting since it makes use of the following features of the Pharo language and infrastructure:
 
 \begin{description}
-\item[Immediate objects.] Immediate objects are objects encoded in the object reference instead of being allocated in the heap. Immediate objects do not contain a reference to their class in the object header, as there is no object header. Instead, the object reference where the object is encoded contains a bit tag that the VM uses to identify the immediate object. This means that the Pharo VM must acknowledge the immediate object classes~(or their proxies) in order to send messages to these immediate objects. In this experiment we use immediate small integers, instances of \ct{SmallInteger}.
+\item[Immediate objects.] Immediate objects are objects encoded in the object reference instead of being allocated in the heap. Immediate objects do not contain a reference to their class in the object header, as there is no object header. Instead, the object reference where the object is encoded contains a bit tag that the VM uses to identify the immediate object. This means that the Pharo VM must have references to the immediate object classes~(or their proxies) in order to send messages to these immediate objects. In this experiment we use immediate small integers, instances of \ct{SmallInteger}.
 \item[Special selectors.] The method selector \ct{+} is a special selector for the Pharo VM. Special selectors are optimized as they are broadly used messages, for example for arithmetics. First, they are implemented as special bytecodes to avoid method lookup. If the special bytecode cannot be executed because some VM assertions are not valid~(\eg class and object format assumptions), the VM performs the default method lookup. In this experiment the VM should take care of small integer arithmetic \ie it should fulfill all VM assumptions and not perform a method lookup; Tornado should install no extra methods nor classes.
 \end{description}
 
-\subsection*{Experiment II: Factorial of a little number}
+\subsection*{Experiment II: Factorial of a small number}
 
-The following experiment in incremental complexity is the factorial of a small number, again without the involvement of any I/O \ie an application executing the \ct{"10 factorial"} statement as its entry point. Factorial uses arithmetic as the latter experiment~(sums and multiplications), while it also adds the following interesting cases:
+The following a bit more complex experiment is the factorial of a small number. Again, it is free from any I/O. The application simply executes the \ct{"10 factorial"} statement as its entry point. Factorial uses arithmetics as the latter experiment~(sums and multiplications), while it also adds the following interesting cases:
 
 \begin{description}
-\item[Method lookup.] The \ct{factorial} message is sent to a small integer but not optimized as it is not a special selector. Thus, the VM look ups the corresponding method up in its class hierarchy. The method \ct{factorial} is defined in its superclass~(\ct{Integer}).
-\item[Recursion.] The factorial implementation in Pharo base libraries is recursive. Additionally, this recursion activates the \ct{factorial} method many times, creating many activation records in the VM. Activation records are reified lazily whenever it is accessed reflectively, or the stack depth is deeper than the maximum supported.
+\item[Method lookup.] The \ct{factorial} message is sent to a small integer but not optimized as it is not a special selector. Thus, the VM looks up the corresponding method up in its class hierarchy. The method \ct{factorial} is defined in a superclass~(\ct{Integer}).
+\item[Recursion.] The factorial implementation in Pharo base libraries is recursive. Additionally, this recursion activates the \ct{factorial} method many times, creating many activation records in the VM. Activation records are reified lazily whenever it is accessed reflectively, or when the stack depth is deeper than the maximum supported.
 \end{description}
 
 \subsection*{Experiment III: Factorial of a large number}
 
 Following, we experimented with an application whose entry point was the \ct{"100 factorial"} statement. This application does not either make use of any I/O. The factorial of a large integer creates eventually integers that exceed 32 bits, and thus, do not fit as immediate small integers. This experiment adds the following interesting cases:
 \begin{description}
-\item[Large integers.] Large integers in Pharo are represented, in contrast to immediate small integers, as objects allocated in the heap with their own object header and arbitrary length. Large integers are created automatically by the VM when the result of some integer calculation produces a number that overflows 31 bits. That is, the LargeInteger class (or its proxy) should be available to the VM in order to instantiate the correct object.  Additionally, large integers implement their arithmetic methods by calling primitives from external plugins~(the large integers plugin).
-\item[Polymorphism.] The introduction of large integers introduces also \emph{polymorphism} between them and the immediate small integers. They share the same class hierarchy~(\ct{Integer} is the superclass of \ct{SmallInteger} and \ct{LargePositiveInteger}), being the method \ct{factorial} implemented in the superclass and having each of the subclasses their own implementation of the arithmetic methods for adding and multiplying.
+\item[Large integers.] Large integers in Pharo are represented, in contrast to immediate small integers, as standard objects allocated in the heap with their own object header and arbitrary length. Large integers are created automatically by the VM when the result of some integer calculation produces a number that overflows 31 bits. That is, the LargeInteger class (or its proxy) should be available to the VM in order to instantiate the correct object.  Additionally, large integers implement their arithmetic methods by calling primitives from external plugins~(the large integers plugin).
+\item[Polymorphism.] The introduction of large integers introduces also \emph{polymorphism} between them and the immediate small integers. They share the same class hierarchy~(\ct{Integer} is the superclass of \ct{SmallInteger} and \ct{LargePositiveInteger}), since the method \ct{factorial} is implemented in the superclass and each of the subclasses has its own implementation of the arithmetic methods for adding and multiplying.
 \end{description}
 
 \subsection*{Experiment IV: Reflective invocations} \label{sec:results_helloworld}
@@ -448,7 +448,7 @@ PropertyExtractor>>extractPropertiesFrom: anObject
 \caption{ \textbf{Code of the reflective invocations experiment.} The \ct{PropertyExtractor} class does the reflective invocations, the \ct{User} is the class we will be reflecting on.\label{fig:reflective_invocations}}
 \end{figure}
 
-This experiment evaluates how do we handle the reflective abilities of Tornado's RFG. The \ct{PropertyExtractor} queries the methods from the \ct{User} class, that are included as part of the tailored application~(since they receive the messages \ct{isReturnField} and \ct{pragmas}). These reflective invocations include: (a) access to an object's class, (b) access class methods and (c) query those methods to know if they correspond to the criteria of the \ct{PropertyExtractor}.
+This experiment evaluates how do we handle a reflective application with Tornado's RFG. The \ct{PropertyExtractor} queries the methods from the \ct{User} class, that are included as part of the tailored application~(since they receive the messages \ct{isReturnField} and \ct{pragmas}). These reflective invocations include: (a) access to an object's class, (b) access class methods and (c) query those methods to know if they correspond to the criteria of the \ct{PropertyExtractor}.
 
 \subsection*{Experiment V: Adding I/O} \label{sec:results_helloworld}
 
@@ -471,9 +471,9 @@ In this experiment, besides testing the proper usage of I/O streams such as the 
 
 
 
-Our last experiment consists is tailoring a web application using Seaside application framework~\cite{Duca07a}. Seaside is a web application framework featuring continuations thanks to stack reification. We configured it with its default values, without making any customizations. The web application under tailoring has a single webpage that allows one to send requests to the web server to increase or decrease a counter. This experience shows that Tornado works in presence of \textbf{threading}. The Seaside application framework makes use of Pharo processes. One process listens incoming connections and opens new processes to handle requests. Seaside uses semaphores to synchronize processes and wait for incoming data from sockets.
+Our last experiment consists is tailoring a web application using Seaside application framework~\cite{Duca07a}. Seaside is a web application framework featuring continuations thanks to stack reification. We configured it with its default values, without making any customizations. The web application under tailoring has a single webpage that allows one to send requests to the web server to increment or decrement a counter. This experience shows that Tornado works in presence of Pharo's \textbf{multi-threading}. The Seaside application framework makes use of Pharo processes. One process listens incoming connections and opens new processes to handle requests. Seaside uses semaphores to synchronize processes and wait for incoming data from sockets.
 
-For this case, we proceeded to do two different experiences, with two different seeds. We first used the empty seed~(\emph{Seaside Web Application A}), as in the previous experiments, and then used a seed containing all Pharo base libraries~(\emph{Seaside Web Application B}). For reasons of space, the details of how the entry points are initialized for these both seeds can be found in our technical report~\cite{Poli14a}.
+For this case, we proceeded to do two different experiences, with two different seeds. We first used the empty seed~(\emph{Seaside Web Application A}), as in the previous experiments, and then used a seed containing all Pharo base libraries~(\emph{Seaside Web Application B}). The details of how the entry points are initialized for these both seeds can be found in our technical report~\cite{Poli14a}.
 
 \section{Results} \label{sec:results_discussion}
 
@@ -563,18 +563,18 @@ Note that we subtract the size of the seed from both the nurtured and reference 
 		Seaside Web App & 47\\\midrule
 		Reflective Invocations App & 104\\\bottomrule
  	\end{tabular}
- 	\caption{\textbf{Component sizes in our experiments. Size presented in KB.} \label{tb:tailored_components}}
+ 	\caption{\textbf{Component sizes in our experiments.} Size presented in KB.\label{tb:tailored_components}}
  	\label{tb:basic_sizes}
  \end{table}
 
 Table \ref{tb:tailored_components} shows the size in KB of the code units from we used in our experiments. This table details the size of the Pharo base libraries, third party libraries such as Seaside and our particular experiments, which aid in the understanding of the results. We obtained this sizes by measuring the size of the code units once loaded in memory.
 
 %\subsection{Discussion of Results}
-Our experiments show that Tornado aggressively reduces the size of code units required for an application. Our examples save from 95\% to 99\% of space, compared with their reference runtimes~(which contains all base libraries and third party libraries in case of Seaside). Our first three experiments (the sum of two numbers, and the factorial of 10 and 100) show that Tornado succeeds to create minimal deployment versions of our applications, having into account that our seed forces a minimal of 10KB in each of them. The reflective application is indeed also minimal, but bigger than the other three, as Tornado installs inside the nurtured runtime (a) all the code that is accessed by reflection and (b) code from the collections package to iterate the methods of a class.
+Our experiments show that Tornado aggressively reduces the size of code units required for an application. Our examples save from 95\% to 99\% of space, compared with their reference runtimes~(which contains all base libraries and third party libraries in case of Seaside). Our first three experiments (the sum of two numbers, and the factorial of 10 and 100) show that Tornado succeeds to create minimal deployment versions of our applications, taking into account that our seed forces a minimal of 10KB in each of them. The reflective application is indeed also minimal, but bigger than the other three, as Tornado installs inside the nurtured runtime (a) all the code that is accessed by reflection and (b) code from the collections package to iterate the methods of a class.
 
-We detect a notorious grow in size when adding I/O to our experiments, which varies from 63KB to 71KB extra. According to the list of installed code units, we identity a problem in the design of the I/O streams library from Pharo: a set of character tables meant for character encoding and conversion are initialized, even if not all of them are later on used by the application. This problem shows that this part of Pharo base libraries should be rethought.
+We detect a notorious grow in size when adding I/O to our experiments, which varies from 63KB to 71KB extra. According to the list of installed code units, we identity a problem in the design of the I/O streams library from Pharo: a set of character tables meant for character encoding and conversion are initialized, even if not all of them are later on used by the application. This problem shows that this part of Pharo base libraries should be redesigned.
 
-The Seaside experiments show that Tornado can be used in a complex setting such as a web application that runs a web server, while still achieving good results. It is interesting to note, from the comparison of both experiments, that more of half of the size of the final nurtured runtime in \emph{Seaside Web Application A} seems to be in the base libraries, as the amount of installed code is reduced when introducing the base libraries seed.
+The Seaside experiments show that Tornado can be used in a complex setting such as a web application that runs a web server, while still achieving good results. It is interesting to note, from the comparison of both experiments, that more of half of the size of the final nurtured runtime in \emph{Seaside Web Application A} comes from the base libraries. When we introduce the base libraries in the seed, the amount of installed code is reduced to less than the half.
 
 \section{Comparison with a Dedicated Platform}
 
@@ -654,11 +654,11 @@ Regarding the seaside web application, we can observe that while Seaside can be 
 
 \section{Evaluation of Tornado}\label{sec:rfg_evaluation}
 
-We start this section evaluating Tornado according to the criteria we presented in \chapref{state_tailoring}, so we can in the following sections discuss it and compare it with other approaches. Table~\ref{tb:comparison} shows an overview of the criteria presented in \chapref{state_tailoring} and their possible values to evaluate tailoring solutions.
-In this section we focus on the evaluation of Tornado that is summarized in the latest column of Table~\ref{tb:comparison}.
+In this section we evaluate Tornado according to the criteria we presented in \chapref{state_tailoring}. Table~\ref{tb:comparison} shows an overview of the criteria presented in \chapref{state_tailoring} and their possible values to evaluate tailoring solutions. We include Tornado in the last column of this table.
+%In this section we focus on the evaluation of Tornado that is summarized in the latest column of Table~\ref{tb:comparison}.
 
 \begin{table}[ht]
- 	\centering
+\small 	\centering
  	\begin{tabular}{cccccc}
 	
 \toprule
@@ -701,7 +701,7 @@ In this section we focus on the evaluation of Tornado that is summarized in the 
  			& - & + & + & \textasciitilde  & \textbf{+}\\
 		\midrule
 		Completeness
- 			& + & - & - & \textasciitilde  & \textbf{-}\\
+ 			& + & - & - & \textasciitilde  & \textbf{\textasciitilde}\\
 \bottomrule
  	\end{tabular}
 	\includegraphics[width=.7\linewidth]{runtime_manipulation_criteria_overview}
@@ -709,26 +709,28 @@ In this section we focus on the evaluation of Tornado that is summarized in the 
  	\label{tb:comparison}
  \end{table}
 
-Tornado's model and implementation show themselves as a complete solution in the area of application tailoring. It tailors code units written by the application's developer as well as those from the base language and third-party libraries. There is no special code for managing such cases since Tornado's infrastructure allows the inspection of loaded classes, regardless their origin. This approach, based on runtime execution, offers two main advantages: (a) it does not require modifications in the nurtured runtime's code allowing its usage on legacy code and libraries in a transparent way, and (b) it supports reflection naturally since the code exercised during the tailoring is the same that will be executed once deployed.
+Tornado's model and implementation present themselves as a complete solution in the area of application tailoring. Regarding the area of application, we can see that Tornado tailors code units written by the application's developer as well as those from the base language and third-party libraries. This approach, based on runtime execution, offers also three main advantages: (a) it does not require modifications in the nurtured runtime's code allowing its usage on legacy code and libraries in a transparent way, (b) it is applicable in dynamically typed languages as it does not rely on the type annotations in the source code and (c) it supports reflection naturally since the code exercised during the tailoring is the same that will be executed once deployed.
 
-Tornado requires a dedicated infrastructure only during the tailoring: tools to monitor and manipulate the tailoring application. However, once the tailoring is finished and the application reaches a stable point, Tornado extracts and prepares the application to run in the deployment-ready unmodified infrastructure.
+Tornado requires a dedicated infrastructure only during the tailoring: tools to monitor and manipulate the tailoring application. However, once the tailoring is finished and the application reaches a stable point, Tornado extracts and prepares the application to run in the deployment-ready unmodified infrastructure. Tornado offers also a flexible solution in the sense that it allows one to configure the level of tailoring by means of a seed. The seed contains a pre-selection of code units available in the tailoring application before the tailoring starts. In such a way, we can use the seed to specify whether, for example, the base or third-party libraries should be tailored or not.
 
-Finally, Tornado is a flexible solution in the sense that it allows one to configure the level of tailoring by means of a seed. The seed contains a pre-selection of code units available in the tailoring application before the tailoring starts. In such a way, we can use the seed to specify whether, for example, the base or third-party libraries should be tailored or not.
+Tornado also handles modern programming language features such as reflection, open classes\gp{cite} and class extensions~\cite{Berg03a}~(\ie a package can define methods to classes from other packages) and traits~\cite{Scha03a}, out of the box.Tornado installs methods from other packages or behavior units such as traits seamlessly because during runtime it knows the exact concrete type of each object involved in the execution. Thus, no extra static or string analysis is needed. This is possible thanks to Ghost proxies~\cite{Mart11a}, which can capture all message sends and specific method invocations.
+
+Finally, we can see that tornado achieves minimality by selecting only those code units that were used during the tailoring process. No extra code units are installed, besides the objects needed by the \VM to run. Regarding completeness, we see Tornado as a partially complete technique, such as the dynamic ones. Every piece of code that was \emph{exercised} during the tailoring process will be available in the deployable version of the application runtime.
 
 \section{Discussions on the run-fail-grow approach} \label{sec:discussion}
 
 \subsection{Ensuring Completeness} \label{section:safety}
 
-Dead code elimination techniques do never ensure completeness by themselves. Static approaches cannot efficiently predict the need of those elements used by reflection, or configured in external files/resources. Dynamic approaches depend on the code coverage of the application during runtime, \ie if the parts of the application that are not used will be not available afterwards. Hybrid approaches share both weaknesses. Orthogonal to the dead code elimination techniques, two complementary mechanisms are used by existing solutions to guarantee \emph{completeness} and avoid runtime errors due to missing code.
+Dead code elimination techniques do never ensure completeness by themselves. Static approaches cannot efficiently predict the need of those elements used by reflection, or configured in external files/resources. Dynamic approaches depend on the code coverage of the application during runtime, \ie if the parts of the application that are not used will be not available afterwards. Hybrid approaches share both weaknesses. Orthogonal to the dead code elimination techniques, these two complementary mechanisms are used by existing solutions to guarantee \emph{completeness} and avoid runtime errors due to missing code.
 
 \begin{description}
 \item[Lazy Loading.] JUCE~\cite{Popa04a,Teod01a} and SlimVM~\cite{Kers09a, Wagn11a}, as well as Tornado, load missing code from remote servers on demand, Marea\cite{Mart12a} implements application-level virtual memory with lazy loading of unloaded unused objects. These different solutions differ on their lazy loading approaches by the granularity they use. JUCE loads code with a method granularity to control memory consumption. SlimVM uses as its main loading granularity, a \emph{basic block} granularity, but they can work at the class and method level also. Marea uses an object-cluster granularity. It loads object graphs containing not only classes but also individual objects, which were unloaded to reduce the application's memory footprint.
 \item[Remote Invocations.] OLIE~\cite{Gu03a} uses remote invocations to invoke methods from those objects that where offloaded and migrated to other devices. This approach may introduce several latency problems due to network communications. OLIE tries to minimize it by offloading those elements that degrade less the performance of the system. For that, it takes at runtime object and bandwidth usage statistics.
 \end{description}
 
-\subsection{Maximizing the Effectiveness of Run-fail-grow}\label{sec:maximize_effectiveness}
+%\subsection{Maximizing the Effectiveness of Run-fail-grow}\label{sec:maximize_effectiveness}
 
-Dynamic techniques, in particular Tornado, depend on the coverage of the application to ensure the code is loaded and available for execution. Application coverage must ensure that every code unit that is interesting to be deployed is covered, including special and boundary cases as well as the straightforward cases. We can enforce the coverage and installation of code with several techniques. 
+For dynamic and hybrid techniques, application coverage must ensure that every code unit that is interesting to be deployed is covered. This should include testing special and boundary cases as well as the straightforward cases. We can enforce the coverage and installation of code with several testing techniques.
 
 \begin{description}
 \item[Manual Testing.] Manual testing provides a simple but inefficient way to cover an application's code. Its main benefit is that the code units selection is based on user interactions. Its main drawback is the possibility of human omission during the testing, which impacts directly the detection of used code. 
@@ -740,11 +742,6 @@ Dynamic techniques, in particular Tornado, depend on the coverage of the applica
 \subsection{Application Designs that get along with Tornado} As show in Section 5.2, the design of the tailored application directly impacts on the results obtained by Tornado. A series of issues appear regarding global state~(\eg class variables and global variables). A first issue is related to the initialization of such a global state~\cite{Unga95a}. Since Tornado follows the application's execution flow, eager initializations force Tornado to install objects and methods that may not be used later by the application. In contrast, lazy initializations will only be triggered on usage. Thus, better results could be obtained if a lazy initialization strategy is adopted for the global state.
 
 A second issue appears with residual side-effects. Our tailoring technique builds the deployment application by running it. Thus, those executed global side-effects may reside in the tailored application. For example, a web application framework may hold a cache of HTTP sessions in a class variable. When the tailoring process finishes, the application will keep this cache if we do not handle the case. Solving this problem in Tornado may require either minimizing global state in an application, or either installing a new entry point to reinitialize such global state when the tailoring is finished \eg clean caches and session dependent state such as file and socket descriptors.
-
-%\paragraph{Handling Reflection.}
-\subsection{Modern Language Features}
-
-Tornado handles modern programming language features such as reflection, open classes\gp{cite} and class extensions~\cite{Berg03a}~(\ie a package can define methods to classes from other packages) and traits~\cite{Scha03a}, out of the box. Reflective invocations contain all the information they need to be tailored correctly as Tornado works at the runtime of the application. Tornado installs methods from other packages or behavior units such as traits seamlessly because during runtime it knows the exact concrete type of each object involved in the execution. Thus, no extra static or string analysis is needed. This is possible thanks to Ghost proxies~\cite{Mart11a}, which can capture all message sends and specific method invocations.
 
 %\sd{below, fuzzy paragraph}
 %In addition, as reflection works with a closed universe assumption \eg asking for all methods of a class will result into all methods that \emph{exist} in the class and will not retrieve those that are not installed or loaded. For those cases in which an application uses such reflective invocations, tornado allows the installation of missing object traps for each method. Then, methods are found by reflective invocations and installed on demand by Tornado if needed.
@@ -780,11 +777,11 @@ Tornado handles modern programming language features such as reflection, open cl
 % ===========================================================================
 \section{Conclusion and Summary}
 
-In this chapter we presented a validation on our run-fail-grow~(RFG) approach for application tailoring. We conducted our validation by first showing in several experiments how our solution succeeds in tailoring applications of different sizes and styles. Tailoring an application just adding two numbers demonstrates what is the smaller application we can work with. Other experiments included IO, reflection or even the tailoring of a web application using the Seaside framework.
+In this chapter we presented a validation on our run-fail-grow~(RFG) approach for application tailoring. We conducted our validation by first showing in several experiments how our solution succeeds in tailoring applications of different sizes and styles. Tailoring an application just adding two numbers demonstrates that the smallest application runtime we can produce with Tornado occupies only 10KB. Other experiments included IO, reflection or even the tailoring of a web application using the Seaside framework. They show that Tornado can aggressively shrink applications.
 
 We also evaluate tornado under the evaluation criteria we stated in the state of the art of this dissertation. The flexibility of our solution through seeds, its ability to handle reflection and its non-dependance on a particular infrastructure for deployment are characteristics that highlight our solution in comparison with the others.
 
-Finally, we present a discussion on several important aspects of RFG and tailoring solutions in general: how to ensure completeness with a tailoring solution, how to maximize the effectiveness of RFG and what are the particular application design decisions that help (or not) when using RFG.
+Finally, we present a discussion on several important aspects of RFG and tailoring solutions in general: how to ensure completeness with a tailoring solution and what are the particular application design decisions that help in reducing even more the size of the application runtimes produced by RFG.
 
 % =============================================================================
 \input{chapter-footer.tex}
