@@ -371,24 +371,24 @@ In this chapter we presented a run-fail-grow~(RFG) approach for application tail
 
 We implemented RFG in a tool called Tornado based in \Vtt. With \Vtt, we are able to monitor the nurtured runtime's execution using the execution cycles. Ghost-like proxies represent traps that detect missing code units during execution. We use Mirrors to install required code and restart the execution as it is needed.
 
-\chapter{RFG Validation}
+\chapter{Run-Fail-Grow Validation}
 \minitoc
 \introduction
 
 %\section{Experiments and Results}\label{sec:results}
 %
 %\subsection{Experiment's Methodology}
-We evaluate Tornado by conducting five experiments that tailor different Pharo applications, with increasing requirements~(Section \ref{sec:rfg_experiments}). We chose our experiments under the objectives of (a) understand how minimal are the applications we can tailor, (b) explore how successfully we address the challenges we stated in Section \ref{sec:challenges} and (c) exercise those cases that push to the limit the interaction between the language and the VM. Our experiment methodology consists in the following steps:
+We evaluate Tornado by conducting five experiments that tailor different Pharo applications, with increasing requirements~(Section \ref{sec:rfg_experiments}). We chose our experiments in a way to target the objectives of (a) understand how minimal are the applications resulting from the tailoring process, (b) explore how successfully we address the challenges we stated in \chapref{state_tailoring} and (c) exercise those cases that push to the limit the interaction between the language and the VM. Our experiment methodology consists in the following steps:
 
 \begin{enumerate}
-\item \textbf{Setting up a seed for the application.} Most of our experiments use what we already called an \emph{empty seed}. This seed is, however, not completely empty. The empty seed we used contains some minimal infrastructural objects that are needed for language-VM interaction, and is therefore 10KB large. Our last experiment, the largest one, uses both this empty seed and an additional seed containing the base libraries. 
+\item \textbf{Setting up a seed for the application.} Most of our experiments use what we called an \emph{empty seed}. This seed is, however, not completely empty. The empty seed we used contains some minimal infrastructural objects that are needed for language-VM interaction, and is therefore 10KB large. Our last experiment, the largest one, uses both this empty seed and an additional seed containing the base libraries. 
 \item \textbf{Preparing the application entry points.} This step consists in the installation of the one or more processes that will run our application.
-\item \textbf{Run the application.} The application is run, its threads executed. In particular in our last experiment~(an interactive web application), we interact with our application through a web browser. 
+\item \textbf{Run the application.} The application is run by executing its threads. In particular in our last experiment~(an interactive web application), we interact with our application through a web browser. 
 \item \textbf{Stop and extract the application.} Once the tailoring process finishes, we stop Tornado and extract the resulting application by making a snapshot of it in a Pharo image file. We test the generated snapshots to verify they work properly, either by using the application or debugging them when they involve no I/O. We evaluate the behavior of the tailored application under the assumption that only the features we used during the tailoring should work.
-\item \textbf{Perform measurements.} Finally, we measure the size of the generated snapshots files and compare them against two different Pharo distributions prepared for production~(cf. Section \ref{sec:results_discussion}).
+\item \textbf{Perform measurements.} Finally, we measure the size of the generated snapshots files and compare them against the Pharo distribution prepared for production~(cf. Section \ref{sec:results_discussion}).
 \end{enumerate}
 
-Additionally, we present an evaluation of Tornado according to the evaluation criteria stated in \chapref{state_virtualization}. Our evaluation includes a comparison with the already presented related work on application tailoring~(Section~\ref{sec:rfg_evaluation}).
+Additionally, we present an evaluation of Tornado according to the evaluation criteria stated in \chapref{state_tailoring}. Our evaluation includes a comparison with the already presented related work on application tailoring~(Section~\ref{sec:rfg_evaluation}).
 Finally, we discuss some aspects and trade-offs of the run-fail-grow approach and our implementation~(Section~\ref{sec:discussion}).
 
 \section{Experiments}\label{sec:rfg_experiments}
