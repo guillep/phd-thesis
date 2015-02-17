@@ -23,7 +23,7 @@ For example, a seed that includes all base libraries makes the tailoring process
 % Afterwards, deployment units are created from this shrank application to only contain the used code units.
 % Using these compacted deployment units leverages the targeted device limitations. 
 
-The dynamic nature of our solution allows its usage in dynamically-typed languages, and applications using reflection. Our solution does not need to modify the original application thanks to the use of \Vtt runtime virtualization.
+The dynamic nature of our solution allows its usage in dynamically-typed languages, and applications using reflection. Our solution does not need to modify the original application because our run-fail-grow works outside of the nurtured application, transparently.
 It also successfully deals with applications that make use of programming language features such as reflection or open classes.
 
 We developed Tornado, an RFG implementation based on \Vtt~(Section~\ref{sec:rfg_implementation}). In Tornado, the nurtured application resides inside a virtualized runtime. With \Vtt, we can monitor the execution of the nurtured application to detect whether a code unit is missing or not. Using \Vtt's mirrors we can also install the required code units.
@@ -31,7 +31,7 @@ We developed Tornado, an RFG implementation based on \Vtt~(Section~\ref{sec:rfg_
 \section{Run Fail Grow: Dynamic dead code elimination}\label{sec:rfg_model}
 
 We propose a tailoring technique we named run-fail-grow~(RFG). Briefly, RFG works by launching a \emph{reference} application encompassing the full application with all its code units~(base libraries, third party libraries and application code) and a \emph{nurtured} application that has only part of its required code units installed. The nurtured application is run, and when a failure is detected because it misses a code unit, we install into it the corresponding code unit from the reference application. Thus, the nurtured application grows progressively as missing code units are found and solved.
-Once finished, the nurtured application is ready to be deployed on target devices. Figure~\ref{fig:runfail} depicts the basics of our run-fail-grow approach.
+Once finished, the nurtured application is ready to be deployed onx target devices. Figure~\ref{fig:runfail} depicts the basics of our run-fail-grow approach.
 
 \begin{figure}[ht]
 \begin{center}
@@ -192,33 +192,31 @@ RFG depends on getting notified when a missing code unit failure appears. RFG's 
 RFG follows the next rules to install code units inside the nurtured application:
 
 \begin{enumerate}
-\item Classes are installed when we install a method that belongs to them or one of their superclasses.
-\item Methods are installed when they need to be executed, following the rules of the method-lookup in the underlying \VM.
-\item Objects are installed when a message is sent to them, including self and super sends.
-\item Objects are installed when they are needed by the \VM to execute some operation~(\eg primitives and method literals).
+\item A class is installed when we install a method that belongs to it or one of its superclasses.
+\item A method is installed when it needs to be executed, following the rules of the method-lookup in the underlying \VM.
+\item An object is installed when \emph{any} message is sent to it, including self and super sends.
+\item An object is installed when they are needed by the \VM to execute some operation~(\eg primitives and method literals).
 \end{enumerate}
 
 Then, we identify the following as the basic traps that are necessary to tailor an application.
 
 \begin{description}
-\item[Missing object trap.] A \emph{missing object} trap captures messages sent to objects that do not yet exist inside the nurtured application such as classes. When RFG finds one of these traps, its responsibility is to install the corresponding object. The object installed is a \emph{partial} clone of the original object \ie not all of its state is installed, instead it contains traps to capture the access to its class and fields. When a method refers to a static variable, we install one of this traps for it.
+\item[Message Received Trap.] A \emph{message received} trap takes the place of a normal object and captures \emph{all} messages sent to it. These traps are activated when a message is sent to the trap. When it is activated, it installs the object that corresponded to the trap~(Rule 3). RFG installs the object as a \emph{partial} clone of the original object \ie we set all its state to traps to capture the access to its class and fields.%When a method refers to a static variable, we install one of this traps for it.
 
-\item[Missing method trap.] A \emph{missing method} trap captures me\-thod invocations whose methods are not defined in the nurtured application yet. When the application execution triggers one of these traps, RFG installs the corresponding method in the class hierarchy of the object. In the class that will own the method does not exist, RFG will install it too. Method literals (\eg strings and numbers that are part of the method definition) are installed along with the method that owns them because the \VM can manipulate them directly during the bytecode interpretation.
+\item[Method Nonexistent Trap.] A \emph{method nonexistent} trap captures message-sends to already existing object that cannot be resolved because the corresponding method does not yet exist in the nurtured application yet. When the application execution triggers one of these traps, RFG installs the corresponding method in the class hierarchy of the object~(Rule 2). In the class owner of the method does yet not exist, RFG installs it~(Rule 1). When RFG installs a method, its method literals~(\eg strings and numbers that are part of the method definition) are installed along with it because the \VM can manipulate them directly during the bytecode interpretation~(Rule 4).
 
-\item[Missing override traps.] A particular case of missing method traps are \emph{missing override traps}. A missing override trap captures overridden methods. This avoids that the method lookup answers a superclass implementation resulting into an unexpected behavior. Figure~\ref{fig:need_override} illustrates this problem: the class \ct{B} from the reference application contains an override, while it is not present in the nurtured application. If no trap is placed to capture the override, the method \ct{doSomething} from class \ct{A} would be executed, thus changing the semantics of our application.
-
-\end{description}
-
-Note that there is no need for a \emph{missing class trap} as classes are installed when a \emph{missing method trap} is triggered. In the case of languages that expose classes as objects, classes can also be installed by missing object traps when we send a message to them.
-
+\item[Method Invoked Trap.] A particular case of method nonexistent traps are \emph{method invoked traps}. An method invoked trap captures the execution of a particular method. Method invoked traps are useful to capture overridden methods. Overridden methods must be captured to avoid the method lookup to answer a superclass implementation instead of the right one~(Rule 2), resulting into an unexpected behavior. Figure~\ref{fig:need_override} illustrates this problem: the class \ct{B} from the reference application contains an override, while it is not present in the nurtured application. If no trap is placed to capture the override, the method \ct{doSomething} from class \ct{A} would be executed, thus changing the semantics of our application.
 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=0.7\linewidth]{need_override}
-\caption{\small\textbf{The need of overriding traps.} \small Method traps should capture the overridden \ct{doSomething} message-send to avoid the superclass method to be executed wrongly.\label{fig:need_override}}
+\caption{\small\textbf{The need of overriding traps.} Method traps should capture the overridden \ct{doSomething} message-send to avoid the superclass method to be executed wrongly.\label{fig:need_override}}
 \end{center}
 \end{figure}
 
+\end{description}
+
+Note that there is no need for a \emph{missing class trap} or similar, as classes are installed when a \emph{method nonexistent trap} is triggered. In the case of languages that expose classes as objects, classes could also be installed by message received traps.
 
 
 \section{Customizing Dead Code Elimination with Seeds}\label{sec:seeds}
@@ -265,8 +263,7 @@ Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite
 
 \subsection{Execution Traps with Ghost Proxies} \label{sec:proxies}
 
-Implementing execution traps such as the ones described in Section~\ref{sec:model_detail} requires powerful intercession support. Traps must capture \emph{all} message sends to objects provided by the application runtime as well as the application objects, including classes~(for example for the case of class messages or static methods). They must capture \emph{self} and \emph{super} message sends, as well as overrides and particular method invocations.
-
+Implementing execution traps such as the ones described in Section~\ref{sec:model_detail} requires powerful intercession support to capture \emph{all} message-sends.% to objects provided by the application runtime as well as the application objects, including classes~(for example for the case of class messages or static methods). %They must capture \emph{self} and \emph{super} message sends, as well as overrides and particular method invocations.
 To achieve this, we implemented a set of proxies following the Ghost model~\cite{Mart11a}~(similar to JavaScript proxies~\cite{Vanc10a}). Ghost proposes a low-memory footprint, general purpose proxy implementation for the Smalltalk language supporting the creation of proxies for normal objects as well as classes and methods. 
 % These proxies allow the interception of all message sends.
 % When a Ghost proxy captures an invocation, it triggers the behavior of a \emph{handler}. 
@@ -280,16 +277,20 @@ We use proxy handlers to perform the right action for each trap.
 We discuss below the different kinds of proxies and handlers we use and how they support RFG.
 
 \begin{description}
-\item[Missing object trap.] This trap is implemented as a proxy taking the place of a normal object. This trap is triggered when the proxy receives a message.
+\item[Message Received Trap.] We implemented the message received trap as a normal object proxy. An object proxy takes the place of an object and receives all messages that were originally meant for it. This trap is triggered when the proxy receives a message.
 Its handler replaces the proxy by a \emph{partial} copy of the original object from the reference application.
-The copy is created, and all references to the proxy are replaced by references to this new object, which is achieved through the \ct{become:} facility of the Pharo language that dynamically swaps object references.
-Each field and the class of this new installed object are installed as new missing object traps.
+The copy is created and all references to the proxy are replaced by references to this new object~(achieved through the \ct{become:} facility of the Pharo language that dynamically swaps object references).
+Each field of this new installed object is set to message received traps.
 
-\item[Missing method trap.]  We implemented the missing method trap in Tornado as a class proxy located at the top of the class hierarchy. Whenever a message is sent to an object, the VM looks up the method in the object's class hierarchy. This trap is triggered whether a message arrives to the top of the hierarchy, meaning that there was no method for it in the hierarchy. When triggered, the handler installs the classes part of the hierarchy of this method and the missing method in its corresponding class. If no method is found to install, Tornado sends the \ct{doesNotUnderstand:} message~(an equivalent to \eg Ruby's \ct{method\_missing} and Python's \ct{\_\_getattr\_\_}) to honor the dynamic semantics of Pharo.
+\item[Class Message Received Trap.] In Pharo classes are reified as objects, meaning that they can receive messages in addition of participating on the \VM's method lookup. To handle this case Tornado uses special message received traps to capture messages sent to classes. These \emph{class message received} traps are implemented with proxies in the same way as normal message received traps. A main difference relies, however, in that the proxies that replace classes have the same internal structure as the normal classes from the Pharo \VM~(we guarantee they have the three instance variable for their superclass, method dictionary and format). By doing that, the \VM can take the proxy/trap as a class and continue its execution without crashing.
 
-\item[Missing override trap.] We implemented missing override traps in Tornado using method proxies. Method proxies are placed in the method dictionaries of classes containing overriden methods, taking the place of the original method.  When Tornado installs a class into the nurtured application that contains overridden methods in the reference object space, it installs into this class a method proxy for each of its overridden methods. This trap is triggered whenever the method proxy it is about to be executed. The handler of this trap compiles a new method with the same source as the corresponding method from the reference application and installs it inside the nurtured object space.
+\item[Method Nonexistent Trap.]  We implemented the method nonexistent trap in Tornado as a class proxy located at the top of the class hierarchy. Whenever a message is sent to an object, the VM looks up the method in the object's class hierarchy. This trap is triggered when a message arrives to it, meaning that there was no method for it in the hierarchy of the receiver. When triggered, the handler installs the classes part of the hierarchy of this method and the missing method in its corresponding class. The literal objects that belong to the method are installed with it because they are objects that could be used directly by the \VM during bytecode interpretation.
 
-\item[Primitive methods trap.] Primitive method traps are implementation specific related to the Pharo language. Pharo's primitive operations such as number arithmetic are implemented through primitive methods. Primitive methods are implemented in the Virtual Machine and do often access directly the fields of its receiver and arguments by forging references and manipulating directly the memory, bypassing our traps. Thus, we face an issue when a \emph{missing object trap} proxy is the argument of such a method: the VM can modify this proxy without activating the trap. Primitive method traps are method proxies that decorate Pharo's primitive methods. When they are triggered because one of these methods is about to be executed this trap's handler triggers each of the missing object traps received as arguments, if any. In this way, Tornado forces the installation of the arguments and the primitive is executed with actual objects instead of proxies, as expected.
+Particularly, we can find the case where no method is found in the reference application due to either a bug in the application or a design choice to use the dynamic features of Pharo. In those cases Tornado sends the \ct{doesNotUnderstand:} message to the receiver object~(an equivalent to \eg Ruby's \ct{method\_missing} and Python's \ct{\_\_getattr\_\_}) which in turn could be handled by the application or throw a corresponding exception.
+
+\item[Method Invoked Trap.] We implemented method invoked traps in Tornado using method proxies. Method proxies are placed in the method dictionaries of classes containing overridden methods, taking the place of the original method.  When Tornado installs a class into the nurtured application that contains overridden methods in the reference object space, it installs into this class a method proxy for each of its overridden methods. This trap is triggered whenever the method proxy it is about to be executed. The handler of this trap compiles a new method with the same source as the corresponding method from the reference application and installs it inside the nurtured object space.
+
+\item[Primitive invoked trap.] Primitive invoked traps are implementation specific related to the Pharo language. Pharo's primitive operations such as number arithmetic are implemented through primitive methods. Primitive methods are implemented in the Virtual Machine and do often access directly the fields of its receiver and arguments by forging references and manipulating directly the memory, bypassing our traps. Thus, we face an issue when a \emph{message received trap} proxy is the argument of such a method: the VM can modify this proxy without activating the trap. To honor Tornado's Rule 4~(an object is installed if needed by the \VM), we decorate primitive methods with \emph{primitive invoked traps}. We implemented primitive invoked traps with method proxies, as a special case of method invoked traps. When a primitive invoked trap is triggered, its handler triggers each of the missing object traps received as arguments, if any. In this way, Tornado forces the installation of the arguments and the primitive is executed with actual objects instead of proxies, as expected.
 
 \end{description}
 
@@ -313,12 +314,12 @@ Each field and the class of this new installed object are installed as new missi
 
 \subsection{Object Installation and Propagation Rules} \label{sec:mappings}
 
-As we explained before, Tornado installs all objects inside the nurtured application on demand, as \emph{partial copies}, \ie the objects referenced by the original object will not be copied along with it by default, but traps are placed instead of them. %That is, no object, class or method is installed unless it is needed by the application to run. The need for installing some element is detected by means of traps~(cf. Section~\ref{sec:model_detail}).
+As we explained before, Tornado installs all objects inside the nurtured application on demand, as \emph{partial copies}, \ie the objects referenced by the original object will be replaced by default by traps. %That is, no object, class or method is installed unless it is needed by the application to run. The need for installing some element is detected by means of traps~(cf. Section~\ref{sec:model_detail}).
 %The tailored application contains during the tailored process two kind of objects: application objects that are copies of the model application objects, and proxy objects representing traps.
 When Tornado installs an object inside the nurtured application, this new object has the same format and size as its original counterpart. \emph{Propagation rules} determine how each of the object's fields are propagated on installation. Tornado provides the following propagation rules to customize installation:
 
 \begin{description}
-\item[Missing object trap.] This is the \emph{default propagation rule} and end user applications can usually be tailored with just them. This propagation rule installs a missing object trap in each field of the object that is being installed.
+\item[Message Received Trap.] This is the \emph{default propagation rule} and end user applications can usually be tailored with just them. This propagation rule installs a message received trap in each field of the object that is being installed.
 \item[Materialization.] This propagation rule forces the installation of the object referenced by the field. This is used for those cases where some structure should be guaranteed to the Virtual Machine \eg the objects referenced by the first three fields of a class~(superclass, format and method dictionary) cannot be proxified because they are used by the VM for the method lookup. The same happens with other objects reifying low level concepts such as activation records or semaphores.
 \item[Swapping.] This propagation rule forces the reference of the object installed be swapped to another object's reference. The usual use case of this rule is replacing some object reference by \ct{nil}, and so, to force lazy initializations.
 \end{description}
@@ -345,7 +346,7 @@ Identity is an important concern in the presence of proxies. Tornado guarantees 
 
 \begin{center}\emph{An object and its proxy do not exist concurrently in the nurtured application.}\end{center}
 
-That is, the nurtured application contains either an object, either the proxy trap that represents its absence, but not both at the same point in time. When the proxy is replaced by the actual object's copy, all references to the proxy are swapped to references to the new object. The proxy is no longer referenced and thus, garbage collected. This invariant guarantees that identity checks in a program that should be \ct{true} are indeed be \ct{true}. Either the compared references point both to the same proxy, or both to the same \emph{partial} copy.
+That is, the nurtured application contains either an object, either the proxy trap that represents its absence, but not both at the same point in time. When the proxy is replaced by the actual object's copy, all references to the proxy are swapped to references to the new object. The proxy is no longer referenced and thus, garbage collected. This invariant guarantees that identity checks in a program that should be \ct{true} are indeed \ct{true}. Either the compared references point both to the same proxy, or both to the same copy.
 
 \subsection{Implementing Seeds in Tornado}
 
@@ -360,15 +361,15 @@ Tornado's seeds specify the level of tailoring. The seeds are in charge of initi
 
 \subsection{Preparing the Application for Deployment}\label{sec:deploy}
 
-Once Tornado is stopped, the nurtured application contains all the code units needed to run. Tornado procceeds to prepare the application for deployment \ie it removes all trap leftovers and extracts the nurtured application. Tornado identifies the traps by the presence of proxies and replaces the references to those proxies by references to another object, defaulting to the \ct{nil} object. Proxy objects do not then represent a drawback in space consumption because they are garbage collected. Once the traps are removed, the nurtured application keeps no dependencies to Tornado nor its infrastructure. Thus, the application can run outside the Espell infrastructure with no performance penalties.
+Once Tornado is stopped, the nurtured application contains all the code units needed to run. Tornado procceeds to prepare the application for deployment \ie it removes all trap leftovers and extracts the nurtured application. Tornado identifies the traps by the presence of proxies and replaces the references to those proxies by references to another object, defaulting to the \ct{nil} object. Proxy objects do not then represent a drawback in space consumption because they are garbage collected. %Additionally, an application using the Ghost proxy library will see no issues regarding its proxies. Tornado manages its own Ghost proxies differently from those of the application(if any).
 
-Finally, Tornado extracts the application code units using one of two different techniques: (a) the creation of a snapshot file containing all code units and already initialized objects; or (b) build a static description of the application containing the code for all classes and methods that should be part of it.
+Once the traps are removed, the nurtured application keeps no dependencies to Tornado nor its infrastructure. Thus, the application can run outside the Espell infrastructure with no performance penalties. Finally, Tornado extracts the application code units using one of two different techniques: (a) the creation of a snapshot file containing all code units and already initialized objects; or (b) build a static description of the application containing the code for all classes and methods that should be part of it.
 
 \section{Conclusion and Summary}
 
 In this chapter we presented a run-fail-grow~(RFG) approach for application tailoring. RFG tailors an application by starting it and initializing it with a seed that contains the minimal set of code units we want to ensure. Then, we install and execute the application's entry points. As the application executes, missing code units are found and installed on demand, ensuring that only the needed code units are introduced. By following the runtime execution, it supports dynamic features such as reflection and meta-programming.
 
-We implemented RFG in a tool called Tornado based in \Vtt. With \Vtt, we are able to monitor the nurtured application's execution using the execution cycles. Mirrors allows us to easily install required code and restart the execution as it is needed.
+We implemented RFG in a tool called Tornado based in \Vtt. With \Vtt, we are able to monitor the nurtured application's execution using the execution cycles. Ghost-like proxies represent traps that detect missing code units during execution. We use Mirrors to install required code and restart the execution as it is needed.
 
 \chapter{Validation}
 \minitoc
@@ -674,7 +675,7 @@ A second issue appears with residual side-effects. Our tailoring technique build
 %\paragraph{Handling Reflection.}
 \subsection{Modern Language Features}
 
-Tornado handles modern programming language features such as reflection, open classes and class extensions~\cite{Berg03a}~(\ie a package can define methods to classes from other packages) and traits~\cite{Scha03a}, out of the box. Reflective invocations contain all the information they need to be tailored correctly as Tornado works at the runtime of the application. Tornado installs methods from other packages or behavior units such as traits seamlessly because during runtime it knows the exact concrete type of each object involved in the execution. Thus, no extra static or string analysis is needed. This is possible thanks to Ghost proxies~\cite{Mart11a}, which can capture all message sends and specific method invocations.
+Tornado handles modern programming language features such as reflection, open classes\gp{cite} and class extensions~\cite{Berg03a}~(\ie a package can define methods to classes from other packages) and traits~\cite{Scha03a}, out of the box. Reflective invocations contain all the information they need to be tailored correctly as Tornado works at the runtime of the application. Tornado installs methods from other packages or behavior units such as traits seamlessly because during runtime it knows the exact concrete type of each object involved in the execution. Thus, no extra static or string analysis is needed. This is possible thanks to Ghost proxies~\cite{Mart11a}, which can capture all message sends and specific method invocations.
 
 %\sd{below, fuzzy paragraph}
 %In addition, as reflection works with a closed universe assumption \eg asking for all methods of a class will result into all methods that \emph{exist} in the class and will not retrieve those that are not installed or loaded. For those cases in which an application uses such reflective invocations, tornado allows the installation of missing object traps for each method. Then, methods are found by reflective invocations and installed on demand by Tornado if needed.
