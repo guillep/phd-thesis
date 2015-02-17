@@ -18,6 +18,8 @@ To address these issues we introduced \Vtt: an infrastructure for application ru
 \section{Contributions}
 % =============================================================================
 
+This section lists the main contributions made during the period of this thesis: \Vtt application runtime infrastructure and its usages, bootstrapping and tailoring. Additionally, we published the results of several facets of our work. We list these publications in Appendix \ref{papers}.
+
 \subsection{\Vtt}
 The main contribution of this thesis is \Vtt, a \emph{language virtualization infrastructure}. In \Vtt, a first-class application runtime, namely an object space, allows the manipulation, control and monitoring of a virtualized runtime through a clear API. A first-class language hypervisor implements such runtime manipulations with the expression power and abstractions of the high-level language we are manipulating.
 
@@ -45,26 +47,6 @@ Application tailoring is a technique reduces the memory footprint of an applicat
 Using \Vtt, we developed run-fail-grow~(RFG), an approach for dynamic application tailoring. RFG tailors an application by starting it inside an initially empty object space. We can additionally ensure a set of code units inside our application by introducing them inside the seed. Then, a set of application entry points describing where the application starts are installed inside the object space and executed. As the application executes, the application will \emph{fail} due to missing code units. RFG reacts to missing code failures by installing the required code units. Then, code units are only installed on demand inside the virtualized runtime. Using this technique, we ensure that only the needed code units are introduced.
 
 By performing during execution, RFG tailors programs written in dynamically typed languages and using features such as reflection and polymorphism. It works transparently, being able to tailor legacy and third-party code without modifying it. Tornado, our RFG implementation, succeeds to produce applications with minimal footprint for deployment. Our results show that we can aggressively tailor challenging cases. In our experiments we observe memory reductions from 95.02\% to 99.99\% when comparing with the production ready Pharo distribution.
-
-% =============================================================================
-%\section{Published Papers}
-%% =============================================================================
-%
-%\subsection{Journals}
-%
-%Guillermo Polito, Stéphane Ducasse, Luc Fabresse, Noury Bouraqadi, and Benjamin Ryseghem. Bootstrapping Reflective Systems: The Case of Pharo. In Science of Computer Programming, 2013. Impact Factor: 0,548\newline
-%
-%
-%
-%tornado (under submission spe)
-%
-%\subsection{Workshops}
-%
-%Clara Allende, Guillermo Polito. Virtual Smalltalk Images: Model and Applications. In WISIT - Workshop de Ingeniería en Sistemas y Tecnologías de la Información, 2014.
-%
-%Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Understanding Pharo’s global state to move programs through time and space. In IWST - International Workshop on Smalltalk Technology, Co-located within the 22th International Smalltalk Conference - 2014, 2014.
-%
-%Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Virtual Smalltalk Images: Model and Applications. In IWST - International Workshop on Smalltalk Technology, Co-located within the 21th International Smalltalk Conference - 2013, 2013.
 
 \section{Future Work}
 
