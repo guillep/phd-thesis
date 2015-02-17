@@ -6,44 +6,65 @@
 % =============================================================================
 \introduction
 
-Making deep modifications to a language runtime can be a cumbersome task.
-At the same time, evolving a language runtime has become an important task in the last years. Multicore hardware brought new problems on concurrency and parallelism; the \emph{cloud} increased the need for software adaptation; new resource constrained devices such as phones are as current as almost every person has one in their our pockets. These new technologies present new challenges to software developers. The software we use, and in particular the programming languages and tools we use should be easily tailorable to support many of the new challenges that come with new technology and needs.
+This thesis focuses on the ease of manipulation of application runtimes for Object-Oriented languages, particularly reflective ones. Having access and the power to change such application runtimes is indeed an issue for both language and application developers.
 
-The complexity and unclear interactions between different runtime components such as \VMs and the languages that run on top of it make such evolution challenging. This thesis explores two different language runtime evolution scenarios through their virtualization. We present our virtualization model called \Vtt, a language bootstrapping process and infrastructure and RFG, an application runtime tailoring technique.
+Application runtimes are at the center of the activity of language developers. Implementing a language requires designing its execution model and its runtime representation besides its syntax and exposed concepts. Moreover, extending an existing language to add new features requires its runtime to be easily extensible. Also, reflective languages add the challenge of circularities. To perform these tasks, language developers need tools that allow them to modify a language runtime, extend it and address its circularities.
+
+Application developers are also exposed to the modification and specialization of application runtimes. Particularly, the spreading of new constrained devices such as embedded systems or sensor networks, require application developers to reduce the memory occupied by their applications. To address these concerns, application developers should have access and control on the application runtimes they develop. They should be able to shrink them.
+
+To address these issues we introduced \Vtt: an infrastructure for application runtime virtualization. We show that runtime virtualization is a general purpose tool that can be used for different purposes. In particular we use it to explore the two challenges presented above. Our first scenario is language bootstrapping. The second is the tailoring of application runtimes.
 
 % =============================================================================
 \section{Contributions}
 % =============================================================================
 
-This thesis explores the evolution of an application and language runtime through \emph{\Vtt, a language virtualization infrastructure}. In \Vtt, a first-class application runtime, namely an object space, allows the manipulation, control and monitoring of a virtualized runtime through a clear API. A first-class language hypervisor implements such runtime manipulations with the expression power and abstractions of the high-level language we are manipulating. We validate this approach by exploring two different usages of runtime virtualization: object-oriented runtime bootstrapping and application runtime tailoring.
+\subsection{\Vtt}
+The main contribution of this thesis is \Vtt, a \emph{language virtualization infrastructure}. In \Vtt, a first-class application runtime, namely an object space, allows the manipulation, control and monitoring of a virtualized runtime through a clear API. A first-class language hypervisor implements such runtime manipulations with the expression power and abstractions of the high-level language we are manipulating.
 
-\emph{Bootstrapping} is commonly known by its usage on compiler building, where a compiler can compile itself.
+\Vtt allows application runtime manipulation and control through several techniques. Mirrors allow the direct manipulation of objects inside an object space while enforcing the invariants of the \VM execution model. The hypervisor can execute an object space in cycles and perform custom operations between each of those cycles. This allows the hypervisor to control the execution inside an object space. Finally, to execute arbitrary code inside an object space \Vtt provides with process injection and virtual execution. The first one injects code inside an object space so it can run normally. The latter is based on code interpretation and while slower provides finer control on what code is executed. 
+
+\subsection{Bootstrapping}
+Bootstrapping is commonly known by its usage on compiler building, where a compiler can compile itself.
 It can be generalized to the introduction of any software system to its own building process.
-A bootstrap process allows us to easily change this system as it is expressed in terms of itself, taking advantage of its abstractions and tools.
-Our virtualization infrastructure eases this bootstrap process by providing a clear VM-language interface to manipulate the runtime system of the language under creation. It also provides with a bootstrapping interpreter that allows the manipulation of the bootstrapped language in terms of itself, and avoids manipulating it in terms of memory as in existing solutions.
-We show how this infrastructure can be used to bootstrap three different object-oriented languages with different programming models: a minimal Smalltalk with implicit metaclasses, the core of the Pharo language which is defined by traits, and finally MetaTalk which decomposes reflection from the base level and stores meta information in the meta level of the language.
+A bootstrap process has the property of describing the system under construction in terms of the system itself. This allows us to easily change and extend this system, taking advantage of its abstractions and tools.
 
-\emph{Tailoring} is a technique that specialized an application runtime to contain only code units that will be used at runtime. We presented our run-fail-grow~(RFG) approach for dynamic application tailoring. RFG tailors an application by starting it and initializing it with a seed that contains the minimal set of code units we want to ensure. Then, we install and execute the application's entry points. As the application executes, missing code units are found and installed on demand, ensuring that only the needed code units are introduced. By performing during execution, RFG tailors programs written in dynamically typed languages and using features such as reflection and polymorphism. Tornado, our RFG implementation, succeeds to produce applications with minimal footprint for deployment. Our results show that we manage different extreme and challenging cases with flexibility.
+We applied the idea of a bootstrap in object-oriented languages by providing a circular language definition \ie a definition of the language runtime defined in itself.
+Our virtualization infrastructure eases the execution of such language definition. First, an object space provides a clear VM-language interface to helps with the manipulation of the language runtime under creation. Second, a bootstrapping virtual interpreter allows the execution of the language definition when the language cannot still be executed.
+
+We used this infrastructure to bootstrap three different object-oriented languages with different programming models: 
+\begin{description}
+\item[Candle.] A minimal Smalltalk with implicit metaclasses.
+\item[Pharo.] The core of the Pharo language which is defined by traits, first-class layouts and first-class variables.
+\item[MetaTalk.] A Smalltalk based language that decomposes reflection into mirrors. The language meta information is hosted inside the meta level of the language, which can be dynamically removed.
+\end{description}
+
+\subsection{RFG Tailoring} 
+
+Application tailoring is a technique reduces the memory footprint of an application by removing code bloat. Code bloat is an issue in constrained scenarios, when the size of an application limits its deployment. For example, devices with limited memory or web-applications in slow networks. Application tailoring reduces unused code units~(\eg classes, methods) to produce a specialized version of an application for its deployment in such scenarios.
+
+Using \Vtt, we developed run-fail-grow~(RFG), an approach for dynamic application tailoring. RFG tailors an application by starting it inside an initially empty object space. We can additionally ensure a set of code units inside our application by introducing them inside the seed. Then, a set of application entry points describing where the application starts are installed inside the object space and executed. As the application executes, the application will \emph{fail} due to missing code units. RFG reacts to missing code failures by installing the required code units. Then, code units are only installed on demand inside the virtualized runtime. Using this technique, we ensure that only the needed code units are introduced.
+
+By performing during execution, RFG tailors programs written in dynamically typed languages and using features such as reflection and polymorphism. It works transparently, being able to tailor legacy and third-party code without modifying it. Tornado, our RFG implementation, succeeds to produce applications with minimal footprint for deployment. Our results show that we can aggressively tailor challenging cases. In our experiments we observe memory reductions from 95.02\% to 99.99\% when comparing with the production ready Pharo distribution.
 
 % =============================================================================
-\section{Published Papers}
-% =============================================================================
-
-\subsection{Journals}
-
-Guillermo Polito, Stéphane Ducasse, Luc Fabresse, Noury Bouraqadi, and Benjamin Ryseghem. Bootstrapping Reflective Systems: The Case of Pharo. In Science of Computer Programming, 2013. Impact Factor: 0,548\newline
-
-
-
-tornado (under submission spe)
-
-\subsection{Workshops}
-
-Clara Allende, Guillermo Polito. Virtual Smalltalk Images: Model and Applications. In WISIT - Workshop de Ingeniería en Sistemas y Tecnologías de la Información, 2014.
-
-Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Understanding Pharo’s global state to move programs through time and space. In IWST - International Workshop on Smalltalk Technology, Co-located within the 22th International Smalltalk Conference - 2014, 2014.
-
-Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Virtual Smalltalk Images: Model and Applications. In IWST - International Workshop on Smalltalk Technology, Co-located within the 21th International Smalltalk Conference - 2013, 2013.
+%\section{Published Papers}
+%% =============================================================================
+%
+%\subsection{Journals}
+%
+%Guillermo Polito, Stéphane Ducasse, Luc Fabresse, Noury Bouraqadi, and Benjamin Ryseghem. Bootstrapping Reflective Systems: The Case of Pharo. In Science of Computer Programming, 2013. Impact Factor: 0,548\newline
+%
+%
+%
+%tornado (under submission spe)
+%
+%\subsection{Workshops}
+%
+%Clara Allende, Guillermo Polito. Virtual Smalltalk Images: Model and Applications. In WISIT - Workshop de Ingeniería en Sistemas y Tecnologías de la Información, 2014.
+%
+%Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Understanding Pharo’s global state to move programs through time and space. In IWST - International Workshop on Smalltalk Technology, Co-located within the 22th International Smalltalk Conference - 2014, 2014.
+%
+%Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Virtual Smalltalk Images: Model and Applications. In IWST - International Workshop on Smalltalk Technology, Co-located within the 21th International Smalltalk Conference - 2013, 2013.
 
 \section{Future Work}
 
@@ -64,19 +85,19 @@ Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Virtual 
 \end{description}
 
 % =============================================================================
-\section{Software Artifacts}
-
-The research that appears in this thesis was supported and validated by several prototypes implemented in the course of the P.h.d. The produced software artifacts are the following:
-
-\begin{description}
-
-\item[\Vtt.] \Vtt's prototype is the main software artifact that results from this research. This prototype included changes in the Pharo \VM to allow the described co-existence, manipulation and control of a language runtime. \Vtt also includes several language libraries that expose the \VM behavior: object spaces and its mirrros encapsulate a language runtime; a \Vtt-based AST interpreter was created from an existent AST interpreter in Pharo; a heap exporter and importer allowed us to work on existing smalltalk images.
-
-\item[Hazelnut/Seed.] Hazelnut/Seed is our bootstrapping solution for the Pharo language. Hazelnut describes a language runtime and allow its creation through a bootstrapping interpreter based on \Vtt's one.
-
-\item[Tornado.] Tornado is our tailoring implementation on top of \Vtt. Tornado uses the Ghost proxies model to implement execution traps and the \Vtt execution cycle to install code when missing code is detected.
-
-\end{description}
+%\section{Software Artifacts}
+%
+%The research that appears in this thesis was supported and validated by several prototypes implemented in the course of the P.h.d. The produced software artifacts are the following:
+%
+%\begin{description}
+%
+%\item[\Vtt.] \Vtt's prototype is the main software artifact that results from this research. This prototype included changes in the Pharo \VM to allow the described co-existence, manipulation and control of a language runtime. \Vtt also includes several language libraries that expose the \VM behavior: object spaces and its mirrros encapsulate a language runtime; a \Vtt-based AST interpreter was created from an existent AST interpreter in Pharo; a heap exporter and importer allowed us to work on existing smalltalk images.
+%
+%\item[Hazelnut/Seed.] Hazelnut/Seed is our bootstrapping solution for the Pharo language. Hazelnut describes a language runtime and allow its creation through a bootstrapping interpreter based on \Vtt's one.
+%
+%\item[Tornado.] Tornado is our tailoring implementation on top of \Vtt. Tornado uses the Ghost proxies model to implement execution traps and the \Vtt execution cycle to install code when missing code is detected.
+%
+%\end{description}
 
 % =============================================================================
 \input{chapter-footer.tex}
