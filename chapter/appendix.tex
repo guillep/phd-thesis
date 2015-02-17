@@ -1,6 +1,7 @@
 \input{chapter-header.tex}
 % =============================================================================
-\chapter{Appendix}
+\appendix
+\chapter{Appendix A: \PH Programming Language}
 \markboth{Appendix}{Appendix}
 \label{appendixa}
 %\minitoc
@@ -8,10 +9,10 @@
 
 %\clearpage
 
-\vspace*{5cm}
+%\vspace*{5cm}
 % =============================================================================
-\section{\PH Programming Language}
-\seclabel{pharo}
+%\section{\PH Programming Language}
+%\seclabel{pharo}
 % =============================================================================
 
 
@@ -27,10 +28,10 @@ It is worth noting that \emph{all} classes can be extended with new methods in \
 For instance, one can add new operations on integers or strings, classes that are treated as unchangeable internal objects by many other high-level languages.
 For deployment and debugging, the state of a running image can be saved at any point and subsequently restored.
 
-\newpage
+%\newpage
 
 % ---------------------------------------------------------------------------
-\subsection{Minimal Syntax}
+\section{Minimal Syntax}
 % ---------------------------------------------------------------------------
 
 \noindent
@@ -68,7 +69,7 @@ For deployment and debugging, the state of a running image can be saved at any p
 \end{tabularx}
 
 % ---------------------------------------------------------------------------
-\subsection{Message Sending}
+\section{Message Sending}
 % ---------------------------------------------------------------------------
 
 A method is called by sending a message to an object called the \emph{receiver}.
@@ -124,7 +125,7 @@ The second example sends \texttt{to:by:} to \textcolor{darkRed}{\texttt{3}}, wit
 
 
 % ---------------------------------------------------------------------------
-\subsection{Precedence}
+\section{Precedence}
 % ---------------------------------------------------------------------------
 
 There is a fixed global precedence when evaluating expressions in \PH: Parentheses\,$>$\,unary\,$>$\,binary\,$>$\,keyword, and finally from left to right.
@@ -137,7 +138,7 @@ Here, the messages \texttt{+} and \texttt{*} are sent first, then \texttt{betwee
 The rule suffers no exception: operators are just binary messages with \emph{no notion of mathematical precedence}, so \texttt{\textcolor{darkRed}{2}\,+\,\textcolor{darkRed}{4}\,*\,\textcolor{darkRed}{3}} reads left-to-right and thus yields \textcolor{darkRed}{18} and not the expected \textcolor{darkRed}{14}!
 
 % ---------------------------------------------------------------------------
-\subsection{Cascading Messages}
+\section{Cascading Messages}
 % ---------------------------------------------------------------------------
 
 Multiple messages can be sent to the same receiver with \texttt{;}.
@@ -174,7 +175,7 @@ To return the original receiver of the message cascade (\ie the collection) inst
 \end{alltt}
 
 % ---------------------------------------------------------------------------
-\subsection{Blocks}
+\section{Blocks}
 % ---------------------------------------------------------------------------
 
 Blocks are objects containing code that is executed on demand,
@@ -201,7 +202,7 @@ As a result, \texttt{\textcolor{string}{Hello~World!}} is printed.
 
 
 % ---------------------------------------------------------------------------
-\subsection{Methods}
+\section{Methods}
 % ---------------------------------------------------------------------------
 
 Methods are first-class objects in \PH and can be inspected and modified on the fly.
@@ -228,6 +229,3014 @@ For instance the \texttt{basicNew} which allocates new objects uses the primitiv
     \textcolor{darkBlue}{OutOfMemory} signal.
 \end{alltt}
 
+\chapter{Bootstrap Extracts}
+\label{appendixbootstrap}
+
+This appendix shows the extracts of classes and/or methods for the languages we bootstrapped.
+
+\section{Pharo Bootstrap Extract}
+
+This section lists the classes that were extracted from Pharo (version 3) for its bootstrapping. For brevity we do not list the methods in these classes. Additionally, our extraction for bootstrap includes all methods in such classes.
+
+\begin{multicols}{2}\noindent\small
+\ct{ASTCache}\newline\ct{Abort}\newline\ct{AbstractClassInstaller}\newline\ct{AbstractClassModification}\newline\ct{AbstractCompiler}\newline\ct{AbstractFieldModification}\newline\ct{AbstractLayout}\newline\ct{AbstractMethodUpdateStrategy}\newline\ct{AbstractModification}\newline\ct{AbstractTimeZone}\newline\ct{AddedField}\newline\ct{AdditionalMethodState}\newline\ct{AllProtocol}\newline\ct{Announcement}\newline\ct{AnnouncementLogger}\newline\ct{AnnouncementSet}\newline\ct{AnnouncementSubscription}\newline\ct{Announcer}\newline\ct{AnonymousClassInstaller}\newline\ct{ArithmeticError}\newline\ct{Array}\newline\ct{ArrayedCollection}\newline\ct{AssertionFailure}\newline\ct{Association}\newline\ct{Author}\newline\ct{AuthorNameRequest}\newline\ct{Bag}\newline\ct{Beeper}\newline\ct{Behavior}\newline\ct{BitsLayout}\newline\ct{BlockCannotReturn}\newline\ct{BlockClosure}\newline\ct{BlockLocalTempCounter}\newline\ct{Boolean}\newline\ct{ByteArray}\newline\ct{ByteLayout}\newline\ct{ByteString}\newline\ct{ByteSymbol}\newline\ct{CCompilationContext}\newline\ct{Categorizer}\newline\ct{CategoryAdded}\newline\ct{CategoryRemoved}\newline\ct{CategoryRenamed}\newline\ct{ChangesLog}\newline\ct{Character}\newline\ct{CharacterSet}\newline\ct{CharacterSetComplement}\newline\ct{ChronologyConstants}\newline\ct{CircularHierarchyError}\newline\ct{Class}\newline\ct{ClassAdded}\newline\ct{ClassAnnouncement}\newline\ct{ClassCategoryReader}\newline\ct{ClassCommentReader}\newline\ct{ClassCommented}\newline\ct{ClassDescription}\newline\ct{ClassModification}\newline\ct{ClassModificationPropagation}\newline\ct{ClassModifiedClassDefinition}\newline\ct{ClassOrganization}\newline\ct{ClassRecategorized}\newline\ct{ClassRemoved}\newline\ct{ClassRenamed}\newline\ct{ClassReorganized}\newline\ct{ClassTrait}\newline\ct{Collection}\newline\ct{CollectionIsEmpty}\newline\ct{CombinedChar}\newline\ct{CompilationContext}\newline\ct{CompiledMethod}\newline\ct{CompiledMethodLayout}\newline\ct{CompiledMethodTrailer}\newline\ct{ContextPart}\newline\ct{Continuation}\newline\ct{DangerousClassNotifier}\newline\ct{Date}\newline\ct{DateAndTime}\newline\ct{DateParser}\newline\ct{DebuggerMethodMapOpal}\newline\ct{DeepCopier}\newline\ct{DefaultExternalDropHandler}\newline\ct{Delay}\newline\ct{DelayWaitTimeout}\newline\ct{DependentsArray}\newline\ct{Deprecation}\newline\ct{Dictionary}\newline\ct{DomainError}\newline\ct{DosTimestamp}\newline\ct{DuplicatedSlotName}\newline\ct{DuplicatedVariableError}\newline\ct{Duration}\newline\ct{DynamicVariable}\newline\ct{EmptyLayout}\newline\ct{Error}\newline\ct{EventManager}\newline\ct{EventSensorConstants}\newline\ct{ExactFloatPrintPolicy}\newline\ct{Exception}\newline\ct{ExceptionSet}\newline\ct{ExceptionSetWithExclusions}\newline\ct{Exit}\newline\ct{ExpressionEvaluated}\newline\ct{ExternalDropHandler}\newline\ct{ExternalSemaphoreTable}\newline\ct{False}\newline\ct{FixedLayout}\newline\ct{Float}\newline\ct{FloatArray}\newline\ct{FloatPrintPolicy}\newline\ct{FloatingPointException}\newline\ct{Fraction}\newline\ct{Generator}\newline\ct{Halt}\newline\ct{HashTableSizes}\newline\ct{HashedCollection}\newline\ct{Heap}\newline\ct{IRAccess}\newline\ct{IRBlockReturnTop}\newline\ct{IRBuilder}\newline\ct{IRBytecodeDecompiler}\newline\ct{IRBytecodeGenerator}\newline\ct{IRBytecodeScope}\newline\ct{IRInstVarAccess}\newline\ct{IRInstruction}\newline\ct{IRInterpreter}\newline\ct{IRJump}\newline\ct{IRJumpIf}\newline\ct{IRLiteralVariableAccess}\newline\ct{IRMethod}\newline\ct{IRPop}\newline\ct{IRPrimitive}\newline\ct{IRPrinter}\newline\ct{IRPushArray}\newline\ct{IRPushClosureCopy}\newline\ct{IRPushDup}\newline\ct{IRPushLiteral}\newline\ct{IRReceiverAccess}\newline\ct{IRReconstructor}\newline\ct{IRRemoteArray}\newline\ct{IRRemoteTempAccess}\newline\ct{IRReturn}\newline\ct{IRSend}\newline\ct{IRSequence}\newline\ct{IRStackCount}\newline\ct{IRTempAccess}\newline\ct{IRTempVector}\newline\ct{IRThisContextAccess}\newline\ct{IRTranslator}\newline\ct{IRVisitor}\newline\ct{IdentityBag}\newline\ct{IdentityDictionary}\newline\ct{IdentitySet}\newline\ct{IllegalResumeAttempt}\newline\ct{InMidstOfFileinNotification}\newline\ct{IncompatibleLayoutConflict}\newline\ct{InexactFloatPrintPolicy}\newline\ct{InputEventFetcher}\newline\ct{InputEventHandler}\newline\ct{InputEventSensor}\newline\ct{InstVarRefLocator}\newline\ct{InstanceModification}\newline\ct{InstructionClient}\newline\ct{InstructionPrinter}\newline\ct{InstructionStream}\newline\ct{Integer}\newline\ct{IntegerArray}\newline\ct{Interval}\newline\ct{InvalidGlobalName}\newline\ct{InvalidSlotName}\newline\ct{InvalidSuperclass}\newline\ct{Job}\newline\ct{JobChange}\newline\ct{JobDetector}\newline\ct{JobEnd}\newline\ct{JobNotification}\newline\ct{JobProgress}\newline\ct{JobStart}\newline\ct{JobStartNotification}\newline\ct{KeyNotFound}\newline\ct{KeyedTree}\newline\ct{LargeInteger}\newline\ct{LargeNegativeInteger}\newline\ct{LargePositiveInteger}\newline\ct{LayoutAbstractScope}\newline\ct{LayoutClassScope}\newline\ct{LayoutEmptyScope}\newline\ct{LegacyWeakSubscription}\newline\ct{LimitedWriteStream}\newline\ct{LimitingLineStreamWrapper}\newline\ct{Link}\newline\ct{LinkedList}\newline\ct{LocalTimeZone}\newline\ct{LookupKey}\newline\ct{Magnitude}\newline\ct{ManifestASTCore}\newline\ct{ManifestOpalCompilerCore}\newline\ct{Margin}\newline\ct{Matrix}\newline\ct{Message}\newline\ct{MessageCatcher}\newline\ct{MessageNotUnderstood}\newline\ct{MessageSend}\newline\ct{Metaclass}\newline\ct{MethodAdded}\newline\ct{MethodClassifier}\newline\ct{MethodContext}\newline\ct{MethodDictionary}\newline\ct{MethodModification}\newline\ct{MethodModified}\newline\ct{MethodRecategorized}\newline\ct{MethodRecompileStrategy}\newline\ct{MethodRemoved}\newline\ct{Model}\newline\ct{ModifiedField}\newline\ct{Monitor}\newline\ct{MonitorDelay}\newline\ct{Month}\newline\ct{MultiByteBinaryOrTextStream}\newline\ct{Mutex}\newline\ct{MutexSet}\newline\ct{NaNException}\newline\ct{NonBooleanReceiver}\newline\ct{NonInteractiveTranscript}\newline\ct{NotFound}\newline\ct{NotYetImplemented}\newline\ct{Notification}\newline\ct{NullStream}\newline\ct{Number}\newline\ct{NumberParser}\newline\ct{OCASTClosureAnalyzer}\newline\ct{OCASTSemanticAnalyzer}\newline\ct{OCASTTranslator}\newline\ct{OCASTTranslatorForEffect}\newline\ct{OCASTTranslatorForValue}\newline\ct{OCAbstractLocalVariable}\newline\ct{OCAbstractMethodScope}\newline\ct{OCAbstractScope}\newline\ct{OCAbstractVariable}\newline\ct{OCBlockScope}\newline\ct{OCClassScope}\newline\ct{OCCopyingTempVariable}\newline\ct{OCInstanceScope}\newline\ct{OCInstanceVariable}\newline\ct{OCKeyedSet}\newline\ct{OCLiteralList}\newline\ct{OCLiteralSet}\newline\ct{OCLiteralVariable}\newline\ct{OCMethodScope}\newline\ct{OCOptimizedBlockScope}\newline\ct{OCRequestorScope}\newline\ct{OCSemanticError}\newline\ct{OCSemanticWarning}\newline\ct{OCShadowVariableWarning}\newline\ct{OCSourceCodeChanged}\newline\ct{OCSpecialVariable}\newline\ct{OCTempVariable}\newline\ct{OCUndeclaredVariable}\newline\ct{OCUndeclaredVariableWarning}\newline\ct{OCUninitializedVariableWarning}\newline\ct{OCUnknownSelectorWarning}\newline\ct{OCUnusedVariableWarning}\newline\ct{OCVectorTempVariable}\newline\ct{Object}\newline\ct{ObjectFinalizer}\newline\ct{ObjectFinalizerCollection}\newline\ct{ObjectLayout}\newline\ct{OldClassBuilderAdapter}\newline\ct{OpalCompiler}\newline\ct{OrderedCollection}\newline\ct{OrderedIdentityDictionary}\newline\ct{OutOfMemory}\newline\ct{PackageInfo}\newline\ct{PackageOrganizer}\newline\ct{PharoClassInstaller}\newline\ct{PluggableDictionary}\newline\ct{PluggableSet}\newline\ct{Point}\newline\ct{PointerLayout}\newline\ct{PositionableStream}\newline\ct{Pragma}\newline\ct{PragmaAdded}\newline\ct{PragmaAnnouncement}\newline\ct{PragmaCollector}\newline\ct{PragmaCollectorReset}\newline\ct{PragmaRemoved}\newline\ct{PragmaUpdated}\newline\ct{PrimitiveFailed}\newline\ct{Process}\newline\ct{ProcessLocalVariable}\newline\ct{ProcessSpecificVariable}\newline\ct{ProcessorScheduler}\newline\ct{ProtoObject}\newline\ct{Protocol}\newline\ct{ProtocolAdded}\newline\ct{ProtocolAnnouncement}\newline\ct{ProtocolOrganizer}\newline\ct{ProtocolRemovalException}\newline\ct{ProtocolRemoved}\newline\ct{PseudoClassOrganization}\newline\ct{RBArgumentNode}\newline\ct{RBArrayNode}\newline\ct{RBAssignmentNode}\newline\ct{RBAssignmentToken}\newline\ct{RBBinarySelectorToken}\newline\ct{RBBlockNode}\newline\ct{RBBlockReplaceRule}\newline\ct{RBCascadeNode}\newline\ct{RBClassReference}\newline\ct{RBConfigurableFormatter}\newline\ct{RBErrorToken}\newline\ct{RBExplicitVariableParser}\newline\ct{RBIdentifierToken}\newline\ct{RBKeywordToken}\newline\ct{RBLiteralArrayNode}\newline\ct{RBLiteralArrayToken}\newline\ct{RBLiteralNode}\newline\ct{RBLiteralToken}\newline\ct{RBLiteralValueNode}\newline\ct{RBMessageNode}\newline\ct{RBMethodNode}\newline\ct{RBMultiKeywordLiteralToken}\newline\ct{RBNumberLiteralToken}\newline\ct{RBParseErrorNode}\newline\ct{RBParseTreeRewriter}\newline\ct{RBParseTreeRule}\newline\ct{RBParseTreeSearcher}\newline\ct{RBParser}\newline\ct{RBPatternBlockNode}\newline\ct{RBPatternBlockToken}\newline\ct{RBPatternMessageNode}\newline\ct{RBPatternMethodNode}\newline\ct{RBPatternParser}\newline\ct{RBPatternPragmaNode}\newline\ct{RBPatternScanner}\newline\ct{RBPatternVariableNode}\newline\ct{RBPatternWrapperBlockNode}\newline\ct{RBPragmaNode}\newline\ct{RBProgramNode}\newline\ct{RBProgramNodeVisitor}\newline\ct{RBReadBeforeWrittenTester}\newline\ct{RBReplaceRule}\newline\ct{RBReturnNode}\newline\ct{RBScanner}\newline\ct{RBSearchRule}\newline\ct{RBSelfNode}\newline\ct{RBSequenceNode}\newline\ct{RBShortAssignmentToken}\newline\ct{RBSpecialCharacterToken}\newline\ct{RBStringReplaceRule}\newline\ct{RBStringReplacement}\newline\ct{RBSuperNode}\newline\ct{RBTemporaryNode}\newline\ct{RBThisContextNode}\newline\ct{RBToken}\newline\ct{RBValueNode}\newline\ct{RBValueToken}\newline\ct{RBVariableNode}\newline\ct{RPackage}\newline\ct{RPackageAnnouncement}\newline\ct{RPackageConflictError}\newline\ct{RPackageCreated}\newline\ct{RPackageOrganizer}\newline\ct{RPackageRenamed}\newline\ct{RPackageSet}\newline\ct{RPackageTag}\newline\ct{RPackageUnregistered}\newline\ct{RWBinaryOrTextStream}\newline\ct{Random}\newline\ct{ReadStream}\newline\ct{ReadWriteStream}\newline\ct{Rectangle}\newline\ct{RelativeInstructionPrinter}\newline\ct{RemovedField}\newline\ct{ScaledDecimal}\newline\ct{Schedule}\newline\ct{SelectorException}\newline\ct{Semaphore}\newline\ct{SequenceableCollection}\newline\ct{Session}\newline\ct{Set}\newline\ct{SetElement}\newline\ct{SharedPool}\newline\ct{SharedQueue}\newline\ct{ShiftedField}\newline\ct{ShouldBeImplemented}\newline\ct{ShouldNotImplement}\newline\ct{SimulationExceptionWrapper}\newline\ct{SizeMismatch}\newline\ct{Slot}\newline\ct{SlotClassBuilder}\newline\ct{SlotClassBuilderError}\newline\ct{SlotClassBuilderWarning}\newline\ct{SlotNotFound}\newline\ct{SmallDictionary}\newline\ct{SmallIdentityDictionary}\newline\ct{SmallInteger}\newline\ct{SmallIntegerLayout}\newline\ct{SmalltalkImage}\newline\ct{SnapshotDone}\newline\ct{SortedCollection}\newline\ct{SparseLargeArray}\newline\ct{SparseLargeTable}\newline\ct{Stopwatch}\newline\ct{Stream}\newline\ct{String}\newline\ct{SubclassResponsibility}\newline\ct{SubscriptOutOfBounds}\newline\ct{SubscriptionRegistry}\newline\ct{Symbol}\newline\ct{SyntaxErrorNotification}\newline\ct{SystemAnnouncement}\newline\ct{SystemAnnouncer}\newline\ct{SystemDictionary}\newline\ct{SystemNavigation}\newline\ct{SystemOrganizer}\newline\ct{SystemVersion}\newline\ct{TApplyingOnClassSide}\newline\ct{TBehavior}\newline\ct{TBehaviorCategorization}\newline\ct{TClass}\newline\ct{TClassDescription}\newline\ct{TComparable}\newline\ct{TComposingDescription}\newline\ct{TIRVisitor}\newline\ct{TRBProgramNodeVisitor}\newline\ct{TSortable}\newline\ct{TTransformationCompatibility}\newline\ct{TextStream}\newline\ct{ThreadSafeTranscript}\newline\ct{Time}\newline\ct{TimeStamp}\newline\ct{TimeZone}\newline\ct{TimedOut}\newline\ct{Timespan}\newline\ct{Trait}\newline\ct{TraitAlias}\newline\ct{TraitBehavior}\newline\ct{TraitComposition}\newline\ct{TraitCompositionException}\newline\ct{TraitDescription}\newline\ct{TraitException}\newline\ct{TraitExclusion}\newline\ct{TraitMethodDescription}\newline\ct{TraitTransformation}\newline\ct{True}\newline\ct{UndefinedObject}\newline\ct{UnhandledError}\newline\ct{UnmodifiedField}\newline\ct{UserInterruptHandler}\newline\ct{ValueLink}\newline\ct{ValueNotFound}\newline\ct{VariableLayout}\newline\ct{VirtualMachine}\newline\ct{Warning}\newline\ct{WeakActionSequence}\newline\ct{WeakAnnouncementSubscription}\newline\ct{WeakArray}\newline\ct{WeakFinalizationList}\newline\ct{WeakFinalizerItem}\newline\ct{WeakIdentityKeyDictionary}\newline\ct{WeakKeyAssociation}\newline\ct{WeakKeyDictionary}\newline\ct{WeakKeyToCollectionDictionary}\newline\ct{WeakLayout}\newline\ct{WeakMessageSend}\newline\ct{WeakOrderedCollection}\newline\ct{WeakRegistry}\newline\ct{WeakSet}\newline\ct{WeakSubscriptionBuilder}\newline\ct{WeakValueAssociation}\newline\ct{WeakValueDictionary}\newline\ct{Week}\newline\ct{WideCharacterSet}\newline\ct{WideString}\newline\ct{WideSymbol}\newline\ct{WordArray}\newline\ct{WordLayout}\newline\ct{WriteStream}\newline\ct{Year}\newline\ct{ZeroDivide}\newline
+\end{multicols}
+
+\section{Candle Bootstrap Extract}
+
+This section lists the methods from Candle for its bootstrapping.
+
+\begin{multicols}{2}\noindent\small
+\ct{PCAssociation>>hash}\newline\ct{PCAssociation>>value:}\newline\ct{PCAssociation>>key}\newline\ct{PCAssociation>>key:}\newline\ct{PCAssociation>>=}\newline\ct{PCAssociation>>value}\newline\ct{PCAssociation>>key:value:}\newline\ct{PCAssociation>>printOn:}\newline\ct{PCAssociation>><}\newline\ct{PCOrderedCollection>>remove:ifAbsent:}\newline\ct{PCOrderedCollection>>last}\newline\ct{PCOrderedCollection>>size}\newline\ct{PCOrderedCollection>>errorNoSuchElement}\newline\ct{PCOrderedCollection>>add:}\newline\ct{PCOrderedCollection>>at:}\newline\ct{PCOrderedCollection>>at:put:}\newline\ct{PCOrderedCollection>>makeRoomAtFirst}\newline\ct{PCOrderedCollection>>copyFrom:to:}\newline\ct{PCOrderedCollection>>grow}\newline\ct{PCOrderedCollection>>setCollection:}\newline\ct{PCOrderedCollection>>collect:}\newline\ct{PCOrderedCollection>>makeRoomAtLast}\newline\ct{PCOrderedCollection>>}\newline\indent\ct{copyReplaceFrom:to:with:}\newline\ct{PCOrderedCollection>>addFirst:}\newline\ct{PCOrderedCollection>>do:}\newline\ct{PCOrderedCollection>>first}\newline\ct{PCOrderedCollection>>insert:before:}\newline\ct{PCOrderedCollection>>removeFirst}\newline\ct{PCOrderedCollection>>removeIndex:}\newline\ct{PCOrderedCollection>>removeLast}\newline\ct{PCOrderedCollection>>select:}\newline\ct{PCIdentityDictionary>>scanFor:}\newline\ct{PCIdentityDictionary>>keys}\newline\ct{PCFile>>primWrite:from:startingAt:count:}\newline\ct{PCFile>>close}\newline\ct{PCFile>>cr}\newline\ct{PCFile>>position}\newline\ct{PCFile>>position:}\newline\ct{PCFile>>localFolderPath}\newline\ct{PCFile>>name}\newline\ct{PCFile>>nextPutAll:}\newline\ct{PCFile>>primClose:}\newline\ct{PCFile>>openReadWrite:}\newline\ct{PCFile>>primGetPosition:}\newline\ct{PCFile>>size}\newline\ct{PCFile>>readInto:startingAt:count:}\newline\ct{PCFile>>primOpen:writable:}\newline\ct{PCFile>>next:}\newline\ct{PCFile>>openReadOnly:}\newline\ct{PCFile>>primRead:into:startingAt:count:}\newline\ct{PCFile>>primSize:}\newline\ct{PCFile>>primImageName}\newline\ct{PCFile>>primSetPosition:to:}\newline\ct{PCMessage>>lookupClass}\newline\ct{PCMessage>>sentTo:}\newline\ct{PCMessage>>arguments}\newline\ct{PCMessage>>printOn:}\newline\ct{PCMessage>>selector}\newline\ct{PCIdentitySet>>scanFor:}\newline\ct{PCFloat>>ln}\newline\ct{PCFloat>>printOn:base:}\newline\ct{PCFloat>>reciprocalLogBase2}\newline\ct{PCFloat>>sqrt}\newline\ct{PCFloat>>tan}\newline\ct{PCFloat>>truncated}\newline\ct{PCFloat>>reciprocal}\newline\ct{PCFloat>>raisedTo:}\newline\ct{PCFloat>>hash}\newline\ct{PCFloat>>/}\newline\ct{PCFloat>>rounded}\newline\ct{PCFloat>>radiansToDegrees}\newline\ct{PCFloat>>-}\newline\ct{PCFloat>>abs}\newline\ct{PCFloat>>=}\newline\ct{PCFloat>>adaptToInteger:andSend:}\newline\ct{PCFloat>>arcCos}\newline\ct{PCFloat>>>}\newline\ct{PCFloat>>arcTan}\newline\ct{PCFloat>>cos}\newline\ct{PCFloat>>floorLog:}\newline\ct{PCFloat>>significand}\newline\ct{PCFloat>>timesTwoPower:}\newline\ct{PCFloat>>fractionPart}\newline\ct{PCFloat>>exponent}\newline\ct{PCFloat>>isNaN}\newline\ct{PCFloat>>asFloat}\newline\ct{PCFloat>>arcSin}\newline\ct{PCFloat>>sin}\newline\ct{PCFloat>>~=}\newline\ct{PCFloat>>degreesToRadians}\newline\ct{PCFloat>>isInfinite}\newline\ct{PCFloat>>log}\newline\ct{PCFloat>>sign}\newline\ct{PCFloat>>*}\newline\ct{PCFloat>><=}\newline\ct{PCFloat>>>=}\newline\ct{PCFloat>>exp}\newline\ct{PCFloat>>negated}\newline\ct{PCFloat>>absPrintOn:base:}\newline\ct{PCFloat>>+}\newline\ct{PCFloat>><}\newline\ct{PCClass>>name:}\newline\ct{PCClass>>classSide}\newline\ct{PCClass>>}\newline\indent\ct{weakSubclass:instanceVariableNames:}\newline\indent\ct{classVariableNames:}\newline\ct{PCClass>>initFrom:methodDict:}\newline\ct{PCClass>>}\newline\indent\ct{variableWordSubclass:}\newline\indent\ct{instanceVariableNames:}\newline\indent\ct{classVariableNames:}\newline\ct{PCClass>>}\newline\indent\ct{newClassBuilderForSubclass:}\newline\indent\ct{instanceVariableNames:}\newline\indent\ct{classVariableNames:}\newline\ct{PCClass>>instVarNames}\newline\ct{PCClass>>}\newline\indent\ct{variableByteSubclass:}\newline\indent\ct{instanceVariableNames:}\newline\indent\ct{classVariableNames:}\newline\ct{PCClass>>name}\newline\ct{PCClass>>isMeta}\newline\ct{PCClass>>instVarNames:}\newline\ct{PCClass>>theNonMetaClass}\newline\ct{PCClass>>subclass:}\newline\indent\ct{instanceVariableNames:}\newline\indent\ct{classVariableNames:}\newline\ct{PCClass>>variableSubclass:}\newline\indent\ct{instanceVariableNames:}\newline\indent\ct{classVariableNames:}\newline\ct{PCClass>>classVariables}\newline\ct{PCClass>>classVariables:}\newline\ct{PCForm>>bits}\newline\ct{PCForm>>fillRectX:y:w:h:}\newline\ct{PCForm>>setColorR:g:b:}\newline\ct{PCForm>>primScreenSize}\newline\ct{PCForm>>beDisplayDepth:}\newline\ct{PCForm>>depth}\newline\ct{PCForm>>setWidth:height:depth:}\newline\ct{PCForm>>height}\newline\ct{PCForm>>copyX:y:width:height:}\newline\ct{PCForm>>drawForm:x:y:rule:}\newline\ct{PCForm>>width}\newline\ct{PCCompiledMethod>>numLiterals}\newline\ct{PCCompiledMethod>>objectAt:put:}\newline\ct{PCCompiledMethod>>header}\newline\ct{PCCompiledMethod>>objectAt:}\newline\ct{PCCompiledMethod>>numTemps}\newline\ct{PCCompiledMethod>>frameSize}\newline\ct{PCCompiledMethod>>initialPC}\newline\ct{PCCompiledMethod>>flushCache}\newline\ct{PCCompiledMethod>>isCompiledMethod}\newline\ct{PCArray>>hash}\newline\ct{PCArray>>replaceFrom:to:with:startingAt:}\newline\ct{PCArray>>asArray}\newline\ct{PCArray>>asDictionary}\newline\ct{PCArray>>elementsExchangeIdentityWith:}\newline\ct{PCArray>>printOn:}\newline\ct{PCLinkedList>>linkAt:}\newline\ct{PCLinkedList>>at:putLink:}\newline\ct{PCLinkedList>>firstLink}\newline\ct{PCLinkedList>>removeAllSuchThat:}\newline\ct{PCLinkedList>>copyWith:}\newline\ct{PCLinkedList>>at:put:}\newline\ct{PCLinkedList>>first}\newline\ct{PCLinkedList>>linkOf:ifAbsent:}\newline\ct{PCLinkedList>>add:after:}\newline\ct{PCLinkedList>>isEmpty}\newline\ct{PCLinkedList>>do:}\newline\ct{PCLinkedList>>indexOf:startingAt:ifAbsent:}\newline\ct{PCLinkedList>>last}\newline\ct{PCLinkedList>>removeFirst}\newline\ct{PCLinkedList>>linksDo:}\newline\ct{PCLinkedList>>postCopy}\newline\ct{PCLinkedList>>add:afterLink:}\newline\ct{PCLinkedList>>removeAll}\newline\ct{PCLinkedList>>removeLink:}\newline\ct{PCLinkedList>>linkOf:}\newline\ct{PCLinkedList>>at:}\newline\ct{PCLinkedList>>removeLast}\newline\ct{PCLinkedList>>copyWithout:}\newline\ct{PCLinkedList>>addLast:}\newline\ct{PCLinkedList>>add:}\newline\ct{PCLinkedList>>add:before:}\newline\ct{PCLinkedList>>add:beforeLink:}\newline\ct{PCLinkedList>>lastLink}\newline\ct{PCLinkedList>>linkAt:ifAbsent:}\newline\ct{PCLinkedList>>collect:}\newline\ct{PCLinkedList>>addFirst:}\newline\ct{PCLinkedList>>removeLink:ifAbsent:}\newline\ct{PCLinkedList>>validIndex:}\newline\ct{PCLinkedList>>species}\newline\ct{PCLinkedList>>swap:with:}\newline\ct{PCLinkedList>>remove:ifAbsent:}\newline\ct{PCBehavior>>basicNew:}\newline\ct{PCBehavior>>superclass}\newline\ct{PCBehavior>>sharedPools}\newline\ct{PCBehavior>>superclass:}\newline\ct{PCBehavior>>initialize}\newline\ct{PCBehavior>>printOn:}\newline\ct{PCBehavior>>inheritsFrom:}\newline\ct{PCBehavior>>isCompact}\newline\ct{PCBehavior>>allInstancesDo:}\newline\ct{PCBehavior>>name}\newline\ct{PCBehavior>>someInstance}\newline\ct{PCBehavior>>format}\newline\ct{PCBehavior>>allInstances}\newline\ct{PCBehavior>>isBits}\newline\ct{PCBehavior>>isBytes}\newline\ct{PCBehavior>>isPointers}\newline\ct{PCBehavior>>methodDict}\newline\ct{PCBehavior>>isVariable}\newline\ct{PCBehavior>>new}\newline\ct{PCBehavior>>basicNew}\newline\ct{PCBehavior>>allInstVarNames}\newline\ct{PCBehavior>>classPool}\newline\ct{PCBehavior>>>>}\newline\ct{PCBehavior>>instSize}\newline\ct{PCBehavior>>new:}\newline\ct{PCBehavior>>indexIfCompact}\newline\ct{PCBehavior>>selectorAtMethod:setClass:}\newline\ct{PCBehavior>>isBehavior}\newline\ct{PCBehavior>>lookupSelector:}\newline\ct{PCBehavior>>canUnderstand:}\newline\ct{PCBehavior>>setFormat:}\newline\ct{PCBehavior>>instSpec}\newline\ct{PCBehavior>>setCompactClassIndex:}\newline\ct{PCUndefinedObject>>printOn:}\newline\ct{PCUndefinedObject>>subclass:}\newline\indent\ct{instanceVariableNames:}\newline\indent\ct{classVariableNames:}\newline\ct{PCUndefinedObject>>isNil}\newline\ct{PCUndefinedObject>>ifNotNil:}\newline\ct{PCUndefinedObject>>basicCopy}\newline\ct{PCUndefinedObject>>ifNil:}\newline\ct{PCUndefinedObject>>ifNil:ifNotNil:}\newline\ct{PCLargePositiveInteger>>digitLength}\newline\ct{PCLargePositiveInteger>>negative}\newline\ct{PCLargePositiveInteger>>\textbackslash}\newline\ct{PCLargePositiveInteger>>highBit}\newline\ct{PCLargePositiveInteger>>negated}\newline\ct{PCLargePositiveInteger>>/}\newline\ct{PCLargePositiveInteger>>//}\newline\ct{PCLargePositiveInteger>>+}\newline\ct{PCLargePositiveInteger>><=}\newline\ct{PCLargePositiveInteger>>>}\newline\ct{PCLargePositiveInteger>>>=}\newline\ct{PCLargePositiveInteger>>normalize}\newline\ct{PCLargePositiveInteger>>}\newline\indent\ct{replaceFrom:to:with:startingAt:}\newline\ct{PCLargePositiveInteger>>digitAt:}\newline\ct{PCLargePositiveInteger>>abs}\newline\ct{PCLargePositiveInteger>>bitAnd:}\newline\ct{PCLargePositiveInteger>>sign}\newline\ct{PCLargePositiveInteger>>-}\newline\ct{PCLargePositiveInteger>>*}\newline\ct{PCLargePositiveInteger>>bitXor:}\newline\ct{PCLargePositiveInteger>>~=}\newline\ct{PCLargePositiveInteger>>digitAt:put:}\newline\ct{PCLargePositiveInteger>>bitOr:}\newline\ct{PCLargePositiveInteger>>=}\newline\ct{PCLargePositiveInteger>>bitShift:}\newline\ct{PCLargePositiveInteger>>quo:}\newline\ct{PCLargePositiveInteger>><}\newline\ct{PCSmallInteger>>>}\newline\ct{PCSmallInteger>><=}\newline\ct{PCSmallInteger>>\textbackslash\textbackslash}\newline\ct{PCSmallInteger>>digitAt:}\newline\ct{PCSmallInteger>>>=}\newline\ct{PCSmallInteger>>identityHash}\newline\ct{PCSmallInteger>>printOn:base:}\newline\ct{PCSmallInteger>>hash}\newline\ct{PCSmallInteger>>~=}\newline\ct{PCSmallInteger>>//}\newline\ct{PCSmallInteger>>=}\newline\ct{PCSmallInteger>>asFloat}\newline\ct{PCSmallInteger>>hashMultiply}\newline\ct{PCSmallInteger>>-}\newline\ct{PCSmallInteger>>basicIdentityHash}\newline\ct{PCSmallInteger>>highBit}\newline\ct{PCSmallInteger>>*}\newline\ct{PCSmallInteger>>+}\newline\ct{PCSmallInteger>>basicCopy}\newline\ct{PCSmallInteger>>bitAnd:}\newline\ct{PCSmallInteger>>bitOr:}\newline\ct{PCSmallInteger>>digitAt:put:}\newline\ct{PCSmallInteger>>isSmallInteger}\newline\ct{PCSmallInteger>><}\newline\ct{PCSmallInteger>>bitShift:}\newline\ct{PCSmallInteger>>quo:}\newline\ct{PCSmallInteger>>digitLength}\newline\ct{PCSmallInteger>>/}\newline\ct{PCSmallInteger>>bitXor:}\newline\ct{PCInterval>>size}\newline\ct{PCInterval>>last}\newline\ct{PCInterval>>at:}\newline\ct{PCInterval>>at:put:}\newline\ct{PCInterval>>species}\newline\ct{PCInterval>>add:}\newline\ct{PCInterval>>=}\newline\ct{PCInterval>>first}\newline\ct{PCInterval>>hash}\newline\ct{PCInterval>>includes:}\newline\ct{PCInterval>>setFrom:to:by:}\newline\ct{PCInterval>>remove:}\newline\ct{PCInterval>>do:}\newline\ct{PCInterval>>increment}\newline\ct{PCInterval>>collect:}\newline\ct{PCInterval>>printOn:}\newline\ct{PCMagnitude>>>}\newline\ct{PCMagnitude>>=}\newline\ct{PCMagnitude>><=}\newline\ct{PCMagnitude>>>=}\newline\ct{PCMagnitude>>between:and:}\newline\ct{PCMagnitude>>hash}\newline\ct{PCMagnitude>>min:}\newline\ct{PCMagnitude>>max:}\newline\ct{PCMagnitude>><}\newline\ct{PCSequenceableCollection>>}\newline\indent\ct{indexOf:startingAt:ifAbsent:}\newline\ct{PCSequenceableCollection>>}\newline\indent\ct{replaceFrom:to:with:}\newline\ct{PCSequenceableCollection>>}\newline\indent\ct{replaceFrom:to:with:startingAt:}\newline\ct{PCSequenceableCollection>>last}\newline\ct{PCSequenceableCollection>>at:ifAbsent:}\newline\ct{PCSequenceableCollection>>copyWith:}\newline\ct{PCSequenceableCollection>>}\newline\indent\ct{copyReplaceFrom:to:with:}\newline\ct{PCSequenceableCollection>>,}\newline\ct{PCSequenceableCollection>>do:}\newline\ct{PCSequenceableCollection>>first}\newline\ct{PCSequenceableCollection>>select:}\newline\ct{PCSequenceableCollection>>size}\newline\ct{PCSequenceableCollection>>=}\newline\ct{PCSequenceableCollection>>copyFrom:to:}\newline\ct{PCSequenceableCollection>>asArray}\newline\ct{PCSequenceableCollection>>indexOf:ifAbsent:}\newline\ct{PCSequenceableCollection>>remove:ifAbsent:}\newline\ct{PCSequenceableCollection>>swap:with:}\newline\ct{PCSequenceableCollection>>collect:}\newline\ct{PCBitBlt>>fillWords:}\newline\ct{PCBitBlt>>rule:}\newline\ct{PCBitBlt>>copyBits}\newline\ct{PCBitBlt>>sourceForm:}\newline\ct{PCBitBlt>>copyBitsTranslucent:}\newline\ct{PCBitBlt>>destForm:}\newline\ct{PCBitBlt>>sourceX:y:}\newline\ct{PCBitBlt>>destX:y:width:height:}\newline\ct{PCBitBlt>>fillWords}\newline\ct{PCBitBlt>>width:height:}\newline\ct{PCBitBlt>>initialize}\newline\ct{PCBitBlt>>fillR:g:b:}\newline\ct{PCBitBlt>>clipX:y:width:height:}\newline\ct{PCNumber>>adaptToInteger:andSend:}\newline\ct{PCNumber>>to:by:}\newline\ct{PCNumber>>to:by:do:}\newline\ct{PCNumber>>floorLog:}\newline\ct{PCNumber>>abs}\newline\ct{PCNumber>>cos}\newline\ct{PCNumber>>isNumber}\newline\ct{PCNumber>>arcTan}\newline\ct{PCNumber>>log}\newline\ct{PCNumber>>reciprocal}\newline\ct{PCNumber>>exp}\newline\ct{PCNumber>>//}\newline\ct{PCNumber>>/}\newline\ct{PCNumber>>asInteger}\newline\ct{PCNumber>>log:}\newline\ct{PCNumber>>raisedToInteger:}\newline\ct{PCNumber>>printStringBase:}\newline\ct{PCNumber>>rem:}\newline\ct{PCNumber>>roundUpTo:}\newline\ct{PCNumber>>adaptToFloat:andSend:}\newline\ct{PCNumber>>rounded}\newline\ct{PCNumber>>to:do:}\newline\ct{PCNumber>>arcSin}\newline\ct{PCNumber>>printOn:}\newline\ct{PCNumber>>+}\newline\ct{PCNumber>>\\}\newline\ct{PCNumber>>ln}\newline\ct{PCNumber>>degreesToRadians}\newline\ct{PCNumber>>negated}\newline\ct{PCNumber>>quo:}\newline\ct{PCNumber>>radiansToDegrees}\newline\ct{PCNumber>>tan}\newline\ct{PCNumber>>-}\newline\ct{PCNumber>>arcCos}\newline\ct{PCNumber>>ceiling}\newline\ct{PCNumber>>negative}\newline\ct{PCNumber>>to:}\newline\ct{PCNumber>>roundTo:}\newline\ct{PCNumber>>truncated}\newline\ct{PCNumber>>sin}\newline\ct{PCNumber>>sign}\newline\ct{PCNumber>>truncateTo:}\newline\ct{PCNumber>>*}\newline\ct{PCNumber>>floor}\newline\ct{PCNumber>>raisedTo:}\newline\ct{PCNumber>>sqrt}\newline\ct{PCLargeNegativeInteger>>abs}\newline\ct{PCLargeNegativeInteger>>negative}\newline\ct{PCLargeNegativeInteger>>normalize}\newline\ct{PCLargeNegativeInteger>>sign}\newline\ct{PCLargeNegativeInteger>>printOn:base:}\newline\ct{PCLargeNegativeInteger>>negated}\newline\ct{PCProcess>>nextLink}\newline\ct{PCProcess>>printOn:}\newline\ct{PCProcess>>priority}\newline\ct{PCProcess>>errorHandler:}\newline\ct{PCProcess>>resume}\newline\ct{PCProcess>>suspendedContext}\newline\ct{PCProcess>>suspend}\newline\ct{PCProcess>>terminate}\newline\ct{PCProcess>>priority:}\newline\ct{PCProcess>>nextLink:}\newline\ct{PCProcess>>initSuspendedContext:}\newline\ct{PCProcess>>errorHandler}\newline\ct{PCCharacter>>=}\newline\ct{PCCharacter>>isLetter}\newline\ct{PCCharacter>>printOn:}\newline\ct{PCCharacter>>isSpecial}\newline\ct{PCCharacter>>isVowel}\newline\ct{PCCharacter>>to:}\newline\ct{PCCharacter>>asCharacter}\newline\ct{PCCharacter>>setValue:}\newline\ct{PCCharacter>>>}\newline\ct{PCCharacter>>asLowercase}\newline\ct{PCCharacter>><}\newline\ct{PCCharacter>>asInteger}\newline\ct{PCCharacter>>asString}\newline\ct{PCCharacter>>asUppercase}\newline\ct{PCCharacter>>basicCopy}\newline\ct{PCCharacter>>tokenish}\newline\ct{PCCharacter>>hash}\newline\ct{PCCharacter>>digitValue}\newline\ct{PCCharacter>>asciiValue}\newline\ct{PCCharacter>>isDigit}\newline\ct{PCCharacter>>isUppercase}\newline\ct{PCSet>>fullCheck}\newline\ct{PCSet>>fixCollisionsFrom:}\newline\ct{PCSet>>keyAt:}\newline\ct{PCSet>>copy}\newline\ct{PCSet>>init:}\newline\ct{PCSet>>=}\newline\ct{PCSet>>grow}\newline\ct{PCSet>>withArray:}\newline\ct{PCSet>>asArray}\newline\ct{PCSet>>findElementOrNil:}\newline\ct{PCSet>>includes:}\newline\ct{PCSet>>noCheckAdd:}\newline\ct{PCSet>>asSet}\newline\ct{PCSet>>remove:ifAbsent:}\newline\ct{PCSet>>atNewIndex:put:}\newline\ct{PCSet>>scanFor:}\newline\ct{PCSet>>add:}\newline\ct{PCSet>>do:}\newline\ct{PCSet>>size}\newline\ct{PCSet>>collect:}\newline\ct{PCSet>>swap:with:}\newline\ct{PCReadStream>>peek}\newline\ct{PCReadStream>>atEnd}\newline\ct{PCReadStream>>position:}\newline\ct{PCReadStream>>next}\newline\ct{PCReadStream>>skip:}\newline\ct{PCReadStream>>position}\newline\ct{PCReadStream>>contents}\newline\ct{PCReadStream>>peekFor:}\newline\ct{PCReadStream>>size}\newline\ct{PCReadStream>>on:}\newline\ct{PCReadStream>>next:}\newline\ct{PCMetaclass>>theNonMetaClass}\newline\ct{PCMetaclass>>new}\newline\ct{PCMetaclass>>initMethodDict:}\newline\ct{PCMetaclass>>isMeta}\newline\ct{PCMetaclass>>name}\newline\ct{PCMetaclass>>soleInstance:}\newline\ct{PCObject>>ifNil:}\newline\ct{PCObject>>pointsTo:}\newline\ct{PCObject>>class}\newline\ct{PCObject>>ifNotNil:ifNil:}\newline\ct{PCObject>>isCompiledMethod}\newline\ct{PCObject>>respondsTo:}\newline\ct{PCObject>>~~}\newline\ct{PCObject>>asLink}\newline\ct{PCObject>>perform:}\newline\ct{PCObject>>perform:withArguments:inSuperclass:}\newline\ct{PCObject>>shouldNotImplement}\newline\ct{PCObject>>instVarAt:}\newline\ct{PCObject>>someObject}\newline\ct{PCObject>>printOn:}\newline\ct{PCObject>>yourself}\newline\ct{PCObject>>=}\newline\ct{PCObject>>initialize}\newline\ct{PCObject>>isBehavior}\newline\ct{PCObject>>nextInstance}\newline\ct{PCObject>>become:}\newline\ct{PCObject>>putAscii:}\newline\ct{PCObject>>species}\newline\ct{PCObject>>tryPrimitive:withArgs:}\newline\ct{PCObject>>basicAt:}\newline\ct{PCObject>>isNil}\newline\ct{PCObject>>putcr}\newline\ct{PCObject>>isNumber}\newline\ct{PCObject>>errorSubscriptBounds:}\newline\ct{PCObject>>isContextPart}\newline\ct{PCObject>>isSelfEvaluating}\newline\ct{PCObject>>beep}\newline\ct{PCObject>>nextObject}\newline\ct{PCObject>>isInteger}\newline\ct{PCObject>>basicAt:put:}\newline\ct{PCObject>>handleExceptionName:context:}\newline\ct{PCObject>>identityHash}\newline\ct{PCObject>>asString}\newline\ct{PCObject>>errorNonIntegerIndex}\newline\ct{PCObject>>perform:withArguments:}\newline\ct{PCObject>>hash}\newline\ct{PCObject>>primitiveFailed}\newline\ct{PCObject>>printString}\newline\ct{PCObject>>instVarAt:put:}\newline\ct{PCObject>>~=}\newline\ct{PCObject>>at:put:}\newline\ct{PCObject>>shouldBePrintedAsLiteral}\newline\ct{PCObject>>isSmallInteger}\newline\ct{PCObject>>error:}\newline\ct{PCObject>>basicSize}\newline\ct{PCObject>>subclassResponsibility}\newline\ct{PCObject>>->}\newline\ct{PCObject>>at:}\newline\ct{PCObject>>ifNotNil:}\newline\ct{PCObject>>basicCopy}\newline\ct{PCObject>>basicIdentityHash}\newline\ct{PCObject>>copy}\newline\ct{PCObject>>doesNotUnderstand:}\newline\ct{PCObject>>ifNil:ifNotNil:}\newline\ct{PCObject>>perform:with:}\newline\ct{PCObject>>==}\newline\ct{PCObject>>mustBeBoolean}\newline\ct{PCObject>>putString:}\newline\ct{PCObject>>isKindOf:}\newline\ct{PCObject>>errorImproperStore}\newline\ct{PCByteArray>>asByteArray}\newline\ct{PCByteArray>>}\newline\indent\ct{replaceFrom:to:with:startingAt:}\newline\ct{PCByteArray>>asString}\newline\ct{PCDictionary>>includes:}\newline\ct{PCDictionary>>remove:ifAbsent:}\newline\ct{PCDictionary>>associationAt:}\newline\ct{PCDictionary>>remove:}\newline\ct{PCDictionary>>removeKey:}\newline\ct{PCDictionary>>keysDo:}\newline\ct{PCDictionary>>collect:}\newline\ct{PCDictionary>>associationAt:ifAbsent:}\newline\ct{PCDictionary>>keyAtValue:ifAbsent:}\newline\ct{PCDictionary>>noCheckAdd:}\newline\ct{PCDictionary>>printOn:}\newline\ct{PCDictionary>>scanFor:}\newline\ct{PCDictionary>>errorKeyNotFound}\newline\ct{PCDictionary>>at:}\newline\ct{PCDictionary>>at:ifAbsent:}\newline\ct{PCDictionary>>errorValueNotFound}\newline\ct{PCDictionary>>keyAt:}\newline\ct{PCDictionary>>keyAtValue:}\newline\ct{PCDictionary>>keys}\newline\ct{PCDictionary>>associationsDo:}\newline\ct{PCDictionary>>copy}\newline\ct{PCDictionary>>removeKey:ifAbsent:}\newline\ct{PCDictionary>>add:}\newline\ct{PCDictionary>>at:put:}\newline\ct{PCDictionary>>do:}\newline\ct{PCDictionary>>includesKey:}\newline\ct{PCDictionary>>select:}\newline\ct{PCSemaphore>>=}\newline\ct{PCSemaphore>>signal}\newline\ct{PCSemaphore>>initialize}\newline\ct{PCSemaphore>>critical:}\newline\ct{PCSemaphore>>hash}\newline\ct{PCSemaphore>>wait}\newline\ct{PCValueLink>>value:}\newline\ct{PCValueLink>>nextLink}\newline\ct{PCValueLink>>nextLink:}\newline\ct{PCValueLink>>value}\newline\ct{PCValueLink>>=}\newline\ct{PCValueLink>>asLink}\newline\ct{PCValueLink>>hash}\newline\ct{PCValueLink>>printOn:}\newline\ct{PCMethodDictionary>>associationsDo:}\newline\ct{PCMethodDictionary>>at:put:}\newline\ct{PCMethodDictionary>>keysDo:}\newline\ct{PCMethodDictionary>>keyAt:}\newline\ct{PCMethodDictionary>>do:}\newline\ct{PCMethodDictionary>>grow}\newline\ct{PCMethodDictionary>>at:ifAbsent:}\newline\ct{PCMethodDictionary>>includesKey:}\newline\ct{PCMethodDictionary>>removeKey:ifAbsent:}\newline\ct{PCMethodDictionary>>}\newline\indent\ct{keyAtIdentityValue:ifAbsent:}\newline\ct{PCMethodDictionary>>add:}\newline\ct{PCMethodDictionary>>copy}\newline\ct{PCMethodDictionary>>scanFor:}\newline\ct{PCMethodDictionary>>swap:with:}\newline\ct{PCBlock>>value:}\newline\ct{PCBlock>>value:value:}\newline\ct{PCBlock>>asContext}\newline\ct{PCBlock>>outerContext}\newline\ct{PCBlock>>asContextWithSender:}\newline\ct{PCBlock>>valueWithArguments:}\newline\ct{PCBlock>>home}\newline\ct{PCBlock>>ifError:}\newline\ct{PCBlock>>method}\newline\ct{PCBlock>>msecs}\newline\ct{PCBlock>>numArgs}\newline\ct{PCBlock>>numCopiedValues}\newline\ct{PCBlock>>value}\newline\ct{PCContext>>blockCopy:}\newline\ct{PCContext>>sender}\newline\ct{PCContext>>isContextPart}\newline\ct{PCProcessorScheduler>>initProcessLists}\newline\ct{PCProcessorScheduler>>installStartProcess}\newline\ct{PCProcessorScheduler>>remove:ifAbsent:}\newline\ct{PCProcessorScheduler>>installIdleProcess}\newline\ct{PCProcessorScheduler>>activeProcess}\newline\ct{PCProcessorScheduler>>highestPriority}\newline\ct{PCProcessorScheduler>>idleProcess}\newline\ct{PCCollection>>add:}\newline\ct{PCCollection>>asByteArray}\newline\ct{PCCollection>>do:}\newline\ct{PCCollection>>errorNotFound}\newline\ct{PCCollection>>collect:}\newline\ct{PCCollection>>includes:}\newline\ct{PCCollection>>emptyCheck}\newline\ct{PCCollection>>asArray}\newline\ct{PCCollection>>printOn:}\newline\ct{PCCollection>>select:}\newline\ct{PCCollection>>detect:ifNone:}\newline\ct{PCCollection>>sum}\newline\ct{PCCollection>>isEmpty}\newline\ct{PCCollection>>asSet}\newline\ct{PCCollection>>remove:}\newline\ct{PCCollection>>remove:ifAbsent:}\newline\ct{PCCollection>>size}\newline\ct{PCCollection>>errorEmptyCollection}\newline\ct{PCArrayedCollection>>sort:}\newline\ct{PCArrayedCollection>>size}\newline\ct{PCArrayedCollection>>sort}\newline\ct{PCArrayedCollection>>mergeSortFrom:to:by:}\newline\ct{PCArrayedCollection>>add:}\newline\ct{PCArrayedCollection>>}\newline\indent\ct{mergeFirst:middle:last:into:by:}\newline\ct{PCArrayedCollection>>}\newline\indent\ct{mergeSortFrom:to:src:dst:by:}\newline\ct{PCWriteStream>>on:}\newline\ct{PCWriteStream>>pastEndPut:}\newline\ct{PCWriteStream>>contents}\newline\ct{PCWriteStream>>nextPut:}\newline\ct{PCWriteStream>>position:}\newline\ct{PCWriteStream>>size}\newline\ct{PCWriteStream>>space}\newline\ct{PCWriteStream>>nextPutAll:}\newline\ct{PCString>>>}\newline\ct{PCString>>}\newline\indent\ct{findString:startingAt:caseSensitive:}\newline\ct{PCString>>substrings}\newline\ct{PCString>>size}\newline\ct{PCString>><}\newline\ct{PCString>>asSymbol}\newline\ct{PCString>>}\newline\indent\ct{findSubstring:in:startingAt:matchTable:}\newline\ct{PCString>>asByteArray}\newline\ct{PCString>>compare:with:collated:}\newline\ct{PCString>>findDelimiters:startingAt:}\newline\ct{PCString>>hash}\newline\ct{PCString>>indexOfAscii:inString:startingAt:}\newline\ct{PCString>>findTokens:}\newline\ct{PCString>>numArgs}\newline\ct{PCString>><=}\newline\ct{PCString>>replaceFrom:to:with:startingAt:}\newline\ct{PCString>>>=}\newline\ct{PCString>>at:}\newline\ct{PCString>>indexOf:startingAt:}\newline\ct{PCString>>printOn:}\newline\ct{PCString>>at:put:}\newline\ct{PCString>>translate:from:to:table:}\newline\ct{PCString>>asLowercase}\newline\ct{PCString>>asString}\newline\ct{PCString>>=}\newline\ct{PCString>>skipDelimiters:startingAt:}\newline\ct{PCString>>compare:}\newline\ct{PCString>>indexOf:startingAt:ifAbsent:}\newline\ct{PCClassBuilder>>isVariable}\newline\ct{PCClassBuilder>>initialize}\newline\ct{PCClassBuilder>>instSize}\newline\ct{PCClassBuilder>>beBytes}\newline\ct{PCClassBuilder>>name:}\newline\ct{PCClassBuilder>>classVariableNames:}\newline\ct{PCClassBuilder>>compactClassIndex}\newline\ct{PCClassBuilder>>beCompiledMethod}\newline\ct{PCClassBuilder>>isPointers}\newline\ct{PCClassBuilder>>isWords}\newline\ct{PCClassBuilder>>}\newline\indent\ct{isCompiledMethodClassIndex}\newline\ct{PCClassBuilder>>beVariable}\newline\ct{PCClassBuilder>>instVarNames:}\newline\ct{PCClassBuilder>>isCompiledMethod}\newline\ct{PCClassBuilder>>beWords}\newline\ct{PCClassBuilder>>isWeak}\newline\ct{PCClassBuilder>>newClassFormat}\newline\ct{PCClassBuilder>>bePointers}\newline\ct{PCClassBuilder>>build}\newline\ct{PCClassBuilder>>superclass:}\newline\ct{PCClassBuilder>>beWeak}\newline\ct{PCClassBuilder>>compactClassIndexFor:}\newline\ct{PCClassBuilder>>classVariableNames}\newline\ct{PCSymbol>>flushCache}\newline\ct{PCSymbol>>printOn:}\newline\ct{PCSymbol>>initFrom:}\newline\ct{PCSymbol>>species}\newline\ct{PCSymbol>>=}\newline\ct{PCSymbol>>asString}\newline\ct{PCSymbol>>asSymbol}\newline\ct{PCSymbol>>hash}\newline\ct{PCSymbol>>errorNoModification}\newline\ct{PCSymbol>>replaceFrom:to:with:startingAt:}\newline\ct{PCSymbol>>at:put:}\newline\ct{PCSymbol>>basicCopy}\newline\ct{PCInteger>>bitOr:}\newline\ct{PCInteger>>=}\newline\ct{PCInteger>>floor}\newline\ct{PCInteger>>asCharacter}\newline\ct{PCInteger>>//}\newline\ct{PCInteger>>lastDigit}\newline\ct{PCInteger>>printOn:base:}\newline\ct{PCInteger>><}\newline\ct{PCInteger>>truncated}\newline\ct{PCInteger>>digitDiv:neg:}\newline\ct{PCInteger>>bitInvert}\newline\ct{PCInteger>>copyto:}\newline\ct{PCInteger>>benchFib}\newline\ct{PCInteger>>rounded}\newline\ct{PCInteger>>*}\newline\ct{PCInteger>>benchmark}\newline\ct{PCInteger>>asInteger}\newline\ct{PCInteger>>bitClear:}\newline\ct{PCInteger>>bitShift:}\newline\ct{PCInteger>>ceiling}\newline\ct{PCInteger>>digitAdd:}\newline\ct{PCInteger>>bitXor:}\newline\ct{PCInteger>>isInteger}\newline\ct{PCInteger>>growby:}\newline\ct{PCInteger>>bitAnd:}\newline\ct{PCInteger>>/}\newline\ct{PCInteger>>quo:}\newline\ct{PCInteger>>+}\newline\ct{PCInteger>>-}\newline\ct{PCInteger>>digitRshift:bytes:lookfirst:}\newline\ct{PCInteger>>hash}\newline\ct{PCInteger>>digitCompare:}\newline\ct{PCInteger>>digitLogic:op:length:}\newline\ct{PCInteger>>digitMultiply:neg:}\newline\ct{PCInteger>>replaceFrom:to:with:startingAt:}\newline\ct{PCInteger>>>}\newline\ct{PCInteger>>asFloat}\newline\ct{PCInteger>>digitSubtract:}\newline\ct{PCInteger>>timesRepeat:}\newline\ct{PCInteger>>normalize}\newline\ct{PCInteger>>growto:}\newline\ct{PCInteger>>digitLshift:}\newline\ct{PCProcessList>>first}\newline\ct{PCProcessList>>remove:ifAbsent:}\newline\ct{PCProcessList>>removeFirst}\newline\ct{PCProcessList>>add:}\newline\ct{PCProcessList>>do:}\newline\ct{PCProcessList>>isEmpty}\newline\ct{PCProcessList>>addLast:}\newline\ct{PCProcessList>>size}\newline\ct{PCFalse>>\&}\newline\ct{PCFalse>>not}\newline\ct{PCFalse>>or:}\newline\ct{PCFalse>>printOn:}\newline\ct{PCFalse>>and:}\newline\ct{PCFalse>>ifTrue:}\newline\ct{PCFalse>>|}\newline\ct{PCFalse>>ifFalse:}\newline\ct{PCFalse>>ifTrue:ifFalse:}\newline\ct{PCTrue>>or:}\newline\ct{PCTrue>>ifTrue:}\newline\ct{PCTrue>>\&}\newline\ct{PCTrue>>basicCopy}\newline\ct{PCTrue>>ifTrue:ifFalse:}\newline\ct{PCTrue>>not}\newline\ct{PCTrue>>ifFalse:}\newline\ct{PCTrue>>printOn:}\newline\ct{PCTrue>>and:}\newline\ct{PCTrue>>|}\newline\ct{PCMethodContext>>privRefresh}\newline\ct{PCMethodContext>>stackp:}\newline\ct{PCMethodContext>>removeSelf}\newline\ct{PCMethodContext>>}\newline\indent\ct{setSender:receiver:method:closure:startpc:}\newline\ct{PCMethodContext>>tempAt:put:}\newline\ct{PCMethodContext>>asContext}\newline\ct{PCMethodContext>>method}\newline\ct{PCMethodContext>>home}\newline\ct{PCPoint>>abs}\newline\ct{PCPoint>>degrees}\newline\ct{PCPoint>>hash}\newline\ct{PCPoint>>min:}\newline\ct{PCPoint>>*}\newline\ct{PCPoint>>-}\newline\ct{PCPoint>>r}\newline\ct{PCPoint>>rounded}\newline\ct{PCPoint>>printOn:}\newline\ct{PCPoint>>dist:}\newline\ct{PCPoint>>adaptToFloat:andSend:}\newline\ct{PCPoint>>theta}\newline\ct{PCPoint>>asPoint}\newline\ct{PCPoint>>crossProduct:}\newline\ct{PCPoint>>max:}\newline\ct{PCPoint>>y}\newline\ct{PCPoint>>dotProduct:}\newline\ct{PCPoint>>/}\newline\ct{PCPoint>>setX:setY:}\newline\ct{PCPoint>>+}\newline\ct{PCPoint>>adaptToInteger:andSend:}\newline\ct{PCPoint>>truncated}\newline\ct{PCPoint>>=}\newline\ct{PCPoint>>setR:degrees:}\newline\ct{PCPoint>>//}\newline\ct{PCPoint>>x}\newline\ct{PCPoint>>negated}\newline
+\end{multicols}
+
+\section{MetaTalk Bootstrap Extract}
+
+This section lists the methods from MetaTalk for its bootstrapping. This list includes mirrors and base-level classes.
+
+\begin{multicols}{2}\noindent\small
+\ct{ObjectMirror>>initialize}\newline\ct{ObjectMirror>>classMirror}\newline\ct{ObjectMirror>>setClassMirror:}\newline\ct{ObjectMirror>>baseObject}\newline\ct{ObjectMirror>>setBaseObject:}\newline\ct{ClassMirror>>atMethod:put:}\newline\ct{ClassMirror>>baseObject}\newline\ct{ClassMirror>>super}\newline\ct{ClassMirror>>allocate}\newline\ct{ClassMirror>>subClass:instanceVariableNames:}\newline\ct{ClassMirror>>setClassMirror:}\newline\ct{ClassMirror>>initialize}\newline\ct{ClassMirror>>name:}\newline\ct{ClassMirror>>methods}\newline\ct{ClassMirror>>classMirror}\newline\ct{ClassMirror>>newWithBaseObject:}\newline\ct{ClassMirror>>super:}\newline\ct{ClassMirror>>instanceVariables:}\newline\ct{ClassMirror>>methodSourceOf:}\newline\ct{ClassMirror>>isClass}\newline\ct{ClassMirror>>indexOf:}\newline\ct{ClassMirror>>methodAt:}\newline\ct{ClassMirror>>atMethod:compile:}\newline\ct{ClassMirror>>instanceVariables}\newline\ct{ClassMirror>>name}\newline\ct{ClassMirror>>setBaseObject:}\newline\ct{File>>nextPutAll:}\newline\ct{File>>primOpen:writable:}\newline\ct{File>>position:}\newline\ct{File>>primWrite:from:startingAt:count:}\newline\ct{File>>openReadWrite:}\newline\ct{File>>cr}\newline\ct{File>>primClose:}\newline\ct{File>>primSetPosition:to:}\newline\ct{File>>close}\newline\ct{File>>size}\newline\ct{File>>primSize:}\newline\ct{Char>>asString}\newline\ct{Char>>asCharacter}\newline\ct{Point3D>>initialize}\newline\ct{Point3D>>z:}\newline\ct{Point3D>>z}\newline\ct{Point3D>>asString}\newline\ct{True>>asString}\newline\ct{True>>not}\newline\ct{True>>ifTrue:ifFalse:}\newline\ct{True>>|}\newline\ct{True>>ifTrue:}\newline\ct{True>>ifFalse:}\newline\ct{True>>\&}\newline\ct{True>>initialize}\newline\ct{Number>>negated}\newline\ct{Number>>\/\/}\newline\ct{Number>>+}\newline\ct{Number>>\-}\newline\ct{Number>>asNumber}\newline\ct{Number>><}\newline\ct{Number>>\/}\newline\ct{Number>>decimalDigitLength}\newline\ct{Number>>\*}\newline\ct{Number>>\=}\newline\ct{Number>>to:}\newline\ct{Number>>asString}\newline\ct{Number>>>}\newline\ct{Base>>reflect:}\newline\ct{Class>>new}\newline\ct{Class>>new:}\newline\ct{Class>>allocate}\newline\ct{Class>>allocate:}\newline\ct{Block>>value}\newline\ct{Block>>valueWithArgs:}\newline\ct{Block>>whileTrue:}\newline\ct{UndefinedObject>>asString}\newline\ct{Point>>asString}\newline\ct{Point>>initialize}\newline\ct{Point>>y:}\newline\ct{Point>>x:}\newline\ct{Point>>x}\newline\ct{Point>>y}\newline\ct{False>>ifTrue:}\newline\ct{False>>ifTrue:ifFalse:}\newline\ct{False>>asString}\newline\ct{False>>ifFalse:}\newline\ct{False>>|}\newline\ct{False>>\&}\newline\ct{False>>not}\newline\ct{False>>initialize}\newline\ct{Array>>asString}\newline\ct{Array>>size}\newline\ct{Array>>indexAndValuesDo:}\newline\ct{Array>>at:put:}\newline\ct{Array>>do:}\newline\ct{Array>>indexOf:}\newline\ct{Array>>at:}\newline\ct{AbstractMirror>>baseObject}\newline\ct{AbstractMirror>>variables}\newline\ct{AbstractMirror>>at:put:}\newline\ct{AbstractMirror>>perform:withArguments:}\newline\ct{AbstractMirror>>setBaseObject:}\newline\ct{AbstractMirror>>obj:perform:withArguments:}\newline\ct{AbstractMirror>>obj:atIndex:put:}\newline\ct{AbstractMirror>>asString}\newline\ct{AbstractMirror>>isClass}\newline\ct{AbstractMirror>>classMirror}\newline\ct{AbstractMirror>>at:}\newline\ct{AbstractMirror>>baseObject:}\newline\ct{AbstractMirror>>obj:atIndex:}\newline\ct{AbstractMirror>>}\newline
+\indent\ct{obj:perform:withArguments:lookupClass:}\newline\ct{AbstractMirror>>setDirectClass:on:}\newline\ct{AbstractMirror>>baseClass:}\newline\ct{AbstractMirror>>perform:}\newline\ct{AbstractMirror>>directClassOn:}\newline\ct{AbstractMirror>>setClassMirror:}\newline\ct{MirrorFactory>>setDirectMirror:on:}\newline\ct{MirrorFactory>>newOn:}\newline\ct{MirrorFactory>>directClassOn:}\newline\ct{MirrorFactory>>on:}\newline\ct{MirrorFactory>>initialize}\newline\ct{MirrorFactory>>directMirrorOn:}\newline\ct{MirrorFactory>>setDirectClass:on:}\newline\ct{Dict>>values}\newline\ct{Dict>>at:}\newline\ct{Dict>>keysAndValuesDo:}\newline\ct{Dict>>remove:}\newline\ct{Dict>>add:}\newline\ct{Dict>>keyOf:}\newline\ct{Dict>>atKey:}\newline\ct{Dict>>at:put:}\newline\ct{Dict>>keys}\newline\ct{Object>>==}\newline\ct{Object>>print}\newline\ct{Object>>=}\newline\ct{Object>>yourself}\newline\ct{Object>>asList}\newline\ct{Object>>quit}\newline\ct{Object>>copy}\newline\ct{Object>>size}\newline\ct{Object>>initialize}\newline\ct{Object>>asString}\newline\ct{List>>at:}\newline\ct{List>>tail}\newline\ct{List>>=}\newline\ct{List>>at:put:}\newline\ct{List>>size}\newline\ct{List>>,}\newline\ct{List>>isEmpty}\newline\ct{List>>remove:}\newline\ct{List>>do:}\newline\ct{List>>indexAndValuesDo:}\newline\ct{List>>asList}\newline\ct{List>>indexOf:}\newline\ct{List>>head}\newline\ct{List>>asString}\newline\ct{List>>basicAddAll:}\newline\ct{List>>initialize}\newline\ct{List>>add:}\newline\ct{String>>,}\newline\ct{String>>byteAt:put:}\newline\ct{String>>copyReplaceFrom:to:with:}\newline\ct{String>>replaceFrom:to:with:startingAt:}\newline\ct{String>>print}\newline\ct{String>>size}\newline\ct{String>>at:}\newline\ct{String>>asString}\newline\ct{String>>at:put:}\newline\ct{String>>==}\newline
+\end{multicols}
+
+\chapter{Tornado Result Extracts}
+\label{appendixtornado}
+
+This appendix lits the entry points and resulting code units we obtained from three different tailoring cases.
+
+\section{I/O App Extract} \label{app:extraction_helloworld}
+
+This section lists the methods extracted from a nurtured Hello World application using I/O. This case was tailored using an empty seed. The used entry point is the following:
+
+\begin{code}
+FileStream startUp: true.
+1 to: 10 do: [ :i | FileStream stdout nextPutAll: 'hello'; crlf ].
+\end{code}
+
+This list includes all methods installed from the Pharo base libraries and the simple Hello World application.
+\begin{multicols}{2}\noindent\small
+\ct{Array class>>new:}\newline
+\ct{ArrayedCollection>>size}\newline
+\ct{Association class>>key:value:}\newline
+\ct{Association>>value:}\newline
+\ct{Association>>value}\newline
+\ct{BlockClosure>>on:do:}\newline
+\ct{BlockClosure>>repeat}\newline
+\ct{BlockClosure>>valueNoContextSwitch}\newline
+\ct{ByteString class>>compare:with:collated:}\newline
+\ct{ByteString class>>}\newline
+\indent\ct{findFirstInString:inSet:startingAt:}\newline
+\ct{ByteString class>>stringHash:initialHash:}\newline
+\ct{ByteString>>at:put:}\newline
+\ct{ByteString>>at:}\newline
+\ct{ByteString>>isByteString}\newline
+\ct{ByteString>>replaceFrom:to:with:startingAt:}\newline
+\ct{ByteTextConverter class>>}\newline
+\indent\ct{unicodeToByteTable}\newline
+\ct{ByteTextConverter>>nextPut:toStream:}\newline
+\ct{ByteTextConverter>>unicodeToByte:}\newline
+\ct{Character class>>cr}\newline
+\ct{Character class>>lf}\newline
+\ct{Character class>>value:}\newline
+\ct{Character>>=}\newline
+\ct{Character>>asInteger}\newline
+\ct{Character>>asciiValue}\newline
+\ct{Character>>charCode}\newline
+\ct{Collection>>detect:ifNone:}\newline
+\ct{Dictionary>>at:ifAbsent:}\newline
+\ct{Dictionary>>at:ifPresent:}\newline
+\ct{Dictionary>>at:put:}\newline
+\ct{Dictionary>>noCheckAdd:}\newline
+\ct{Dictionary>>scanFor:}\newline
+\ct{FileStream class>>newForStdio}\newline
+\ct{FileStream class>>new}\newline
+\ct{FileStream class>>standardIOStreamNamed:forWrite:}\newline
+\ct{FileStream class>>startUp:}\newline
+\ct{FileStream class>>stdioHandles}\newline
+\ct{FileStream class>>stdoutCharacter>>isCharacter}\newline
+\ct{FileStream class>>voidStdioFiles}\newline
+\ct{FileStream>>collectionSpeciesStandard}\newline
+\ct{FileStream>>enableReadBufferingSmalltalkImage>>vm}\newline
+\ct{FileStream>>isBinaryStandard}\newline
+\ct{FileStream>>next:putAll:startingAt:Standard}\newline
+\ct{FileStream>>nextPut:Standard}\newline
+\ct{FileStream>>openOnHandle:name:forWrite:Standard}\newline
+\ct{FileStream>>primWrite:from:startingAt:count:Standard}\newline
+\ct{GreekEnvironment class>>supportedLanguages}\newline
+\ct{HashTableSizes class>>atLeast:}\newline
+\ct{HashTableSizes class>>sizes}\newline
+\ct{HashedCollection class>>newProto}\newline
+\ct{HashedCollection>>atNewIndex:put:}\newline
+\ct{HashedCollection>>findElementOrNil:}\newline
+\ct{HashedCollection>>fullCheck}\newline
+\ct{HashedCollection>>grow}\newline
+\ct{HashedCollection>>initialize:}\newline
+\ct{Integer>>asCharacter}\newline
+\ct{JapaneseEnvironment class>>}\newline
+\indent\ct{supportedLanguages}\newline
+\ct{KoreanEnvironment class>>}\newline
+\indent\ct{supportedLanguages}\newline
+\ct{LanguageEnvironment class>>}\newline
+\indent\ct{currentPlatform}\newline
+\ct{LanguageEnvironment class>>}\newline
+\indent\ct{defaultSystemConverter}\newline
+\ct{LanguageEnvironment class>>}\newline
+\indent\ct{initKnownEnvironments}\newline
+\ct{LanguageEnvironment class>>}\newline
+\noindent\ct{knownEnvironments}\newline
+\ct{LanguageEnvironment class>>}\newline
+\indent\ct{localeID:}\newline
+\ct{LanguageEnvironment>>localeID:}\newline
+\ct{Latin1Environment class>>}\newline
+\indent\ct{supportedLanguages}\newline
+\ct{Latin2Environment class>>}\newline
+\indent\ct{supportedLanguages}\newline
+\ct{Latin9Environment class>>}\newline
+\indent\ct{supportedLanguages}\newline
+\ct{Latin9Environment class>>}\newline
+\indent\ct{systemConverterClass}\newline
+\ct{Locale class>>currentPlatform}\newline
+\ct{Locale class>>determineCurrentLocale}\newline
+\ct{Locale>>determineLocaleID}\newline
+\ct{Locale>>determineLocale}\newline
+\ct{Locale>>fetchISO2Language}\newline
+\ct{Locale>>languageEnvironment}\newline
+\ct{Locale>>localeID:}\newline
+\ct{Locale>>localeID}\newline
+\ct{Locale>>primCountry}\newline
+\ct{Locale>>primLanguage}\newline
+\ct{LocaleID class>>isoLanguage:isoCountry:}\newline
+\ct{LocaleID class>>isoLanguage:}\newline
+\ct{LocaleID class>>isoString:}\newline
+\ct{LocaleID>>=}\newline
+\ct{LocaleID>>hash}\newline
+\ct{LocaleID>>isoCountry}\newline
+\ct{LocaleID>>isoLanguage:isoCountry:}\newline
+\ct{LocaleID>>isoLanguage}\newline
+\ct{LookupKey class>>key:}\newline
+\ct{LookupKey>>key:}\newline
+\ct{LookupKey>>key}\newline
+\ct{Magnitude>>max:}\newline
+\ct{MultiByteFileStream>>}\newline
+\indent\ct{basicNext:putAll:startingAt:}\newline
+\ct{MultiByteFileStream>>basicNextPut:}\newline
+\ct{MultiByteFileStream>>converter:}\newline
+\ct{MultiByteFileStream>>converter}\newline
+\ct{MultiByteFileStream>>}\newline
+\indent\ct{installLineEndConventionInConverter}\newline
+\ct{MultiByteFileStream>>nextPut:}\newline
+\ct{MultiByteFileStream>>nextPutAll:}\newline
+\ct{Number>>negative}\newline
+\ct{OSPlatform class>>isWin32}\newline
+\ct{OSPlatform class>>platformName}\newline
+\ct{Object>>=}\newline
+\ct{Object>>at:put:Object>>isCharacter}\newline
+\ct{Object>>at:}\newline
+\ct{Object>>class}\newline
+\ct{Object>>hash}\newline
+\ct{Object>>isInteger}\newline
+\ct{Object>>species}\newline
+\ct{Object>>\textasciitilde\textasciitilde}\newline
+\ct{OrderedCollection class>>arrayType}\newline
+\ct{OrderedCollection class>>new:}\newline
+\ct{OrderedCollection class>>new}\newline
+\ct{OrderedCollection>>add:}\newline
+\ct{OrderedCollection>>addLast:}\newline
+\ct{OrderedCollection>>at:}\newline
+\ct{OrderedCollection>>ensureBoundsFrom:to:}\newline
+\ct{OrderedCollection>>resetTo:}\newline
+\ct{OrderedCollection>>reset}\newline
+\ct{OrderedCollection>>setCollection:}\newline
+\ct{OrderedCollection>>size}\newline
+\ct{PositionableStream class>>on:}\newline
+\ct{PositionableStream>>isBinary}\newline
+\ct{PositionableStream>>on:}\newline
+\ct{ProtoObject>>basicIdentityHash}\newline
+\ct{ProtoObject>>flag:}\newline
+\ct{ProtoObject>>identityHash}\newline
+\ct{ProtoObject>>initialize}\newline
+\ct{RussianEnvironment class>>supportedLanguages}\newline
+\ct{Semaphore>>critical:}\newline
+\ct{SequenceableCollection>>copyFrom:to:}\newline
+\ct{SequenceableCollection>>copyUpTo:}\newline
+\ct{SequenceableCollection>>do:}\newline
+\ct{SequenceableCollection>>first:}\newline
+\ct{SequenceableCollection>>first}\newline
+\ct{SequenceableCollection>>identityIndexOf:ifAbsent:}\newline
+\ct{SequenceableCollection>>identityIndexOf:}\newline
+\ct{SequenceableCollection>>indexOf:ifAbsent:}\newline
+\ct{SequenceableCollection>>second}\newline
+\ct{SequenceableCollection>>writeStream}\newline
+\ct{SimplifiedChineseEnvironment class>>supportedLanguages}\newline
+\ct{SmallInteger>>bitXor:}\newline
+\ct{SmallInteger>>hash}\newline
+\ct{Stream>>basicNextPut:}\newline
+\ct{String class>>new:}\newline
+\ct{String class>>with:}\newline
+\ct{String>>=}\newline
+\ct{String>>compare:with:collated:}\newline
+\ct{String>>findDelimiters:startingAt:}\newline
+\ct{String>>findTokens:}\newline
+\ct{String>>hash}\newline
+\ct{String>>indexOf:startingAt:ifAbsent:}\newline
+\ct{String>>isString}\newline
+\ct{String>>skipDelimiters:startingAt:}\newline
+\ct{TextConverter class>>defaultSystemConverter}\newline
+\ct{TextConverter class>>initializeLatin1MapAndEncodings}\newline
+\ct{TextConverter class>>latin1Encodings}\newline
+\ct{TextConverter class>>latin1Map}\newline
+\ct{TextConverter>>initialize}\newline
+\ct{TextConverter>>installLineEndConvention:}\newline
+\ct{TextConverter>>nextPutAll:toStream:}\newline
+\ct{TextConverter>>nextPutByteString:toStream:}\newline
+\ct{VirtualMachine class>>getSystemAttribute:}\newline
+\ct{WriteStream>>contentsStandard}\newline
+\ct{WriteStream>>crlf}\newline
+\ct{WriteStream>>nextPut:}\newline
+\ct{WriteStream>>on:}\newline
+\ct{WriteStream>>reset}\newline
+\end{multicols}
+
+\section{Seaside Web Application Entry Points} \label{app:extraction_seaside_entry_points}
+
+This section lists the entry points as used to tailor the Seaside web application with a full Pharo seed and an empty seed. The following code snippet corresponds with a full Pharo seed. It only consists in starting the web server as the base libraries are initialized and available in the seed.
+
+\begin{code}
+	ZnZincServerAdaptor startOn: 8888.
+\end{code}
+
+The following code snippet corresponds with an empty seed.  This entry point includes also the initialization of the minimal runtime needed to do networking.
+
+\begin{code}
+	"We initialize some classes of the system"
+	SmalltalkImage initializeForTornado.
+	Symbol initializeForTornado.
+	Object initialize.
+	ExternalSemaphoreTable initialize.
+	Socket initialize.
+	Delay initialize.
+	Delay startUp: true.
+	Delay shutDown: true.
+	OSPlatform initialize.
+	DiskStore initialize.
+	FileStream initialize.
+	NetNameResolver initialize.
+	DateAndTime initialize.
+	ProcessorScheduler initialize.
+	WeakFinalizationList initialize.
+	UUIDGenerator initialize.
+	WeakArray initialize.
+	GRPharoRandomProvider initialize.
+	WASlime initialize.
+	UIManager basicDefault: DummyUIManager new.
+	ZnServer initialize.
+	WAServerManager initialize.
+	Smalltalk instVarNamed: 'session' put: Smalltalk newSessionObject.
+	Smalltalk startupImage: true snapshotWorked: true.
+	
+	"Finally we start the web server"
+	ZnZincServerAdaptor startOn: 8888.
+\end{code}
+
+\section{Seaside App A Extract} \label{app:extraction_seaside_empty_seed}
+
+This section lists the methods extracted from the nurtured Web application when using an empty seed. This list includes all methods installed from Seaside framework, the Counter application and the base library of Pharo.
+
+\begin{multicols}{2}\noindent\small
+\ct{Array class>>new:}\newline
+\ct{Array>>isSelfEvaluating}\newline
+\ct{Array>>printOn:}\newline
+\ct{Array>>replaceFrom:to:with:startingAt:}\newline
+\ct{Array>>shouldBePrintedAsLiteral}\newline
+\ct{ArrayedCollection class>>new:withAll:}\newline
+\ct{ArrayedCollection class>>new}\newline
+\ct{ArrayedCollection class>>with:with:with:}\newline
+\ct{ArrayedCollection class>>with:with:}\newline
+\ct{ArrayedCollection class>>with:}\newline
+\ct{ArrayedCollection>>mergeSortFrom:to:by:}\newline
+\ct{ArrayedCollection>>size}\newline
+\ct{ArrayedCollection>>sort:}\newline
+\ct{Association class>>key:value:}\newline
+\ct{Association class>>key:value:}\newline
+\ct{Association>>expireWeakKey}\newline
+\ct{Association>>expiredWeakKey}\newline
+\ct{Association>>key:WeakKey}\newline
+\ct{Association>>key:value:WeakKey}\newline
+\ct{Association>>keyWeakKey}\newline
+\ct{Association>>value:WeakKey}\newline
+\ct{Association>>value:}\newline
+\ct{Association>>valueWeakKey}\newline
+\ct{Association>>value}\newline
+\ct{BlockClosure>>argumentCount}\newline
+\ct{BlockClosure>>asContextWithSender:}\newline
+\ct{BlockClosure>>asContext}\newline
+\ct{BlockClosure>>assert}\newline
+\ct{BlockClosure>>cull:}\newline
+\ct{BlockClosure>>ensure:}\newline
+\ct{BlockClosure>>fixCallbackTemps}\newline
+\ct{BlockClosure>>forkAt:named:}\newline
+\ct{BlockClosure>>forkAt:}\newline
+\ct{BlockClosure>>ifCurtailed:}\newline
+\ct{BlockClosure>>ifError:}\newline
+\ct{BlockClosure>>isClosure}\newline
+\ct{BlockClosure>>newProcess}\newline
+\ct{BlockClosure>>numArgs}\newline
+\ct{BlockClosure>>numCopiedValues}\newline
+\ct{BlockClosure>>on:do:}\newline
+\ct{BlockClosure>>on:fork:}\newline
+\ct{BlockClosure>>outerContext}\newline
+\ct{BlockClosure>>renderOn:}\newline
+\ct{BlockClosure>>repeatWithGCIf:}\newline
+\ct{BlockClosure>>repeat}\newline
+\ct{BlockClosure>>startpc}\newline
+\ct{BlockClosure>>value:value:value:}\newline
+\ct{BlockClosure>>value:value:}\newline
+\ct{BlockClosure>>valueNoContextSwitch}\newline
+\ct{BlockClosure>>valueWithArguments:}\newline
+\ct{BlockClosure>>valueWithPossibleArguments:}\newline
+\ct{ByteArray>>asByteArray}\newline
+\ct{ByteArray>>replaceFrom:to:with:startingAt:}\newline
+\ct{ByteString class>>compare:with:collated:}\newline
+\ct{ByteString class>>findFirstInString:inSet:startingAt:}\newline
+\ct{ByteString class>>indexOfAscii:inString:startingAt:}\newline
+\ct{ByteString class>>stringHash:initialHash:}\newline
+\ct{ByteString class>>translate:from:to:table:}\newline
+\ct{ByteString>>asByteArray}\newline
+\ct{ByteString>>at:put:}\newline
+\ct{ByteString>>at:}\newline
+\ct{ByteString>>beginsWith:}\newline
+\ct{ByteString>>byteAt:put:}\newline
+\ct{ByteString>>byteSize}\newline
+\ct{ByteString>>}\newline
+\indent\ct{findSubstring:in:startingAt:matchTable:}\newline
+\ct{ByteString>>}\newline
+\indent\ct{findSubstringViaPrimitive:in:startingAt:matchTable:}\newline
+\ct{ByteString>>isByteString}\newline
+\ct{ByteString>>isOctetString}\newline
+\ct{ByteString>>replaceFrom:to:with:startingAt:}\newline
+\ct{ByteSymbol class>>stringHash:initialHash:}\newline
+\ct{ByteSymbol>>at:}\newline
+\ct{ByteSymbol>>}\newline
+\indent\ct{findSubstring:in:startingAt:matchTable:}\newline
+\ct{ByteSymbol>>isByteString}\newline
+\ct{ByteSymbol>>privateAt:put:}\newline
+\ct{ByteSymbol>>species}\newline
+\ct{ByteSymbol>>string:}\newline
+\ct{CNGBTextConverter class>>encodingNames}\newline
+\ct{CP1250TextConverter class>>encodingNames}\newline
+\ct{CP1253TextConverter class>>encodingNames}\newline
+\ct{ChangesLog class>>default}\newline
+\ct{ChangesLog>>recordStartupStamp}\newline
+\ct{Character class>>codePoint:}\newline
+\ct{Character class>>cr}\newline
+\ct{Character class>>lf}\newline
+\ct{Character class>>space}\newline
+\ct{Character class>>value:}\newline
+\ct{Character>>=}\newline
+\ct{Character>>asCharacter}\newline
+\ct{Character>>asInteger}\newline
+\ct{Character>>asSymbol}\newline
+\ct{Character>>asUppercase}\newline
+\ct{Character>>asciiValue}\newline
+\ct{Character>>charCode}\newline
+\ct{Character>>characterSet}\newline
+\ct{Character>>codePoint}\newline
+\ct{Character>>digitValue}\newline
+\ct{Character>>greaseInteger}\newline
+\ct{Character>>isAlphaNumeric}\newline
+\ct{Character>>isCharacter}\newline
+\ct{Character>>isDigit}\newline
+\ct{Character>>isLetter}\newline
+\ct{Character>>isOctetCharacter}\newline
+\ct{Character>>isSeparator}\newline
+\ct{Character>>isVowel}\newline
+\ct{Character>>leadingChar}\newline
+\ct{Character>>to:}\newline
+\ct{Collection class>>withAll:}\newline
+\ct{Collection>>addAll:}\newline
+\ct{Collection>>allSatisfy:}\newline
+\ct{Collection>>anySatisfy:}\newline
+\ct{Collection>>asArray}\newline
+\ct{Collection>>detect:ifNone:}\newline
+\ct{Collection>>emptyCheck}\newline
+\ct{Collection>>inject:into:}\newline
+\ct{Collection>>isCollection}\newline
+\ct{Collection>>isEmptyOrNil}\newline
+\ct{Collection>>isEmpty}\newline
+\ct{Collection>>noneSatisfy:}\newline
+\ct{Collection>>notEmpty}\newline
+\ct{Collection>>printElementsOn:}\newline
+\ct{Collection>>printNameOn:}\newline
+\ct{Collection>>printOn:}\newline
+\ct{Collection>>removeAll:}\newline
+\ct{Collection>>removeAllFoundIn:}\newline
+\ct{Collection>>sorted:}\newline
+\ct{Collection>>sorted}\newline
+\ct{CommandLineUIManager class>>replacing:}\newline
+\ct{CommandLineUIManager>>initialize}\newline
+\ct{CommandLineUIManager>>replacing:}\newline
+\ct{CompiledMethod>>frameSize}\newline
+\ct{CompiledMethod>>header}\newline
+\ct{CompiledMethod>>initialPC}\newline
+\ct{CompiledMethod>>isPrimitive}\newline
+\ct{CompiledMethod>>numLiterals}\newline
+\ct{CompiledMethod>>numTemps}\newline
+\ct{CompiledMethod>>objectAt:}\newline
+\ct{CompiledMethod>>primitive}\newline
+\ct{CompoundTextConverter class>>encodingNames}\newline
+\ct{ContextPart class>>contextEnsure:}\newline
+\ct{ContextPart class>>contextOn:do:}\newline
+\ct{ContextPart class>>newForMethod:}\newline
+\ct{ContextPart class>>theReturnMethod}\newline
+\ct{ContextPart>>activateMethod:withArgs:receiver:class:}\newline
+\ct{ContextPart>>activateReturn:value:}\newline
+\ct{ContextPart>>at:put:}\newline
+\ct{ContextPart>>at:}\newline
+\ct{ContextPart>>bottomContext}\newline
+\ct{ContextPart>>cut:}\newline
+\ct{ContextPart>>doPop}\newline
+\ct{ContextPart>>exceptionClass}\newline
+\ct{ContextPart>>exceptionHandlerBlock}\newline
+\ct{ContextPart>>exceptionHandlerIsActive:}\newline
+\ct{ContextPart>>exceptionHandlerIsActive}\newline
+\ct{ContextPart>>findContextSuchThat:}\newline
+\ct{ContextPart>>findNextHandlerContextStarting}\newline
+\ct{ContextPart>>findNextUnwindContextUpTo:}\newline
+\ct{ContextPart>>handleSignal:}\newline
+\ct{ContextPart>>insertSender:}\newline
+\ct{ContextPart>>isDead}\newline
+\ct{ContextPart>>jump}\newline
+\ct{ContextPart>>methodReturnTop}\newline
+\ct{ContextPart>>nextHandlerContext}\newline
+\ct{ContextPart>>pop}\newline
+\ct{ContextPart>>privSender:}\newline
+\ct{ContextPart>>push:}\newline
+\ct{ContextPart>>pushTemporaryVariable:}\newline
+\ct{ContextPart>>releaseTo:}\newline
+\ct{ContextPart>>resume:through:}\newline
+\ct{ContextPart>>resume:}\newline
+\ct{ContextPart>>return:from:}\newline
+\ct{ContextPart>>return:through:}\newline
+\ct{ContextPart>>return:}\newline
+\ct{ContextPart>>runUntilErrorOrReturnFrom:}\newline
+\ct{ContextPart>>sender}\newline
+\ct{ContextPart>>singleRelease}\newline
+\ct{ContextPart>>stackp:}\newline
+\ct{ContextPart>>stepToCallee}\newline
+\ct{ContextPart>>step}\newline
+\ct{ContextPart>>terminateTo:}\newline
+\ct{Date class>>fromSeconds:}\newline
+\ct{Date class>>fromString:}\newline
+\ct{Date class>>readFrom:}\newline
+\ct{Date class>>starting:}\newline
+\ct{Date class>>year:month:day:}\newline
+\ct{Date>>dayMonthYearDo:}\newline
+\ct{Date>>monthIndex}\newline
+\ct{Date>>printOn:format:}\newline
+\ct{Date>>printOn:}\newline
+\ct{DateAndTime class>>clock}\newline
+\ct{DateAndTime class>>fromSeconds:offset:}\newline
+\ct{DateAndTime class>>fromSeconds:}\newline
+\ct{DateAndTime class>>fromString:}\newline
+\ct{DateAndTime class>>initializeOffsets}\newline
+\ct{DateAndTime class>>initialize}\newline
+\ct{DateAndTime class>>localOffset}\newline
+\ct{DateAndTime class>>localTimeZone}\newline
+\ct{DateAndTime class>>}\newline
+\indent\ct{milliSecondsSinceMidnight}\newline
+\ct{DateAndTime class>>millisecondClockValue}\newline
+\ct{DateAndTime class>>now}\newline
+\ct{DateAndTime class>>readFrom:}\newline
+\ct{DateAndTime class>>}\newline
+\indent\ct{readOptionalSeparatorFrom:}\newline
+\ct{DateAndTime class>>}\newline
+\indent\ct{readTimezoneOffsetFrom:}\newline
+\ct{DateAndTime class>>}\newline
+\indent\ct{readTwoDigitIntegerFrom:}\newline
+\ct{DateAndTime class>>startUp:}\newline
+\ct{DateAndTime class>>todayAtMilliSeconds:}\newline
+\ct{DateAndTime class>>waitForOffsets}\newline
+\ct{DateAndTime class>>}\newline
+\indent\ct{year:month:day:hour:minute:offset:}\newline
+\ct{DateAndTime class>>}\newline
+\indent\ct{year:month:day:hour:minute:}\newline
+\indent\ct{second:nanoSecond:offset:}\newline
+\ct{DateAndTime class>>}\newline
+\indent\ct{year:month:day:hour:minute:}\newline
+\indent\ct{second:offset:}\newline
+\ct{DateAndTime class>>}\newline
+\indent\ct{year:month:day:hour:minute:second:}\newline
+\ct{DateAndTime class>>}\newline
+\indent\ct{year:month:day:hour:minute:}\newline
+\ct{DateAndTime class>>}\newline
+\indent\ct{year:month:day:offset:}\newline
+\ct{DateAndTime class>>}\newline
+\indent\ct{year:month:day:}\newline
+\ct{DateAndTime>><}\newline
+\ct{DateAndTime>>asDateAndTime}\newline
+\ct{DateAndTime>>asTimeStamp}\newline
+\ct{DateAndTime>>asUTC}\newline
+\ct{DateAndTime>>dayMonthYearDo:}\newline
+\ct{DateAndTime>>dayOfMonth}\newline
+\ct{DateAndTime>>dayOfWeekAbbreviation}\newline
+\ct{DateAndTime>>dayOfWeekName}\newline
+\ct{DateAndTime>>hour24}\newline
+\ct{DateAndTime>>hour}\newline
+\ct{DateAndTime>>julianDayNumber}\newline
+\ct{DateAndTime>>julianDayOffset}\newline
+\ct{DateAndTime>>localSeconds}\newline
+\ct{DateAndTime>>minute}\newline
+\ct{DateAndTime>>monthAbbreviation}\newline
+\ct{DateAndTime>>monthName}\newline
+\ct{DateAndTime>>month}\newline
+\ct{DateAndTime>>normalize:ticks:base:}\newline
+\ct{DateAndTime>>offset:DateAndTime>>midnight}\newline
+\ct{DateAndTime>>offset}\newline
+\ct{DateAndTime>>printHMSOn:}\newline
+\ct{DateAndTime>>second}\newline
+\ct{DateAndTime>>setJdn:seconds:nano:offset:}\newline
+\ct{DateAndTime>>ticks:offset:DateAndTime>>dayOfWeek}\newline
+\ct{DateAndTime>>ticks}\newline
+\ct{DateAndTime>>year}\newline
+\ct{Delay class>>forMilliseconds:}\newline
+\ct{Delay class>>handleTimerEvent}\newline
+\ct{Delay class>>initialize}\newline
+\ct{Delay class>>primSignal:atMilliseconds:}\newline
+\ct{Delay class>>restoreResumptionTimes}\newline
+\ct{Delay class>>runTimerEventLoop}\newline
+\ct{Delay class>>saveResumptionTimes}\newline
+\ct{Delay class>>scheduleDelay:}\newline
+\ct{Delay class>>shutDown}\newline
+\ct{Delay class>>startTimerEventLoop}\newline
+\ct{Delay class>>startUp}\newline
+\ct{Delay class>>stopTimerEventLoop}\newline
+\ct{Delay class>>unscheduleDelay:}\newline
+\ct{Delay>>beingWaitedOn:}\newline
+\ct{Delay>>beingWaitedOn}\newline
+\ct{Delay>>delayDuration}\newline
+\ct{Delay>>resumptionTime:}\newline
+\ct{Delay>>resumptionTime}\newline
+\ct{Delay>>schedule}\newline
+\ct{Delay>>setDelay:forSemaphore:}\newline
+\ct{Delay>>signalWaitingProcess}\newline
+\ct{Delay>>unschedule}\newline
+\ct{Delay>>wait}\newline
+\ct{DelayWaitTimeout>>isExpired}\newline
+\ct{DelayWaitTimeout>>setDelay:forSemaphore:}\newline
+\ct{DelayWaitTimeout>>signalWaitingProcess}\newline
+\ct{DelayWaitTimeout>>wait}\newline
+\ct{Dictionary>>addAll:GRSmall}\newline
+\ct{Dictionary>>associationsDo:}\newline
+\ct{Dictionary>>at:ifAbsent:GRSmall}\newline
+\ct{Dictionary>>at:ifAbsent:Small}\newline
+\ct{Dictionary>>at:ifAbsent:}\newline
+\ct{Dictionary>>at:ifAbsentPut:GRSmall}\newline
+\ct{Dictionary>>at:ifAbsentPut:}\newline
+\ct{Dictionary>>at:ifPresent:GRSmall}\newline
+\ct{Dictionary>>at:ifPresent:}\newline
+\ct{Dictionary>>at:put:GRSmall}\newline
+\ct{Dictionary>>at:put:Small}\newline
+\ct{Dictionary>>at:put:}\newline
+\ct{Dictionary>>at:}\newline
+\ct{Dictionary>>do:}\newline
+\ct{Dictionary>>findIndexFor:GRSmall}\newline
+\ct{Dictionary>>findIndexForKey:Small}\newline
+\ct{Dictionary>>fixCollisionsFrom:}\newline
+\ct{Dictionary>>includesKey:GRSmall}\newline
+\ct{Dictionary>>includesKey:}\newline
+\ct{Dictionary>>initialize:GRSmall}\newline
+\ct{Dictionary>>initializeSmall}\newline
+\ct{Dictionary>>isEmptyGRSmall}\newline
+\ct{Dictionary>>keyAtValue:ifAbsent:}\newline
+\ct{Dictionary>>keysAndValuesDo:}\newline
+\ct{Dictionary>>keysAndValuesDo:}\newline
+\ct{Dictionary>>keysAndValuesDo:}\newline
+\ct{Dictionary>>keysDo:GRSmall}\newline
+\ct{Dictionary>>noCheckAdd:}\newline
+\ct{Dictionary>>postCopyGRSmall}\newline
+\ct{Dictionary>>privateAt:put:GRSmall}\newline
+\ct{Dictionary>>privateAt:put:Small}\newline
+\ct{Dictionary>>rehash}\newline
+\ct{Dictionary>>removeKey:ifAbsent:}\newline
+\ct{Dictionary>>scanFor:}\newline
+\ct{Dictionary>>seasideRequestFieldsGRSmall}\newline
+\ct{Dictionary>>sizeGRSmall}\newline
+\ct{Dictionary>>valuesDo:}\newline
+\ct{DiskStore class>>checkVMVersion}\newline
+\ct{DiskStore class>>initialize}\newline
+\ct{DiskStore class>>reset}\newline
+\ct{DiskStore class>>shutDown:}\newline
+\ct{DiskStore class>>startUp:}\newline
+\ct{DiskStore class>>useFilePlugin}\newline
+\ct{Duration class>>days:hours:minutes:}\newline
+\indent\ct{seconds:nanoSeconds:}\newline
+\ct{Duration class>>days:hours:minutes:}\newline
+\indent\ct{seconds:}\newline
+\ct{Duration class>>days:}\newline
+\ct{Duration class>>nanoSeconds:}\newline
+\ct{Duration class>>seconds:nanoSeconds:}\newline
+\ct{Duration class>>seconds:}\newline
+\ct{Duration>>+}\newline
+\ct{Duration>>-}\newline
+\ct{Duration>>asDuration}\newline
+\ct{Duration>>asMilliSeconds}\newline
+\ct{Duration>>asNanoSeconds}\newline
+\ct{Duration>>asSeconds}\newline
+\ct{Duration>>days}\newline
+\ct{Duration>>isZero}\newline
+\ct{Duration>>negated}\newline
+\ct{Duration>>seconds:nanoSeconds:}\newline
+\ct{Duration>>ticks}\newline
+\ct{DynamicVariable class>>value:during:}\newline
+\ct{DynamicVariable>>value:during:}\newline
+\ct{EUCJPTextConverter class>>encodingNames}\newline
+\ct{EUCKRTextConverter class>>encodingNames}\newline
+\ct{EncodedCharSet class>>charsetAt:}\newline
+\ct{EventManager class>>actionMaps}\newline
+\ct{EventManagerclass>>flushEvents}\newline
+\ct{Exception class>>,}\newline
+\ct{Exception class>>handles:}\newline
+\ct{Exception class>>signal:}\newline
+\ct{Exception class>>signal}\newline
+\ct{Exception>>description}\newline
+\ct{Exception>>isResumable}\newline
+\ct{Exception>>messageText:}\newline
+\ct{Exception>>messageText}\newline
+\ct{Exception>>printOn:}\newline
+\ct{Exception>>privHandlerContext:}\newline
+\ct{Exception>>receiver}\newline
+\ct{Exception>>resume:}\newline
+\ct{Exception>>resumeUnchecked:}\newline
+\ct{Exception>>signal:}\newline
+\ct{Exception>>signalerContext}\newline
+\ct{Exception>>signal}\newline
+\ct{ExceptionSet>>,}\newline
+\ct{ExceptionSet>>add:}\newline
+\ct{ExceptionSet>>handles:}\newline
+\ct{ExceptionSet>>initialize}\newline
+\ct{ExtendedNumberParser>>allowPlusSign}\newline
+\ct{ExtendedNumberParser>>nextNumber}\newline
+\ct{ExternalSemaphoreTable class>>clearExternalObjects}\newline
+\ct{ExternalSemaphoreTable class>>collectionBasedOn:withRoomFor:}\newline
+\ct{ExternalSemaphoreTable class>>freedSlotsIn:ratherThanIncreaseSizeTo:}\newline
+\ct{ExternalSemaphoreTable class>>initialize}\newline
+\ct{ExternalSemaphoreTable class>>registerExternalObject:}\newline
+\ct{ExternalSemaphoreTable class>>safelyRegisterExternalObject:}\newline
+\ct{ExternalSemaphoreTable class>>safelyUnregisterExternalObject:}\newline
+\ct{ExternalSemaphoreTable class>>slotFor:in:}\newline
+\ct{ExternalSemaphoreTable class>>unprotectedExternalObjects:}\newline
+\ct{ExternalSemaphoreTable class>>unprotectedExternalObjects}\newline
+\ct{ExternalSemaphoreTable class>>unregisterExternalObject:}\newline
+\ct{False>>not}\newline
+\ct{False>>|}\newline
+\ct{FilePath class>>pathName:isEncoded:}\newline
+\ct{FilePath>>asSqueakPathName}\newline
+\ct{FilePath>>pathName:isEncoded:}\newline
+\ct{FilePath>>pathName}\newline
+\ct{FileStream class>>flushAndVoidStdioFiles}\newline
+\ct{FileStream class>>initialize}\newline
+\ct{FileStream class>>shutDown:}\newline
+\ct{FileStream class>>startUp:}\newline
+\ct{FileStream class>>stdioHandles}\newline
+\ct{FileStream class>>voidStdioFiles}\newline
+\ct{Float class>>precision}\newline
+\ct{Float>>adaptToInteger:andSend:}\newline
+\ct{Float>>asFloat}\newline
+\ct{Float>>isInfinite}\newline
+\ct{Float>>timesTwoPower:}\newline
+\ct{Float>>truncated}\newline
+\ct{Fraction class>>numerator:denominator:}\newline
+\ct{Fraction>>>=}\newline
+\ct{Fraction>>reduced}\newline
+\ct{Fraction>>setNumerator:denominator:}\newline
+\ct{Fraction>>truncated}\newline
+\ct{GRCodecStream class>>on:}\newline
+\ct{GRCodecStream>>atEnd}\newline
+\ct{GRCodecStream>>initializeOn:}\newline
+\ct{GRNullCodec class>>codecName}\newline
+\ct{GRNullCodec class>>supportsEncoding:}\newline
+\ct{GRNullCodec>>encoderFor:}\newline
+\ct{GRNullCodec>>url}\newline
+\ct{GRNullCodecStream>>nextPutAll:}\newline
+\ct{GRObject class>>new}\newline
+\ct{GRObject>>initialize}\newline
+\ct{GROrderedMultiMap>>allAt:}\newline
+\ct{GROrderedMultiMap>>at:add:}\newline
+\ct{GRPharoConverterCodecStream class>>}\newline
+\indent\ct{on:converter:}\newline
+\ct{GRPharoConverterCodecStream>>}\newline
+\indent\ct{contents}\newline
+\ct{GRPharoConverterCodecStream>>}\newline
+\indent\ct{initializeOn:converter:}\newline
+\ct{GRPharoConverterCodecStream>>}\newline
+\indent\ct{size}\newline
+\ct{GRPharoGenericCodec class>>}\newline
+\indent\ct{supportedEncodingNames}\newline
+\ct{GRPharoGenericCodec class>>}\newline
+\indent\ct{supportsEncoding:}\newline
+\ct{GRPharoLatin1Codec class>>}\newline
+\indent\ct{supportedEncodingNames}\newline
+\ct{GRPharoLatin1Codec class>>}\newline
+\indent\ct{supportsEncoding:}\newline
+\ct{GRPharoPlatform>>addToShutDownList:}\newline
+\ct{GRPharoPlatform>>addToStartUpList:}\newline
+\ct{GRPharoPlatform>>}\newline
+\indent\ct{includesUnsafeUrlCharacter:}\newline
+\ct{GRPharoPlatform>>}\newline
+\indent\ct{includesUnsafeXmlCharacter:}\newline
+\ct{GRPharoPlatform>>semaphoreClass}\newline
+\ct{GRPharoRandomProvider class>>initialize}\newline
+\ct{GRPharoRandomProvider class>>nextInt:}\newline
+\ct{GRPharoRandomProvider class>>randomClass}\newline
+\ct{GRPharoRandomProvider class>>startUp}\newline
+\ct{GRPharoUtf8Codec class>>basicForEncoding:}\newline
+\ct{GRPharoUtf8Codec class>>supportsEncoding:}\newline
+\ct{GRPharoUtf8Codec>>decode:}\newline
+\ct{GRPharoUtf8Codec>>decoderFor:}\newline
+\ct{GRPharoUtf8Codec>>encoderFor:}\newline
+\ct{GRPharoUtf8Codec>>name}\newline
+\ct{GRPharoUtf8Codec>>url}\newline
+\ct{GRPharoUtf8CodecStream>>encodeFast:}\newline
+\ct{GRPharoUtf8CodecStream>>next:}\newline
+\ct{GRPharoUtf8CodecStream>>nextPut:}\newline
+\ct{GRPharoUtf8CodecStream>>nextPutAll:}\newline
+\ct{GRPlatform class>>current}\newline
+\ct{GRPlatform>>reducedConflictDictionary}\newline
+\ct{GRSmallDictionary class>>new}\newline
+\ct{GRSmallDictionary class>>new:}\newline
+\ct{GRSmallDictionary class>>new}\newline
+\ct{GRSmallDictionary class>>withAll:}\newline
+\ct{HashTableSizes class>>atLeast:}\newline
+\ct{HashTableSizes class>>sizes}\newline
+\ct{HashedCollection class>>new:}\newline
+\ct{HashedCollection class>>new}\newline
+\ct{HashedCollection class>>sizeFor:}\newline
+\ct{HashedCollection>>array}\newline
+\ct{HashedCollection>>atNewIndex:put:}\newline
+\ct{HashedCollection>>findElementOrNil:}\newline
+\ct{HashedCollection>>fullCheck}\newline
+\ct{HashedCollection>>grow}\newline
+\ct{HashedCollection>>initialize:}\newline
+\ct{HashedCollection>>size}\newline
+\ct{Heap class>>withAll:sortBlock:}\newline
+\ct{Heap>>add:}\newline
+\ct{Heap>>do:}\newline
+\ct{Heap>>downHeapSingle:}\newline
+\ct{Heap>>growHeap>>reSort}\newline
+\ct{Heap>>growSize}\newline
+\ct{Heap>>growTo:}\newline
+\ct{Heap>>isEmpty}\newline
+\ct{Heap>>privateRemoveAt:}\newline
+\ct{Heap>>remove:ifAbsent:}\newline
+\ct{Heap>>removeFirst}\newline
+\ct{Heap>>setCollection:tally:}\newline
+\ct{Heap>>size}\newline
+\ct{Heap>>sortBlock:}\newline
+\ct{Heap>>sorts:before:}\newline
+\ct{Heap>>upHeap:}\newline
+\ct{Heap>>updateObjectIndex:}\newline
+\ct{ISO885915TextConverter class>>encodingNames}\newline
+\ct{ISO88592TextConverter class>>encodingNames}\newline
+\ct{IdentitySet>>scanFor:}\newline
+\ct{InstructionStream>>interpretExtension:in:for:}\newline
+\ct{InstructionStream>>interpretNextInstructionFor:}\newline
+\ct{Integer class>>readFrom:base:}\newline
+\ct{Integer class>>readFrom:}\newline
+\ct{Integer>>*}\newline
+\ct{Integer>>+}\newline
+\ct{Integer>><}\newline
+\ct{Integer>>=}\newline
+\ct{Integer>>>>}\newline
+\ct{Integer>>asCharacter}\newline
+\ct{Integer>>asInteger}\newline
+\ct{Integer>>copyto:}\newline
+\ct{Integer>>denominator}\newline
+\ct{Integer>>digitCompare:}\newline
+\ct{Integer>>digitDiv:neg:}\newline
+\ct{Integer>>digitMultiply:neg:}\newline
+\ct{Integer>>digitSubtract:}\newline
+\ct{Integer>>floor}\newline
+\ct{Integer>>isFraction}\newline
+\ct{Integer>>isInteger}\newline
+\ct{Integer>>noMask:}\newline
+\ct{Integer>>normalize}\newline
+\ct{Integer>>numerator}\newline
+\ct{Integer>>printOn:}\newline
+\ct{Integer>>printStringBase:length:padded:}\newline
+\ct{Integer>>printStringLength:padded:}\newline
+\ct{Integer>>quo:}\newline
+\ct{Integer>>rounded}\newline
+\ct{Integer>>timesRepeat:}\newline
+\ct{Integer>>truncated}\newline
+\ct{Interval class>>from:to:by:}\newline
+\ct{Interval class>>new}\newline
+\ct{Interval>>collect:}\newline
+\ct{Interval>>setFrom:to:by:}\newline
+\ct{Interval>>size}\newline
+\ct{Interval>>species}\newline
+\ct{KOI8RTextConverter class>>encodingNames}\newline
+\ct{LanguageEnvironment class>>}\newline
+\indent\ct{defaultFileNameConverter}\newline
+\ct{LargeNegativeInteger>>negative}\newline
+\ct{LargeNegativeInteger>>normalize}\newline
+\ct{LargePositiveInteger>>*}\newline
+\ct{LargePositiveInteger>>+}\newline
+\ct{LargePositiveInteger>>-}\newline
+\ct{LargePositiveInteger>>//}\newline
+\ct{LargePositiveInteger>><}\newline
+\ct{LargePositiveInteger>>asFloat}\newline
+\ct{LargePositiveInteger>>digitAt:}\newline
+\ct{LargePositiveInteger>>digitLength}\newline
+\ct{LargePositiveInteger>>highBitOfMagnitude}\newline
+\ct{LargePositiveInteger>>negated}\newline
+\ct{LargePositiveInteger>>negative}\newline
+\ct{LargePositiveInteger>>normalize}\newline
+\ct{LargePositiveInteger>>quo:}\newline
+\ct{LimitedWriteStream>>nextPut:}\newline
+\ct{LimitedWriteStream>>nextPutAll:}\newline
+\ct{LimitedWriteStream>>setLimit:limitBlock:}\newline
+\ct{LookupKey class>>key:}\newline
+\ct{LookupKey>>key:}\newline
+\ct{LookupKey>>key}\newline
+\ct{MacOSXPlatform class>>isActivePlatform}\newline
+\ct{MacRomanTextConverter class>>}\newline
+\indent\ct{encodingNames}\newline
+\ct{Magnitude>>>}\newline
+\ct{Magnitude>>between:and:}\newline
+\ct{Magnitude>>max:}\newline
+\ct{Magnitude>>min:}\newline
+\ct{MethodContext class>>}\newline
+\indent\ct{sender:receiver:method:arguments:}\newline
+\ct{MethodContext>>aboutToReturn:through:}\newline
+\ct{MethodContext>>blockReturnTop}\newline
+\ct{MethodContext>>closure}\newline
+\ct{MethodContext>>contextTag}\newline
+\ct{MethodContext>>methodReturnContext}\newline
+\ct{MethodContext>>method}\newline
+\ct{MethodContext>>privRefresh}\newline
+\ct{MethodContext>>receiver}\newline
+\ct{MethodContext>>setSender:receiver:method:arguments:}\newline
+\ct{MethodContext>>setSender:receiver:method:closure:startpc:}\newline
+\ct{MethodContext>>tempAt:put:}\newline
+\ct{MethodContext>>tempAt:}\newline
+\ct{MethodDictionary>>at:ifAbsent:}\newline
+\ct{MethodDictionary>>includesKey:}\newline
+\ct{MethodDictionary>>scanFor:}\newline
+\ct{Month class>>daysInMonth:forYear:}\newline
+\ct{Month class>>indexOfMonth:}\newline
+\ct{Month class>>nameOfMonth:}\newline
+\ct{Mutex>>critical:}\newline
+\ct{Mutex>>initialize}\newline
+\ct{NetNameResolver class>>initializeNetwork}\newline
+\ct{NetNameResolver class>>initialize}\newline
+\ct{NetNameResolver class>>primNameResolverStatus}\newline
+\ct{NetNameResolver class>>resolverStatus}\newline
+\ct{Number class>>one}\newline
+\ct{Number class>>readFrom:}\newline
+\ct{Number>>//}\newline
+\ct{Number>>\%}\newline
+\ct{Number>>\textbackslash\textbackslash}\newline
+\ct{Number>>abs}\newline
+\ct{Number>>asDuration}\newline
+\ct{Number>>floor}\newline
+\ct{Number>>fractionPart}\newline
+\ct{Number>>integerPart}\newline
+\ct{Number>>isNumber}\newline
+\ct{Number>>isZero}\newline
+\ct{Number>>negated}\newline
+\ct{Number>>negative}\newline
+\ct{Number>>quo:}\newline
+\ct{Number>>raisedToInteger:}\newline
+\ct{Number>>rem:}\newline
+\ct{Number>>strictlyPositive}\newline
+\ct{Number>>to:}\newline
+\ct{NumberParser class>>on:}\newline
+\ct{NumberParser>>nextElementaryLargeIntegerBase:}\newline
+\ct{NumberParser>>nextIntegerBase:}\newline
+\ct{NumberParser>>nextUnsignedIntegerBase:}\newline
+\ct{NumberParser>>nextUnsignedIntegerOrNilBase:}\newline
+\ct{NumberParser>>on:}\newline
+\ct{NumberParser>>peekSignIsMinus}\newline
+\ct{NumberParser>>readExponent}\newline
+\ct{OSPlatform class>>determineActivePlatformStartingAt:}\newline
+\ct{OSPlatform class>>initialize}\newline
+\ct{OSPlatform class>>isMacOS}\newline
+\ct{OSPlatform class>>platformName}\newline
+\ct{OSPlatform class>>shutDown:}\newline
+\ct{OSPlatform class>>startUp:ISO88597}\newline
+\ct{OSPlatform class>>version}\newline
+\ct{OSPlatform>>shutDown:}\newline
+\ct{OSPlatform>>startUp:}\newline
+\ct{Object class>>flushDependents}\newline
+\ct{Object class>>flushEvents}\newline
+\ct{Object class>>initializeDependentsFields}\newline
+\ct{Object class>>initialize}\newline
+\ct{Object class>>newFrom:}\newline
+\ct{Object>>=}\newline
+\ct{Object>>actAsExecutor}\newline
+\ct{Object>>as:}\newline
+\ct{Object>>asSetElement}\newline
+\ct{Object>>asString}\newline
+\ct{Object>>assert:}\newline
+\ct{Object>>at:put:}\newline
+\ct{Object>>at:}\newline
+\ct{Object>>basicAt:put:}\newline
+\ct{Object>>basicAt:}\newline
+\ct{Object>>basicSize}\newline
+\ct{Object>>breakDependents}\newline
+\ct{Object>>class}\newline
+\ct{Object>>copyFrom:}\newline
+\ct{Object>>copySameFrom:}\newline
+\ct{Object>>copy}\newline
+\ct{Object>>enclosedSetElement}\newline
+\ct{Object>>encodeOn:}\newline
+\ct{Object>>executor}\newline
+\ct{Object>>greaseString}\newline
+\ct{Object>>hash}\newline
+\ct{Object>>instVarAt:put:}\newline
+\ct{Object>>instVarAt:}\newline
+\ct{Object>>instVarNamed:put:}\newline
+\ct{Object>>isArray}\newline
+\ct{Object>>isCharacter}\newline
+\ct{Object>>isInteger}\newline
+\ct{Object>>isKindOf:}\newline
+\ct{Object>>isLiteral}\newline
+\ct{Object>>isMemberOf:}\newline
+\ct{Object>>isSelfEvaluating}\newline
+\ct{Object>>isString}\newline
+\ct{Object>>isSymbol}\newline
+\ct{Object>>myDependents:}\newline
+\ct{Object>>notNil}\newline
+\ct{Object>>perform:with:}\newline
+\ct{Object>>perform:withArguments:inSuperclass:}\newline
+\ct{Object>>perform:withArguments:}\newline
+\ct{Object>>perform:}\newline
+\ct{Object>>postCopy}\newline
+\ct{Object>>printOn:}\newline
+\ct{Object>>printStringLimitedTo:}\newline
+\ct{Object>>printString}\newline
+\ct{Object>>readFromString:}\newline
+\ct{Object>>renderOn:}\newline
+\ct{Object>>respondsTo:}\newline
+\ct{Object>>restoreFromSnapshot:}\newline
+\ct{Object>>shallowCopy}\newline
+\ct{Object>>shouldBePrintedAsLiteral}\newline
+\ct{Object>>snapshotCopy}\newline
+\ct{Object>>species}\newline
+\ct{Object>>split:do:}\newline
+\ct{Object>>split:}\newline
+\ct{Object>>value}\newline
+\ct{Object>>yourself}\newline
+\ct{Object>>\textasciitilde=}\newline
+\ct{OrderedCollection class>>arrayType}\newline
+\ct{OrderedCollection class>>new:}\newline
+\ct{OrderedCollection class>>new}\newline
+\ct{OrderedCollection>>add:}\newline
+\ct{OrderedCollection>>addAll:}\newline
+\ct{OrderedCollection>>addAllLast:}\newline
+\ct{OrderedCollection>>addFirst:}\newline
+\ct{OrderedCollection>>addLast:}\newline
+\ct{OrderedCollection>>asArray}\newline
+\ct{OrderedCollection>>at:}\newline
+\ct{OrderedCollection>>collect:}\newline
+\ct{OrderedCollection>>copyEmpty}\newline
+\ct{OrderedCollection>>do:}\newline
+\ct{OrderedCollection>>ensureBoundsFrom:to:}\newline
+\ct{OrderedCollection>>growAtLast}\newline
+\ct{OrderedCollection>>makeRoomAtFirst}\newline
+\ct{OrderedCollection>>makeRoomAtLast}\newline
+\ct{OrderedCollection>>postCopy}\newline
+\ct{OrderedCollection>>remove:ifAbsent:}\newline
+\ct{OrderedCollection>>removeFirst}\newline
+\ct{OrderedCollection>>removeIndex:}\newline
+\ct{OrderedCollection>>resetTo:}\newline
+\ct{OrderedCollection>>reset}\newline
+\ct{OrderedCollection>>reverseDo:}\newline
+\ct{OrderedCollection>>select:}\newline
+\ct{OrderedCollection>>setCollection:}\newline
+\ct{OrderedCollection>>size}\newline
+\ct{PositionableStream class>>on:}\newline
+\ct{PositionableStream>>atEnd}\newline
+\ct{PositionableStream>>isBinary}\newline
+\ct{PositionableStream>>isEmpty}\newline
+\ct{PositionableStream>>on:}\newline
+\ct{PositionableStream>>originalContents}\newline
+\ct{PositionableStream>>peekFor:}\newline
+\ct{PositionableStream>>peek}\newline
+\ct{PositionableStream>>position:}\newline
+\ct{PositionableStream>>position}\newline
+\ct{PositionableStream>>reset}\newline
+\ct{PositionableStream>>skip:}\newline
+\ct{PositionableStream>>skipSeparators}\newline
+\ct{PositionableStream>>skipTo:}\newline
+\ct{Process class>>forContext:priority:}\newline
+\ct{Process>>activateReturn:value:}\newline
+\ct{Process>>calleeOf:}\newline
+\ct{Process>>complete:}\newline
+\ct{Process>>isActiveProcess}\newline
+\ct{Process>>name:}\newline
+\ct{Process>>popTo:}\newline
+\ct{Process>>primitiveResume}\newline
+\ct{Process>>priority:}\newline
+\ct{Process>>priority}\newline
+\ct{Process>>psValueAt:put:}\newline
+\ct{Process>>psValueAt:}\newline
+\ct{Process>>resume}\newline
+\ct{Process>>return:value:}\newline
+\ct{Process>>suspendedContext:}\newline
+\ct{Process>>suspendingList}\newline
+\ct{Process>>suspend}\newline
+\ct{Process>>terminate}\newline
+\ct{ProcessLocalVariable class>>value:}\newline
+\ct{ProcessLocalVariable>>value:}\newline
+\ct{ProcessSpecificVariable class>>soleInstance}\newline
+\ct{ProcessSpecificVariable class>>value}\newline
+\ct{ProcessSpecificVariable>>default}\newline
+\ct{ProcessSpecificVariable>>value}\newline
+\ct{ProcessorScheduler class>>idleProcess}\newline
+\ct{ProcessorScheduler class>>initialize}\newline
+\ct{ProcessorScheduler class>>}\newline
+\indent\ct{relinquishProcessorForMicroseconds:}\newline
+\ct{ProcessorScheduler class>>startUp}\newline
+\ct{ProcessorScheduler>>activePriority}\newline
+\ct{ProcessorScheduler>>activeProcess}\newline
+\ct{ProcessorScheduler>>highIOPriority}\newline
+\ct{ProcessorScheduler>>highestPriority}\newline
+\ct{ProcessorScheduler>>lowIOPriority}\newline
+\ct{ProcessorScheduler>>lowestPriority}\newline
+\ct{ProcessorScheduler>>terminateActive}\newline
+\ct{ProcessorScheduler>>timingPriority}\newline
+\ct{ProcessorScheduler>>userInterruptPriority}\newline
+\ct{ProtoObject>>basicIdentityHash}\newline
+\ct{ProtoObject>>flag:}\newline
+\ct{ProtoObject>>identityHash}\newline
+\ct{ProtoObject>>initialize}\newline
+\ct{ProtoObject>>instVarsInclude:}\newline
+\ct{ProtoObject>>isNil}\newline
+\ct{ProtoObject>>pointsTo:}\newline
+\ct{ProtoObject>>\textasciitilde\textasciitilde}\newline
+\ct{Random>>initialize}\newline
+\ct{Random>>nextInt:}\newline
+\ct{Random>>nextValue}\newline
+\ct{Random>>next}\newline
+\ct{ReadStream class>>on:from:to:}\newline
+\ct{ReadStream>>next}\newline
+\ct{ReadStream>>on:from:to:}\newline
+\ct{ReadStream>>upTo:}\newline
+\ct{ReadStream>>upToEnd}\newline
+\ct{Semaphore class>>forMutualExclusion}\newline
+\ct{Semaphore class>>new}\newline
+\ct{Semaphore>>critical:ifError:}\newline
+\ct{Semaphore>>critical:}\newline
+\ct{Semaphore>>initSignals}\newline
+\ct{Semaphore>>signal}\newline
+\ct{Semaphore>>waitTimeoutMSecs:}\newline
+\ct{Semaphore>>wait}\newline
+\ct{SequenceableCollection class>>new:streamContents:}\newline
+\ct{SequenceableCollection class>>ofSize:}\newline
+\ct{SequenceableCollection class>>streamContents:limitedTo:}\newline
+\ct{SequenceableCollection class>>streamContents:}\newline
+\ct{SequenceableCollection class>>streamSpecies}\newline
+\ct{SequenceableCollection>>,}\newline
+\ct{SequenceableCollection>>allButFirst:}\newline
+\ct{SequenceableCollection>>at:ifAbsent:}\newline
+\ct{SequenceableCollection>>atAllPut:}\newline
+\ct{SequenceableCollection>>copyAfter:}\newline
+\ct{SequenceableCollection>>copyFrom:to:}\newline
+\ct{SequenceableCollection>>copyReplaceFrom:to:with:}\newline
+\ct{SequenceableCollection>>copyUpTo:}\newline
+\ct{SequenceableCollection>>do:separatedBy:}\newline
+\ct{SequenceableCollection>>do:}\newline
+\ct{SequenceableCollection>>doWithIndex:}\newline
+\ct{SequenceableCollection>>first:}\newline
+\ct{SequenceableCollection>>first}\newline
+\ct{SequenceableCollection>>from:to:put:}\newline
+\ct{SequenceableCollection>>grownBy:}\newline
+\ct{SequenceableCollection>>includes:}\newline
+\ct{SequenceableCollection>>indexOf:ifAbsent:}\newline
+\ct{SequenceableCollection>>indexOf:startingAt:ifAbsent:}\newline
+\ct{SequenceableCollection>>indexOf:}\newline
+\ct{SequenceableCollection>>indexOfSubCollection:startingAt:}\newline
+\ct{SequenceableCollection>>keysAndValuesDo:}\newline
+\ct{SequenceableCollection>>last}\newline
+\ct{SequenceableCollection>>readStream}\newline
+\ct{SequenceableCollection>>replaceFrom:to:with:}\newline
+\ct{SequenceableCollection>>reverseDo:}\newline
+\ct{SequenceableCollection>>second}\newline
+\ct{SequenceableCollection>>select:}\newline
+\ct{SequenceableCollection>>split:indicesDo:}\newline
+\ct{SequenceableCollection>>splitOn:}\newline
+\ct{SequenceableCollection>>swap:with:}\newline
+\ct{SequenceableCollection>>withIndexDo:}\newline
+\ct{SequenceableCollection>>writeStream}\newline
+\ct{Set class>>new}\newline
+\ct{Set>>add:}\newline
+\ct{Set>>do:}\newline
+\ct{Set>>fixCollisionsFrom:}\newline
+\ct{Set>>grow}\newline
+\ct{Set>>includes:}\newline
+\ct{Set>>noCheckAdd:}\newline
+\ct{Set>>remove:ifAbsent:}\newline
+\ct{Set>>scanFor:}\newline
+\ct{SmallInteger class>>maxValCP1252}\newline
+\ct{SmallInteger>>*}\newline
+\ct{SmallInteger>>/}\newline
+\ct{SmallInteger>>asFloat}\newline
+\ct{SmallInteger>>decimalDigitLength}\newline
+\ct{SmallInteger>>gcd:}\newline
+\ct{SmallInteger>>hashMultiply}\newline
+\ct{SmallInteger>>hash}\newline
+\ct{SmallInteger>>highBitOfPositiveReceiver}\newline
+\ct{SmallInteger>>highBit}\newline
+\ct{SmallInteger>>identityHash}\newline
+\ct{SmallInteger>>isLarge}\newline
+\ct{SmallInteger>>numberOfDigitsInBase:}\newline
+\ct{SmallInteger>>printOn:base:length:padded:}\newline
+\ct{SmallInteger>>printOn:base:}\newline
+\ct{SmallInteger>>printString}\newline
+\ct{SmallInteger>>quo:}\newline
+\ct{SmalltalkImage class>>initializeForTornado}\newline
+\ct{SmalltalkImage>>addDeferredStartupAction:}\newline
+\ct{SmalltalkImage>>addToShutDownList:}\newline
+\ct{SmalltalkImage>>addToStartUpList:}\newline
+\ct{SmalltalkImage>>at:ifAbsent:}\newline
+\ct{SmalltalkImage>>at:}\newline
+\ct{SmalltalkImage>>clearExternalObjects}\newline
+\ct{SmalltalkImage>>}\newline
+\indent\ct{executeDeferredStartupActions:}\newline
+\ct{SmalltalkImage>>garbageCollectMost}\newline
+\ct{SmalltalkImage>>imagePath}\newline
+\ct{SmalltalkImage>>includesKey:}\newline
+\ct{SmalltalkImage>>installLowSpaceWatcher}\newline
+\ct{SmalltalkImage>>isHeadless}\newline
+\ct{SmalltalkImage>>isInteractive}\newline
+\ct{SmalltalkImage>>}\newline
+\indent\ct{logStartUpErrorDuring:into:tryDebugger:}\newline
+\ct{SmalltalkImage>>lowSpaceThreshold}\newline
+\ct{SmalltalkImage>>lowSpaceWatcher}\newline
+\ct{SmalltalkImage>>newSessionObject}\newline
+\ct{SmalltalkImage>>primImagePath}\newline
+\ct{SmalltalkImage>>primSignalAtBytesLeft:}\newline
+\ct{SmalltalkImage>>}\newline
+\indent\ct{primitiveGetSpecialObjectsArray}\newline
+\ct{SmalltalkImage>>processShutDownList:}\newline
+\ct{SmalltalkImage>>processStartUpList:}\newline
+\ct{SmalltalkImage>>recordStartupStamp}\newline
+\ct{SmalltalkImage>>registerExternalObject:}\newline
+\ct{SmalltalkImage>>send:toClassesNamedIn:with:}\newline
+\ct{SmalltalkImage>>shutDownImage:}\newline
+\ct{SmalltalkImage>>specialObjectsArray}\newline
+\ct{SmalltalkImage>>}\newline
+\indent\ct{startupImage:snapshotWorked:}\newline
+\ct{SmalltalkImage>>unregisterExternalObject:}\newline
+\ct{SmalltalkImage>>vm}\newline
+\ct{SmalltalkImage>>wordSize}\newline
+\ct{Socket class>>acceptFrom:}\newline
+\ct{Socket class>>initializeNetwork}\newline
+\ct{Socket class>>initialize}\newline
+\ct{Socket class>>newTCP}\newline
+\ct{Socket class>>register:}\newline
+\ct{Socket class>>registry}\newline
+\ct{Socket class>>standardTimeout}\newline
+\ct{Socket class>>unregister:}\newline
+\ct{Socket>>acceptFrom:}\newline
+\ct{Socket>>accept}\newline
+\ct{Socket>>closeAndDestroy:}\newline
+\ct{Socket>>closeAndDestroy}\newline
+\ct{Socket>>close}\newline
+\ct{Socket>>dataAvailable}\newline
+\ct{Socket>>destroy}\newline
+\ct{Socket>>initialize:}\newline
+\ct{Socket>>isConnected}\newline
+\ct{Socket>>isOtherEndClosed}\newline
+\ct{Socket>>isValid}\newline
+\ct{Socket>>listenOn:backlogSize:}\newline
+\ct{Socket>>}\newline\indent\ct{primAcceptFrom:}\newline\indent\ct{receiveBufferSize:}\newline\indent\ct{sendBufSize:}\newline\indent\ct{semaIndex:}\newline\indent\ct{readSemaIndex:}\newline\indent\ct{writeSemaIndex:}\newline
+\ct{Socket>>primSocket:receiveDataInto:startingAt:count:}\newline
+\ct{Socket>>primSocket:sendData:startIndex:count:}\newline
+\ct{Socket>>primSocket:setOption:value:}\newline
+\ct{Socket>>primSocketConnectionStatus:}\newline
+\ct{Socket>>primSocketDestroy:}\newline
+\ct{Socket>>primSocketReceiveDataAvailable:}\newline
+\ct{Socket>>primSocketRemoteAddress:}\newline
+\ct{Socket>>primSocketSendDone:}\newline
+\ct{Socket>>readSemaphore}\newline
+\ct{Socket>>register}\newline
+\ct{Socket>>remoteAddress}\newline
+\ct{Socket>>sendSomeData:startIndex:count:for:}\newline
+\ct{Socket>>sendSomeData:startIndex:count:}\newline
+\ct{Socket>>setOption:value:}\newline
+\ct{Socket>>socketHandle}\newline
+\ct{Socket>>unregister}\newline
+\ct{Socket>>waitForAcceptFor:}\newline
+\ct{Socket>>waitForConnectionFor:ifTimedOut:}\newline
+\ct{Socket>>waitForDataFor:ifClosed:ifTimedOut:}\newline
+\ct{Socket>>waitForDataFor:}\newline
+\ct{Socket>>waitForDisconnectionFor:}\newline
+\ct{Socket>>waitForSendDoneFor:}\newline
+\ct{SparseLargeTable>>at:}\newline
+\ct{SparseLargeTable>>noCheckAt:}\newline
+\ct{SparseLargeTable>>pvtCheckIndex:}\newline
+\ct{SparseLargeTable>>size}\newline
+\ct{SqNumberParser>>allowPlusSign}\newline
+\ct{SqNumberParser>>makeIntegerOrScaledInteger}\newline
+\ct{SqNumberParser>>readScale}\newline
+\ct{Stream>>basicNext}\newline
+\ct{Stream>>nextPutAll:}\newline
+\ct{Stream>>print:}\newline
+\ct{String class>>crlf}\newline
+\ct{String class>>empty}\newline
+\ct{String class>>new:}\newline
+\ct{String:startingAt:}\newline
+\ct{String>>=}\newline
+\ct{String>>asDateAndTime}\newline
+\ct{String>>asDate}\newline
+\ct{String>>asLowercase}\newline
+\ct{String>>asNumber}\newline
+\ct{String>>asString}\newline
+\ct{String>>asSymbol}\newline
+\ct{String>>asUppercase}\newline
+\ct{String>>asZnMimeType}\newline
+\ct{String>>asZnUrl}\newline
+\ct{String>>compare:caseSensitive:}\newline
+\ct{String>>compare:with:collated:}\newline
+\ct{String>>convertFromWithConverter:}\newline
+\ct{String>>encodeOn:}\newline
+\ct{String>>findString:startingAt:caseSensitive:}\newline
+\ct{String>>findString:}\newline
+\ct{String>>find}\newline
+\ct{String>>greaseInteger}\newline
+\ct{String>>hash}\newline
+\ct{String>>includesSubstring:}\newline
+\ct{String>>indexOf:startingAt:ifAbsent:}\newline
+\ct{String>>indexOf:startingAt:}\newline
+\ct{String>>indexOf:}\newline
+\ct{String>>}\newline
+\indent\ct{indexOfSubCollection:startingAt:ifAbsent:}\newline
+\ct{String>>indexOfSubCollection:}\newline
+\ct{String>>isString}\newline
+\ct{String>>isWideString}\newline
+\ct{String>>match:}\newline
+\ct{String>>putOn:}\newline
+\ct{String>>renderOn:}\newline
+\ct{String>>sameAs:}\newline
+\ct{String>>seasideMimeType}\newline
+\ct{String>>startingAt:match:startingAt:}\newline
+\ct{String>>subStrings:}\newline
+\ct{String>>translateFrom:to:table:}\newline
+\ct{String>>translateToLowercase}\newline
+\ct{String>>translateToUppercase}\newline
+\ct{String>>translateWith:}\newline
+\ct{String>>trimBoth:}\newline
+\ct{String>>trimBoth}\newline
+\ct{String>>trimLeft:right:}\newline
+\ct{Symbol class>>initializeForTornado}\newline
+\ct{Symbol class>>intern:}\newline
+\ct{Symbol class>>internCharacter:}\newline
+\ct{Symbol class>>lookup:}\newline
+\ct{Symbol class>>shutDown:}\newline
+\ct{Symbol>>=}\newline
+\ct{Symbol>>asString}\newline
+\ct{TextConverter class>>allEncodingNames}\newline
+\ct{TextConverter class>>encodingNames}\newline
+\ct{TextConverter class>>encodingNames}\newline
+\ct{TextConverter class>>encodingNames}\newline
+\ct{TextConverter class>>encodingNames}\newline
+\ct{TextConverter class>>encodingNames}\newline
+\ct{TextConverter class>>encodingNames}\newline
+\ct{TextConverter class>>latin1Encodings}\newline
+\ct{TextConverter class>>latin1}\newline
+\ct{GRCodec class>>forEncoding:}\newline
+\ct{TextConverter>>initialize}\newline
+\ct{TextConverter>>nextFromStream:UTF8}\newline
+\ct{Time class>>dateAndTimeFromSeconds:}\newline
+\ct{Time class>>dateAndTimeNow}\newline
+\ct{Time class>>fromSeconds:}\newline
+\ct{Time class>>hour:minute:second:nanoSecond:}\newline
+\ct{Time class>>millisecondClockValue}\newline
+\ct{Time class>>milliseconds:since:}\newline
+\ct{Time class>>millisecondsSince:}\newline
+\ct{Time class>>primSecondsClock}\newline
+\ct{Time class>>readFrom:}\newline
+\ct{Time class>>seconds:nanoSeconds:}\newline
+\ct{Time class>>secondsWhenClockTicks}\newline
+\ct{Time class>>totalSeconds}\newline
+\ct{Time>>hour24}\newline
+\ct{Time>>hour}\newline
+\ct{Time>>minute}\newline
+\ct{Time>>nanoSecond}\newline
+\ct{Time>>print24:showSeconds:on:}\newline
+\ct{Time>>printOn:}\newline
+\ct{Time>>seconds}\newline
+\ct{Time>>second}\newline
+\ct{Time>>ticks:}\newline
+\ct{TimeZone>>offset}\newline
+\ct{Timespan class>>starting:duration:}\newline
+\ct{Timespan>><}\newline
+\ct{Timespan>>dayOfMonth}\newline
+\ct{Timespan>>duration:}\newline
+\ct{Timespan>>month}\newline
+\ct{Timespan>>start:}\newline
+\ct{Timespan>>start}\newline
+\ct{Timespan>>year}\newline
+\ct{True>>ifFalse:}\newline
+\ct{True>>not}\newline
+\ct{True>>|}\newline
+\ct{UIManager class>>basicDefault:}\newline
+\ct{UIManager class>>default:}\newline
+\ct{WAUnescapedDocument>>initializeWithStream:codec:}\newline
+\ct{UIManager class>>default}\newline
+\ct{UIManager>>activate}\newline
+\ct{UIManager>>beDefault}\newline
+\ct{UIManager>>boot:during:}\newline
+\ct{UIManager>>deactivate}\newline
+\ct{UIManager>>onSnapshot:}\newline
+\ct{UTF16TextConverter class>>encodingNames}\newline
+\ct{UTF8DecomposedTextConverter class>>encodingNames}\newline
+\ct{UUIDGenerator class>>initialize}\newline
+\ct{UUIDGenerator class>>startUp}\newline
+\ct{UndefinedObject>>encodeOn:}\newline
+\ct{UndefinedObject>>isNil}\newline
+\ct{UndefinedObject>>notNil}\newline
+\ct{UndefinedObject>>seasideUrl}\newline
+\ct{UndefinedObject>>shallowCopy}\newline
+\ct{Unicode class>>isDigit:}\newline
+\ct{Unicode class>>isLetter:}\newline
+\ct{Unicode class>>toUppercase:}\newline
+\ct{VirtualMachine class>>allocationsBetweenGC:}\newline
+\ct{VirtualMachine class>>getSystemAttribute:}\newline
+\ct{VirtualMachine class>>interpreterClass}\newline
+\ct{VirtualMachine class>>}\newline
+\indent\ct{interpreterSourceDate}\newline
+\ct{VirtualMachine class>>}\newline
+\indent\ct{interpreterSourceVersion}\newline
+\ct{VirtualMachine class>>isPharoVM}\newline
+\ct{VirtualMachine class>>isRunningCogit}\newline
+\ct{VirtualMachine class>>}\newline
+\indent\ct{maxExternalSemaphores}\newline
+\ct{VirtualMachine class>>parameterAt:put:}\newline
+\ct{VirtualMachine class>>parameterAt:}\newline
+\ct{VirtualMachine class>>setGCParameters}\newline
+\ct{VirtualMachine class>>tenuringThreshold:}\newline
+\ct{VirtualMachine class>>version}\newline
+\ct{VirtualMachine class>>wordSize}\newline
+\ct{WAAccessIntervalReapingStrategy>>}\newline
+\indent\ct{defaultConfiguration}\newline
+\ct{WAAccessIntervalReapingStrategy>>}\newline
+\indent\ct{initialize}\newline
+\ct{WAAccessIntervalReapingStrategy>>}\newline
+\indent\ct{interval}\newline
+\ct{WAAccessIntervalReapingStrategy>>}\newline
+\indent\ct{reap}\newline
+\ct{WAAccessIntervalReapingStrategy>>}\newline
+\indent\ct{stored:key:}\newline
+\ct{WAActionCallback>>block:}\newline
+\ct{WAActionCallback>>evaluateWithArgument:}\newline
+\ct{WAActionCallback>>isEnabledFor:}\newline
+\ct{WAActionCallback>>signalRenderNotification}\newline
+\ct{WAActionPhaseContinuation>>continue}\newline
+\ct{WAActionPhaseContinuation>>handleRequest}\newline
+\ct{WAActionPhaseContinuation>>renderContext:}\newline
+\ct{WAActionPhaseContinuation>>renderContext}\newline
+\ct{WAActionPhaseContinuation>>runCallbacks}\newline
+\ct{WAActionPhaseContinuation>>shouldRedirect}\newline
+\ct{WAAdmin class>>defaultServerManager}\newline
+\ct{WAAdmin class>>serverAdaptors}\newline
+\ct{WAAnchorTag>>callback:}\newline
+\ct{WAAnchorTag>>tag}\newline
+\ct{WAAnchorTag>>url}\newline
+\ct{WAAnchorTag>>with:}\newline
+\ct{WAApplication>>contentType}\newline
+\ct{WAApplication>>doesHandlerSupportCookies:}\newline
+\ct{WAApplication>>handleDefault:}\newline
+\ct{WAApplication>>handleFiltered:}\newline
+\ct{WAApplication>>isApplication}\newline
+\ct{WAApplication>>isImplemented:}\newline
+\ct{WAApplication>>keyField}\newline
+\ct{WAApplication>>libraries}\newline
+\ct{WAApplication>>mainClass}\newline
+\ct{WAApplication>>mimeType}\newline
+\ct{WAApplication>>newSession}\newline
+\ct{WAApplication>>resourceBaseUrl}\newline
+\ct{WAApplication>>sessionClass}\newline
+\ct{WAApplicationConfiguration>>parents}\newline
+\ct{WAAttributeSearchContext class>>key:target:}\newline
+\ct{WAAttributeSearchContext>>at:ifPresent:}\newline
+\ct{WAAttributeSearchContext>>at:put:}\newline
+\ct{WAAttributeSearchContext>>attribute}\newline
+\ct{WAAttributeSearchContext>>cachedValues}\newline
+\ct{WAAttributeSearchContext>>findAttributeAndSelectAncestorsOf:}\newline
+\ct{WAAttributeSearchContext>>initializeWithKey:}\newline
+\ct{WAAttributeSearchContext>>isAttributeInheritedOn:}\newline
+\ct{WAAttributeSearchContext>>isAttributeLocalOn:}\newline
+\ct{WAAttributeSearchContext>>key}\newline
+\ct{WABrush>>initialize}\newline
+\ct{WABrush>>parent}\newline
+\ct{WABrush>>setParent:canvas:}\newline
+\ct{WABrush>>with:}\newline
+\ct{WABufferedResponse class>>on:}\newline
+\ct{WABufferedResponse>>contents}\newline
+\ct{WABufferedResponse>>destroy}\newline
+\ct{WABufferedResponse>>initializeOn:}\newline
+\ct{WABufferedResponse>>stream}\newline
+\ct{WACache>>at:ifAbsent:}\newline
+\ct{WACache>>expiryPolicy}\newline
+\ct{WACache>>initializeCollections}\newline
+\ct{WACache>>initializeMutex}\newline
+\ct{WACache>>initialize}\newline
+\ct{WACache>>keyAtValue:ifAbsent:}\newline
+\ct{WACache>>keyAtValue:}\newline
+\ct{WACache>>keySize}\newline
+\ct{WACache>>missStrategy}\newline
+\ct{WACache>>notifyRemoved:key:}\newline
+\ct{WACache>>notifyRetrieved:key:}\newline
+\ct{WACache>>notifyStored:key:}\newline
+\ct{WACache>>pluginsDo:}\newline
+\ct{WACache>>reapingStrategy}\newline
+\ct{WACache>>reap}\newline
+\ct{WACache>>removalAction}\newline
+\ct{WACache>>setExpiryPolicy:}\newline
+\ct{WACache>>setMissStrategy:}\newline
+\ct{WACache>>setReapingStrategy:}\newline
+\ct{WACache>>setRemovalAction:}\newline
+\ct{WACache>>store:}\newline
+\ct{WACacheCapacityConfiguration>>describeOn:}\newline
+\ct{WACachePlugin>>configuration}\newline
+\ct{WACachePlugin>>defaultConfiguration}\newline
+\ct{WACachePlugin>>initialize}\newline
+\ct{WACachePlugin>>removed:key:}\newline
+\ct{WACachePlugin>>retrieved:key:}\newline
+\ct{WACachePlugin>>setCache:}\newline
+\ct{WACachePlugin>>stored:key:}\newline
+\ct{WACacheReapingStrategy>>reap}\newline
+\ct{WACallback class>>on:}\newline
+\ct{WACallback>>convertKey:}\newline
+\ct{WACallback>>evaluateWithFieldValues:}\newline
+\ct{WACallback>>key}\newline
+\ct{WACallback>>setKey:callbacks:}\newline
+\ct{WACallback>>valueForField:}\newline
+\ct{WACallbackRegistry>>advanceKey}\newline
+\ct{WACallbackRegistry>>handle:}\newline
+\ct{WACallbackRegistry>>increaseKey}\newline
+\ct{WACallbackRegistry>>initialize}\newline
+\ct{WACallbackRegistry>>nextKey}\newline
+\ct{WACallbackRegistry>>store:}\newline
+\ct{WACanvas>>brush:}\newline
+\ct{WACanvas>>flush}\newline
+\ct{WACanvas>>nest:}\newline
+\ct{WACanvas>>render:}\newline
+\ct{WACanvas>>text:}\newline
+\ct{WAComponent>>accept:}\newline
+\ct{WAComponent>>acceptDecorated:}\newline
+\ct{WAComponent>>decoration}\newline
+\ct{WAComponent>>initialize}\newline
+\ct{WAComponent>>updateStates:}\newline
+\ct{WAConfigurationDescription>>add:to:}\newline
+\ct{WAConfigurationDescription>>addAttribute:}\newline
+\ct{WAConfigurationDescription>>attributes}\newline
+\ct{WAConfigurationDescription>>expressions}\newline
+\ct{WAConfigurationDescription>>initialize}\newline
+\ct{WAConfigurationDescription>>integer:}\newline
+\ct{WAConfiguredRequestFilter>>configuration}\newline
+\ct{WACounter>>count:}\newline
+\ct{WACounter>>decrease}\newline
+\ct{WACounter>>increase}\newline
+\ct{WACounter>>initialize}\newline
+\ct{WACounter>>renderContentOn:}\newline
+\ct{WACounter>>states}\newline
+\ct{WADefaultScriptGenerator>>close:on:}\newline
+\ct{WADefaultScriptGenerator>>open:on:}\newline
+\ct{WADevelopmentConfiguration>>parents}\newline
+\ct{WADispatcher class>>default}\newline
+\ct{WADispatcher>>handleFiltered:named:}\newline
+\ct{WADispatcher>>handleFiltered:}\newline
+\ct{WADispatcher>>handlerAt:ifAbsent:}\newline
+\ct{WADispatcher>>handlerAt:with:}\newline
+\ct{WADispatcher>>handlers}\newline
+\ct{WADispatcher>>nameOfHandler:}\newline
+\ct{WADispatcher>>urlFor:}\newline
+\ct{WADocument class>>on:codec:}\newline
+\ct{WADocument class>>on:}\newline
+\ct{WADocument>>closeWADocument>>destroy}\newline
+\ct{WADocument>>initializeWithStream:codec:}\newline
+\ct{WADocument>>nextPut:}\newline
+\ct{WADocument>>nextPutAll:}\newline
+\ct{WADocument>>open:}\newline
+\ct{WADynamicVariable class>>use:during:}\newline
+\ct{WADynamicVariable class>>value}\newline
+\ct{WAEncoder class>>on:table:}\newline
+\ct{WAEncoder class>>on:}\newline
+\ct{WAEncoder>>initializeOn:table:}\newline
+\ct{WAEncoder>>nextPut:}\newline
+\ct{WAErrorHandler class>>exceptionSelector}\newline
+\ct{WAExampleComponent>>rendererClass}\newline
+\ct{WAExceptionFilter>>exceptionHandler}\newline
+\ct{WAExceptionFilter>>handleFiltered:}\newline
+\ct{WAExceptionHandler class>>context:}\newline
+\ct{WAExceptionHandler class>>exceptionSelector}\newline
+\ct{WAExceptionHandler class>>handleExceptionsDuring:context:}\newline
+\ct{WAExceptionHandler class>>handles:}\newline
+\ct{WAExceptionHandler>>handleExceptionsDuring:}\newline
+\ct{WAExceptionHandler>>handles:}\newline
+\ct{WAExceptionHandler>>initializeWithContext:}\newline
+\ct{WAHeaderFields>>checkValue:}\newline
+\ct{WAHeaderFields>>privateAt:put:}\newline
+\ct{WAHeadingTag>>initialize}\newline
+\ct{WAHeadingTag>>level1}\newline
+\ct{WAHeadingTag>>level}\newline
+\ct{WAHeadingTag>>tag}\newline
+\ct{WAHtmlAttributes>>encodeOn:}\newline
+\ct{WAHtmlAttributes>>privateAt:put:}\newline
+\ct{WAHtmlCanvas>>anchor}\newline
+\ct{WAHtmlCanvas>>heading:}\newline
+\ct{WAHtmlCanvas>>heading}\newline
+\ct{WAHtmlCanvas>>spaceEntity}\newline
+\ct{WAHtmlDocument>>scriptGenerator:}\newline
+\ct{WAHtmlDocument>>scriptGenerator}\newline
+\ct{WAHtmlElement class>>root:}\newline
+\ct{WAHtmlElement>>attributeAt:put:}\newline
+\ct{WAHtmlElement>>attributes}\newline
+\ct{WAHtmlElement>>encodeBeforeOn:}\newline
+\ct{WAHtmlElement>>encodeOn:}\newline
+\ct{WAHtmlElement>>initializeWithRoot:}\newline
+\ct{WAHtmlElement>>isClosed}\newline
+\ct{WAHtmlRoot>>add:}\newline
+\ct{WAHtmlRoot>>beXhtml10Strict}\newline
+\ct{WAHtmlRoot>>bodyAttributes}\newline
+\ct{WAHtmlRoot>>closeOn:}\newline
+\ct{WAHtmlRoot>>docType:}\newline
+\ct{WAHtmlRoot>>htmlAttributes}\newline
+\ct{WAHtmlRoot>>initialize}\newline
+\ct{WAHtmlRoot>>meta}\newline
+\ct{WAHtmlRoot>>openOn:}\newline
+\ct{WAHtmlRoot>>title:}\newline
+\ct{WAHtmlRoot>>writeElementsOn:}\newline
+\ct{WAHtmlRoot>>writeFootOn:}\newline
+\ct{WAHtmlRoot>>writeHeadOn:}\newline
+\ct{WAHtmlRoot>>writeScriptsOn:}\newline
+\ct{WAHtmlRoot>>writeStylesOn:}\newline
+\ct{WAHttpVersion class>>fromString:}\newline
+\ct{WAHttpVersion class>>major:minor:}\newline
+\ct{WAHttpVersion class>>readFrom:}\newline
+\ct{WAHttpVersion>>initializeWithMajor:minor:}\newline
+\ct{WAInitialRequestVisitor class>>request:}\newline
+\ct{WAInitialRequestVisitor>>initializeWithRequest:}\newline
+\ct{WAInitialRequestVisitor>>request}\newline
+\ct{WAInitialRequestVisitor>>visitPresenter:}\newline
+\ct{WAKeyGenerator class>>current}\newline
+\ct{WAKeyGenerator>>keyOfLength:}\newline
+\ct{WALastAccessExpiryPolicy>>}\newline
+\indent\ct{defaultConfiguration}\newline
+\ct{WALastAccessExpiryPolicy>>initialize}\newline
+\ct{WALastAccessExpiryPolicy>>isExpired:key:}\newline
+\ct{WALastAccessExpiryPolicy>>retrieved:key:}\newline
+\ct{WALastAccessExpiryPolicy>>stored:key:}\newline
+\ct{WALastAccessExpiryPolicy>>timeout}\newline
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{defaultConfiguration}\newline
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{initialize}\newline
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{isExpired:key:}\newline
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{maximumAge}\newline
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{removed:key:}\newline
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{retrieved:key:}\newline
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{stored:key:}\newline
+\ct{WAMergedRequestFields class>>on:}\newline
+\ct{WAMergedRequestFields>>allAt:}\newline
+\ct{WAMergedRequestFields>>at:ifAbsent:}\newline
+\ct{WAMergedRequestFields>>includesKey:}\newline
+\ct{WAMergedRequestFields>>initializeOn:}\newline
+\ct{WAMergedRequestFields>>keysDo:}\newline
+\ct{WAMetaElement>>content:}\newline
+\ct{WAMetaElement>>contentScriptType:}\newline
+\ct{WAMetaElement>>contentType:}\newline
+\ct{WAMetaElement>>encodeBeforeOn:}\newline
+\ct{WAMetaElement>>responseHeaderName:}\newline
+\ct{WAMetaElement>>tag}\newline
+\ct{WAMimeType class>>fromString:}\newline
+\ct{WAMimeType class>>main:sub:}\newline
+\ct{WAMimeType class>>textJavascript}\newline
+\ct{WAMimeType class>>textPlain}\newline
+\ct{WAMimeType>>charset:}\newline
+\ct{WAMimeType>>greaseString}\newline
+\ct{WAMimeType>>main:}\newline
+\ct{WAMimeType>>main}\newline
+\ct{WAMimeType>>parameters}\newline
+\ct{WAMimeType>>sub:}\newline
+\ct{WAMimeType>>sub}\newline
+\ct{WAMutex>>critical:}\newline
+\ct{WAMutex>>initialize}\newline
+\ct{WAMutualExclusionFilter>>handleFiltered:}\newline
+\ct{WAMutualExclusionFilter>>initialize}\newline
+\ct{WAMutualExclusionFilter>>shouldTerminate:}\newline
+\ct{WANotifyRemovalAction>>removed:key:}\newline
+\ct{WAObject>>application}\newline
+\ct{WAObject>>requestContext}\newline
+\ct{WAObject>>session}\newline
+\ct{WAPainter>>renderWithContext:}\newline
+\ct{WAPainter>>updateRoot:}\newline
+\ct{WAPainter>>updateUrl:}\newline
+\ct{WAPainterVisitor>>visitComponent:}\newline
+\ct{WAPainterVisitor>>visitDecorationsOfComponent:}\newline
+\ct{WAPainterVisitor>>visitPainter:}\newline
+\ct{WAPainterVisitor>>visitPresenter:}\newline
+\ct{WAPathConsumer class>>path:}\newline
+\ct{WAPathConsumer>>atEnd}\newline
+\ct{WAPathConsumer>>initializeWith:}\newline
+\ct{WAPathConsumer>>next}\newline
+\ct{WAPresenter>>childrenDo:}\newline
+\ct{WAPresenter>>children}\newline
+\ct{WAPresenter>>initialRequest:}\newline
+\ct{WAPresenter>>script}\newline
+\ct{WAPresenter>>style}\newline
+\ct{WAPresenter>>updateRoot:}\newline
+\ct{WAPresenter>>updateStates:}\newline
+\ct{WAPresenterGuide class>>client:}\newline
+\ct{WAPresenterGuide>>client}\newline
+\ct{WAPresenterGuide>>initializeWithClient:}\newline
+\ct{WAPresenterGuide>>visit:}\newline
+\ct{WAPresenterGuide>>visitPainter:}\newline
+\ct{WARegistryConfiguration>>parents}\newline
+\ct{WARenderContext>>actionBaseUrl:}\newline
+\ct{WARenderContext>>actionUrl:}\newline
+\ct{WARenderContext>>actionUrl}\newline
+\ct{WARenderContext>>callbacks}\newline
+\ct{WARenderContext>>defaultVisitor}\newline
+\ct{WARenderContext>>destroy}\newline
+\ct{WARenderContext>>document:}\newline
+\ct{WARenderContext>>document}\newline
+\ct{WARenderContext>>initialize}\newline
+\ct{WARenderContext>>resourceUrl:}\newline
+\ct{WARenderContext>>visitor:}\newline
+\ct{WARenderContext>>visitor}\newline
+\ct{WARenderLoopConfiguration>>parents}\newline
+\ct{WARenderLoopContinuation>>createActionContinuation}\newline
+\ct{WARenderLoopContinuation>>createRenderContinuation}\newline
+\ct{WARenderLoopContinuation>>presenter}\newline
+\ct{WARenderLoopContinuation>>toPresenterSendRoot:}\newline
+\ct{WARenderLoopContinuation>>updateRoot:}\newline
+\ct{WARenderLoopContinuation>>updateStates:}\newline
+\ct{WARenderLoopContinuation>>updateUrl:}\newline
+\ct{WARenderLoopContinuation>>withNotificationHandlerDo:}\newline
+\ct{WARenderLoopMain>>createRoot}\newline
+\ct{WARenderLoopMain>>prepareRoot:}\newline
+\ct{WARenderLoopMain>>rootClass}\newline
+\ct{WARenderLoopMain>>rootDecorationClasses}\newline
+\ct{WARenderLoopMain>>start}\newline
+\ct{WARenderPhaseContinuation>>createHtmlRootWithContext:}\newline
+\ct{WARenderPhaseContinuation>>createRenderContext}\newline
+\ct{WARenderPhaseContinuation>>handleRequest}\newline
+\ct{WARenderPhaseContinuation>>}\newline
+\indent\ct{processRendering:}\newline
+\ct{WARenderVisitor class>>context:}\newline
+\ct{WARenderVisitor>>initializeWithContext:}\newline
+\ct{WARenderVisitor>>renderContext}\newline
+\ct{WARenderVisitor>>visitPainter:}\newline
+\ct{WARenderer class>>context:}\newline
+\ct{WARenderer>>actionUrl}\newline
+\ct{WARenderer>>callbacks}\newline
+\ct{WARenderer>>context}\newline
+\ct{WARenderer>>document}\newline
+\ct{WARenderer>>flush}\newline
+\ct{WARenderer>>initializeWithContext:}\newline
+\ct{WARenderer>>render:}\newline
+\ct{WARenderer>>text:}\newline
+\ct{WARequest class>>method:uri:version:}\newline
+\ct{WARequest>>at:ifAbsent:}\newline
+\ct{WARequest>>cookiesAt:}\newline
+\ct{WARequest>>cookies}\newline
+\ct{WARequest>>destroy}\newline
+\ct{WARequest>>fields}\newline
+\ct{WARequest>>headerAt:ifAbsent:}\newline
+\ct{WARequest>>headerAt:}\newline
+\ct{WARequest>>}\newline
+\indent\ct{initializeWithMethod:uri:version:}\newline
+\ct{WARequest>>isGet}\newline
+\ct{WARequest>>isPrefetch}\newline
+\ct{WARequest>>isXmlHttpRequest}\newline
+\ct{WARequest>>method}\newline
+\ct{WARequest>>postFields}\newline
+\ct{WARequest>>queryFields}\newline
+\ct{WARequest>>setBody:}\newline
+\ct{WARequest>>setCookies:}\newline
+\ct{WARequest>>setHeaders:}\newline
+\ct{WARequest>>setPostFields:}\newline
+\ct{WARequest>>setRemoteAddress:}\newline
+\ct{WARequest>>uri}\newline
+\ct{WARequest>>url}\newline
+\ct{WARequestContext class>>}\newline
+\indent\ct{request:response:codec:}\newline
+\ct{WARequestContext>>application}\newline
+\ct{WARequestContext>>charSet}\newline
+\ct{WARequestContext>>codec}\newline
+\ct{WARequestContext>>consumer}\newline
+\ct{WARequestContext>>destroy}\newline
+\ct{WARequestContext>>handlers}\newline
+\ct{WARequestContext>>handler}\newline
+\ct{WARequestContext>>}\newline
+\indent\ct{initializeWithRequest:response:codec:}\newline
+\ct{WARequestContext>>newDocument}\newline
+\ct{WARequestContext>>push:during:}\newline
+\ct{WARequestContext>>request}\newline
+\ct{WARequestContext>>respond:}\newline
+\ct{WARequestContext>>respond}\newline
+\ct{WARequestContext>>responseGenerator}\newline
+\ct{WARequestContext>>response}\newline
+\ct{WARequestContext>>session}\newline
+\ct{WARequestFilter>>handleFiltered:}\newline
+\ct{WARequestFilter>>initialize}\newline
+\ct{WARequestFilter>>next}\newline
+\ct{WARequestFilter>>setNext:}\newline
+\ct{WARequestFilter>>updateStates:}\newline
+\ct{WARequestHandler>>addFilter:}\newline
+\ct{WARequestHandler>>addFilterLast:}\newline
+\ct{WARequestHandler>>basicUrl}\newline
+\ct{WARequestHandler>>configuration:}\newline
+\ct{WARequestHandler>>configuration}\newline
+\ct{WARequestHandler>>defaultConfiguration}\newline
+\ct{WARequestHandler>>documentClass}\newline
+\ct{WARequestHandler>>filters}\newline
+\ct{WARequestHandler>>filter}\newline
+\ct{WARequestHandler>>handle:}\newline
+\ct{WARequestHandler>>initialize}\newline
+\ct{WARequestHandler>>isApplication}\newline
+\ct{WARequestHandler>>isRoot}\newline
+\ct{WARequestHandler>>parent}\newline
+\ct{WARequestHandler>>preferenceAt:}\newline
+\ct{WARequestHandler>>responseGenerator}\newline
+\ct{WARequestHandler>>serverHostname}\newline
+\ct{WARequestHandler>>serverPath}\newline
+\ct{WARequestHandler>>serverPort}\newline
+\ct{WARequestHandler>>serverProtocol}\newline
+\ct{WARequestHandler>>setFilter:}\newline
+\ct{WARequestHandler>>setParent:}\newline
+\ct{WARequestHandler>>url}\newline
+\ct{WAResponse class>>messageForStatus:}\newline
+\ct{WAResponse class>>statusFound}\newline
+\ct{WAResponse class>>statusNotFound}\newline
+\ct{WAResponse>>contentType:}\newline
+\ct{WAResponse>>contentType}\newline
+\ct{WAResponse>>cookies}\newline
+\ct{WAResponse>>destroy}\newline
+\ct{WAResponse>>found}\newline
+\ct{WAResponse>>headerAt:ifAbsent:}\newline
+\ct{WAResponse>>headerAt:put:}\newline
+\ct{WAResponse>>headers}\newline
+\ct{WAResponse>>initializeOn:}\newline
+\ct{WAResponse>>initialize}\newline
+\ct{WAResponse>>location:}\newline
+\ct{WAResponse>>nextPutAll:}\newline
+\ct{WAResponse>>notFound}\newline
+\ct{WAResponse>>redirectTo:}\newline
+\ct{WAResponse>>status:message:}\newline
+\ct{WAResponse>>status:}\newline
+\ct{WAResponse>>status}\newline
+\ct{WAResponseGenerator class>>on:ShiftJIS}\newline
+\ct{WAResponseGenerator>>initializeOn:}\newline
+\ct{WAResponseGenerator>>notFound}\newline
+\ct{WAResponseGenerator>>requestContext}\newline
+\ct{WAResponseGenerator>>request}\newline
+\ct{WAResponseGenerator>>respond}\newline
+\ct{WAResponseGenerator>>response}\newline
+\ct{WARoot class>>context:}\newline
+\ct{WARoot>>setContext:}\newline
+\ct{WAScriptGenerator>>initialize}\newline
+\ct{WAScriptGenerator>>loadScripts}\newline
+\ct{WAScriptGenerator>>writeLoadScriptsOn:}\newline
+\ct{WAScriptGenerator>>writeScriptTag:on:}\newline
+\ct{WAServerAdaptor class>>defaultSmall}\newline
+\ct{WAServerAdaptor class>>manager:}\newline
+\ct{WAServerAdaptor class>>new}\newline
+\ct{WAServerAdaptor class>>port:}\newline
+\ct{WAServerAdaptor class>>startOn:}\newline
+\ct{WAServerAdaptor>>codec}\newline
+\ct{WAServerAdaptor>>contextFor:}\newline
+\ct{WAServerAdaptor>>defaultPort}\newline
+\ct{WAServerAdaptor>>defaultRequestHandler}\newline
+\ct{WAServerAdaptor>>handle:}\newline
+\ct{WAServerAdaptor>>handlePadding:}\newline
+\ct{WAServerAdaptor>>handleRequest:}\newline
+\ct{WAServerAdaptor>>initializeWithManager:}\newline
+\ct{WAServerAdaptor>>initialize}\newline
+\ct{WAServerAdaptor>>manager}\newline
+\ct{WAServerAdaptor>>port:}\newline
+\ct{WAServerAdaptor>>port}\newline
+\ct{WAServerAdaptor>>process:}\newline
+\ct{WAServerAdaptor>>requestFor:}\newline
+\ct{WAServerAdaptor>>requestHandler}\newline
+\ct{WAServerAdaptor>>responseFor:}\newline
+\ct{WAServerAdaptor>>start}\newline
+\ct{WAServerManager class>>default}\newline
+\ct{WAServerManager class>>initialize}\newline
+\ct{WAServerManager class>>shutDown}\newline
+\ct{WAServerManager class>>startUp}\newline
+\ct{WAServerManager>>adaptors}\newline
+\ct{WAServerManager>>canStart:}\newline
+\ct{WAServerManager>>register:}\newline
+\ct{WAServerManager>>start:}\newline
+\ct{WASession>>actionField}\newline
+\ct{WASession>>actionUrlForContinuation:}\newline
+\ct{WASession>>actionUrlForKey:}\newline
+\ct{WASession>>application}\newline
+\ct{WASession>>clearJumpTo}\newline
+\ct{WASession>>createCache}\newline
+\ct{WASession>>handleFiltered:}\newline
+\ct{WASession>>initializeFilters}\newline
+\ct{WASession>>initialize}\newline
+\ct{WASession>>isSession}\newline
+\ct{WASession>>presenter}\newline
+\ct{WASession>>properties}\newline
+\ct{WASession>>start}\newline
+\ct{WASession>>updateRoot:}\newline
+\ct{WASession>>updateStates:}\newline
+\ct{WASession>>updateUrl:}\newline
+\ct{WASession>>url}\newline
+\ct{WASessionContinuation>>basicValue}\newline
+\ct{WASessionContinuation>>captureAndInvoke}\newline
+\ct{WASessionContinuation>>captureState}\newline
+\ct{WASessionContinuation>>redirectToContinuation:}\newline
+\ct{WASessionContinuation>>registerForUrl:}\newline
+\ct{WASessionContinuation>>registerForUrl}\newline
+\ct{WASessionContinuation>>request}\newline
+\ct{WASessionContinuation>>respond:}\newline
+\ct{WASessionContinuation>>setStates:}\newline
+\ct{WASessionContinuation>>states}\newline
+\ct{WASessionContinuation>>updateStates:}\newline
+\ct{WASessionContinuation>>updateUrl:}\newline
+\ct{WASessionContinuation>>value}\newline
+\ct{WASessionContinuation>>withUnregisteredHandlerDo:}\newline
+\ct{WASlime class>>initialize}\newline
+\ct{WASlime class>>startUp}\newline
+\ct{WASnapshot>>initialize}\newline
+\ct{WASnapshot>>register:}\newline
+\ct{WASnapshot>>resetWASnapshot>>restore}\newline
+\ct{WATagBrush>>after}\newline
+\ct{WATagBrush>>attributes}\newline
+\ct{WATagBrush>>before}\newline
+\ct{WATagBrush>>closeTag}\newline
+\ct{WATagBrush>>document}\newline
+\ct{WATagBrush>>isClosed}\newline
+\ct{WATagBrush>>openTag}\newline
+\ct{WATagBrush>>storeCallback:}\newline
+\ct{WATagBrush>>with:}\newline
+\ct{WAUpdateRootVisitor class>>root:WeakKey}\newline
+\ct{WAUpdateRootVisitor>>initializeWithRoot:}\newline
+\ct{WAUpdateRootVisitor>>root}\newline
+\ct{WAUpdateRootVisitor>>visitPainter:}\newline
+\ct{WAUpdateStatesVisitor class>>snapshot:}\newline
+\ct{WAUpdateStatesVisitor>>initializeWithSnapshot:}\newline
+\ct{WAUpdateStatesVisitor>>snapshot}\newline
+\ct{WAUpdateStatesVisitor>>visitPresenter:}\newline
+\ct{WAUpdateUrlVisitor class>>url:}\newline
+\ct{WAUpdateUrlVisitor>>initializeWithUrl:}\newline
+\ct{WAUpdateUrlVisitor>>url}\newline
+\ct{WAUpdateUrlVisitor>>visitPainter:}\newline
+\ct{WAUrl class>>absolute:}\newline
+\ct{WAUrl class>>decodePercent:}\newline
+\ct{WAUrl>>addField:value:}\newline
+\ct{WAUrl>>addField:}\newline
+\ct{WAUrl>>addToPath:}\newline
+\ct{WAUrl>>decode:}\newline
+\ct{WAUrl>>decodedWith:}\newline
+\ct{WAUrl>>encodeOn:}\newline
+\ct{WAUrl>>encodePathOn:}\newline
+\ct{WAUrl>>encodeQueryOn:}\newline
+\ct{WAUrl>>encodeSchemeAndAuthorityOn:}\newline
+\ct{WAUrl>>fragment}\newline
+\ct{WAUrl>>initializeFromString:}\newline
+\ct{WAUrl>>initialize}\newline
+\ct{WAUrl>>parsePath:}\newline
+\ct{WAUrl>>parseQuery:}\newline
+\ct{WAUrl>>password}\newline
+\ct{WAUrl>>path:}\newline
+\ct{WAUrl>>pathElementsIn:do:}\newline
+\ct{WAUrl>>pathString}\newline
+\ct{WAUrl>>path}\newline
+\ct{WAUrl>>postCopy}\newline
+\ct{WAUrl>>printOn:}\newline
+\ct{WAUrl>>queryFields:}\newline
+\ct{WAUrl>>queryFields}\newline
+\ct{WAUrl>>seasideUrl}\newline
+\ct{WAUrl>>slash:}\newline
+\ct{WAUrl>>subStringsIn:splitBy:do:}\newline
+\ct{WAUrl>>user}\newline
+\ct{WAUrlEncoder class>>on:codec:}\newline
+\ct{WAUrlEncoder>>nextPutAll:}\newline
+\ct{WAUserConfiguration>>addParent:}\newline
+\ct{WAUserConfiguration>>canAddParent:}\newline
+\ct{WAUserConfiguration>>expressionAt:ifAbsent:}\newline
+\ct{WAUserConfiguration>>initialize}\newline
+\ct{WAUserConfiguration>>}\newline
+\indent\ct{localAttributeAt:ifAbsent:}\newline
+\ct{WAUserConfiguration>>parents}\newline
+\ct{WAValueExpression>>}\newline
+\indent\ct{determineValueWithContext:}\newline
+\indent\ct{configuration:}\newline
+\ct{WAValueExpression>>value}\newline
+\ct{WAValueHolder class>>with:}\newline
+\ct{WAValueHolder>>contents:}\newline
+\ct{WAValueHolder>>contents}\newline
+\ct{WAVisiblePresenterGuide>>visitPresenter:}\newline
+\ct{WAVisitor>>visit:WAVisitor>>start:}\newline
+\ct{WAXmlDocument>>closeTag:}\newline
+\ct{WAXmlDocument>>destroy}\newline
+\ct{WAXmlDocument>>}\newline
+\indent\ct{initializeWithStream:codec:}\newline
+\ct{WAXmlDocument>>}\newline
+\indent\ct{openTag:attributes:closed:}\newline
+\ct{WAXmlDocument>>}\newline
+\indent\ct{openTag:attributes:}\newline
+\ct{WAXmlDocument>>openTag:}\newline
+\ct{WAXmlDocument>>print:}\newline
+\ct{WAXmlDocument>>urlEncoder}\newline
+\ct{WAXmlDocument>>xmlEncoder}\newline
+\ct{WAXmlEncoder>>nextPutAll:}\newline
+\ct{WeakAnnouncementSubscription class>>}\newline
+\indent\ct{finalizationList}\newline
+\ct{WeakAnnouncementSubscription class>>}\newline
+\indent\ct{finalizeValues}\newline
+\ct{WeakArray class>>finalizationProcess}\newline
+\ct{WeakArray class>>initialize}\newline
+\ct{WeakArray class>>restartFinalizationProcess}\newline
+\ct{WeakArray class>>startUp:}\newline
+\ct{WeakFinalizationList class>>hasNewFinalization}\newline
+\ct{WeakFinalizationList class>>initialize}\newline
+\ct{WeakFinalizationList class>>startUp:}\newline
+\ct{WeakFinalizationList>>swapWithNil}\newline
+\ct{WeakFinalizerItem class>>new}\newline
+\ct{WeakFinalizerItem>>add:}\newline
+\ct{WeakFinalizerItem>>list:object:}\newline
+\ct{WeakIdentityKeyDictionary>>compare:to:}\newline
+\ct{WeakIdentityKeyDictionary>>startIndexFor:}\newline
+\ct{WeakKeyDictionary>>associationsDo:}\newline
+\ct{WeakKeyDictionary>>finalizeValues}\newline
+\ct{WeakKeyDictionary>>fullCheck}\newline
+\ct{WeakKeyDictionary>>grow}\newline
+\ct{WeakKeyDictionary>>initialize:}\newline
+\ct{WeakKeyDictionary>>noCheckAdd:}\newline
+\ct{WeakKeyDictionary>>overridingAt:put:}\newline
+\ct{WeakKeyDictionary>>rehash}\newline
+\ct{WeakKeyDictionary>>removeKey:ifAbsent:}\newline
+\ct{WeakKeyDictionary>>scanFor:}\newline
+\ct{WeakKeyDictionary>>scanForKeyOrNil:}\newline
+\ct{WeakRegistry>>add:executor:}\newline
+\ct{WeakRegistry>>add:}\newline
+\ct{WeakRegistry>>finalizeValues}\newline
+\ct{WeakRegistry>>protected:}\newline
+\ct{WeakRegistry>>remove:ifAbsent:}\newline
+\ct{WeakSet>>add:}\newline
+\ct{WeakSet>>do:}\newline
+\ct{WeakSet>>growTo:}\newline
+\ct{WeakSet>>grow}\newline
+\ct{WeakSet>>initialize:}\newline
+\ct{WeakSet>>like:}\newline
+\ct{WeakSet>>noCheckNoGrowFillFrom:}\newline
+\ct{WeakSet>>scanFor:}\newline
+\ct{WeakSet>>scanForEmptySlotFor:}\newline
+\ct{Week class>>nameOfDay:}\newline
+\ct{WideString>>at:}\newline
+\ct{WideString>>wordAt:}\newline
+\ct{WriteStream>><<}\newline
+\ct{WriteStream>>contents}\newline
+\ct{WriteStream>>cr}\newline
+\ct{WriteStream>>growTo:}\newline
+\ct{WriteStream>>nextPut:}\newline
+\ct{WriteStream>>nextPutAll:}\newline
+\ct{WriteStream>>on:}\newline
+\ct{WriteStream>>pastEndPut:}\newline
+\ct{WriteStream>>reset}\newline
+\ct{WriteStream>>size}\newline
+\ct{WriteStream>>space}\newline
+\ct{ZdcAbstractSocketStream class>>on:}\newline
+\ct{ZdcAbstractSocketStream>>SocketSendData:startingAt:count:}\newline
+\ct{ZdcAbstractSocketStream>>SocketWaitForData}\newline
+\ct{ZdcAbstractSocketStream>>autoFlush:}\newline
+\ct{ZdcAbstractSocketStream>>binary}\newline
+\ct{ZdcAbstractSocketStream>>bufferSize:}\newline
+\ct{ZdcAbstractSocketStream>>close}\newline
+\ct{ZdcAbstractSocketStream>>flush}\newline
+\ct{ZdcAbstractSocketStream>>initializeBuffers}\newline
+\ct{ZdcAbstractSocketStream>>initialize}\newline
+\ct{ZdcAbstractSocketStream>>isBinary}\newline
+\ct{ZdcAbstractSocketStream>>nextPut:}\newline
+\ct{ZdcAbstractSocketStream>>nextPutAll:}\newline
+\ct{ZdcAbstractSocketStream>>next}\newline
+\ct{ZdcAbstractSocketStream>>on:}\newline
+\ct{ZdcAbstractSocketStream>>peek}\newline
+\ct{ZdcAbstractSocketStream>>shouldSignal:}\newline
+\ct{ZdcAbstractSocketStream>>socketClose}\newline
+\ct{ZdcAbstractSocketStream>>}\newline
+\indent\ct{socketIsConnected}\newline
+\ct{ZdcAbstractSocketStream>>}\newline
+\indent\ct{socketIsDataAvailable}\newline
+\ct{ZdcAbstractSocketStream>>}\newline
+\indent\ct{socketReceiveDataInto:startingAt:count:}\newline
+\ct{ZdcAbstractSocketStream>>socket}\newline
+\ct{ZdcAbstractSocketStream>>timeout:}\newline
+\ct{ZdcAbstractSocketStream>>timeout}\newline
+\ct{ZdcIOBuffer class>>on:}\newline
+\ct{ZdcIOBuffer class>>onByteArrayOfSize:}\newline
+\ct{ZdcIOBuffer>>advanceWritePointer:}\newline
+\ct{ZdcIOBuffer>>availableForReading}\newline
+\ct{ZdcIOBuffer>>availableForWriting}\newline
+\ct{ZdcIOBuffer>>bufferSize}\newline
+\ct{ZdcIOBuffer>>buffer}\newline
+\ct{ZdcIOBuffer>>compact}\newline
+\ct{ZdcIOBuffer>>contentsStart}\newline
+\ct{ZdcIOBuffer>>freeSpaceStart}\newline
+\ct{ZdcIOBuffer>>isEmpty}\newline
+\ct{ZdcIOBuffer>>isFull}\newline
+\ct{ZdcIOBuffer>>next:putAll:startingAt:}\newline
+\ct{ZdcIOBuffer>>nextPut:}\newline
+\ct{ZdcIOBuffer>>next}\newline
+\ct{ZdcIOBuffer>>on:}\newline
+\ct{ZdcIOBuffer>>peek}\newline
+\ct{ZdcIOBuffer>>reset}\newline
+\ct{ZdcSimpleSocketStream>>atEnd}\newline
+\ct{ZdcSimpleSocketStream>>}\newline
+\indent\ct{fillBytes:startingAt:count:}\newline
+\ct{ZdcSimpleSocketStream>>}\newline
+\indent\ct{fillReadBufferNoWait}\newline
+\ct{ZdcSimpleSocketStream>>}\newline
+\indent\ct{fillReadBuffer}\newline
+\ct{ZdcSimpleSocketStream>>}\newline
+\indent\ct{flushBytes:startingAt:count:}\newline
+\ct{ZdcSimpleSocketStream>>}\newline
+\indent\ct{flushWriteBuffer}\newline
+\ct{ZdcSimpleSocketStream>>}\newline
+\indent\ct{isConnected}\newline
+\ct{ZdcSocketStream>>next:putAll:startingAt:}\newline
+\ct{ZnBivalentWriteStream class>>on:}\newline
+\ct{ZnBivalentWriteStream>>isBinary}\newline
+\ct{ZnBivalentWriteStream>>nextPut:}\newline
+\ct{ZnBivalentWriteStream>>nextPutAll:}\newline
+\ct{ZnBivalentWriteStream>>on:}\newline
+\ct{ZnBivalentWriteStream>>space}\newline
+\ct{ZnByteArrayEntity class>>bytes:}\newline
+\ct{ZnByteArrayEntity class>>designatedMimeType}\newline
+\ct{ZnByteArrayEntity>>bytes:}\newline
+\ct{ZnByteArrayEntity>>bytes}\newline
+\ct{ZnByteArrayEntity>>writeOn:}\newline
+\ct{ZnCharacterEncoder class>>newForEncoding:}\newline
+\ct{ZnCharacterEncoder>>beLenient}\newline
+\ct{ZnCharacterEncoder>>encodedByteCountForString:}\newline
+\ct{ZnConstants class>>defaultHTTPVersion}\newline
+\ct{ZnConstants class>>defaultMaximumEntitySize}\newline
+\ct{ZnConstants class>>defaultServerString}\newline
+\ct{ZnConstants class>>frameworkNameAndVersion}\newline
+\ct{ZnConstants class>>frameworkName}\newline
+\ct{ZnConstants class>>frameworkVersion}\newline
+\ct{ZnConstants class>>httpStatusCodes}\newline
+\ct{ZnConstants class>>knownHTTPMethods}\newline
+\ct{ZnConstants class>>knownHTTPVersions}\newline
+\ct{ZnConstants class>>maximumLineLength}\newline
+\ct{ZnConstants class>>remoteAddressHeader}\newline
+\ct{ZnEntity class>>byteArrayEntityClass}\newline
+\ct{ZnEntity class>>bytes:}\newline
+\ct{ZnEntity class>>new}\newline
+\ct{ZnEntity class>>stringEntityClass}\newline
+\ct{ZnEntity class>>text:}\newline
+\ct{ZnEntity class>>textCRLF:}\newline
+\ct{ZnEntity class>>type:length:}\newline
+\ct{ZnEntity class>>type:}\newline
+\ct{ZnEntity>>contentLength:}\newline
+\ct{ZnEntity>>contentLength}\newline
+\ct{ZnEntity>>contentType:}\newline
+\ct{ZnEntity>>contentType}\newline
+\ct{ZnEntityReader>>allowsReadingUpToEnd}\newline
+\ct{ZnEntityReader>>binary}\newline
+\ct{ZnEntityReader>>canReadContent}\newline
+\ct{ZnEntityReader>>hasContentLength}\newline
+\ct{ZnEntityReader>>headers:}\newline
+\ct{ZnEntityReader>>headers}\newline
+\ct{ZnEntityReader>>isChunked}\newline
+\ct{ZnEntityReader>>readEntity}\newline
+\ct{ZnEntityReader>>stream:}\newline
+\ct{ZnEntityWriter>>headers:}\newline
+\ct{ZnEntityWriter>>headers}\newline
+\ct{ZnEntityWriter>>isChunked}\newline
+\ct{ZnEntityWriter>>isGzipped}\newline
+\ct{ZnEntityWriter>>stream:}\newline
+\ct{ZnEntityWriter>>writeEntity:}\newline
+\ct{ZnHeaders class>>defaultResponseHeaders}\newline
+\ct{ZnHeaders class>>readFrom:}\newline
+\ct{ZnHeaders>>acceptEntityDescription:}\newline
+\ct{ZnHeaders>>at:add:}\newline
+\ct{ZnHeaders>>at:ifAbsent:}\newline
+\ct{ZnHeaders>>at:put:}\newline
+\ct{ZnHeaders>>clearContentLength}\newline
+\ct{ZnHeaders>>clearContentType}\newline
+\ct{ZnHeaders>>contentLength:}\newline
+\ct{ZnHeaders>>contentType:}\newline
+\ct{ZnHeaders>>headersDo:}\newline
+\ct{ZnHeaders>>headers}\newline
+\ct{ZnHeaders>>includesKey:}\newline
+\ct{ZnHeaders>>isDescribingEntity}\newline
+\ct{ZnHeaders>>isEmpty}\newline
+\ct{ZnHeaders>>normalizeHeaderKey:}\newline
+\ct{ZnHeaders>>readFrom:}\newline
+\ct{ZnHeaders>>readOneHeaderFrom:}\newline
+\ct{ZnHeaders>>removeKey:ifAbsent:}\newline
+\ct{ZnHeaders>>writeOn:}\newline
+\ct{ZnLineReader class>>on:}\newline
+\ct{ZnLineReader>>growBuffer}\newline
+\ct{ZnLineReader>>limit:}\newline
+\ct{ZnLineReader>>nextLine}\newline
+\ct{ZnLineReader>>on:}\newline
+\ct{ZnLineReader>>processNext}\newline
+\ct{ZnLineReader>>reset}\newline
+\ct{ZnLineReader>>store:}\newline
+\ct{ZnLogSupport>>debug:}\newline
+\ct{ZnLogSupport>>disable}\newline
+\ct{ZnLogSupport>>enabled:}\newline
+\ct{ZnLogSupport>>enabled}\newline
+\ct{ZnLogSupport>>info:}\newline
+\ct{ZnLogSupport>>initialize}\newline
+\ct{ZnLogSupport>>transaction:}\newline
+\ct{ZnManagingMultiThreadedServer>>}\newline
+\indent\ct{closeConnections}\newline
+\ct{ZnManagingMultiThreadedServer>>}\newline
+\indent\ct{closeSocketStream:}\newline
+\ct{ZnManagingMultiThreadedServer>>}\newline
+\indent\ct{connections}\newline
+\ct{ZnManagingMultiThreadedServer>>}\newline
+\indent\ct{lock}\newline
+\ct{ZnManagingMultiThreadedServer>>}\newline
+\indent\ct{socketStreamOn:}\newline
+\ct{ZnManagingMultiThreadedServer>>}\newline
+\indent\ct{stop:}\newline
+\ct{ZnMessage class>>readBinaryFrom:UTF8}\newline
+\ct{ZnMessage>>entity:}\newline
+\ct{ZnMessage>>entityReaderOn:}\newline
+\ct{ZnMessage>>entityWriterOn:}\newline
+\ct{ZnMessage>>entity}\newline
+\ct{ZnMessage>>hasEntity}\newline
+\ct{ZnMessage>>hasHeaders}\newline
+\ct{ZnMessage>>headers:}\newline
+\ct{ZnMessage>>headersDo:}\newline
+\ct{ZnMessage>>headers}\newline
+\ct{ZnMessage>>isConnectionClose}\newline
+\ct{ZnMessage>>readBinaryFrom:}\newline
+\ct{ZnMessage>>readHeaderFrom:}\newline
+\ct{ZnMessage>>setConnectionClose}\newline
+\ct{ZnMessage>>wantsConnectionClose}\newline
+\ct{ZnMessage>>writeOn:}\newline
+\ct{ZnMimeType class>>applicationOctetStream}\newline
+\ct{ZnMimeType class>>fromString:}\newline
+\ct{ZnMimeType class>>main:sub:parameters:}\newline
+\ct{ZnMimeType class>>main:sub:}\newline
+\ct{ZnMimeType class>>textPlain}\newline
+\ct{ZnMimeType>>=}\newline
+\ct{ZnMimeType>>asZnMimeType}\newline
+\ct{ZnMimeType>>charSet:}\newline
+\ct{ZnMimeType>>charSet}\newline
+\ct{ZnMimeType>>main:}\newline
+\ct{ZnMimeType>>main}\newline
+\ct{ZnMimeType>>parameterAt:ifAbsent:}\newline
+\ct{ZnMimeType>>parameters:}\newline
+\ct{ZnMimeType>>parameters}\newline
+\ct{ZnMimeType>>printOn:}\newline
+\ct{ZnMimeType>>setCharSetUTF8}\newline
+\ct{ZnMimeType>>sub:}\newline
+\ct{ZnMimeType>>sub}\newline
+\ct{ZnMultiThreadedServer>>augmentResponse:forRequest:}\newline
+\ct{ZnMultiThreadedServer>>closeSocketStream:}\newline
+\ct{ZnMultiThreadedServer>>exceptionSet:}\newline
+\ct{ZnMultiThreadedServer>>executeOneRequestResponseOn:}\newline
+\ct{ZnMultiThreadedServer>>executeRequestResponseLoopOn:}\newline
+\ct{ZnMultiThreadedServer>>listenLoop}\newline
+\ct{ZnMultiThreadedServer>>readRequestBadExceptionSet}\newline
+\ct{ZnMultiThreadedServer>>readRequestSafely:}\newline
+\ct{ZnMultiThreadedServer>>readRequestTerminationExceptionSet}\newline
+\ct{ZnMultiThreadedServer>>serveConnectionsOn:}\newline
+\ct{ZnMultiThreadedServer>>workerProcessName}\newline
+\ct{ZnMultiThreadedServer>>writeResponseBad:on:}\newline
+\ct{ZnMultiThreadedServer>>writeResponseSafely:on:}\newline
+\ct{ZnMultiThreadedServer>>writeResponseTerminationExceptionSet}\newline
+\ct{ZnMultiValueDictionary>>at:add:}\newline
+\ct{ZnMultiValueDictionary>>at:put:}\newline
+\ct{ZnMultiValueDictionary>>checkLimitForKey:}\newline
+\ct{ZnMultiValueDictionary>>defaultLimit}\newline
+\ct{ZnMultiValueDictionary>>initialize:}\newline
+\ct{ZnMultiValueDictionary>>keysAndValuesDo:}\newline
+\ct{ZnMultiValueDictionary>>limit}\newline
+\ct{ZnNetworkingUtils class>>defaultSocketStreamTimeout}\newline
+\ct{ZnNetworkingUtils class>>default}\newline
+\ct{ZnNetworkingUtils class>>ipAddressToString:}\newline
+\ct{ZnNetworkingUtils class>>listenBacklogSize}\newline
+\ct{ZnNetworkingUtils class>>serverSocketOn:}\newline
+\ct{ZnNetworkingUtils class>>socketBufferSize}\newline
+\ct{ZnNetworkingUtils class>>socketStreamOn:}\newline
+\ct{ZnNetworkingUtils class>>socketStreamTimeout}\newline
+\ct{ZnNetworkingUtils>>bufferSize}\newline
+\ct{ZnNetworkingUtils>>serverSocketOn:}\newline
+\ct{ZnNetworkingUtils>>setServerSocketOptions:}\newline
+\ct{ZnNetworkingUtils>>setSocketStreamParameters:}\newline
+\ct{ZnNetworkingUtils>>socketStreamClass}\newline
+\ct{ZnNetworkingUtils>>socketStreamOn:}\newline
+\ct{ZnNetworkingUtils>>timeout}\newline
+\ct{ZnNullEncoder class>>handlesEncoding:}\newline
+\ct{ZnPercentEncoder>>characterEncoder:}\newline
+\ct{ZnPercentEncoder>>characterEncoder}\newline
+\ct{ZnPercentEncoder>>decode:to:}\newline
+\ct{ZnPercentEncoder>>decode:}\newline
+\ct{ZnPercentEncoder>>encode:to:}\newline
+\ct{ZnPercentEncoder>>encode:}\newline
+\ct{ZnPercentEncoder>>safeSet:}\newline
+\ct{ZnPercentEncoder>>safeSet}\newline
+\ct{ZnRequest>>isHttp10}\newline
+\ct{ZnRequest>>method}\newline
+\ct{ZnRequest>>readHeaderFrom:}\newline
+\ct{ZnRequest>>requestLine:}\newline
+\ct{ZnRequest>>requestLine}\newline
+\ct{ZnRequest>>uri}\newline
+\ct{ZnRequest>>wantsConnectionClose}\newline
+\ct{ZnRequestLine class>>readFrom:}\newline
+\ct{ZnRequestLine>>isHttp10}\newline
+\ct{ZnRequestLine>>method:}\newline
+\ct{ZnRequestLine>>method}\newline
+\ct{ZnRequestLine>>readFrom:}\newline
+\ct{ZnRequestLine>>uri:}\newline
+\ct{ZnRequestLine>>uri}\newline
+\ct{ZnRequestLine>>version:}\newline
+\ct{ZnRequestLine>>version}\newline
+\ct{ZnResourceMetaUtils class>>}\newline
+\indent\ct{decodePercent:}\newline
+\ct{ZnResourceMetaUtils class>>}\newline
+\indent\ct{encodePercent:safeSet:encoding:}\newline
+\ct{ZnResourceMetaUtils class>>}\newline
+\indent\ct{parseQueryFrom:}\newline
+\ct{ZnResourceMetaUtils class>>}\newline
+\indent\ct{queryKeyValueSafeSet}\newline
+\ct{ZnResourceMetaUtils class>>}\newline
+\indent\ct{urlPathSafeSet}\newline
+\ct{ZnResourceMetaUtils class>>}\newline
+\indent\ct{writeQueryFields:on:}\newline
+\ct{ZnResourceMetaUtils class>>}\newline
+\indent\ct{writeQueryFields:withTextEncoding:on:}\newline
+\ct{ZnResponse>>setConnectionCloseFor:}\newline
+\ct{ZnResponse>>setKeepAliveFor:}\newline
+\ct{ZnResponse>>statusLine:}\newline
+\ct{ZnResponse>>statusLine}\newline
+\ct{ZnResponse>>useConnection:}\newline
+\ct{ZnResponse>>writeOn:}\newline
+\ct{ZnSeasideServerAdaptorDelegate class>>with:}\newline
+\ct{ZnSeasideServerAdaptorDelegate>>adaptor:}\newline
+\ct{ZnSeasideServerAdaptorDelegate>>adaptor}\newline
+\ct{ZnSeasideServerAdaptorDelegate>>}\newline
+\indent\ct{handleRequest:}\newline
+\ct{ZnServer class>>defaultServerClass}\newline
+\ct{ZnServer class>>initialize}\newline
+\ct{ZnServer class>>managedServers}\newline
+\ct{ZnServer class>>on:}\newline
+\ct{ZnServer class>>shutDown:}\newline
+\ct{ZnServer class>>startUp:}\newline
+\ct{ZnServer class>>unregister:}\newline
+\ct{ZnServer>>authenticator}\newline
+\ct{ZnServer>>bindingAddress}\newline
+\ct{ZnServer>>delegate:}\newline
+\ct{ZnServer>>delegate}\newline
+\ct{ZnServer>>maximumEntitySize}\newline
+\ct{ZnServer>>optionAt:ifAbsent:}\newline
+\ct{ZnServer>>optionAt:ifAbsentPut:}\newline
+\ct{ZnServer>>optionAt:put:}\newline
+\ct{ZnServer>>port:}\newline
+\ct{ZnServer>>port}\newline
+\ct{ZnServer>>reader:}\newline
+\ct{ZnServer>>reader}\newline
+\ct{ZnServer>>stop}\newline
+\ct{ZnServer>>unregister}\newline
+\ct{ZnServer>>useGzipCompressionAndChunking}\newline
+\ct{ZnSignalProgress class>>enabled}\newline
+\ct{ZnSingleThreadedServer class>>default}\newline
+\ct{ZnSingleThreadedServer class>>on:Latin1}\newline
+\ct{ZnSingleThreadedServer>>acceptWaitTimeout}\newline
+\ct{ZnSingleThreadedServer>>augmentResponse:forRequest:}\newline
+\ct{ZnSingleThreadedServer>>authenticateAndDelegateRequest:}\newline
+\ct{ZnSingleThreadedServer>>authenticateRequest:do:}\newline
+\ct{ZnSingleThreadedServer>>closeDelegate}\newline
+\ct{ZnSingleThreadedServer>>handleRequest:}\newline
+\ct{ZnSingleThreadedServer>>handleRequestProtected:}\newline
+\ct{ZnSingleThreadedServer>>initializeServerSocket}\newline
+\ct{ZnSingleThreadedServer>>isRunning}\newline
+\ct{ZnSingleThreadedServer>>logRequest:response:started:}\newline
+\ct{ZnSingleThreadedServer>>logRequest:}\newline
+\ct{ZnSingleThreadedServer>>logResponse:}\newline
+\ct{ZnSingleThreadedServer>>log}\newline
+\ct{ZnSingleThreadedServer>>noteAcceptWaitTimedOut}\newline
+\ct{ZnSingleThreadedServer>>periodicTasks}\newline
+\ct{ZnSingleThreadedServer>>process}\newline
+\ct{ZnSingleThreadedServer>>readRequest:}\newline
+\ct{ZnSingleThreadedServer>>releaseServerSocket}\newline
+\ct{ZnSingleThreadedServer>>serverProcessName}\newline
+\ct{ZnSingleThreadedServer>>serverSocket}\newline
+\ct{ZnSingleThreadedServer>>socketStreamOn:}\newline
+\ct{ZnSingleThreadedServer>>start}\newline
+\ct{ZnSingleThreadedServer>>stop:}\newline
+\ct{ZnSingleThreadedServer>>withMaximumEntitySizeDo:}\newline
+\ct{ZnSingleThreadedServer>>writeResponse:on:}\newline
+\ct{ZnStatusLine class>>badRequest}\newline
+\ct{ZnStatusLine class>>code:}\newline
+\ct{ZnStatusLine>>code:}\newline
+\ct{ZnStatusLine>>code}\newline
+\ct{ZnStatusLine>>reason}\newline
+\ct{ZnStatusLine>>version:}\newline
+\ct{ZnStatusLine>>version}\newline
+\ct{ZnStatusLine>>writeOn:}\newline
+\ct{ZnStringEntity class>>designatedMimeType}\newline
+\ct{ZnStringEntity class>>text:}\newline
+\ct{ZnStringEntity>>computeContentLength}\newline
+\ct{ZnStringEntity>>contentLength}\newline
+\ct{ZnStringEntity>>encoder:}\newline
+\ct{ZnStringEntity>>encoder}\newline
+\ct{ZnStringEntity>>hasEncoder}\newline
+\ct{ZnStringEntity>>initializeEncoder}\newline
+\ct{ZnStringEntity>>string:}\newline
+\ct{ZnStringEntity>>string}\newline
+\ct{ZnStringEntity>>writeOn:}\newline
+\ct{ZnUTF8Encoder class>>handlesEncoding:}\newline
+\ct{ZnUTF8Encoder class>>newForEncoding:}\newline
+\ct{ZnUTF8Encoder>>decodeBytes:}\newline
+\ct{ZnUTF8Encoder>>encodedByteCountFor:}\newline
+\ct{ZnUTF8Encoder>>}\newline
+\indent\ct{findFirstNonASCIIIn:startingAt:}\newline
+\ct{ZnUTF8Encoder>>}\newline
+\indent\ct{next:putAll:startingAt:toStream:}\newline
+\ct{ZnUTF8Encoder>>}\newline
+\indent\ct{next:putAllASCII:startingAt:toStream:}\newline
+\ct{ZnUTF8Encoder>>}\newline
+\indent\ct{next:putAllByteString:startingAt:}\newline
+\indent\ct{toStream:}\newline
+\ct{ZnUTF8Encoder>>}\newline
+\indent\ct{nextFromStream:}\newline
+\ct{ZnUTF8Encoder>>}\newline
+\indent\ct{nextPut:toStream:}\newline
+\ct{ZnUnknownHttpMethod class>>method:}\newline
+\ct{ZnUnknownHttpMethod>>method:}\newline
+\ct{ZnUrl class>>fromString:}\newline
+\ct{ZnUrl class>>schemesNotUsingPath}\newline
+\ct{ZnUrl>>addPathSegment:}\newline
+\ct{ZnUrl>>decodePercent:}\newline
+\ct{ZnUrl>>encodePath:on:}\newline
+\ct{ZnUrl>>enforceKnownScheme}\newline
+\ct{ZnUrl>>hasFragment}\newline
+\ct{ZnUrl>>hasHost}\newline
+\ct{ZnUrl>>hasPath}\newline
+\ct{ZnUrl>>hasPort}\newline
+\ct{ZnUrl>>hasQuery}\newline
+\ct{ZnUrl>>hasScheme}\newline
+\ct{ZnUrl>>hasUsername}\newline
+\ct{ZnUrl>>isSchemeUsingPath}\newline
+\ct{ZnUrl>>parseFrom:defaultScheme:}\newline
+\ct{ZnUrl>>parseFrom:}\newline
+\ct{ZnUrl>>parsePath:}\newline
+\ct{ZnUrl>>printAuthorityOn:}\newline
+\ct{ZnUrl>>printOn:}\newline
+\ct{ZnUrl>>printPathOn:}\newline
+\ct{ZnUrl>>printPathQueryFragmentOn:}\newline
+\ct{ZnUrl>>printQueryOn:}\newline
+\ct{ZnUrl>>query:}\newline
+\ct{ZnUrl>>query}\newline
+\ct{ZnUrl>>scheme}\newline
+\ct{ZnUtils class>>httpDate:}\newline
+\ct{ZnUtils class>>httpDate}\newline
+\ct{ZnUtils class>>nextPutAll:on:}\newline
+\ct{ZnUtils class>>signalProgress:total:}\newline
+\ct{ZnUtils class>>streamingBufferSize}\newline
+\ct{ZnZincServerAdaptor>>basicStart}\newline
+\ct{ZnZincServerAdaptor>>configureDelegate}\newline
+\ct{ZnZincServerAdaptor>>configureServerForBinaryReading}\newline
+\ct{ZnZincServerAdaptor>>defaultCodec}\newline
+\ct{ZnZincServerAdaptor>>defaultDelegate}\newline
+\ct{ZnZincServerAdaptor>>defaultZnServer}\newline
+\ct{ZnZincServerAdaptor>>isRunning}\newline
+\ct{ZnZincServerAdaptor>>isStopped}\newline
+\ct{ZnZincServerAdaptor>>requestAddressFor:}\newline
+\ct{ZnZincServerAdaptor>>requestBodyFor:}\newline
+\ct{ZnZincServerAdaptor>>requestCookiesFor:}\newline
+\ct{ZnZincServerAdaptor>>requestFieldsFor:}\newline
+\ct{ZnZincServerAdaptor>>requestHeadersFor:}\newline
+\ct{ZnZincServerAdaptor>>requestMethodFor:}\newline
+\ct{ZnZincServerAdaptor>>requestUrlFor:}\newline
+\ct{ZnZincServerAdaptor>>requestVersionFor:}\newline
+\ct{ZnZincServerAdaptor>>responseFrom:}\newline
+\ct{ZnZincServerAdaptor>>server}\newline
+\ct{ZnZincServerAdaptor>>shutDown}\newline
+\ct{ZnZincServerAdaptor>>startUp}\newline
+\end{multicols}
+
+
+\section{Seaside App B Extract} \label{app:extraction_seaside_pharo_seed}
+
+This section list the methods extracted from the nurtured Web application when using a seed containing all base libraries from Pharo. This list includes all methods installed from Seaside framework and the counter application. The list of methods part of the base library are excluded as it is the same list of the methods found in Pharo base library.
+\begin{multicols}{2}\noindent\small
+\ct{WAAccessIntervalReapingStrategy>>}\newline
+\indent\ct{defaultConfiguration}\newline	
+\ct{WAAccessIntervalReapingStrategy>>initialize}\newline	
+\ct{WAAccessIntervalReapingStrategy>>interval}\newline	
+\ct{WAAccessIntervalReapingStrategy>>reap}\newline	
+\ct{WAAccessIntervalReapingStrategy>>stored:key:}\newline	
+\ct{WAActionCallback>>block:}\newline	
+\ct{WAActionCallback>>evaluateWithArgument:}\newline	
+\ct{WAActionCallback>>isEnabledFor:}\newline	
+\ct{WAActionCallback>>signalRenderNotification}\newline	
+\ct{WAActionPhaseContinuation>>continue}\newline	
+\ct{WAActionPhaseContinuation>>handleRequest}\newline	
+\ct{WAActionPhaseContinuation>>renderContext:}\newline	
+\ct{WAActionPhaseContinuation>>renderContext}\newline	
+\ct{WAActionPhaseContinuation>>runCallbacks}\newline	
+\ct{WAActionPhaseContinuation>>shouldRedirect}\newline	
+\ct{WAAdmin class>>defaultServerManager}\newline	
+\ct{WAAdmin class>>serverAdaptors}\newline	
+\ct{WAAnchorTag>>callback:}\newline	
+\ct{WAAnchorTag>>tag}\newline	
+\ct{WAAnchorTag>>url}\newline	
+\ct{WAAnchorTag>>with:}\newline	
+\ct{WAApplication>>contentType}\newline	
+\ct{WAApplication>>doesHandlerSupportCookies:}\newline	
+\ct{WAApplication>>handleDefault:}\newline	
+\ct{WAApplication>>handleFiltered:}\newline	
+\ct{WAApplication>>isApplication}\newline	
+\ct{WAApplication>>isImplemented:}\newline	
+\ct{WAApplication>>keyField}\newline	
+\ct{WAApplication>>libraries}\newline	
+\ct{WAApplication>>mainClass}\newline	
+\ct{WAApplication>>mimeType}\newline	
+\ct{WAApplication>>newSession}\newline	
+\ct{WAApplication>>resourceBaseUrl}\newline	
+\ct{WAApplication>>sessionClass}\newline	
+\ct{WAApplicationConfiguration>>parents}\newline	
+\ct{WAAttributeSearchContext class>>key:target:}\newline	
+\ct{WAAttributeSearchContext>>at:ifPresent:}\newline	
+\ct{WAAttributeSearchContext>>at:put:}\newline	
+\ct{WAAttributeSearchContext>>attribute}\newline	
+\ct{WAAttributeSearchContext>>cachedValues}\newline	
+\ct{WAAttributeSearchContext>>}\newline
+\indent\ct{findAttributeAndSelectAncestorsOf:}\newline	
+\ct{WAAttributeSearchContext>>initializeWithKey:}\newline	
+\ct{WAAttributeSearchContext>>isAttributeInheritedOn:}\newline	
+\ct{WAAttributeSearchContext>>isAttributeLocalOn:}\newline	
+\ct{WAAttributeSearchContext>>key}\newline	
+\ct{WABrush>>initialize}\newline	
+\ct{WABrush>>parent}\newline	
+\ct{WABrush>>setParent:canvas:}\newline	
+\ct{WABrush>>with:}\newline	
+\ct{WABufferedResponse class>>on:}\newline	
+\ct{WABufferedResponse>>contents}\newline	
+\ct{WABufferedResponse>>destroy}\newline	
+\ct{WABufferedResponse>>initializeOn:}\newline	
+\ct{WABufferedResponse>>stream}\newline	
+\ct{WACache>>at:ifAbsent:}\newline	
+\ct{WACache>>expiryPolicy}\newline	
+\ct{WACache>>initializeCollections}\newline	
+\ct{WACache>>initializeMutex}\newline	
+\ct{WACache>>initialize}\newline	
+\ct{WACache>>keyAtValue:ifAbsent:}\newline	
+\ct{WACache>>keyAtValue:}\newline	
+\ct{WACache>>keySize}\newline	
+\ct{WACache>>missStrategy}\newline	
+\ct{WACache>>notifyRemoved:key:}\newline	
+\ct{WACache>>notifyRetrieved:key:}\newline	
+\ct{WACache>>notifyStored:key:}\newline	
+\ct{WACache>>pluginsDo:}\newline	
+\ct{WACache>>reapingStrategy}\newline	
+\ct{WACache>>reap}\newline	
+\ct{WACache>>removalAction}\newline	
+\ct{WACache>>setExpiryPolicy:}\newline	
+\ct{WACache>>setMissStrategy:}\newline	
+\ct{WACache>>setReapingStrategy:}\newline	
+\ct{WACache>>setRemovalAction:}\newline	
+\ct{WACache>>store:}\newline	
+\ct{WACacheCapacityConfiguration>>describeOn:}\newline	
+\ct{WACacheMissStrategy>>missed:}\newline	
+\ct{WACachePlugin>>configuration}\newline	
+\ct{WACachePlugin>>defaultConfiguration}\newline	
+\ct{WACachePlugin>>initialize}\newline	
+\ct{WACachePlugin>>removed:key:}\newline	
+\ct{WACachePlugin>>retrieved:key:}\newline	
+\ct{WACachePlugin>>setCache:}\newline	
+\ct{WACachePlugin>>stored:key:}\newline	
+\ct{WACacheReapingStrategy>>reap}\newline	
+\ct{WACallback class>>on:}\newline	
+\ct{WACallback>>convertKey:}\newline	
+\ct{WACallback>>evaluateWithFieldValues:}\newline	
+\ct{WACallback>>key}\newline	
+\ct{WACallback>>setKey:callbacks:}\newline	
+\ct{WACallback>>valueForField:}\newline	
+\ct{WACallbackRegistry>>advanceKey}\newline	
+\ct{WACallbackRegistry>>handle:}\newline	
+\ct{WACallbackRegistry>>increaseKey}\newline	
+\ct{WACallbackRegistry>>initialize}\newline	
+\ct{WACallbackRegistry>>nextKey}\newline	
+\ct{WACallbackRegistry>>store:}\newline	
+\ct{WACanvas>>brush:}\newline	
+\ct{WACanvas>>flush}\newline	
+\ct{WACanvas>>nest:}\newline	
+\ct{WACanvas>>render:}\newline	
+\ct{WACanvas>>text:}\newline	
+\ct{WAComponent>>accept:}\newline	
+\ct{WAComponent>>acceptDecorated:}\newline	
+\ct{WAComponent>>decoration}\newline	
+\ct{WAComponent>>initialize}\newline	
+\ct{WAComponent>>updateStates:}\newline	
+\ct{WAConfigurationDescription>>add:to:}\newline	
+\ct{WAConfigurationDescription>>addAttribute:}\newline	
+\ct{WAConfigurationDescription>>attributes}\newline	
+\ct{WAConfigurationDescription>>expressions}\newline	
+\ct{WAConfigurationDescription>>initialize}\newline	
+\ct{WAConfigurationDescription>>integer:}\newline	
+\ct{WAConfiguredRequestFilter>>configuration}\newline	
+\ct{WACounter>>count:}\newline	
+\ct{WACounter>>decrease}\newline	
+\ct{WACounter>>increase}\newline	
+\ct{WACounter>>initialize}\newline	
+\ct{WACounter>>renderContentOn:}\newline	
+\ct{WACounter>>states}\newline	
+\ct{WADefaultScriptGenerator>>close:on:}\newline	
+\ct{WADefaultScriptGenerator>>open:on:}\newline	
+\ct{WADevelopmentConfiguration>>parents}\newline	
+\ct{WADispatcher class>>default}\newline	
+\ct{WADispatcher>>handleFiltered:named:}\newline	
+\ct{WADispatcher>>handleFiltered:}\newline	
+\ct{WADispatcher>>handlerAt:ifAbsent:}\newline	
+\ct{WADispatcher>>handlerAt:with:}\newline	
+\ct{WADispatcher>>handlers}\newline	
+\ct{WADispatcher>>nameOfHandler:}\newline	
+\ct{WADispatcher>>urlFor:}\newline	
+\ct{WADocument class>>on:codec:}\newline	
+\ct{WADocument>>close}\newline	
+\ct{WADocument>>destroy}\newline	
+\ct{WADocument>>initializeWithStream:codec:}\newline	
+\ct{WADocument>>nextPut:}\newline	
+\ct{WADocument>>nextPutAll:}\newline	
+\ct{WADocument>>open:}\newline	
+\ct{WADynamicVariable class>>use:during:}\newline	
+\ct{WADynamicVariable class>>value}\newline	
+\ct{WAEncoder class>>on:table:}\newline	
+\ct{WAEncoder class>>on:}\newline	
+\ct{WAEncoder>>initializeOn:table:}\newline	
+\ct{WAEncoder>>nextPut:}\newline	
+\ct{WAErrorHandler class>>exceptionSelector}\newline	
+\ct{WAExampleComponent>>rendererClass}\newline	
+\ct{WAExceptionFilter>>exceptionHandler}\newline	
+\ct{WAExceptionFilter>>handleFiltered:}\newline	
+\ct{WAExceptionHandler class>>context:}\newline	
+\ct{WAExceptionHandler class>>exceptionSelector}\newline	
+\ct{WAExceptionHandler class>>handleExceptionsDuring:context:}\newline	
+\ct{WAExceptionHandler class>>handles:}\newline	
+\ct{WAExceptionHandler>>handleExceptionsDuring:}\newline	
+\ct{WAExceptionHandler>>handles:}\newline	
+\ct{WAExceptionHandler>>initializeWithContext:}\newline	
+\ct{WAHeaderFields>>checkValue:}\newline	
+\ct{WAHeaderFields>>privateAt:put:}\newline	
+\ct{WAHeadingTag>>initialize}\newline	
+\ct{WAHeadingTag>>level1}\newline	
+\ct{WAHeadingTag>>level}\newline	
+\ct{WAHeadingTag>>tag}\newline	
+\ct{WAHtmlAttributes>>encodeOn:}\newline	
+\ct{WAHtmlAttributes>>privateAt:put:}\newline	
+\ct{WAHtmlCanvas>>anchor}\newline	
+\ct{WAHtmlCanvas>>heading:}\newline	
+\ct{WAHtmlCanvas>>heading}\newline	
+\ct{WAHtmlCanvas>>spaceEntity}\newline	
+\ct{WAHtmlDocument>>scriptGenerator:}\newline	
+\ct{WAHtmlDocument>>scriptGenerator}\newline	
+\ct{WAHtmlElement class>>root:}\newline	
+\ct{WAHtmlElement>>attributeAt:put:}\newline	
+\ct{WAHtmlElement>>attributes}\newline	
+\ct{WAHtmlElement>>encodeBeforeOn:}\newline	
+\ct{WAHtmlElement>>encodeOn:}\newline	
+\ct{WAHtmlElement>>initializeWithRoot:}\newline	
+\ct{WAHtmlElement>>isClosed}\newline	
+\ct{WAHtmlRoot>>add:}\newline	
+\ct{WAHtmlRoot>>beXhtml10Strict}\newline	
+\ct{WAHtmlRoot>>bodyAttributes}\newline	
+\ct{WAHtmlRoot>>closeOn:}\newline	
+\ct{WAHtmlRoot>>docType:}\newline	
+\ct{WAHtmlRoot>>htmlAttributes}\newline	
+\ct{WAHtmlRoot>>initialize}\newline	
+\ct{WAHtmlRoot>>meta}\newline	
+\ct{WAHtmlRoot>>openOn:}\newline	
+\ct{WAHtmlRoot>>title:}\newline	
+\ct{WAHtmlRoot>>writeElementsOn:}\newline	
+\ct{WAHtmlRoot>>writeFootOn:}\newline	
+\ct{WAHtmlRoot>>writeHeadOn:}\newline	
+\ct{WAHtmlRoot>>writeScriptsOn:}\newline	
+\ct{WAHtmlRoot>>writeStylesOn:}\newline	
+\ct{WAHttpVersion class>>fromString:}\newline	
+\ct{WAHttpVersion class>>major:minor:}\newline	
+\ct{WAHttpVersion class>>readFrom:}\newline	
+\ct{WAHttpVersion>>initializeWithMajor:minor:}\newline	
+\ct{WAInitialRequestVisitor class>>request:}\newline	
+\ct{WAInitialRequestVisitor>>}\newline
+\indent\ct{initializeWithRequest:}\newline	
+\ct{WAInitialRequestVisitor>>request}\newline	
+\ct{WAInitialRequestVisitor>>visitPresenter:}\newline	
+\ct{WAKeyGenerator class>>current}\newline	
+\ct{WAKeyGenerator>>keyOfLength:}\newline	
+\ct{WALastAccessExpiryPolicy>>}\newline
+\indent\ct{defaultConfiguration}\newline	
+\ct{WALastAccessExpiryPolicy>>initialize}\newline	
+\ct{WALastAccessExpiryPolicy>>isExpired:key:}\newline	
+\ct{WALastAccessExpiryPolicy>>retrieved:key:}\newline	
+\ct{WALastAccessExpiryPolicy>>stored:key:}\newline	
+\ct{WALastAccessExpiryPolicy>>timeout}\newline	
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{defaultConfiguration}\newline	
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{initialize}\newline	
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{isExpired:key:}\newline	
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{maximumAge}\newline	
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{removed:key:}\newline	
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{retrieved:key:}\newline	
+\ct{WALeastRecentlyUsedExpiryPolicy>>}\newline
+\indent\ct{stored:key:}\newline	
+\ct{WAMergedRequestFields class>>on:}\newline	
+\ct{WAMergedRequestFields>>allAt:}\newline	
+\ct{WAMergedRequestFields>>at:ifAbsent:}\newline	
+\ct{WAMergedRequestFields>>includesKey:}\newline	
+\ct{WAMergedRequestFields>>initializeOn:}\newline	
+\ct{WAMergedRequestFields>>keysAndValuesDo:}\newline	
+\ct{WAMergedRequestFields>>keysDo:}\newline	
+\ct{WAMetaElement>>content:}\newline	
+\ct{WAMetaElement>>contentScriptType:}\newline	
+\ct{WAMetaElement>>contentType:}\newline	
+\ct{WAMetaElement>>encodeBeforeOn:}\newline	
+\ct{WAMetaElement>>responseHeaderName:}\newline	
+\ct{WAMetaElement>>tag}\newline	
+\ct{WAMimeType class>>fromString:}\newline	
+\ct{WAMimeType class>>main:sub:}\newline	
+\ct{WAMimeType class>>textJavascript}\newline	
+\ct{WAMimeType class>>textPlain}\newline	
+\ct{WAMimeType>>charset:}\newline	
+\ct{WAMimeType>>greaseString}\newline	
+\ct{WAMimeType>>main:}\newline	
+\ct{WAMimeType>>main}\newline	
+\ct{WAMimeType>>parameters}\newline	
+\ct{WAMimeType>>sub:}\newline	
+\ct{WAMimeType>>sub}\newline	
+\ct{WAMutex>>critical:}\newline	
+\ct{WAMutex>>initialize}\newline	
+\ct{WAMutualExclusionFilter>>handleFiltered:}\newline	
+\ct{WAMutualExclusionFilter>>initialize}\newline	
+\ct{WAMutualExclusionFilter>>shouldTerminate:}\newline	
+\ct{WANotifyRemovalAction>>removed:key:}\newline	
+\ct{WAObject>>application}\newline	
+\ct{WAObject>>requestContext}\newline	
+\ct{WAObject>>session}\newline	
+\ct{WAPainter>>renderWithContext:}\newline	
+\ct{WAPainter>>updateRoot:}\newline	
+\ct{WAPainter>>updateUrl:}\newline	
+\ct{WAPainterVisitor>>visitComponent:}\newline	
+\ct{WAPainterVisitor>>visitDecorationsOfComponent:}\newline	
+\ct{WAPainterVisitor>>visitPainter:}\newline	
+\ct{WAPainterVisitor>>visitPresenter:}\newline	
+\ct{WAPathConsumer class>>path:}\newline	
+\ct{WAPathConsumer>>atEnd}\newline	
+\ct{WAPathConsumer>>initializeWith:}\newline	
+\ct{WAPathConsumer>>next}\newline	
+\ct{WAPathConsumer>>upToEnd}\newline	
+\ct{WAPresenter>>childrenDo:}\newline	
+\ct{WAPresenter>>children}\newline	
+\ct{WAPresenter>>initialRequest:}\newline	
+\ct{WAPresenter>>script}\newline	
+\ct{WAPresenter>>style}\newline	
+\ct{WAPresenter>>updateRoot:}\newline	
+\ct{WAPresenter>>updateStates:}\newline	
+\ct{WAPresenterGuide class>>client:}\newline	
+\ct{WAPresenterGuide>>client}\newline	
+\ct{WAPresenterGuide>>initializeWithClient:}\newline	
+\ct{WAPresenterGuide>>visit:}\newline	
+\ct{WAPresenterGuide>>visitPainter:}\newline	
+\ct{WARegistryConfiguration>>parents}\newline	
+\ct{WARenderContext>>actionBaseUrl:}\newline	
+\ct{WARenderContext>>actionUrl:}\newline	
+\ct{WARenderContext>>actionUrl}\newline	
+\ct{WARenderContext>>callbacks}\newline	
+\ct{WARenderContext>>defaultVisitor}\newline	
+\ct{WARenderContext>>destroy}\newline	
+\ct{WARenderContext>>document:}\newline	
+\ct{WARenderContext>>document}\newline	
+\ct{WARenderContext>>initialize}\newline	
+\ct{WARenderContext>>resourceUrl:}\newline	
+\ct{WARenderContext>>visitor:}\newline	
+\ct{WARenderContext>>visitor}\newline	
+\ct{WARenderLoopConfiguration>>parents}\newline	
+\ct{WARenderLoopContinuation>>}\newline
+\indent\ct{createActionContinuation}\newline	
+\ct{WARenderLoopContinuation>>}\newline
+\indent\ct{createRenderContinuation}\newline	
+\ct{WARenderLoopContinuation>>}\newline
+\indent\ct{presenter}\newline	
+\ct{WARenderLoopContinuation>>}\newline
+\indent\ct{toPresenterSendRoot:}\newline	
+\ct{WARenderLoopContinuation>>}\newline
+\indent\ct{updateRoot:}\newline	
+\ct{WARenderLoopContinuation>>}\newline
+\indent\ct{updateStates:}\newline	
+\ct{WARenderLoopContinuation>>}\newline
+\indent\ct{updateUrl:}\newline	
+\ct{WARenderLoopContinuation>>}\newline
+\indent\ct{withNotificationHandlerDo:}\newline	
+\ct{WARenderLoopMain>>createRoot}\newline	
+\ct{WARenderLoopMain>>prepareRoot:}\newline	
+\ct{WARenderLoopMain>>rootClass}\newline	
+\ct{WARenderLoopMain>>rootDecorationClasses}\newline	
+\ct{WARenderLoopMain>>start}\newline	
+\ct{WARenderPhaseContinuation>>}\newline
+\indent\ct{createHtmlRootWithContext:}\newline	
+\ct{WARenderPhaseContinuation>>}\newline
+\indent\ct{createRenderContext}\newline	
+\ct{WARenderPhaseContinuation>>}\newline
+\indent\ct{handleRequest}\newline	
+\ct{WARenderPhaseContinuation>>}\newline
+\indent\ct{processRendering:}\newline	
+\ct{WARenderVisitor class>>context:}\newline	
+\ct{WARenderVisitor>>initializeWithContext:}\newline	
+\ct{WARenderVisitor>>renderContext}\newline	
+\ct{WARenderVisitor>>visitPainter:}\newline	
+\ct{WARenderer class>>context:}\newline	
+\ct{WARenderer>>actionUrl}\newline	
+\ct{WARenderer>>callbacks}\newline	
+\ct{WARenderer>>context}\newline	
+\ct{WARenderer>>document}\newline	
+\ct{WARenderer>>flush}\newline	
+\ct{WARenderer>>initializeWithContext:}\newline	
+\ct{WARenderer>>render:}\newline	
+\ct{WARenderer>>text:}\newline	
+\ct{WARequest class>>method:uri:version:}\newline	
+\ct{WARequest>>at:ifAbsent:}\newline	
+\ct{WARequest>>cookiesAt:}\newline	
+\ct{WARequest>>cookies}\newline	
+\ct{WARequest>>destroy}\newline	
+\ct{WARequest>>fields}\newline	
+\ct{WARequest>>headerAt:ifAbsent:}\newline	
+\ct{WARequest>>headerAt:}\newline	
+\ct{WARequest>>initializeWithMethod:uri:version:}\newline	
+\ct{WARequest>>isGet}\newline	
+\ct{WARequest>>isPrefetch}\newline	
+\ct{WARequest>>isXmlHttpRequest}\newline	
+\ct{WARequest>>method}\newline	
+\ct{WARequest>>postFields}\newline	
+\ct{WARequest>>queryFields}\newline	
+\ct{WARequest>>setBody:}\newline	
+\ct{WARequest>>setCookies:}\newline	
+\ct{WARequest>>setHeaders:}\newline	
+\ct{WARequest>>setPostFields:}\newline	
+\ct{WARequest>>setRemoteAddress:}\newline	
+\ct{WARequest>>uri}\newline	
+\ct{WARequest>>url}\newline	
+\ct{WARequestContext class>>request:response:codec:}\newline	
+\ct{WARequestContext>>application}\newline	
+\ct{WARequestContext>>charSet}\newline	
+\ct{WARequestContext>>codec}\newline	
+\ct{WARequestContext>>consumer}\newline	
+\ct{WARequestContext>>destroy}\newline	
+\ct{WARequestContext>>handlers}\newline	
+\ct{WARequestContext>>handler}\newline	
+\ct{WARequestContext>>initializeWithRequest:response:codec:}\newline	
+\ct{WARequestContext>>newDocument}\newline	
+\ct{WARequestContext>>push:during:}\newline	
+\ct{WARequestContext>>registry}\newline	
+\ct{WARequestContext>>request}\newline	
+\ct{WARequestContext>>respond:}\newline	
+\ct{WARequestContext>>respond}\newline	
+\ct{WARequestContext>>responseGenerator}\newline	
+\ct{WARequestContext>>response}\newline	
+\ct{WARequestContext>>session}\newline	
+\ct{WARequestFilter>>handleFiltered:}\newline	
+\ct{WARequestFilter>>initialize}\newline	
+\ct{WARequestFilter>>next}\newline	
+\ct{WARequestFilter>>setNext:}\newline	
+\ct{WARequestFilter>>updateStates:}\newline	
+\ct{WARequestHandler>>addFilter:}\newline	
+\ct{WARequestHandler>>addFilterLast:}\newline	
+\ct{WARequestHandler>>basicUrl}\newline	
+\ct{WARequestHandler>>configuration:}\newline	
+\ct{WARequestHandler>>configuration}\newline	
+\ct{WARequestHandler>>defaultConfiguration}\newline	
+\ct{WARequestHandler>>documentClass}\newline	
+\ct{WARequestHandler>>filters}\newline	
+\ct{WARequestHandler>>filter}\newline	
+\ct{WARequestHandler>>handle:}\newline	
+\ct{WARequestHandler>>initialize}\newline	
+\ct{WARequestHandler>>isApplication}\newline	
+\ct{WARequestHandler>>isRoot}\newline	
+\ct{WARequestHandler>>parent}\newline	
+\ct{WARequestHandler>>preferenceAt:}\newline	
+\ct{WARequestHandler>>responseGenerator}\newline	
+\ct{WARequestHandler>>serverHostname}\newline	
+\ct{WARequestHandler>>serverPath}\newline	
+\ct{WARequestHandler>>serverPort}\newline	
+\ct{WARequestHandler>>serverProtocol}\newline	
+\ct{WARequestHandler>>setFilter:}\newline	
+\ct{WARequestHandler>>setParent:}\newline	
+\ct{WARequestHandler>>url}\newline	
+\ct{WAResponse class>>messageForStatus:}\newline	
+\ct{WAResponse class>>statusFound}\newline	
+\ct{WAResponse>>contentType:}\newline	
+\ct{WAResponse>>contentType}\newline	
+\ct{WAResponse>>cookies}\newline	
+\ct{WAResponse>>destroy}\newline	
+\ct{WAResponse>>found}\newline	
+\ct{WAResponse>>headerAt:ifAbsent:}\newline	
+\ct{WAResponse>>headerAt:put:}\newline	
+\ct{WAResponse>>headers}\newline	
+\ct{WAResponse>>initializeOn:}\newline	
+\ct{WAResponse>>initialize}\newline	
+\ct{WAResponse>>location:}\newline	
+\ct{WAResponse>>redirectTo:}\newline	
+\ct{WAResponse>>status:message:}\newline	
+\ct{WAResponse>>status:}\newline	
+\ct{WAResponse>>status}\newline	
+\ct{WAResponseGenerator class>>on:}\newline	
+\ct{WAResponseGenerator>>expiredRegistryKey}\newline	
+\ct{WAResponseGenerator>>initializeOn:}\newline	
+\ct{WAResponseGenerator>>requestContext}\newline	
+\ct{WAResponseGenerator>>request}\newline	
+\ct{WAResponseGenerator>>respond}\newline	
+\ct{WAResponseGenerator>>response}\newline	
+\ct{WARoot class>>context:}\newline	
+\ct{WARoot>>setContext:}\newline	
+\ct{WAScriptGenerator>>initialize}\newline	
+\ct{WAScriptGenerator>>loadScripts}\newline	
+\ct{WAScriptGenerator>>writeLoadScriptsOn:}\newline	
+\ct{WAScriptGenerator>>writeScriptTag:on:}\newline	
+\ct{WAServerAdaptor class>>default}\newline	
+\ct{WAServerAdaptor class>>manager:}\newline	
+\ct{WAServerAdaptor class>>new}\newline	
+\ct{WAServerAdaptor class>>port:}\newline	
+\ct{WAServerAdaptor class>>startOn:}\newline	
+\ct{WAServerAdaptor>>codec}\newline	
+\ct{WAServerAdaptor>>contextFor:}\newline	
+\ct{WAServerAdaptor>>defaultPort}\newline	
+\ct{WAServerAdaptor>>defaultRequestHandler}\newline	
+\ct{WAServerAdaptor>>handle:}\newline	
+\ct{WAServerAdaptor>>handlePadding:}\newline	
+\ct{WAServerAdaptor>>handleRequest:}\newline	
+\ct{WAServerAdaptor>>initializeWithManager:}\newline	
+\ct{WAServerAdaptor>>initialize}\newline	
+\ct{WAServerAdaptor>>manager}\newline	
+\ct{WAServerAdaptor>>port:}\newline	
+\ct{WAServerAdaptor>>port}\newline	
+\ct{WAServerAdaptor>>process:}\newline	
+\ct{WAServerAdaptor>>requestFor:}\newline	
+\ct{WAServerAdaptor>>requestHandler}\newline	
+\ct{WAServerAdaptor>>responseFor:}\newline	
+\ct{WAServerAdaptor>>start}\newline	
+\ct{WAServerManager class>>default}\newline	
+\ct{WAServerManager>>adaptors}\newline	
+\ct{WAServerManager>>canStart:}\newline	
+\ct{WAServerManager>>register:}\newline	
+\ct{WAServerManager>>start:}\newline	
+\ct{WASession>>actionField}\newline	
+\ct{WASession>>actionUrlForContinuation:}\newline	
+\ct{WASession>>actionUrlForKey:}\newline	
+\ct{WASession>>application}\newline	
+\ct{WASession>>clearJumpTo}\newline	
+\ct{WASession>>createCache}\newline	
+\ct{WASession>>handleFiltered:}\newline	
+\ct{WASession>>initializeFilters}\newline	
+\ct{WASession>>initialize}\newline	
+\ct{WASession>>isSession}\newline	
+\ct{WASession>>presenter}\newline	
+\ct{WASession>>properties}\newline	
+\ct{WASession>>start}\newline	
+\ct{WASession>>unknownRequest}\newline	
+\ct{WASession>>updateRoot:}\newline	
+\ct{WASession>>updateStates:}\newline	
+\ct{WASession>>updateUrl:}\newline	
+\ct{WASession>>url}\newline	
+\ct{WASessionContinuation>>basicValue}\newline	
+\ct{WASessionContinuation>>captureAndInvoke}\newline	
+\ct{WASessionContinuation>>captureState}\newline	
+\ct{WASessionContinuation>>redirectToContinuation:}\newline	
+\ct{WASessionContinuation>>registerForUrl:}\newline	
+\ct{WASessionContinuation>>registerForUrl}\newline	
+\ct{WASessionContinuation>>request}\newline	
+\ct{WASessionContinuation>>respond:}\newline	
+\ct{WASessionContinuation>>setStates:}\newline	
+\ct{WASessionContinuation>>states}\newline	
+\ct{WASessionContinuation>>updateStates:}\newline	
+\ct{WASessionContinuation>>updateUrl:}\newline	
+\ct{WASessionContinuation>>value}\newline	
+\ct{WASessionContinuation>>withUnregisteredHandlerDo:}\newline	
+\ct{WASnapshot>>initialize}\newline	
+\ct{WASnapshot>>register:}\newline	
+\ct{WASnapshot>>reset}\newline	
+\ct{WASnapshot>>restore}\newline	
+\ct{WATagBrush>>after}\newline	
+\ct{WATagBrush>>attributes}\newline	
+\ct{WATagBrush>>before}\newline	
+\ct{WATagBrush>>closeTag}\newline	
+\ct{WATagBrush>>document}\newline	
+\ct{WATagBrush>>isClosed}\newline	
+\ct{WATagBrush>>openTag}\newline	
+\ct{WATagBrush>>storeCallback:}\newline	
+\ct{WATagBrush>>with:}\newline	
+\ct{WATagCanvas>>space}\newline	
+\ct{WATagCanvas>>space}\newline
+\ct{WAUnescapedDocument>>initializeWithStream:codec:}\newline	
+\ct{WAUpdateRootVisitor class>>root:}\newline	
+\ct{WAUpdateRootVisitor>>initializeWithRoot:}\newline	
+\ct{WAUpdateRootVisitor>>root}\newline	
+\ct{WAUpdateRootVisitor>>visitPainter:}\newline	
+\ct{WAUpdateStatesVisitor class>>snapshot:}\newline	
+\ct{WAUpdateStatesVisitor>>initializeWithSnapshot:}\newline	
+\ct{WAUpdateStatesVisitor>>snapshot}\newline	
+\ct{WAUpdateStatesVisitor>>visitPresenter:}\newline	
+\ct{WAUpdateUrlVisitor class>>url:}\newline	
+\ct{WAUpdateUrlVisitor>>initializeWithUrl:}\newline	
+\ct{WAUpdateUrlVisitor>>url}\newline	
+\ct{WAUpdateUrlVisitor>>visitPainter:}\newline	
+\ct{WAUrl class>>absolute:}\newline	
+\ct{WAUrl class>>decodePercent:}\newline	
+\ct{WAUrl>>addAllToPath:}\newline	
+\ct{WAUrl>>addField:value:}\newline	
+\ct{WAUrl>>addField:}\newline	
+\ct{WAUrl>>addToPath:}\newline	
+\ct{WAUrl>>decode:}\newline	
+\ct{WAUrl>>decodedWith:}\newline	
+\ct{WAUrl>>encodeOn:}\newline	
+\ct{WAUrl>>encodePathOn:}\newline	
+\ct{WAUrl>>encodeQueryOn:}\newline	
+\ct{WAUrl>>encodeSchemeAndAuthorityOn:}\newline	
+\ct{WAUrl>>fragment}\newline	
+\ct{WAUrl>>initializeFromString:}\newline	
+\ct{WAUrl>>initialize}\newline	
+\ct{WAUrl>>isSeasideField:}\newline	
+\ct{WAUrl>>parsePath:}\newline	
+\ct{WAUrl>>parseQuery:}\newline	
+\ct{WAUrl>>password}\newline	
+\ct{WAUrl>>path:}\newline	
+\ct{WAUrl>>pathElementsIn:do:}\newline	
+\ct{WAUrl>>path}\newline	
+\ct{WAUrl>>postCopy}\newline	
+\ct{WAUrl>>printOn:}\newline	
+\ct{WAUrl>>queryFields:}\newline	
+\ct{WAUrl>>queryFields}\newline	
+\ct{WAUrl>>seasideUrl}\newline	
+\ct{WAUrl>>slash:}\newline	
+\ct{WAUrl>>subStringsIn:splitBy:do:}\newline	
+\ct{WAUrl>>user}\newline	
+\ct{WAUrlEncoder class>>on:codec:}\newline	
+\ct{WAUrlEncoder>>nextPutAll:}\newline	
+\ct{WAUserConfiguration>>addParent:}\newline	
+\ct{WAUserConfiguration>>canAddParent:}\newline	
+\ct{WAUserConfiguration>>expressionAt:ifAbsent:}\newline	
+\ct{WAUserConfiguration>>initialize}\newline	
+\ct{WAUserConfiguration>>localAttributeAt:ifAbsent:}\newline	
+\ct{WAUserConfiguration>>parents}\newline	
+\ct{WAValueExpression>>determineValueWithContext:configuration:}\newline	
+\ct{WAValueExpression>>value}\newline	
+\ct{WAValueHolder class>>with:}\newline	
+\ct{WAValueHolder>>contents:}\newline	
+\ct{WAValueHolder>>contents}\newline	
+\ct{WAVisiblePresenterGuide>>visitPresenter:}\newline	
+\ct{WAVisitor>>start:}\newline	
+\ct{WAVisitor>>visit:}\newline	
+\ct{WAXmlDocument>>closeTag:}\newline	
+\ct{WAXmlDocument>>destroy}\newline	
+\ct{WAXmlDocument>>initializeWithStream:codec:}\newline	
+\ct{WAXmlDocument>>openTag:attributes:closed:}\newline	
+\ct{WAXmlDocument>>openTag:attributes:}\newline	
+\ct{WAXmlDocument>>openTag:}\newline	
+\ct{WAXmlDocument>>print:}\newline	
+\ct{WAXmlDocument>>urlEncoder}\newline	
+\ct{WAXmlDocument>>xmlEncoder}\newline	
+\ct{WAXmlEncoder>>nextPutAll:}\newline	
+\ct{ZnSeasideServerAdaptorDelegate class>>with:}\newline	
+\ct{ZnSeasideServerAdaptorDelegate>>adaptor:}\newline	
+\ct{ZnSeasideServerAdaptorDelegate>>adaptor}\newline	
+\ct{ZnSeasideServerAdaptorDelegate>>handleRequest:}\newline	
+\ct{ZnZincServerAdaptor>>basicStart}\newline	
+\ct{ZnZincServerAdaptor>>configureDelegate}\newline	
+\ct{ZnZincServerAdaptor>>configureServerForBinaryReading}\newline	
+\ct{ZnZincServerAdaptor>>defaultCodec}\newline	
+\ct{ZnZincServerAdaptor>>defaultDelegate}\newline	
+\ct{ZnZincServerAdaptor>>defaultZnServer}\newline	
+\ct{ZnZincServerAdaptor>>isStopped}\newline	
+\ct{ZnZincServerAdaptor>>requestAddressFor:}\newline	
+\ct{ZnZincServerAdaptor>>requestBodyFor:}\newline	
+\ct{ZnZincServerAdaptor>>requestCookiesFor:}\newline	
+\ct{ZnZincServerAdaptor>>requestFieldsFor:}\newline	
+\ct{ZnZincServerAdaptor>>requestHeadersFor:}\newline	
+\ct{ZnZincServerAdaptor>>requestMethodFor:}\newline	
+\ct{ZnZincServerAdaptor>>requestUrlFor:}\newline	
+\ct{ZnZincServerAdaptor>>requestVersionFor:}\newline	
+\ct{ZnZincServerAdaptor>>responseFrom:}\newline
+\ct{ZnZincServerAdaptor>>server}\newline
+
+\end{multicols}
 
 % =============================================================================
 \input{chapter-footer.tex}
