@@ -6,7 +6,7 @@
 % =============================================================================
 \introduction
 
-Software inevitable changes and we need to provide with the tools and methodologies that support such changes~\cite{Nier08b}. However, production-ready applications are not usually change-aware. These applications should be either engineered from scratch with change in mind, or a lot of reengineering effort should be invested in them to support change. Making deep modifications to a language runtime can be a cumbersome task.
+Making deep modifications to a language runtime can be a cumbersome task.
 At the same time, evolving a language runtime has become an important task in the last years. Multicore hardware brought new problems on concurrency and parallelism; the \emph{cloud} increased the need for software adaptation; new resource constrained devices such as phones are as current as almost every person has one in their our pockets. These new technologies present new challenges to software developers. The software we use, and in particular the programming languages and tools we use should be easily tailorable to support many of the new challenges that come with new technology and needs.
 
 The complexity and unclear interactions between different runtime components such as \VMs and the languages that run on top of it make such evolution challenging. This thesis explores two different language runtime evolution scenarios through their virtualization. We present our virtualization model called \Vtt, a language bootstrapping process and infrastructure and RFG, an application runtime tailoring technique.
@@ -15,15 +15,15 @@ The complexity and unclear interactions between different runtime components suc
 \section{Contributions}
 % =============================================================================
 
-This thesis explores the evolution of an application and language runtime through \emph{\Vtt, a language virtualization infrastructure}. In \Vtt, a first-class runtime system, namely an object space, allows the manipulation, control and monitoring of such runtime system through a clear API. A first-class language hypervisor implements such runtime manipulations with the expression power and abstractions of the high-level language we are manipulating. We validate this approach by exploring two different evolution scenarios: bootstrapping and tailoring.
+This thesis explores the evolution of an application and language runtime through \emph{\Vtt, a language virtualization infrastructure}. In \Vtt, a first-class application runtime, namely an object space, allows the manipulation, control and monitoring of a virtualized runtime through a clear API. A first-class language hypervisor implements such runtime manipulations with the expression power and abstractions of the high-level language we are manipulating. We validate this approach by exploring two different usages of runtime virtualization: object-oriented runtime bootstrapping and application runtime tailoring.
 
 \emph{Bootstrapping} is commonly known by its usage on compiler building, where a compiler can compile itself.
 It can be generalized to the introduction of any software system to its own building process.
 A bootstrap process allows us to easily change this system as it is expressed in terms of itself, taking advantage of its abstractions and tools.
-Our virtualization infrastructure eases this bootstrap process by providing a clear VM-language interface to manipulate the runtime system of the language under creation. It also provides with a bootstrapping interpreter that allows the manipulation of the bootstrapped language in terms of itself, and not manipulating chunks of memory.
-We show how by this infrastructure can be used to bootstrap three different object-oriented languages with different programming models: a minimal small-talk with implicit metaclasses, the core of the Pharo language which is defined by traits, and finally Metatalk which decomposes reflection from the base level and stores meta information in the meta level of the language.
+Our virtualization infrastructure eases this bootstrap process by providing a clear VM-language interface to manipulate the runtime system of the language under creation. It also provides with a bootstrapping interpreter that allows the manipulation of the bootstrapped language in terms of itself, and avoids manipulating it in terms of memory as in existing solutions.
+We show how this infrastructure can be used to bootstrap three different object-oriented languages with different programming models: a minimal Smalltalk with implicit metaclasses, the core of the Pharo language which is defined by traits, and finally MetaTalk which decomposes reflection from the base level and stores meta information in the meta level of the language.
 
-\emph{Tailoring} is a technique that specialized an application runtime to contain only code units that will be used at runtime. We presented our run-fail-grow~(RFG) approach for application tailoring. RFG tailors an application by starting it and initializing it with a seed that contains the minimal set of code units we want to ensure. Then, we install and execute the application's entry points. As the application executes, missing code units are found and installed on demand, ensuring that only the needed code units are introduced. By following the runtime execution, it supports dynamic features such as reflection and meta-programming. Tornado, our RFG implementation, succeeds to produce applications with minimal footprint for deployment. Our results show that we manage different extreme and challenging cases with flexibility.
+\emph{Tailoring} is a technique that specialized an application runtime to contain only code units that will be used at runtime. We presented our run-fail-grow~(RFG) approach for dynamic application tailoring. RFG tailors an application by starting it and initializing it with a seed that contains the minimal set of code units we want to ensure. Then, we install and execute the application's entry points. As the application executes, missing code units are found and installed on demand, ensuring that only the needed code units are introduced. By performing during execution, RFG tailors programs written in dynamically typed languages and using features such as reflection and polymorphism. Tornado, our RFG implementation, succeeds to produce applications with minimal footprint for deployment. Our results show that we manage different extreme and challenging cases with flexibility.
 
 % =============================================================================
 \section{Published Papers}
@@ -40,12 +40,14 @@ tornado (under submission spe)
 \subsection{Workshops}
 
 Clara Allende, Guillermo Polito. Virtual Smalltalk Images: Model and Applications. In WISIT - Workshop de Ingeniería en Sistemas y Tecnologías de la Información, 2014.
-Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Understanding Pharo’s global state to move programs through time and space. In IWST - International Workshop on Smalltalk Technology, Co-located within the 22th International Smalltalk Conference - 2014, 2014.
-Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Virtual Smalltalk Images: Model and Applications. In IWST - International Workshop on Smalltalk Technology, Co-located within the 21th International Smalltalk Conference - 2013, 2013.
+
+Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Understanding Pharo’s global state to move programs through time and space. In IWST - International Workshop on Smalltalk Technology, Co-located within the 22th International Smalltalk Conference - 2014, 2014.
+
+Guillermo Polito, Stéphane Ducasse, Luc Fabresse, and Noury Bouraqadi. Virtual Smalltalk Images: Model and Applications. In IWST - International Workshop on Smalltalk Technology, Co-located within the 21th International Smalltalk Conference - 2013, 2013.
 
 \section{Future Work}
 
-\Vtt presents a language runtime virtualization model that opens several lines of future work that we consider for exploration.
+\Vtt presents a language runtime virtualization model that opens several directions for future work that we consider for exploration.
 
 \begin{description}
 
