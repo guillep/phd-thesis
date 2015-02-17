@@ -68,21 +68,17 @@ By performing during execution, RFG tailors programs written in dynamically type
 
 \section{Future Work}
 
-\Vtt presents a language runtime virtualization model that opens several directions for future work that we consider for exploration.
+On the engineering side, \Vtt presents some future work to do such as improving its performance, the integration of a JIT compiler, the memory separation for a more efficient GC or the correct management of external libraries state. On the research side, \Vtt presents a language runtime virtualization model that opens several directions for future work that we consider for exploration.
 
-\begin{description}
+\subsection{Security} Application runtime virtualization opens the door to flexibly forbid or constraint operations to a virtualized runtime. An application runtime could be transparently sandboxed inside a virtualized application believing that it \emph{owns} the entire machine for itself. Additionally, a first-class hypervisor could allow us to dynamically change the security policy from the high-level hypervisor instead of being a fixed policy in the \VM. For example, we could transparently limit an object space by the amount of open sockets it can open, or the directories inside a machine that it can access.
 
-\item[Security.] Virtualization opens the door to easily forbid or constraint operations to the virtualized runtime. Sandboxing can then be transparent to the virtualized application, which may believe that it \emph{owns} the entire machine for itself.
+\subsection{Resource Control} By enhancing the control over execution of an object space, we could use virtualization to account and restrict the consumption of critical resources such as CPU or memory. A hypervisor could dynamically modify the resource control policy to execute applications in specific scenarios. This feature could be used, for example, to develop simulators for constrained devices, or testing applications in extreme situations.
 
-\item[Resource Control.] An application could be virtualized to restrict its consumption of critical resources such as CPU or memory. Doing so in a flexible way with our first class runtimes would simplify \eg the creation of simulators for specific platforms such as constrained devices.
+\subsection{Application distribution and migration.} Application runtime virtualization opens the door at managing application migration in a novel fashion. Virtualized application runtimes could be transparently migrated between different machines or processes without being stopped. Moreover, an application may not need to be developed in a specific way as the migration process would reside in a hypervisor, external to it.
 
-\item[Application distribution and migration.] The virtual language runtime API exposed by an object space encapsulates the internals of the implementation. This same API may provide transparent access to remote application runtimes residing in different processes/machines. This could open the possibility of exploring application distribution and migration in the \emph{cloud} at the language level.
+\subsection{Dynamic Adaptation.} Language virtualization can be also useful in the context of dynamic adaptation of applications with almost zero downtime. Indeed, the same mechanisms we used for bootstrapping and tailoring can be used to updates a running application. Mirrors provide a mechanism to directly modify an application runtime objects and classes. The execution in cycles allows safe points of suspension inside an application to make atomic changes.
 
-\item[Dynamic Adaptation.] Language virtualization can be also useful in the context of dynamic adaptation of applications with almost zero downtime. An object space API is general enough to allow updates to occur at runtime. Additionally, the execution cycles provides with atomicity for doing such changes.
-
-\item[VM-Language Co-Evolution.] Our approach doesn't address the co-evolution of language and VM. However, object spaces make explicit the border-line between the VM and the language to change the latter. A co-evolution implies changing not only language and VM but also their interface.
-
-\end{description}
+\subsection{VM-Language Co-Evolution} One of the main limitations of our approach is that it does not address the modification of the \VM. Indeed, object spaces expose the border-line between the \VM and the language to change the latter. We do not change the \VM's execution model. For example, we would like to flexibly change the \VM's object format and see this change automatically reflected in \Vtt's mirrors. A next step of this virtualization infrastructure is its evolution and co-evolution with the \VM.
 
 % =============================================================================
 %\section{Software Artifacts}
