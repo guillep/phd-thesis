@@ -30,17 +30,17 @@ We developed Tornado, an RFG implementation based on \Vtt~(Section~\ref{sec:rfg_
 
 \section{Run Fail Grow: Dynamic dead code elimination}\label{sec:rfg_model}
 
-We propose a tailoring technique we named run-fail-grow~(RFG). Briefly, RFG works by launching a \emph{reference} application runtime encompassing the full application with all its code units~(base libraries, third party libraries and application code) and a \emph{nurtured} runtime that has only part of its required code units installed. The nurtured runtime is run, and when a failure is detected because it misses a code unit, we install into it the corresponding code unit from the reference application runtime. Thus, the nurtured runtime grows progressively as missing code units are found and solved.
+We propose a tailoring technique we named run-fail-grow~(RFG). Briefly, RFG works by launching a \emph{reference} runtime encompassing the full application with all its code units~(base libraries, third party libraries and application code) and a \emph{nurtured} runtime that has only part of its required code units installed. The nurtured runtime is run, and when a failure is detected because it misses a code unit, we install into it the corresponding code unit from the reference runtime. Thus, the nurtured runtime grows progressively as missing code units are found and solved.
 Once finished, the nurtured runtime is ready to be deployed on the target devices. Figure~\ref{fig:runfail} depicts the basics of our run-fail-grow approach.
 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.7\linewidth]{runfail}
-\caption{\small \textbf{Application tailoring with a run-fail-grow approach.} We~(1) run the nurtured runtime and~(2) detect the missing units on failure. For each failure,~(3) we copy missing code units from the reference application runtime and then~(4) the execution is resumed (just before the failure point) until the process finishes. \label{fig:runfail}}
+\caption{\small \textbf{Application tailoring with a run-fail-grow approach.} We~(1) run the nurtured runtime and~(2) detect the missing units on failure. For each failure,~(3) we copy missing code units from the reference runtime and then~(4) the execution is resumed (just before the failure point) until the process finishes. \label{fig:runfail}}
 \end{center}
 \end{figure}
 
-On one side, we start the reference application runtime and pause it at the point where either it contains all its collection of code units, either we can load them dynamically~(under a lazy loading strategy). The reference application runtime remains paused to avoid to mutate its state during the tailoring process. Pausing consists in suspending all processes and threads from the application runtime.
+On one side, we start the reference runtime and pause it at the point where either it contains all its collection of code units, either we can load them dynamically~(under a lazy loading strategy). The reference runtime remains paused to avoid to mutate its state during the tailoring process. Pausing consists in suspending all processes and threads from the application runtime.
 
 On the other side, we fill initially the nurtured runtime with the \emph{seed} \ie the set of code units that we want to ensure in the final application runtime. This seed allows us to specify the level of specialization of our deployable application runtime.
 By using a seed that contains all base libraries, RFG will only affect the application specific code units and third-party libraries.
@@ -48,7 +48,7 @@ However, by using an empty seed, it will also tailor base libraries~(cf. Section
 
 Running the nurtured runtime consists in two main steps. We first install in the nurtured runtime one or more \emph{application's entry points} in the form of threads, and then we resume them.
 The execution of these entry points results into sending messages to objects in the seed. These messages will signal \emph{missing code failures} when the respective classes and methods to resolve the message are not available.
-We detect the missing code failures and solve them by fetching the needed code units from the reference application runtime and install them into the nurtured runtime. RFG installs only code units on demand \ie the content of installed classes and objects is not installed until it is actually needed; methods are not installed until they are invoked.
+We detect the missing code failures and solve them by fetching the needed code units from the reference runtime and install them into the nurtured runtime. RFG installs only code units on demand \ie the content of installed classes and objects is not installed until it is actually needed; methods are not installed until they are invoked.
 The process repeats until we end it explicitly. As part of the process we can interact with the application runtime under construction through \eg its user interface. These interactions may signal more missing code failures, complementing the tailoring process. Ideally, the nurtured runtime reaches a stable point where it needs no more code units.
 The nurtured runtime is then ready for deployment.
 
@@ -98,7 +98,7 @@ StdoutLogger>>log: aMessage
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.5\linewidth]{example_reference}
-\caption{\small\textbf{Reference application with all code units.}\label{fig:example_reference}}
+\caption{\small\textbf{Reference runtime with all code units.}\label{fig:example_reference}}
 \end{center}
 \end{figure}
 
@@ -176,7 +176,7 @@ RFG depends on getting notified when a missing code unit failure appears. RFG's 
 \begin{algorithm}[ht]
  %\KwData{this text}
  %\KwResult{how to write algorithm with \LaTeX2e }
- Initialize reference application\;
+ Initialize reference runtime\;
  Initialize nurturing application with the seed\;
  Install entry point(s)\;
  \While{not finished}{
@@ -205,7 +205,7 @@ Then, we identify the following as the basic traps that are necessary to tailor 
 
 \item[Method Nonexistent Trap.] A \emph{method nonexistent} trap captures message-sends to already existing object that cannot be resolved because the corresponding method does not yet exist in the nurtured runtime yet. When the application execution triggers one of these traps, RFG installs the corresponding method in the class hierarchy of the object~(Rule 2). In the class owner of the method does yet not exist, RFG installs it~(Rule 1). When RFG installs a method, its method literals~(\eg strings and numbers that are part of the method definition) are installed along with it because the \VM can manipulate them directly during the bytecode interpretation~(Rule 4).
 
-\item[Method Invoked Trap.] A particular case of method nonexistent traps are \emph{method invoked traps}. An method invoked trap captures the execution of a particular method. Method invoked traps are useful to capture overridden methods. Overridden methods must be captured to avoid the method lookup to answer a superclass implementation instead of the right one~(Rule 2), resulting into an unexpected behavior. Figure~\ref{fig:need_override} illustrates this problem: the class \ct{B} from the reference application contains an override, while it is not present in the nurtured runtime. If no trap is placed to capture the override, the method \ct{doSomething} from class \ct{A} would be executed, thus changing the semantics of our application.
+\item[Method Invoked Trap.] A particular case of method nonexistent traps are \emph{method invoked traps}. An method invoked trap captures the execution of a particular method. Method invoked traps are useful to capture overridden methods. Overridden methods must be captured to avoid the method lookup to answer a superclass implementation instead of the right one~(Rule 2), resulting into an unexpected behavior. Figure~\ref{fig:need_override} illustrates this problem: the class \ct{B} from the reference runtime contains an override, while it is not present in the nurtured runtime. If no trap is placed to capture the override, the method \ct{doSomething} from class \ct{A} would be executed, thus changing the semantics of our application.
 
 \begin{figure}[ht]
 \begin{center}
@@ -243,7 +243,7 @@ Figure \ref{fig:nurturing_map_model} presents two tailoring maps showing exempla
 
 We implemented our RFG technique as a tool called \emph{Tornado}. Tornado is implemented using \Vtt to tailor applications written in the Pharo programming language.
 %Pharo is a reflective and dynamic programming language inspired from Smalltalk.
-Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite{Mart14z}~(cf. Section \ref{sec:proxies}) illustrated in Figure \ref{fig:tornado_code units}. The nurtured runtime is hosted inside an object space Tornado's hypervisor runs and monitors the nurtured runtime. It installs traps on the nurtured runtime as Ghost proxies, and use the object space interface to query and install code units it. Notice that due to the limitations of our prototype implementation, the reference application cohabits with the hypervisor, which may cause problems when trying to tailor the tailoring process itself. Following, we detail how we fulfilled each of RFG's requirements in our solution:
+Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite{Mart14z}~(cf. Section \ref{sec:proxies}) illustrated in Figure \ref{fig:tornado_code units}. The nurtured runtime is hosted inside an object space Tornado's hypervisor runs and monitors the nurtured runtime. It installs traps on the nurtured runtime as Ghost proxies, and use the object space interface to query and install code units it. Notice that due to the limitations of our prototype implementation, the reference runtime cohabits with the hypervisor, which may cause problems when trying to tailor the tailoring process itself. Following, we detail how we fulfilled each of RFG's requirements in our solution:
 
 \begin{figure}[ht]
 \begin{center}
@@ -270,7 +270,7 @@ To achieve this, we implemented a set of proxies following the Ghost model~\cite
 % The Ghost proxy library provides already several kinds of handlers including for example message forwarding or logging.
 Using Ghost proxies we are able to detect all situations corresponding to our traps.
 Ghost proxies represent missing objects, classes and methods. When a proxy is accessed, Tornado replaces it by its corresponding real object.
-Tornado correctly respect identity by using a table relating each proxy to the code unit or object it represents in the reference application.
+Tornado correctly respect identity by using a table relating each proxy to the code unit or object it represents in the reference runtime.
 %Ghost proxies capture all messages.
 Additionally, each proxy is attached to a \emph{handler} that may perform some action when the proxy receives a message.
 We use proxy handlers to perform the right action for each trap.
@@ -278,7 +278,7 @@ We discuss below the different kinds of proxies and handlers we use and how they
 
 \begin{description}
 \item[Message Received Trap.] We implemented the message received trap as a normal object proxy. An object proxy takes the place of an object and receives all messages that were originally meant for it. This trap is triggered when the proxy receives a message.
-Its handler replaces the proxy by a \emph{partial} copy of the original object from the reference application.
+Its handler replaces the proxy by a \emph{partial} copy of the original object from the reference runtime.
 The copy is created and all references to the proxy are replaced by references to this new object~(achieved through the \ct{become:} facility of the Pharo language that dynamically swaps object references).
 Each field of this new installed object is set to message received traps.
 
@@ -286,9 +286,9 @@ Each field of this new installed object is set to message received traps.
 
 \item[Method Nonexistent Trap.]  We implemented the method nonexistent trap in Tornado as a class proxy located at the top of the class hierarchy. Whenever a message is sent to an object, the VM looks up the method in the object's class hierarchy. This trap is triggered when a message arrives to it, meaning that there was no method for it in the hierarchy of the receiver. When triggered, the handler installs the classes part of the hierarchy of this method and the missing method in its corresponding class. The literal objects that belong to the method are installed with it because they are objects that could be used directly by the \VM during bytecode interpretation.
 
-Particularly, we can find the case where no method is found in the reference application due to either a bug in the application or a design choice to use the dynamic features of Pharo. In those cases Tornado sends the \ct{doesNotUnderstand:} message to the receiver object~(an equivalent to \eg Ruby's \ct{method\_missing} and Python's \ct{\_\_getattr\_\_}) which in turn could be handled by the application or throw a corresponding exception.
+Particularly, we can find the case where no method is found in the reference runtime due to either a bug in the application or a design choice to use the dynamic features of Pharo. In those cases Tornado sends the \ct{doesNotUnderstand:} message to the receiver object~(an equivalent to \eg Ruby's \ct{method\_missing} and Python's \ct{\_\_getattr\_\_}) which in turn could be handled by the application or throw a corresponding exception.
 
-\item[Method Invoked Trap.] We implemented method invoked traps in Tornado using method proxies. Method proxies are placed in the method dictionaries of classes containing overridden methods, taking the place of the original method.  When Tornado installs a class into the nurtured runtime that contains overridden methods in the reference object space, it installs into this class a method proxy for each of its overridden methods. This trap is triggered whenever the method proxy it is about to be executed. The handler of this trap compiles a new method with the same source as the corresponding method from the reference application and installs it inside the nurtured runtime.
+\item[Method Invoked Trap.] We implemented method invoked traps in Tornado using method proxies. Method proxies are placed in the method dictionaries of classes containing overridden methods, taking the place of the original method.  When Tornado installs a class into the nurtured runtime that contains overridden methods in the reference runtime, it installs into this class a method proxy for each of its overridden methods. This trap is triggered whenever the method proxy it is about to be executed. The handler of this trap compiles a new method with the same source as the corresponding method from the reference runtime and installs it inside the nurtured runtime.
 
 \item[Primitive invoked trap.] Primitive invoked traps are implementation specific related to the Pharo language. Pharo's primitive operations such as number arithmetic are implemented through primitive methods. Primitive methods are implemented in the Virtual Machine and do often access directly the fields of its receiver and arguments by forging references and manipulating directly the memory, bypassing our traps. Thus, we face an issue when a \emph{message received trap} proxy is the argument of such a method: the VM can modify this proxy without activating the trap. To honor Tornado's Rule 4~(an object is installed if needed by the \VM), we decorate primitive methods with \emph{primitive invoked traps}. We implemented primitive invoked traps with method proxies, as a special case of method invoked traps. When a primitive invoked trap is triggered, its handler triggers each of the missing object traps received as arguments, if any. In this way, Tornado forces the installation of the arguments and the primitive is executed with actual objects instead of proxies, as expected.
 
@@ -321,7 +321,7 @@ When Tornado installs an object inside the nurtured runtime, this new object has
 \begin{description}
 \item[Message Received Trap.] This is the \emph{default propagation rule} and end user applications can usually be tailored with just them. This propagation rule installs a message received trap in each field of the object that is being installed.
 \item[Materialization.] This propagation rule forces the installation of the object referenced by the field. This is used for those cases where some structure should be guaranteed to the Virtual Machine \eg the objects referenced by the first three fields of a class~(superclass, format and method dictionary) cannot be proxified because they are used by the VM for the method lookup. The same happens with other objects reifying low level concepts such as activation records or semaphores.
-\item[Swapping.] This propagation rule forces the reference of the object installed be swapped to another object's reference. The usual use case of this rule is replacing some object reference by \ct{nil}, and so, to force lazy initializations.
+\item[Swapping.] This propagation rule forces the reference of the object installed to be swapped to another object's reference. The usual use case of this rule is replacing some object reference by \ct{nil}, and so, to force lazy initializations.
 \end{description}
 
 % Figure \ref{fig:character_mapping} shows an example of the mapping of the \ct{Character} class which forces the materialization of the character and digit tables class variables.
@@ -481,10 +481,10 @@ For this case, we proceeded to do two different experiences, with two different 
 We gathered our experiments' results into Table \ref{tb:results}. This table shows:
 \begin{description}
 \item[Experiment.] The name of the experiment under evaluation, followed by our measurements.
-\item[Reference Application.] The size of the reference application containing all of its code units, in KB. We present in here two different sizes: the size of an experimental shrunk version of the Pharo distribution called \emph{PharoKernel}, which was developed independently from us by Pavel Krivanek; and between parenthesis the size of the official Pharo distribution prepared for production: Pharo allows one to prepare a snapshot for production. This option cleans some caches and removes some well known objects and classes from the system, thus, freeing space.
+\item[Reference Runtime.] The size of the reference runtime containing all of its code units, in KB. We present in here two different sizes: the size of an experimental shrunk version of the Pharo distribution called \emph{PharoKernel}, which was developed independently from us by Pavel Krivanek; and between parenthesis the size of the official Pharo distribution prepared for production: Pharo allows one to prepare a snapshot for production. This option cleans some caches and removes some well known objects and classes from the system, thus, freeing space.
 \item[Seed.] The size in KB of the chosen seed for the experiment.
 \item[Nurtured Runtime.] The final size of the nurtured runtime once Tornado finishes its process and the application is extracted.
-\item[Saved.] The percentage of space saved using the smallest reference application size. We chose the smallest reference application to avoid biased results in our favor. We calculated this percentage using the following equation:
+\item[Saved.] The percentage of space saved using the smallest reference runtime size. We chose the smallest reference runtime to avoid biased results in our favor. We calculated this percentage using the following equation:
 
 \begin{equation*}
 saved = 100 - \frac{100*(nurtured - seed)}{reference - seed}
@@ -543,7 +543,7 @@ saved = 100 - \frac{100*(nurtured - seed)}{reference - seed}
 		App B&&&&&\\
 		\bottomrule
  	\end{tabular}
- 	\caption{\small\textbf{Results of the tailored experiments.} Sizes are displayed in KB. The percentage of saved space does not take into account the seed, as it is not subject of Tornado and it is shared by both the reference and nurtured runtime.}
+ 	\caption{\small\textbf{Results of the tailored experiments.} Sizes are displayed in KB. The percentage of saved space does not take into account the seed, as it is not subject of Tornado and it is shared by both the reference and nurtured runtimes.}
  	\label{tb:results}
  \end{table}
 
@@ -571,7 +571,7 @@ Note that we subtract the size of the seed from both the nurtured and reference 
 Table \ref{tb:tailored_components} shows the size in KB of the code units from we used in our experiments. This table details the size of the Pharo base libraries, third party libraries such as Seaside and our particular experiments, which aid in the understanding of the results. We obtained this sizes by measuring the size of the code units once loaded in memory.
 
 \subsection{Discussion of Results}
-Our experiments show that Tornado aggressively reduces the size of code units required for an application. Our examples save from 95\% to 99\% of space, compared with their reference application~(which contains all base libraries and third party libraries in case of Seaside). Our first three experiments (the sum of two numbers, and the factorial of 10 and 100) show that Tornado succeeds to create minimal deployment versions of our applications, having into account that our seed forces a minimal of 10KB in each of them. The reflective application is indeed also minimal, but bigger than the other three, as Tornado installs inside the nurtured runtime (a) all the code that is accessed by reflection and (b) code from the collections package to iterate the methods of a class.
+Our experiments show that Tornado aggressively reduces the size of code units required for an application. Our examples save from 95\% to 99\% of space, compared with their reference runtimes~(which contains all base libraries and third party libraries in case of Seaside). Our first three experiments (the sum of two numbers, and the factorial of 10 and 100) show that Tornado succeeds to create minimal deployment versions of our applications, having into account that our seed forces a minimal of 10KB in each of them. The reflective application is indeed also minimal, but bigger than the other three, as Tornado installs inside the nurtured runtime (a) all the code that is accessed by reflection and (b) code from the collections package to iterate the methods of a class.
 
 We detect a notorious grow in size when adding I/O to our experiments, which varies from 63KB to 71KB extra. According to the list of installed code units, we identity a problem in the design of the I/O streams library from Pharo: a set of character tables meant for character encoding and conversion are initialized, even if not all of them are later on used by the application. This problem shows that this part of Pharo base libraries should be rethought.
 
