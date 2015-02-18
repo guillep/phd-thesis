@@ -398,7 +398,7 @@ This section enumerates the different experiments we conducted to evaluate Torna
 
 \subsection*{Experiment I: Adding Two Numbers}
 
-The smallest~(in terms of size) interesting program to tailor is adding two numbers, without the involvement of any I/O \ie an application just executing the \ct{"2 + 3"} statement as entry point. Tailoring this program is challenging because it stresses the infrastructure by installing only the minimal elements an application needs to run. It makes evident how small a tailored application can be. Additionally, it is interesting since it makes use of the following features of the Pharo language and infrastructure:
+The smallest~(in terms of size) interesting program to tailor is adding two numbers, without the involvement of any I/O \ie an application that just executes the \ct{"2 + 3"} statement as entry point. Tailoring this program is challenging because it stresses the infrastructure by installing only the minimal elements an application needs to run. It makes evident how small a tailored application can be. Additionally, it is interesting since it makes use of the following features of the Pharo language and infrastructure:
 
 \begin{description}
 \item[Immediate objects.] Immediate objects are objects encoded in the object reference instead of being allocated in the heap. Immediate objects do not contain a reference to their class in the object header, as there is no object header. Instead, the object reference where the object is encoded contains a bit tag that the VM uses to identify the immediate object. This means that the Pharo VM must have references to the immediate object classes~(or their proxies) in order to send messages to these immediate objects. In this experiment we use immediate small integers, instances of \ct{SmallInteger}.
@@ -474,7 +474,7 @@ In this experiment, besides testing the proper usage of I/O streams such as the 
 
 
 
-Our last experiment consists is tailoring a web application using Seaside application framework~\cite{Duca07a}. Seaside is a web application framework featuring continuations thanks to stack reification. We configured it with its default values, without making any customizations. The web application under tailoring has a single webpage that allows one to send requests to the web server to increment or decrement a counter. This experience shows that Tornado works in presence of Pharo's \textbf{multi-threading}. The Seaside application framework makes use of Pharo processes. One process listens incoming connections and opens new processes to handle requests. Seaside uses semaphores to synchronize processes and wait for incoming data from sockets.
+Our last experiment consists is tailoring a web application using the Seaside application framework~\cite{Duca07a}. Seaside is a web application framework featuring continuations thanks to stack reification. We configured it with its default values, without making any customizations. The web application under tailoring has a single webpage that allows one to send requests to the web server to increment or decrement a counter. This experience shows that Tornado works in presence of Pharo's \textbf{multi-threading}. The Seaside application framework makes use of Pharo processes. One process listens incoming connections and opens new processes to handle requests. Seaside uses semaphores to synchronize processes and wait for incoming data from sockets.
 
 For this case, we proceeded to do two different experiences, with two different seeds. We first used the empty seed~(\emph{Seaside Web Application A}), as in the previous experiments, and then used a seed containing all Pharo base libraries~(\emph{Seaside Web Application B}). Appendix \ref{appendixtailoring} details the entry points and list of extracted code units for each of these cases.
 
@@ -570,7 +570,7 @@ Note that we subtract the size of the seed from both the nurtured and reference 
  	\label{tb:basic_sizes}
  \end{table}
 
-Table \ref{tb:tailored_components} shows the size in KB of the code units from we used in our experiments. This table details the size of the Pharo base libraries, third party libraries such as Seaside and our particular experiments, which aid in the understanding of the results. We obtained this sizes by measuring the size of the code units once loaded in memory.
+Table \ref{tb:tailored_components} shows the size in KB of the code units we used in our experiments. This table details the size of the Pharo base libraries, third party libraries such as Seaside and our particular experiments, which aid in the understanding of the results. We obtained this sizes by measuring the size of the code units once loaded in memory.
 
 %\subsection{Discussion of Results}
 Our experiments show that Tornado aggressively reduces the size of code units required for an application. Our examples save from 95\% to 99\% of space, compared with their reference runtimes~(which contains all base libraries and third party libraries in case of Seaside). Our first three experiments (the sum of two numbers, and the factorial of 10 and 100) show that Tornado succeeds to create minimal deployment versions of our applications, taking into account that our seed forces a minimal of 10KB in each of them. The reflective application is indeed also minimal, but bigger than the other three, as Tornado installs inside the nurtured runtime (a) all the code that is accessed by reflection and (b) code from the collections package to iterate the methods of a class.
@@ -581,7 +581,7 @@ The Seaside experiments show that Tornado can be used in a complex setting such 
 
 \section{Comparison with a Dedicated Platform}
 
-To have a broader view of our results, we compare them our results also to two dedicated platforms that exist in Pharo's infrastructure.
+To have a broader view of our results, we compare them also with two dedicated platforms that exist in Pharo's infrastructure.
 
 \begin{description}
 \item[Candle.] Candle~(\chapref{bootstrapping_validation}) is a dedicated platform that runs on the Pharo platform based on MicroSqueak~\cite{Malo11a}. It is a specialized platform containing an alternative implementation of base libraries, as Java Micro Edition~(J2ME)~\cite{JavaME} is for Java. MicroSqueak and thus, Candle, were designed with the explicit goal to be the smallest practical Squeak kernel. It contains a total of 49 classes with a reduced set of methods. It offers a minimal core of the language, a basic collection library and basic file IO support. Candle presents a minimal memory footprint of 80KB, when we build an application that performs no computation.
@@ -593,7 +593,7 @@ Candle presents crucial differences with Pharo base libraries: it does not provi
 
 Table \ref{tb:results_dedicated} shows a comparison between our results and dedicated platforms. On one side, we can see that Tornado ensures smaller memory footprints than the dedicated runtimes when working on small applications. We can see a degradation on the used memory when starting using I/O. This problem comes from the fact that a simple I/O operation in regular Pharo requires a lot of objects and methods. Candle on the other side uses a dedicated implementation of I/O.
 
-Regarding the seaside web application, we can observe that while Seaside can be installed inside PharoKernel, its memory footprint grows even bigger than then one in Pharo's official distribution prepared for production. On the other hand, we do not compare the our solution applied to Seaside with Candle, as we cannot install Seaside under Candle.
+Regarding the seaside web application, we can observe that while Seaside can be installed inside PharoKernel, its memory footprint grows even bigger than then one in Pharo's official distribution prepared for production. On the other hand, we do not compare the our solution applied to Seaside with Candle, as we cannot install Seaside under Candle. This last problem appears in most of the dedicated platforms. For example, you cannot easily execute a J2SE program on top of J2ME. 
 
 \begin{table}[ht]
  	\centering
@@ -742,7 +742,7 @@ For dynamic and hybrid techniques, application coverage must ensure that every c
 
 %\subsection{Dynamic Code Coverage} \gp{It deserves to be compared with the trace-copy approach I think}
 
-\subsection{Application Designs that get along with Tornado} As show in Section 5.2, the design of the tailored application directly impacts on the results obtained by Tornado. A series of issues appear regarding global state~(\eg class variables and global variables). A first issue is related to the initialization of such a global state~\cite{Unga95a}. Since Tornado follows the application's execution flow, eager initializations force Tornado to install objects and methods that may not be used later by the application. In contrast, lazy initializations will only be triggered on usage. Thus, better results could be obtained if a lazy initialization strategy is adopted for the global state.
+\subsection{Application Designs that get along with Tornado} As shown in Section 5.2, the design of the tailored application directly impacts on the results obtained by Tornado. A series of issues appear regarding global state~(\eg class variables and global variables). A first issue is related to the initialization of such a global state~\cite{Unga95a}. Since Tornado follows the application's execution flow, eager initializations force Tornado to install objects and methods that may not be used later by the application. In contrast, lazy initializations will only be triggered on usage. Thus, better results could be obtained if a lazy initialization strategy is adopted for the global state.
 
 A second issue appears with residual side-effects. Our tailoring technique builds the deployment application by running it. Thus, those executed global side-effects may reside in the tailored application. For example, a web application framework may hold a cache of HTTP sessions in a class variable. When the tailoring process finishes, the application will keep this cache if we do not handle the case. Solving this problem in Tornado may require either minimizing global state in an application, or either installing a new entry point to reinitialize such global state when the tailoring is finished \eg clean caches and session dependent state such as file and socket descriptors.
 
@@ -780,7 +780,7 @@ A second issue appears with residual side-effects. Our tailoring technique build
 % ===========================================================================
 \section{Conclusion and Summary}
 
-In this chapter we presented a validation on our run-fail-grow~(RFG) approach for application tailoring. We conducted our validation by first showing in several experiments how our solution succeeds in tailoring applications of different sizes and styles. Tailoring an application just adding two numbers demonstrates that the smallest application runtime we can produce with Tornado occupies only 10KB. Other experiments included IO, reflection or even the tailoring of a web application using the Seaside framework. They show that Tornado can aggressively shrink applications.
+In this chapter we presented a validation on our run-fail-grow~(RFG) approach for application tailoring. We conducted our validation by first showing in several experiments how our solution succeeds in tailoring applications of different sizes and styles. Tailoring an application just adding two numbers demonstrates that the smallest application runtime we can produce with Tornado occupies only 10KB. Other experiments included I/O, reflection or even the tailoring of a multi-threaded web application using the Seaside framework. They show that Tornado can aggressively shrink applications.
 
 We also evaluate tornado under the evaluation criteria we stated in the state of the art of this dissertation. The flexibility of our solution through seeds, its ability to handle reflection and its non-dependance on a particular infrastructure for deployment are characteristics that highlight our solution in comparison with the others.
 
