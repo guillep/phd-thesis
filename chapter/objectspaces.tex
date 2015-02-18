@@ -12,7 +12,7 @@ This chapter presents our Virtualization Application Runtime infrastructure, nam
 
 \begin{description}
 \item[Application runtime co-existence.] Two application runtimes can run side by side in the same infrastructure \eg in the same VM and/or operating system process.
-\item[Object spaces.] An object space is a first-class application runtime. It encapsulates the access to an application runtime and provides a high-level API to easily query and manipulate its VM-language interface.
+\item[Object spaces.] An object space is a first-class application runtime. It encapsulates the access to an application runtime and provides a high-level API to easily query and manipulate it.
 \end{description}
 
 In \Vtt two co-existing application runtimes have two well-defined roles. The \emph{virtualized} runtime is hosted inside an object space for its manipulation. The \emph{hypervisor} controls and manipulates the object space~(cf. Section \ref{sec:virtualization_overview}).
@@ -25,7 +25,7 @@ Figure \ref{fig:virtualization_introduction} shows a simplified schema of the so
 \end{center}
 \end{figure}
 
-A hypervisor can perform four basic kind of manipulations on an object space, each with its own tradeoffs. First, it can directly manipulate its state through the object space VM-language interface~(cf. Section \ref{sec:object_space}). The other three manipulation mechanisms are based on this direct manipulation. Second, it can hook into the execution of an object space to execute its own code~(cf. Section\ref{sec:hypervisor}). Third, we can execute arbitrary expressions inside an object space through process injection and virtual interpretation~(Section \ref{sec:isolation}). % can execute isolated and their result can be cleanly retrieved by the hypervisor~(Section \ref{sec:isolation}). Finally, it can execute code inside an object space through a virtual code interpreter, providing full intercession power over the execution of the virtualized application for usages such as tracing or debugging~(Section \ref{sec:interpretation}).
+A hypervisor can perform four basic kind of manipulations on an object space, each with its own tradeoffs. First, it can directly manipulate its state through the object space interface~(cf. Section \ref{sec:object_space}). The other three manipulation mechanisms are based on this direct manipulation. Second, it can hook into the execution of an object space to execute its own code~(cf. Section\ref{sec:hypervisor}). Third, we can execute arbitrary expressions inside an object space through process injection and virtual interpretation~(Section \ref{sec:isolation}). % can execute isolated and their result can be cleanly retrieved by the hypervisor~(Section \ref{sec:isolation}). Finally, it can execute code inside an object space through a virtual code interpreter, providing full intercession power over the execution of the virtualized application for usages such as tracing or debugging~(Section \ref{sec:interpretation}).
 
 
 %Although being isolated, \Vtt presents a richer message-based communication channel. The hypervisor can perform cross-runtime message-sends by injecting processes. Injected processes can execute isolated and their result can be cleanly retrieved by the hypervisor~(Section \ref{sec:isolation}).
@@ -38,7 +38,7 @@ A hypervisor can perform four basic kind of manipulations on an object space, ea
 %We do not require any changes in existing applications to import them inside an object space. We introduce minimal modifications at the \VM level to ensure their control and manipulation is transparent. Regarding execution, an object space provides with different means for controlling the execution of the language runtime it owns~(cf. Section \ref{sec:execution}). It can safely start, pause and resume its execution, create new threads or finalize existing ones.  
 
 
-\section{Co-Existence in \Vtt} \label{sec:virtualization_overview}
+\section{Controlling Virtualized Runtimes in \Vtt} \label{sec:virtualization_overview}
 
 \Vtt presents an architecture where multiple application runtimes co-exist independently from each other. An application runtime fulfills a role inside the virtualization infrastructure. An \emph{hypervisor} monitors and controls \emph{virtualized} application runtimes. Both the virtualized runtime and the hypervisor are full-fledged high-level application runtimes. On one side, the virtualized application runtime is written in a high-level language as the focus of this thesis is the virtualization of such runtime. Although, we would like to emphasize that the hypervisor is as well written in a high-level language~(in contrast with \eg JVMTI\cite{JVMPI}), bringing three main benefits to our solution:
 
@@ -49,12 +49,12 @@ A hypervisor can perform four basic kind of manipulations on an object space, ea
 \end{description}
 
 
-A first-class object space resides inside the hypervisor and represents the virtualized runtime. A first-class hypervisor object uses the object space and implements a particular manipulation on it \eg runtime update, failure detection, browsing or debugging. Figure \ref{fig:objectSpaceOverview_architecture} provides an overview of the \Vtt's architecture.
+A first-class object space resides inside the hypervisor and represents the virtualized runtime. A hypervisor object uses the object space and implements a particular manipulation on it \eg runtime update, failure detection, browsing or debugging. Figure \ref{fig:objectSpaceOverview_architecture} provides an overview of the \Vtt's architecture.
 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.9\linewidth]{object_space_overview3}
-\caption{\textbf{\VTT Coexistence.} Two application runtimes co-exist side by side. Each one is a full-blown high-level application runtime. The hypervisor interacts with the virtualized runtime through an object space.\label{fig:objectSpaceOverview_architecture}}
+\caption{\textbf{\VTT Coexistence.} The hypervisor controls the virtualized runtime through an object space.\label{fig:objectSpaceOverview_architecture}}
 \end{center}
 \end{figure}
 
@@ -185,9 +185,9 @@ ClassMirror {
 
 % ===========================================================================
 
-\section{First-Class Runtime Hypervisors}\label{sec:hypervisor}
+\section{First-Class Hypervisors}\label{sec:hypervisor}
 
-The client of an object space is a \emph{hypervisor}. A hypervisor is first-class object that implements a particular monitoring/modification strategy for that object space. A hypervisor monitors an object space by splitting the execution in cycles. A cycles is an execution that lasts at least a time window and finishes when it finds the next safe suspension point~(Figure \ref{fig:execution_cycle}). A safe suspension point is a point during execution where suspending a thread will not leave it in an inconsistent state. To illustrate with a concrete example, in our \Vtt prototype written for the Pharo language described in \chapref{prototype} safe suspension points are the activation of message sends and bytecode backjumps. During each execution cycle, the object space runs unmanaged using the full \VM's capacity. When the cycle finishes because the execution completed a time window and found a suspension point, the control is returned to the hypervisor. Then, the hypervisor applies its corresponding action and resumes the execution of the object space from the last suspension point.
+The client of an object space is a \emph{hypervisor}. A hypervisor is first-class object that implements a particular monitoring/modification strategy for that object space. A hypervisor monitors an object space by splitting the execution in cycles. A cycle is an execution that lasts at least a time window and finishes when it finds the next safe suspension point~(Figure \ref{fig:execution_cycle}). A safe suspension point is a point during execution where suspending a thread will not leave it in an inconsistent state. To illustrate with a concrete example, in our \Vtt prototype written for the Pharo language described in \chapref{prototype} safe suspension points are the activation of message sends and bytecode backjumps. During each execution cycle, the object space runs unmanaged using the full \VM's capacity. When the cycle finishes because the execution completed a time window and found a suspension point, the control is returned to the hypervisor. Then, the hypervisor applies its corresponding action and resumes the execution of the object space from the last suspension point.
 
 \begin{figure}[ht]
 \center
