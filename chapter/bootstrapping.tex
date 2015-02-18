@@ -8,7 +8,7 @@
 \introduction
 % ===========================================================================
 
-The language initialization is the step during the execution of a program where the application and language runtime of such program is generated \ie the initial structures and constructs of a language runtime are set up.
+The language initialization is the step during the execution of a program where the application and language runtime of such program is generated \ie the initial structures and constructs of a language runtime are set up in primary memory.
 As described in The Art of the Metaobject Protocol~(AMOP)~\cite{Kicz91a}, a language initialization solves the \emph{bootstrapping issues} of a language runtime. To achieve this the language initialization is often located in the virtual machine~(VM), where it can solve these issues without depending on running code on the language under construction.
 
 \begin{figure}[ht!]
@@ -53,9 +53,9 @@ The bootstrapping hypervisor can execute the language circular definition throug
 % ===========================================================================
 \section{Bootstrapping}\label{sec:bootstrapping}
 
-The idea of a \emph{bootstrap} is well known in the context of compilers, where a compiler is considered bootstrapped when it compiles itself. For example, a bootstrapped C compiler is a compiler that, by using its own source code written in C, can produce another compiler with its same behavior. Notice that the input compiled source is not a direct description of the C language, but a description of the compiler itself \ie the description of a program that builds a program. Notice as well that the output of this bootstrap is an executable representation of that description \ie the machine code that will be loaded and run by the operating system.
+The idea of a \emph{bootstrap} is well known in the context of compilers, where a compiler is considered bootstrapped when it can compile its own source code to produce itself. For example, a bootstrapped C compiler is a compiler that, by using its own source code written in C, can produce another compiler with its same behavior. Notice that the input compiled source is not a direct description of the C language, but a description of the compiler itself \ie the description of a program that builds a program. Notice as well that the output of this bootstrap is an executable representation of that description \ie the machine code that will be loaded and run by the operating system.
 
-Bootstrapping an object-oriented language runtime does not have to be mistaken with just writing a compiler of the language in the same language. The compiler of a high-level object-oriented language uses to output the bytecode of a class or method, which is an incomplete view of it: it does not describe other objects that are indeed needed to run this program nor the relation of this compiled code with other objects during runtime. However, following the idea of the C compiler we can then define the bootstrap process of an object-oriented language runtime as follows:
+Bootstrapping an object-oriented language runtime does not have to be mistaken with just writing a compiler of the language in the same language. The compiler of a high-level object-oriented language produces usually the bytecode of a class or method, which is an incomplete view of it: it does not describe other objects that are indeed needed to run this program nor the relation of this compiled code with other objects during runtime. However, following the idea of the C compiler we can then define the bootstrapping process of an object-oriented language runtime as follows:
 
 \begin{definition}[Language runtime Bootstrap]
 It is a process whose input is the definition of a language written in the same language, and whose output is a language runtime.
@@ -65,7 +65,7 @@ This definition applied to an object-oriented high-level language implies the fo
 
 \begin{description}
 
-\item[The language elements should be self-described.] The input language definition must include a description of the classes, methods and/or objects that are part of the language runtime to build. This description should be expressed in the same language we are building. From now on we will call these the \emph{base-level} entities.
+\item[The language elements should be self-described.] The input language definition must include a description of the classes, methods and/or objects that are part of the language runtime to build. This description should be expressed in the same language we are building. From now on we will call these entities the \emph{base-level} entities.
 
 \item[The procedure to create the language elements is also self-described.] The input definition must also include the knowledge to recreate itself: the basic operations to create its classes and methods, or initialize the basic structures of the language runtime \eg the runtime table of symbols or its threads. From now on we will call the entities in charge of this task the \emph{meta-level} entities.
 
@@ -78,7 +78,7 @@ This definition applied to an object-oriented high-level language implies the fo
 %============================================================================
 \section{Bootstrapping Through an Example}\label{sec:bootstrapping_process}
 
-The main component of a bootstrap process is the \emph{language definition} \ie the definition of the elements of the language and the procedure to create them. The language definition of a bootstrap is circular \ie it is written in the same language it defines. In this section we illustrate a bootstrapping process through an example: the bootstrap process for the Pharo language. For this, the example follows the excerpt of Pharo's language definition shown in Figure \ref{fig:example_language_definition}. Notice that while such a language definition is not difficult to express \emph{per se}, it raises the question of \emph{how it can be executed}. This is specially challenging due to the circularity of the language definition. For example, we need classes to be defined to execute this exact bootstrap description. This question leads to ask ourselves about the infrastructure required to be able to manage this and other different bootstraps. The sections that follow describe how \Vtt provides an infrastructure that tackles these problems.
+The main component of a bootstrap process is the \emph{language definition} \ie the definition of the elements of the language and the procedure to create them. The language definition of a bootstrap is circular \ie it is written in the same language it defines. In this section we illustrate a bootstrapping process through an example: the bootstrap process for the Pharo language. For this, the example follows the excerpt of Pharo's language definition shown in Figure \ref{fig:example_language_definition}. Notice that while such a language definition is not difficult to express \emph{per se}, it raises the question of \emph{how it can be executed}. This is specially challenging due to the circularity of the language definition. For example, we need classes to be defined to execute this exact bootstrap description. This question leads to ask ourselves about the infrastructure required to be able to manage this and other different bootstraps. The sections that follow describe how \Vtt provides a suitable infrastructure to tackle these problems.
 
 \begin{figure}[ht]
 \begin{code}
@@ -122,31 +122,33 @@ Processor initialize.
 \caption{\textbf{Excerpt of the Pharo bootstrap language definition.}\label{fig:example_language_definition}}
 \end{figure}
 
-\paragraph{Step 0: Setup of the environment} The first step of a bootstrap process is to start an empty application runtime. The bootstrap process will fill this application runtime as it is executed. This application runtime will contain at the end of the process all the elements of the language runtime we are building.
+\paragraph{Step 0: Setup of the environment} The precondition of a bootstrap process is to start an empty application runtime. The bootstrap process will fill this application runtime as it is executed. This application runtime will contain at the end of the process all the elements of the language runtime we are building.
 
 \paragraph{\textbf{Step 1: Create the first well-known objects}}\label{sec:create_nil}
 
 %When the bootstrap process starts, the bootstrapped language runtime is empty \ie there are no objects inside it. 
-The first step of the process is to create the \ct{nil}, \ct{true} and \ct{false} objects needed for execution~(cf. Figure \ref{fig:nil_creation}). It is important that \ct{nil} is the first object we create in Pharo, as the rest of the objects we create will have their fields initialized to it. We also create \ct{true} and \ct{false}, as they are required for code execution.
+The first step of the process is to create the \ct{nil}, \ct{true} and \ct{false} objects that are needed for execution~(cf. Figure \ref{fig:nil_creation}). It is important that \ct{nil} is the first object we create in Pharo, as the rest of the objects we create will have their fields initialized to it. We also create \ct{true} and \ct{false}, as they are required for code execution. Notice that to execute this step we use the \ct{UndefinedObject} class. However, this class is not in the bootstrapped runtime yet and creating it would introduce another \emph{paradox}~(\eg creating the \ct{UndefinedObject} class requires the \ct{nil} object). To execute this and other similar pieces of code the bootstrap process breaks the circularity by automatically introducing a \emph{stub class}. Stub classes contain the minimal requirements to execute simple operations such as the instantiation primitive~(\ct{basicNew} in this example). We will dive into stub classes in Section \ref{sec:ast_interpreter}.
 
 \begin{figure}[ht]
-\begin{subfigure}{.4\linewidth}
+\begin{subfigure}{.45\linewidth}
 \begin{code}
 nilObject := UndefinedObject basicNew.
 trueObject := True basicNew.
 falseObject := False basicNew.
 \end{code}
 \end{subfigure}
-\begin{subfigure}{.6\linewidth}
+\begin{subfigure}{.55\linewidth}
 \includegraphics[width=.99\linewidth]{nil_creation}
 \end{subfigure}
-\caption{\textbf{Step 1: create the first well-known objects.} The \ct{nil}, \ct{true} and \ct{false} instances are created inside the application runtime.\label{fig:nil_creation}}
+\caption{\textbf{Step 1: create the first well-known objects.} The \ct{nil}, \ct{true} and \ct{false} instances are created inside the application runtime. Their classes are however not yet installed. They are installed as stubs that will be later on replaced.\label{fig:nil_creation}}
 \end{figure}
 
 
 \paragraph{\textbf{Step 2: Create basic language structures}}
 
 The basic language structures are the minimal structure we need to create all the rest of the language elements~(cf. Figure \ref{fig:basic_structure_creation}). For example, creating a class requires the existence of a table of global objects to install the class, and a table of unique strings or symbols to have a unique identifier for it. We must create these basic structures from the very beginning, as the rest of the process rely on them.
+
+Note that this example presents new paradoxes. First, the apparition of \ct{GlobalTable} and \ct{SymbolTable} present the same problems as \ct{UndefinedObject} did before, and thus it is solved in the same way. Additionally, we need to send the \ct{at:put:} message to the \ct{GlobalTable} while the \ct{at:put:} methods does not yet exist. Also, this method belongs to a superclass of \ct{GlobalTable} that is not yet installed: \ct{Dictionary}. To solve this, our bootstrap process will lookup the code to execute inside the language definition and execute it using a specialized code interpreter. By doing that, our bootstrap process can benefit from all the code exists in the language to define itself.  We will dive into how methods are executed before they are installed in Section \ref{sec:ast_interpreter}.
 
 \begin{figure}[ht]
 \begin{subfigure}{.45\linewidth}
@@ -158,15 +160,20 @@ globalTable
     
 SymbolTable initialize.
 \end{code}
+
+\begin{code}
+Dictionary >> at: key put: anObject 	| index assoc |	index := self findElementOrNil: key.	assoc := array at: index.	...\end{code}
 \end{subfigure}
 \begin{subfigure}{.55\linewidth}
 \includegraphics[width=.99\linewidth]{basic_structure_creation}
 \end{subfigure}
-\caption{\textbf{Step 2: Create basic language structures.} We create those structures that are required to create the rest of the language elements, such as the symbol and global tables. In the figure we can see that the global table references itself as a global and the symbol table references the \ct{GlobalTable} symbol.\label{fig:basic_structure_creation}}
+\caption{\textbf{Step 2: Create basic language structures.} We create those structures that are required to create the rest of the language elements, such as the symbol and global tables. In the figure we can see that the global table references itself as a global and the symbol table references the \ct{GlobalTable} symbol. Methods such as \ct{at:put:} are looked up in the language definition and executed using a specialized interpreter.\label{fig:basic_structure_creation}}
 \end{figure}
 
 \paragraph{\textbf{Step 3: Create classes}}
-We create the classes that the language definition requires in the language runtime~(cf. Figure \ref{fig:class_creation}). Pharo already includes a \emph{class builder} object that knows how classes should be created in the application runtime. The class builder validates that a class can be created, creates it and installs it inside the global table. The class builder encapsulates the complexity of class creation \eg first-class layouts, traits, first class instance variables. In this step we do not install a class' methods, since they can reference classes that are not created. We will create all methods at once in a next step once all classes are created.
+We create the classes that the language definition requires in the language runtime~(cf. Figure \ref{fig:class_creation}). For this, we use the \emph{class builder} present in Pharo's language definition through specialized code interpreter. The class builder validates that a class can be created, creates it and installs it inside the global table. It encapsulates the complexity of class creation \eg first-class layouts, traits, first class instance variables.
+
+We replace existing stubs~(\eg \ct{UndefinedObject}, \ct{True} or \ct{GlobalTable}) by their new versions. This step does not yet install methods, since they can reference classes that are about to be created. We will create all methods at once in a next step once all classes are created.
 
 \begin{figure}[ht]
 \begin{subfigure}{.4\linewidth}
@@ -231,6 +238,8 @@ Processor initialize.
 %\end{center}
 %\end{figure}
 
+
+\noindent\newline As we observed, a bootstrap looks easy to express as we are using high-level abstractions to do so. However, executing it presents several challenges in the form or paradoxes~(or informally, the chicken-egg problem). For example, creating an object requires a class and creating a class requires other objects. Installing a method requires sending a message and sending a message requires methods to be already installed. In the following sections we will describe what is an infrastructure that allows to execute such bootstrap process.
 
 \section{Bootstrapping with \Vtt}\label{sec:bootstrapping_infrastructure}
 
@@ -400,7 +409,7 @@ objectSpace {
 \caption{\textbf{The Bootstrapping interpreter in action.} A stub class is created for a non existent class. Each class is mapped to its description in the language definition. The lookup is then performed inside the language definition. Once the method is found, it is executed inside the language runtime.\label{fig:interpretation}}
 \end{figure}
 
-Figure \ref{fig:interpretation} illustrates with an example the behavior of the interpreter, particularly in the execution of the \ct{"Object new"} expression. First, if the class \ct{Object} does not exist, it create a stub \ct{Object} class and maps it to its corresponding definition in the language definition. To interpret the \ct{new} message, the interpreter performs the method lookup from the class of the object in the language definition. As the class from the language runtime and the language definition are mapped, the interpreter knows where to start the method lookup. The method is found in the \ct{Class} class and executed in the language runtime. As a result, an instance of the \ct{Object} class is created.
+Figure \ref{fig:interpretation} illustrates with an example the behavior of the interpreter, particularly in the execution of the \ct{"Object new"} expression. First, if the class \ct{Object} does not exist, it creates a stub \ct{Object} class and maps it to its corresponding definition in the language definition. To interpret the \ct{new} message, the interpreter performs the method lookup from the class of the object in the language definition. As the class from the language runtime and the language definition are mapped, the interpreter knows where to start the method lookup. The method is found in the \ct{Class} class and executed in the language runtime. As a result, an instance of the \ct{Object} class is created.
 
 By using the bootstrapping interpreter, the language definition serves both as a source for compiling the code that will be part of the application runtime, and for the execution of the bootstrapping process itself. A change to the language definition will affect both and avoids major code and logic duplications between \VM, language, and language initialization. For example, Figure~\ref{code:logic_dup3} illustrates how we can use the interpreter to use the \ct{Dictionary} code from the language definition instead of the C function that is part of the \VM, as we shown in \chapref{state_modifying}.
 
@@ -413,7 +422,7 @@ Bootstrap>>createDictionaryWith: n
             execute: 'Dictionary new: size'
             binding: { 'size' -> n }.
 \end{code}
-\caption{\textbf{Avoiding logic duplications with the bootstrapping interpreter.} This example shows how the bootstrapping interpreter does not duplicate the logic of the \ct{Dictionary>>new:} method, but uses it instead.\label{code:logic_dup3}}
+\caption{\textbf{Avoiding logic duplications with the bootstrapping interpreter.} This example shows how the bootstrapping interpreter does not duplicate the logic of the \ct{Dictionary>>new:} method, but executes it inside the virtualized runtime.\label{code:logic_dup3}}
 \end{figure}
 
 
@@ -429,7 +438,7 @@ Building continuously a language runtime provides the language engineers with th
 
 However, not every change in the language definition may impact the bootstrap process: some code is only meant to be in the result of the bootstrap process but it is not used by the bootstrapping interpreter \eg changing the set of final classes introduced by the bootstrap does not alter the bootstrap process. To identify the impact of a change on the language in the bootstrap process we introduced as a second output of our bootstrapping interpreter an execution trace containing all the language elements that were used to bootstrap: any change on these elements may have an impact on the process. Then, to produce useful feedback for the changes made by a language developer, an \emph{impact resolver} measures the impact of a change on the bootstrap process by comparing the introduced change to the trace of previous bootstrap execution~(Figure \ref{fig:resolving_impact}).
 
-Our bootstrapping infrastructure measures the impact by making a diff between the traced and changed language elements. In case a change breaks the bootstrap process, the language engineer has hints that helps him spotting the problem and act on it. We are working to obtain in the future more information through a smarter impact analysis.
+Our bootstrapping infrastructure measures the impact by making a diff between the traced and changed language elements. In case a change breaks the bootstrap process, the language engineer has hints that helps him spotting the problem and act on it. We are working to obtain in the future more information using impact analysis techniques.
 
 \begin{figure}[ht]
 \center
