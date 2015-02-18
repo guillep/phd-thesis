@@ -52,7 +52,7 @@ We detect the missing code failures and solve them by fetching the needed code u
 The process repeats until we end it explicitly. As part of the process we can interact with the application runtime under construction through \eg its user interface. These interactions may signal more missing code failures, complementing the tailoring process. Ideally, the nurtured runtime reaches a stable point where it needs no more code units.
 The nurtured runtime is then ready for deployment.
 
-The dynamic nature of RFG tackles all our challenges. Missing code units are detected and resolved at runtime, where two main elements are available: the exact messages that are sent with their corresponding receiver and arguments, and their concrete types\footnote{We consider the exact class of an object its concrete type}. The methods and classes to install can be easily deduced from the available concrete types, \emph{without depending on type declarations nor their inference}. RFG \emph{takes into account the configuration of the application} such as the ones present in files, since the code that reads and interprets them is actually executed, without the need of custom code for them. \emph{Reflection is supported for free} since reflection invocations are treated as simple message sends and executed as any other code, and strings composed dynamically by the application are available at runtime. 
+The dynamic nature of RFG tackles all our challenges~(cf. \chapref{state_tailoring}). Missing code units are detected and resolved at runtime, where two main elements are available: the exact messages that are sent with their corresponding receiver and arguments, and their concrete types\footnote{We consider the exact class of an object its concrete type}. The methods and classes to install can be easily deduced from the available concrete types, \emph{without depending on type declarations nor their inference}. RFG \emph{takes into account the configuration of the application} such as the ones present in files, since the code that reads and interprets them is actually executed, without the need of custom code for them. \emph{Reflection is supported for free} since reflection invocations are treated as simple message sends and executed as any other code, and strings composed dynamically by the application are available at runtime. 
 
 
 %%%%%%%%%% 
@@ -210,7 +210,7 @@ Then, we identify the following as the basic traps that are necessary to tailor 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=0.7\linewidth]{need_override}
-\caption{\textbf{The need of overriding traps.} Method traps should capture the overridden \ct{doSomething} message-send to avoid the superclass method to be executed wrongly.\label{fig:need_override}}
+\caption{\textbf{The need for overriding traps.} Method traps should capture the overridden \ct{doSomething} message-send to avoid the superclass method to be executed wrongly.\label{fig:need_override}}
 \end{center}
 \end{figure}
 
@@ -243,7 +243,7 @@ Figure \ref{fig:nurturing_map_model} presents two tailoring maps showing exempla
 
 We implemented our RFG technique as a tool called \emph{Tornado}. Tornado is implemented using \Vtt to tailor applications written in the Pharo programming language.
 %Pharo is a reflective and dynamic programming language inspired from Smalltalk.
-Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite{Mart14z}~(cf. Section \ref{sec:proxies}) illustrated in Figure \ref{fig:tornado_code units}. The nurtured runtime is hosted inside an object space Tornado's hypervisor runs and monitors the nurtured runtime. It installs traps on the nurtured runtime as Ghost proxies, and use the object space interface to query and install code units it. Notice that due to the limitations of our prototype implementation, the reference runtime cohabits with the hypervisor, which may cause problems when trying to tailor the tailoring process itself. Following, we detail how we fulfilled each of RFG's requirements in our solution:
+Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite{Mart14z}~(cf. Section \ref{sec:proxies}) illustrated in Figure \ref{fig:tornado_code units}. The nurtured runtime is hosted inside an object space Tornado's hypervisor runs and monitors the nurtured runtime. It installs traps in the nurtured runtime as Ghost proxies, and use the object space interface to query and install code units it. Notice that due to the limitations of our prototype implementation, the reference runtime cohabits with the hypervisor, which may cause problems when trying to tailor the tailoring process itself. Following, we detail how we fulfilled each of RFG's requirements in our solution:
 
 \begin{figure}[ht]
 \begin{center}
@@ -255,7 +255,7 @@ Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite
 \begin{description}
 \item[Execution cycles.] We use \Vtt execution cycles to monitor and control the execution of a nurtured runtime. When a cycle is finished the Tornado hypervisor checks if the virtualized runtime is suspended on a trap. In such case, it installs the corresponding code unit and resumes the execution with another cycle.
 
-\item[Advanced proxies.] Pharo's libraries includes Ghost~\cite{Mart11a}, an advanced proxy implementation. Ghost allows one to capture all kind of message sends, intercept particular method executions, and even to proxy classes and special objects. We use the Ghost model to implement execution traps.
+\item[Advanced proxies.] Pharo's libraries includes Ghost, an advanced proxy implementation. Ghost allows one to capture all kind of message sends, intercept particular method executions, and even to proxy classes and special objects. We use the Ghost model to implement execution traps.
 
 \item[Object space runtime manipulation.] An object space provide already with operations to query and install the classes and methods in the virtualized runtime.
 
@@ -264,7 +264,7 @@ Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite
 \subsection{Execution Traps with Ghost Proxies} \label{sec:proxies}
 
 Implementing execution traps such as the ones described in Section~\ref{sec:model_detail} requires powerful intercession support to capture \emph{all} message-sends.% to objects provided by the application runtime as well as the application objects, including classes~(for example for the case of class messages or static methods). %They must capture \emph{self} and \emph{super} message sends, as well as overrides and particular method invocations.
-To achieve this, we implemented a set of proxies following the Ghost model~\cite{Mart11a}~(similar to JavaScript proxies~\cite{Vanc10a}). Ghost proposes a low-memory footprint, general purpose proxy implementation for the Smalltalk language supporting the creation of proxies for normal objects as well as classes and methods. 
+To achieve this, we implemented a set of proxies following the Ghost model~\cite{Mart14z}~(similar to JavaScript proxies~\cite{Vanc10a}). Ghost proposes a low-memory footprint, general purpose proxy implementation for the Smalltalk language supporting the creation of proxies for normal objects as well as classes and methods. 
 % These proxies allow the interception of all message sends.
 % When a Ghost proxy captures an invocation, it triggers the behavior of a \emph{handler}. 
 % The Ghost proxy library provides already several kinds of handlers including for example message forwarding or logging.
@@ -369,7 +369,7 @@ Once the traps are removed, the nurtured runtime keeps no dependencies to Tornad
 
 In this chapter we presented a run-fail-grow~(RFG) approach for application tailoring. RFG tailors an application by starting it and initializing it with a seed that contains the minimal set of code units we want to ensure. Then, we install and execute the application's entry points. As the application executes, missing code units are found and installed on demand, ensuring that only the needed code units are introduced. By following the runtime execution, it supports dynamic features such as reflection and meta-programming.
 
-We implemented RFG in a tool called Tornado based in \Vtt. With \Vtt, we are able to monitor the nurtured runtime's execution using the execution cycles. Ghost-like proxies represent traps that detect missing code units during execution. We use Mirrors to install required code and restart the execution as it is needed.
+We implemented RFG in a tool called Tornado based on \Vtt. With \Vtt, we are able to monitor the nurtured runtime's execution using the execution cycles. Ghost-like proxies represent traps that detect missing code units during execution. We use Mirrors to install required code and restart the execution as it is needed.
 
 \chapter{Run-Fail-Grow Validation}
 \chaplabel{chap:rfg_validation}
@@ -716,7 +716,7 @@ Tornado's model and implementation present themselves as a complete solution in 
 
 Tornado requires a dedicated infrastructure only during the tailoring: tools to monitor and manipulate the tailoring application. However, once the tailoring is finished and the application reaches a stable point, Tornado extracts and prepares the application to run in the deployment-ready unmodified infrastructure. Tornado offers also a flexible solution in the sense that it allows one to configure the level of tailoring by means of a seed. The seed contains a pre-selection of code units available in the tailoring application before the tailoring starts. In such a way, we can use the seed to specify whether, for example, the base or third-party libraries should be tailored or not.
 
-Tornado also handles modern programming language features such as reflection, open classes\gp{cite} and class extensions~\cite{Berg03a}~(\ie a package can define methods to classes from other packages) and traits~\cite{Scha03a}, out of the box.Tornado installs methods from other packages or behavior units such as traits seamlessly because during runtime it knows the exact concrete type of each object involved in the execution. Thus, no extra static or string analysis is needed. This is possible thanks to Ghost proxies~\cite{Mart11a}, which can capture all message sends and specific method invocations.
+Tornado also handles modern programming language features such as reflection, open classes\gp{cite} and class extensions~\cite{Berg03a}~(\ie a package can define methods to classes from other packages) and traits~\cite{Scha03a}, out of the box.Tornado installs methods from other packages or behavior units such as traits seamlessly because during runtime it knows the exact concrete type of each object involved in the execution. Thus, no extra static or string analysis is needed. This is possible thanks to Ghost proxies~\cite{Mart14z}, which can capture all message sends and specific method invocations.
 
 Finally, we can see that tornado achieves minimality by selecting only those code units that were used during the tailoring process. No extra code units are installed, besides the objects needed by the \VM to run. Regarding completeness, we see Tornado as a partially complete technique, such as the dynamic ones. Every piece of code that was \emph{exercised} during the tailoring process will be available in the deployable version of the application runtime.
 
