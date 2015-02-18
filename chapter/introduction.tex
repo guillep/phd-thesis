@@ -148,23 +148,62 @@ We validate this language virtualization infrastructure by exploring two approac
 % =============================================================================
 \section{Thesis Outline}
 % =============================================================================
-%\sm{This dissertation structure is different to what I am used to. At least the way you announce the purpose of the chapters is not what I would expect.
-%In my diss, everything revolves around one thesis, here, it is a number of things listed one after another, don't see the central motive I would expect}
 
-\gp{write from scratch, left for the end}
+The rest of this dissertation is structured in four main parts that describe our contributions. After these four main parts, a final part presents the conclusive chapter of this thesis and several appendixes with complementary information for the reader of this thesis.
+
+\subsection{Part I: State of the Art}
+
 \begin{description}
-\item[\chapref{background}] 
+\item[\chapref{state_modifying}] presents the state of the art in the manipulation of application runtimes. This chapter analyses and classifies related work in three categories. Reflection models allow programs to ask about and act upon themselves to modify themselves and their own models. Metacircular runtimes and \VMs bring the benefits of high-level languages to the development of \VMs. Finally, application virtualization techniques allow certain grade of manipulation on a program from its outside.
 
-\item[\chapref{benzo}] 
-	
-\item[\chapref{ffi}] 
-
-\item[\chapref{validation}] 
-
-\item[\chapref{conclusion}] 
+\item[\chapref{state_tailoring}] presents the state of the art in techniques for automatically tailor applications by extracting used code. We identify four different kinds of related work in this context. Dedicated platforms are general purpose programming platforms that are built with the purpose of minimizing memory consumption. Static tailoring techniques use static program information such as type annotations and class/method names to select used code. Dynamic techniques will benefit form the dynamic information that is available during a program's execution, such as the object's concrete types and their references at runtime. Finally, hybrid techniques use a mixture of dynamic and static approaches.
 
 \end{description}
 
+\subsection{Part II: \VTT}
+
+\begin{description}
+
+\item[\chapref{vtt}] proposes \Vtt, a model for application runtime virtualization. In \Vtt a virtualized application runtime resides inside an object space. Externally, a hypervisor manipulates the internal state and controls the execution of the object space.
+
+\item[\chapref{prototype}] presents the implementation details of a prototype implementation of \Vtt in Pharo. It describes how objects from the object space and the hypervisor can co-exist and communicate safely.
+\end{description}
+
+\subsection{Part III: Bootstrapping}
+
+\begin{description}
+
+\item[\chapref{bootstrapping}] presents a bootstrapping process based on \Vtt for object-oriented languages. This chapter starts by defining the concept of bootstrap, describes its challenges and presents how \Vtt solves them.
+
+\item[\chapref{bootstrapping_validation}] presents the experiments we conducted to validate our bootstrap process. This chapter describes the bootstrap of four different languages on top of our infrastructure.
+
+\end{description}
+
+\subsection{Part IV: Tailoring}
+
+\begin{description}
+
+\item[\chapref{chap:rfg}] presents run-fail-grow~(RFG), a tailoring technique based on runtime information. RFG extracts only the code that is effectively executed. Tornado, our implementation of RFG benefits from \Vtt to perform transparently for the application.
+
+\item[\chapref{chap:rfg_validation}] presents the experiments we conducted to validate our tailoring process. This chapter describe the different case studies we used and how Tornado performs in each of them. We compare our results with Pharo's official distribution and other two dedicated platforms. We observe that Tornado can aggressively remove unused code.
+
+\end{description}
+
+\subsection{Part V: Conclusion}
+
+\begin{description}
+
+\item[\chapref{conclusion}] concludes this dissertation. It sums up the contributions of this thesis and presents several lines of future work.
+
+\item[Appendix \ref{papers}] presents a list of the publications that came out of the work on this thesis.
+
+\item[Appendix \ref{appendixa}.] briefly presents Pharo's syntax, important for the understanding of the code snippets appearing in the thesis.
+
+\item[Appendix \ref{appendixbootstrap}.] lists the specific results of our bootstrapped languages. We list in here the classes and methods that are present in each of the languages we built.
+
+\item[Appendix \ref{appendixtornado}.] lists the specific results of our tailored applications. We list in here the code units (methods and classes) that were automatically selected by Tornado to belong to the specialized version of several applications.
+
+\end{description}
 
 % =============================================================================
 \input{chapter-footer.tex}
