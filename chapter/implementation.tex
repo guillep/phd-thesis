@@ -131,7 +131,7 @@ Using this mechanism, \Vtt prototype implements one mirror per type of object su
 
 %Using Oz, we can also create and install new processes inside an \objectspace given a code expression. The creation of a process requires the creation of a compiled method with the code~(bytecode) corresponding to the desired expression and a method context. The compiled method with the code to run is obtained by compiling the expression in the host and creating an \objectspace compiled method. The \objectspace compiled method is then provided with the compiled bytecode and its corresponding literals.
 
-\section{\Vtt Virtual Interpreter} \label{sec:memory}
+\section{\Vtt Virtual Interpreter}%\label{sec:memory}
 
 We implemented a virtual code interpreter for \Vtt by extending the existing Pharo's AST interpreter. Pharo's AST is able to parse Pharo code into AST, and execute it into the application runtime it belongs to by using reflection. We extended this AST interpreter with the purpose of executing the given AST inside an object space instead of inside the current application runtime. Our extensions include the following main points:
 
@@ -263,7 +263,7 @@ This decision is funded on minimizing the changes made to the virtual machine, t
 
 \section{Benchmarks}
 
-We present in this section a series of benchmarks we applied to our implementation\footnote{\url{http://www.smalltalkhub.com/#!/~Guille/ObjectSpace}}. The intent of these benchmarks is to provide an idea of the overhead that imply using our implementation of mirrors, process injection and the execution cycle. However, notice that the focus of this thesis is not on the performance of our technique for its extensive usage. Instead we focused on its flexibility for application runtime generation. We acknowledge that there is room for optimization in the techniques we used.
+We present in this section a series of benchmarks we applied to our implementation\footnote{\url{http://www.smalltalkhub.com/\#!/\textasciitilde Guille/ObjectSpace}}. The intent of these benchmarks is to provide an idea of the overhead that imply using our implementation of mirrors, process injection and the execution cycle. However, notice that the focus of this thesis is not on the performance of our technique for its extensive usage. Instead we focused on its flexibility for application runtime generation. We acknowledge that there is room for optimization in the techniques we used.
 
 \subsection{Mirrors Micro-Benchmarks}
 
