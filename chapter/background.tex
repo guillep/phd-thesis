@@ -242,7 +242,7 @@ By limiting the levels of interpretation, the model presented by Black forbids \
 To enable reflection in mainstream languages such as Java, Ruby or JavaScript, the tower of interpreters is replaced by a reflective architecture~\cite{Maes87a}. Instead of relying on a stack of interpreters interpreting each the level below it, a reflective architecture relies on the idea of \emph{causal connection} \ie the programming language incorporates structures that represents aspects of itself~(\eg classes, objects), in such a way that if one structure changes the aspect it represents is updated accordingly, and vice-versa.
 
 
-In languages presenting reflective architectures, reflection is controlled by meta-objects that live in the same environment of the object it reflects upon.
+In languages presenting reflective architectures, reflection is controlled by meta-objects that share a same environment with the objects they reflect upon.
 One problematic corollary of this is that meta-objects rely on the same code and infrastructure as the objects they reflect upon \eg if a class stores its subclasses in a \ct{Set}, changing the  implementation of \ct{Set} impacts the reflective behavior in addition of the base-application behavior.
 Therefore there is a risk of infinite meta-recursion when the meta-level instruments code that it relies upon~(Figure \ref{fig:reflectivity_meta_recursion}).
 
@@ -301,7 +301,7 @@ To facilitate the interaction with the pure C part, Slang supports inline C expr
 A great achievement of the Squeak \VM is a simulator environment that enables programmers to interact dynamically with a simulated version of the running \VM.
 The simulator is capable of running a complete Squeak Smalltalk image including graphical user interface.
 This means that programmers can change the sources of the running \VM and see the immediate effects in the simulator.
-The \VM developer has complete access and control to the \VM internals and the application runtime it contains. It can, for example, change any object and class inside the simulated application runtime. However, to apply such a change it depends on a memory oriented interface. Additionally, once the \VM is generated, this low-level interface disappears and it is not accessible for the developer anymore.
+The \VM developer has complete access and control to the \VM internals and the application runtime it contains. It can, for example, change any object and class inside the simulated application runtime. However, to apply such a change it depends on a memory-oriented interface \ie object modification is achieved by a Smalltalk interface that provides C-like abstractions such as pointer arithmetics. Additionally, once the \VM is generated, this low-level interface disappears and it is not accessible for the developer anymore.
 
 % ---------------------------------------------------------------------------
 \subsection*{\textsc{Jikes: High-level low-level Programming with MMTK}}
@@ -416,7 +416,9 @@ The most related family of work in virtualization are approaches like Xen~\cite{
 Operating System virtualization technology is characterized by the existence of a \emph{hypervisor}~(named after the Operating System \emph{supervisor} that controls the OS processes). The hypervisor is the \VM component that allows one to observe or control the internals of one or many \VMs. A \VM hypervisor gives us, amongst others, the following services:
 
 \begin{description}
-\item[Co-location.] Co-location is the ability to have co-existing applications on top of the same virtual machine. With co-location, a single \VM has information about all the applications running on top of itself and can integrate that information in its decision process. Additionally, it gives to co-located applications a cheap communication mechanism as they reside in the same operating system process.
+\item[Co-location.] Co-location is the ability to have co-existing applications on top of the same virtual machine. 
+Co-located applications can use shared memory to communicate efficiently as they reside in the same operating system process.
+
 \item[Resource control.] \VMs should control how the different resources of their applications are used. However, state of the art \VMs do only control their consumed memory with the usage of a memory manager. They do not perform in general any control in other kind of resources such as CPU or energy consumption.
 \item[Security.] \VMs should control how applications access sensitive information such as files and network connections or execute potentially dangerous operations such as system calls.
 \item[Application mobility.] As applications are portable, they should be easily migrated between different \VMs also at runtime. Application mobility provides support for resource re-allocation.

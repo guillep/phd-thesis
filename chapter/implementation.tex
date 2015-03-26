@@ -31,7 +31,7 @@ To understand the constraints and limitations of our solution, we start this cha
 
 \section{The Special Objects Array as \VM-Setup Interface}\label{sec:setup_interface}
 
-Pharo \VM holds the state of the \VM-setup interface inside a \emph{special objects array} object. Pharo's special objects array contains 56 entries whose indexes are well known by the \VM for their access at runtime. To implement our \VM-setup interface, we provide access and enable the modification of this special object array. Following, we detail the special objects array entries that our API offers.
+The \VM-setup interface is the set of bindings between the \VM and the language needed by the \VM to run \eg which are the boolean objects and special classes. Pharo \VM holds the state of the \VM-setup interface inside a \emph{special objects array} object. Pharo's special objects array contains 56 entries whose indexes are well known by the \VM for their access at runtime. To implement our \VM-setup interface, we provide access and enable the modification of this special object array. Following, we detail the special objects array entries that our API offers.
 
 \begin{description}
 \item[Special Instances.] Special instances such as \ct{nil}, \ct{true} and \ct{false} are directly pushed by the \VM interpreter at runtime instead of residing in a method literal list. A flyweight \ct{Character} table references the first 256 character objects to ensure their identity and save memory.
@@ -67,7 +67,7 @@ In \Vtt, we modified part of the green thread mechanism to allow the scheduling 
 
 Finally, the window time control was implemented hooking into the existing process preemption mechanism in the \VM. A separate \VM thread independent of the application runtimes, namely the \emph{heartbeat}, is awaken with a frequency of 5Hz~(\ie every 200 milliseconds) and activates a flag that indicates a preemption may occur. The chosen frequency is indeed important as it determines the precision of the clock measurements and how often the \VM checks for events such as delays or semaphores being signalled. If the frequency is unstable or low the clock resolution will be poor, delays will fire erratically and input from outside the \VM won't be responded to promptly.
 
-When the \VM interpreter arrives to one of the safe suspension points (\ie a point where suspending the current execution will not leave the current process in an incoherent state) the code interpreter preempts the active process if the heartbeat signalled so~\cite{Deut84a}. Our safe suspension points correspond to the Cog \VM suspension points: back jump and message-send bytecodes~\cite{Mira11a}. This suspension points are designed on one side to minimize the execution overhead and on the other side to not suspend a process in between of a bytecode combination that could be unknown by the debugger. The suspension point before a message-send corresponds with the \VM's stack-overflow check and the one in backjumps allows preemption to happen in the case of long run (possible infinite) cycles. In \Vtt we modified the preemption code to activate another application runtime if available.
+When the \VM interpreter arrives to one of the safe suspension points (\ie a point where suspending the current execution will not leave the current process in an incoherent state) it preempts the active process if the heartbeat signalled so~\cite{Deut84a}. Our safe suspension points correspond to the Cog \VM suspension points: back jump and message-send bytecodes~\cite{Mira11a}. This suspension points are designed on one side to minimize the execution overhead and on the other side to not suspend a process in between of a bytecode combination that could be unknown by the debugger. The suspension point before a message-send corresponds with the \VM's stack-overflow check and the one in backjumps allows preemption to happen in the case of long run (possible infinite) cycles. In \Vtt we modified the preemption code to activate another application runtime if available.
 
 \section{\Vtt Mirror Implementation}\label{sec:implementation_mirrors}
 
@@ -133,25 +133,25 @@ Using this mechanism, \Vtt prototype implements one mirror per type of object su
 
 \section{\Vtt Virtual Interpreter}%\label{sec:memory}
 
-We implemented a virtual code interpreter for \Vtt by extending the existing Pharo's AST interpreter. Pharo's AST is able to parse Pharo code into AST, and execute it into the application runtime it belongs to by using reflection. We extended this AST interpreter with the purpose of executing the given AST inside an object space instead of inside the current application runtime. Our extensions include the following main points:
+We implemented a virtual interpreter for \Vtt by extending the existing Pharo's AST interpreter. Pharo's AST is able to parse Pharo code into AST, and execute it into the application runtime it belongs to by using reflection. We extended this AST interpreter with the purpose of executing the given AST inside an object space instead of inside the current application runtime. Our extensions include the following main points:
 
 \begin{description}
 \item[Name Resolution.] Names inside the source code representing \eg classes or globals must be resolved to the corresponding elements inside an object space. For this, we provide an alternative source of bindings to the AST semantic analysis process.
 
-\item[Instance Variable Access.] Accessing or writing an object's instance variable is mapped by the code interpreter to a field access or write in the mirror representing the receiver object.
+\item[Instance Variable Access.] Accessing or writing an object's instance variable is mapped by the virtual interpreter to a field access or write in the mirror representing the receiver object.
 
 \begin{code}
-VirtualCodeInterpreter >> readInstanceVariableNumber: index
+VirtualInterpreter >> readInstanceVariableNumber: index
     ^ self receiver instanceVariableAtIndex: index
     
-VirtualCodeInterpreter >> writeInstanceVariableNumber: index with: aMirror
+VirtualInterpreter >> writeInstanceVariableNumber: index with: aMirror
     ^ self receiver instanceVariableAtIndex: index put: aMirror
 \end{code}
 
-\item[Method Lookup.] On a message-send, the virtual code interpreter performs the method lookup by inspecting the class hierarchy of the receiver object. The receiver object state is available to the interpreter by a mirror. Following, we illustrate this with a simplified method lookup:
+\item[Method Lookup.] On a message-send, the virtual interpreter performs the method lookup by inspecting the class hierarchy of the receiver object. The receiver object state is available to the interpreter by a mirror. Following, we illustrate this with a simplified method lookup:
 
 \begin{code}
-VirtualCodeInterpreter >> lookupSelector: selector
+VirtualInterpreter >> lookupSelector: selector
     | classToLookup |
     "classToLookup is a class mirror"
     classToLookup := self receiver getClass.
@@ -165,7 +165,7 @@ VirtualCodeInterpreter >> lookupSelector: selector
 \item[Primitive Execution.] In the leaves of the execution, message-sends invoke the language primitives. These language primitives are executed through the object space interface.
 
 \begin{code}
-VirtualCodeInterpreter >> invokePrimitiveMethod: aMethod
+VirtualInterpreter >> invokePrimitiveMethod: aMethod
     ^ self receiver
          executePrimitive: aMethod primitive
          withArguments: self arguments
@@ -173,10 +173,10 @@ VirtualCodeInterpreter >> invokePrimitiveMethod: aMethod
 
 \end{description}
 
-Being a first-class entity, we can specialize the code interpreter to instrument code execution in order to override normal behavior or trace the execution. We can for example trace all instance variable writes by overwriting one of the methods above.
+Being a first-class entity, we can specialize the virtual interpreter to instrument code execution in order to override normal behavior or trace the execution. We can for example trace all instance variable writes by overwriting one of the methods above.
 
 \begin{code}
-TracingCodeInterpreter >> writeInstanceVariableNumber: index with: aMirror
+TracingVirtualInterpreter >> writeInstanceVariableNumber: index with: aMirror
     | result |
     result := super writeInstanceVariableNumber: index with: aMirror.
     !\emph{self logWriteIn: self receiver atIndex: index with: aMirror.}!

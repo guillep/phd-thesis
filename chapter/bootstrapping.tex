@@ -40,7 +40,7 @@ In addition, an unclear separation between the \VM and language concerns in the 
 %This unnecessary coupling has a double impact on the language infrastructure: first, the only means to change the initial class hierarchy is to change the \VM code; second, the \VM can only run this language runtime even if it's execution model is less restrictive.
 
 %In this context we pose the following question: \emph{How do we build and change language runtimes?}
-Notice that this language initialization step is often baptized as the language bootstrapping step. However, we use for it the name \emph{language initialization} and present the concept of \textbf{bootstrapping} as it is known in the context of compilers~(where a compiler can compile itself). Then, bootstrapping is a the process of expressing the language initialization in the language it defines at the end. Though this concept is know in the context of compilers, we explore and expand this concept in the context of object-oriented languages. We can then see bootstrapping as a high-level low-level programming approach for  language runtime generation~\cite{Fram09a}~(cf. Section \ref{sec:bootstrapping}).
+Notice that this language initialization step is often baptized as the language bootstrapping step. However, we use for it the name \emph{language initialization} and present the concept of \textbf{bootstrapping} as it is known in the context of compilers~(where a compiler can compile itself). Then, bootstrapping is the process of expressing the language initialization in the language it defines at the end. Though this concept is know in the context of compilers, we explore and expand this concept in the context of object-oriented languages. We can then see bootstrapping as a high-level low-level programming approach for  language runtime generation~\cite{Fram09a}~(cf. Section \ref{sec:bootstrapping}).
 
 
 We illustrate a bootstrap process for an object-oriented language runtime through an example: the bootstrap of the Pharo language~(cf. Section \ref{sec:bootstrapping_process}).
@@ -48,7 +48,7 @@ However, executing such a bootstrap is not straight-forward: we cannot execute c
 This example raises the question: \emph{how do we do to execute such a bootstrap?}. We show how \Vtt solves this problem and represents a robust infrastructure for language runtime bootstrapping~(cf. Section \ref{sec:bootstrapping_infrastructure}). Using \Vtt, the bootstrapped application runtime is hosted inside an object space and the bootstrap process takes the role of an hypervisor. The object space is initially empty and the bootstrap hypervisor fills it with objects gradually. 
 
 By bootstrapping, the definition of the language runtime becomes circular \ie the language definition expresses its own initialization in itself. This presents the benefit of using the abstraction power and tools of the language it defines~(cf. Section \ref{sec:circular_definition}).
-The bootstrapping hypervisor can execute the language circular definition through a specialized virtual interpreter. This virtual interpreter manipulates objects inside an object space while they cannot execute code by themselves, solving the circularity problems~(cf. Section \ref{sec:ast_interpreter}). Additionally, our infrastructure allows us to trace the execution of the bootstrap code to detect the impact that a change in the language may have in the bootstrap process~(cf. Section \ref{sec:continuous_bootstrapping}).
+The bootstrapping hypervisor can execute the language circular definition through a virtual interpreter specialized for the case of bootstrapping, the \emph{bootstrapping interpreter}. The bootstrapping interpreter manipulates objects inside an object space while they cannot execute code by themselves, solving the circularity problems~(cf. Section \ref{sec:ast_interpreter}). Additionally, our infrastructure allows us to trace the execution of the bootstrap code to detect the impact that a change in the language may have in the bootstrap process~(cf. Section \ref{sec:continuous_bootstrapping}).
 
 % ===========================================================================
 \section{Bootstrapping}\label{sec:bootstrapping}
@@ -148,7 +148,7 @@ falseObject := False basicNew.
 
 The basic language structures are the minimal structure we need to create all the rest of the language elements~(cf. Figure \ref{fig:basic_structure_creation}). For example, creating a class requires the existence of a table of global objects to install the class, and a table of unique strings or symbols to have a unique identifier for it. We must create these basic structures from the very beginning, as the rest of the process rely on them.
 
-Note that this example presents new paradoxes. First, the apparition of \ct{GlobalTable} and \ct{SymbolTable} present the same problems as \ct{UndefinedObject} did before, and thus it is solved in the same way. Additionally, we need to send the \ct{at:put:} message to the \ct{GlobalTable} while the \ct{at:put:} methods does not yet exist. Also, this method belongs to a superclass of \ct{GlobalTable} that is not yet installed: \ct{Dictionary}. To solve this, our bootstrap process will lookup the code to execute inside the language definition and execute it using a specialized code interpreter. By doing that, our bootstrap process can benefit from all the code exists in the language to define itself.  We will dive into how methods are executed before they are installed in Section \ref{sec:ast_interpreter}.
+Note that this example presents new paradoxes. First, the apparition of \ct{GlobalTable} and \ct{SymbolTable} present the same problems as \ct{UndefinedObject} did before, and thus it is solved in the same way. Additionally, we need to send the \ct{at:put:} message to the \ct{GlobalTable} while the \ct{at:put:} methods does not yet exist. Also, this method belongs to a superclass of \ct{GlobalTable} that is not yet installed: \ct{Dictionary}. To solve this, our bootstrap process will lookup the code to execute inside the language definition and execute it using the bootstrapping interpreter. By doing that, our bootstrap process can benefit from all the code exists in the language to define itself. We will dive into how methods are executed before they are installed in Section \ref{sec:ast_interpreter}.
 
 \begin{figure}[ht]
 \begin{subfigure}{.45\linewidth}
@@ -162,16 +162,21 @@ SymbolTable initialize.
 \end{code}
 
 \begin{code}
-Dictionary >> at: key put: anObject 	| index assoc |	index := self findElementOrNil: key.	assoc := array at: index.	...\end{code}
+Dictionary >> at: key put: anObject 
+	| index assoc |
+	index := self findElementOrNil: key.
+	assoc := array at: index.
+	...
+\end{code}
 \end{subfigure}
 \begin{subfigure}{.55\linewidth}
 \includegraphics[width=.99\linewidth]{basic_structure_creation}
 \end{subfigure}
-\caption{\textbf{Step 2: Create basic language structures.} We create those structures that are required to create the rest of the language elements, such as the symbol and global tables. In the figure we can see that the global table references itself as a global and the symbol table references the \ct{GlobalTable} symbol. Methods such as \ct{at:put:} are looked up in the language definition and executed using a specialized interpreter.\label{fig:basic_structure_creation}}
+\caption{\textbf{Step 2: Create basic language structures.} We create those structures that are required to create the rest of the language elements, such as the symbol and global tables. In the figure we can see that the global table references itself as a global and the symbol table references the \ct{GlobalTable} symbol. Methods such as \ct{at:put:} are looked up in the language definition and executed using the bootstrapping interpreter.\label{fig:basic_structure_creation}}
 \end{figure}
 
 \paragraph{\textbf{Step 3: Create classes}}
-We create the classes that the language definition requires in the language runtime~(cf. Figure \ref{fig:class_creation}). For this, we use the \emph{class builder} present in Pharo's language definition through specialized code interpreter. The class builder validates that a class can be created, creates it and installs it inside the global table. It encapsulates the complexity of class creation \eg first-class layouts, traits, first class instance variables.
+We create the classes that the language definition requires in the language runtime~(cf. Figure \ref{fig:class_creation}). For this, we use the \emph{class builder} present in Pharo's language definition through the bootstrapping interpreter. The class builder validates that a class can be created, creates it and installs it inside the global table. It encapsulates the complexity of class creation \eg first-class layouts, traits, first class instance variables.
 
 We replace existing stubs~(\eg \ct{UndefinedObject}, \ct{True} or \ct{GlobalTable}) by their new versions. This step does not yet install methods, since they can reference classes that are about to be created. We will create all methods at once in a next step once all classes are created.
 
@@ -256,7 +261,7 @@ To execute such a language definition, we developed a bootstrap infrastructure f
 
 \item[Virtualized Bootstrapped Language Runtime.] The bootstrapped language is initialized inside a virtualized runtime. This virtualized runtime is initially empty and the bootstrap process fills it with objects before it reaches the execution point. As such, we can use the object space clear \VM-language interface for its manipulation. This also serves the purpose of identifying what are the \VM and language concerns during language initialization to easily decouple them.
 
-\item[Bootstrapping Hypervisor and Virtual Interpreter.] A \emph{bootstrapping hypervisor} contains an specialized virtual interpreter, the \emph{bootstrapping interpreter}. The bootstrapping interpreter is a specialized AST interpreter that can execute the code available in the language definition under the initial absence of classes and objects.
+\item[Bootstrapping Hypervisor and Interpreter.] A \emph{bootstrapping hypervisor} contains a virtual interpreter specialized for bootstrapping, the \emph{bootstrapping interpreter}. The bootstrapping interpreter is a specialized AST interpreter that can execute the code available in the language definition under the initial absence of classes and objects.
 \end{description}
 
 %The main limitation of our approach is the \VM execution model. Our solution exposes a clear but fixed \VM interface that introduces a common denominator for each of the languages we bootstrapped. The co-evolution of language runtime and \VM will be addressed in future work and is out of the scope of this thesis.
@@ -293,7 +298,7 @@ The language definition describes the language we are bootstrapping. During the 
 \caption{\textbf{Bootstrap Phases.} Initially, a language runtime does not contain the minimal elements to execute code. As the bootstrap process installs elements, it reaches the point of execution where it can run autonomously. Later, when (if) reflective features are installed, it reaches the reflective spectrum.\label{fig:phases}}
 \end{figure}
 
-The \Vtt-based bootstrap process takes as input this language definition source code, parses it and reifies it as abstract syntax trees~(ASTs) of the language elements~(\eg classes and methods).
+The \Vtt-based bootstrap process takes as input this language definition, parses it and builds the abstract syntax trees~(ASTs) of the language elements~(\eg classes and methods).
 ASTs ease the manipulation of the language definition for its compilation, interpretation and extraction of information \eg we can easily extract variable and class names, superclasses, and know how to bind names during compilation. Figure \ref{fig:hazelSpecModel} illustrates our basic AST model. For example, a Class definition contains amongst others its name, its superclass, a list of the instance variables that it defines and the source code of its definition. A method definition contains its selector, a list of its statements and its full source code. For clarity of the figure, we don't include sub-method nodes such as statements, assignments or message sends in it.
 
 \begin{figure}[ht]
@@ -388,12 +393,12 @@ ProcessScheduler initialize.
 
 \section{The Bootstrapping Interpreter}\label{sec:ast_interpreter}
 
-The bootstrapping interpreter is a virtual code interpreter that interprets code expressed in the bootstrapped language. The bootstrap process uses the bootstrap interpreter to execute the language definition inside the virtualized runtime before it reaches the execution point. Its design present the following important properties that allow it to achieve this:
+The bootstrapping interpreter is a virtual interpreter that interprets code expressed in the bootstrapped language. The bootstrap process uses the bootstrap interpreter to execute the language definition inside the virtualized runtime before it reaches the execution point. Its design present the following important properties that allow it to achieve this:
 
 \begin{description}
 \item[Alternative method lookup.] Before reaching the execution point, the class hierarchy of the language runtime is incomplete, or part of its methods are not yet installed. The bootstrapping interpreter implements an alternative method lookup mechanism to allow message sending before we reach the execution point: methods are looked up in the definition of the language instead of the hierarchy in the language runtime; a mapping is kept between classes created in the language runtime and their definitions in the language definition to know where the lookup should start.
 
-\item[Automatic class stubs.] The bootstrapping interpreter does also solve most of the well known bootstrapping issues~(\eg how to create an instance before a class exists) in a generic way by using class stubs. When an inexistent class is needed during the bootstrap process, the interpreter creates an empty class to take its place respecting the \VM format for it. The interpreter will be able to create instances of this class and map it to its corresponding definition to perform the method lookup. This class cannot, however, initially perform reflective operations as it does not contain any reflective information. When the real class is created later on in the process, it replaces the stub. For this purpose, we extended the object space interface with one operation that allows the creation of an object whose class pointer is not initialized.
+\item[Automatic class stubs.] The bootstrapping interpreter does also solve most of the well known bootstrapping issues~(\eg how to create an instance before a class exists) in a generic way by using class stubs. When an inexistent class is needed during the bootstrap process, the bootstrapping interpreter creates an empty class to take its place respecting the \VM format for it. The bootstrapping interpreter will be able to create instances of this class and map it to its corresponding definition to perform the method lookup. This class cannot, however, initially perform reflective operations as it does not contain any reflective information. When the real class is created later on in the process, it replaces the stub. For this purpose, we extended the object space interface with one operation that allows the creation of an object whose class pointer is not initialized.
 
 \begin{code}
 objectSpace {
@@ -409,9 +414,9 @@ objectSpace {
 \caption{\textbf{The Bootstrapping interpreter in action.} A stub class is created for a non existent class. Each class is mapped to its description in the language definition. The lookup is then performed inside the language definition. Once the method is found, it is executed inside the language runtime.\label{fig:interpretation}}
 \end{figure}
 
-Figure \ref{fig:interpretation} illustrates with an example the behavior of the interpreter, particularly in the execution of the \ct{"Object new"} expression. First, if the class \ct{Object} does not exist, it creates a stub \ct{Object} class and maps it to its corresponding definition in the language definition. To interpret the \ct{new} message, the interpreter performs the method lookup from the class of the object in the language definition. As the class from the language runtime and the language definition are mapped, the interpreter knows where to start the method lookup. The method is found in the \ct{Class} class and executed in the language runtime. As a result, an instance of the \ct{Object} class is created.
+Figure \ref{fig:interpretation} illustrates with an example the behavior of the interpreter, particularly in the execution of the \ct{"Object new"} expression. First, if the class \ct{Object} does not exist, it creates a stub \ct{Object} class and maps it to its corresponding definition in the language definition. To interpret the \ct{new} message, the bootstrapping interpreter performs the method lookup from the class of the object in the language definition. As the class from the language runtime and the language definition are mapped, the bootstrapping interpreter knows where to start the method lookup. The method is found in the \ct{Class} class and executed in the language runtime. As a result, an instance of the \ct{Object} class is created.
 
-By using the bootstrapping interpreter, the language definition serves both as a source for compiling the code that will be part of the application runtime, and for the execution of the bootstrapping process itself. A change to the language definition will affect both and avoids major code and logic duplications between \VM, language, and language initialization. For example, Figure~\ref{code:logic_dup3} illustrates how we can use the interpreter to use the \ct{Dictionary} code from the language definition instead of the C function that is part of the \VM, as we shown in \chapref{state_modifying}.
+By using the bootstrapping interpreter, the language definition serves both as a source for compiling the code that will be part of the application runtime, and for the execution of the bootstrapping process itself. A change to the language definition will affect both and avoids major code and logic duplications between \VM, language, and language initialization. For example, Figure~\ref{code:logic_dup3} illustrates how we can use the bootstrapping interpreter to use the \ct{Dictionary} code from the language definition instead of the C function that is part of the \VM, as we shown in \chapref{state_modifying}.
 
 
 \begin{figure}[ht]
@@ -452,7 +457,7 @@ Bootstrapping is commonly known by its usage on compiler building, where a compi
 It can be generalized to the introduction of any software system to its own building process.
 A bootstrap process allows us to easily change this system as it is expressed in terms of itself, taking advantage of its abstractions and tools.
 
-In this chapter we explored the bootstrap of an object-oriented language using \Vtt. By using \Vtt we can easily modify the bootstrapped language runtime even when it is empty. A virtual code interpreter, the bootstrapping interpreter, allows the execution of the language definition in an initially empty virtual runtime. On one side, it overrides the method lookup mechanism to look for method ASTs inside the language definition instead of inside the half-built bootstrapped language, avoiding duplications. On the other side it solves the bootstrapping issues by automatically creating class stubs and replacing them once we create and install the real classes.
+In this chapter we explored the bootstrap of an object-oriented language using \Vtt. By using \Vtt we can easily modify the bootstrapped language runtime even when it is empty. A virtual interpreter specialized for bootstrapping allows the execution of the language definition in an initially empty virtual runtime. On one side, it overrides the method lookup mechanism to look for method ASTs inside the language definition instead of inside the half-built bootstrapped language, avoiding duplications. On the other side it solves the bootstrapping issues by automatically creating class stubs and replacing them once we create and install the real classes.
 %
 %The main limitation of our approach is that we don't address the co-evolution of language and VM. A co-evolution implies changing not only language and VM but also their interface. We expect to address these issues in future work and see what the introduction of a metacircular-programming framework implies in this regard.
 

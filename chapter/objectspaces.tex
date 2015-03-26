@@ -11,7 +11,7 @@
 This chapter presents our Virtualization Application Runtime infrastructure, namely \VTT. It focuses on the model of our solution and presents its core ideas. \VTT supports application runtime virtualization through two key ideas:
 
 \begin{description}
-\item[Application runtime co-existence.] Two application runtimes can run side by side in the same infrastructure \eg in the same VM and/or operating system process.
+\item[Application co-location.] The ability to have co-existing applications on top of the same virtual machine. 
 \item[Object spaces.] An object space is a first-class application runtime. It encapsulates the access to an application runtime and provides a high-level API to easily query and manipulate it.
 \end{description}
 
@@ -64,12 +64,12 @@ Notice that the hypervisor and the virtualized runtime do not share any \VM or l
 \begin{description}
 \item[Transparency.] Our solution does not require any changes in the applications residing inside the virtualized runtime. Thus, we can virtualize existing application runtimes without modifying them \ie \Vtt does not require virtualized applications to include particular libraries, use particular interfaces nor change their execution model.
 
-\item[Application independence.] Our solution does not depend on the particular application inside the virtualized runtime. Different runtime hypervisors can be written for different use cases, including application specific and general ones. The limitation of this approach is, however, its dependance on the execution model imposed by the \VM.
+\item[Application independence.] Our solution does not depend on the particular application inside the virtualized runtime. Different runtime hypervisors can be written for different use cases, including application specific and general ones. The limitation of this approach is, however, its dependance on the execution model imposed by the \VM. We do not change the \VM execution semantics such as the code interpreter or the method lookup.
 \end{description}
 
 \section{Object Spaces: First-class Application Runtimes} \label{sec:object_space}
 
-An object space is a first-class representation of an object oriented application runtime, meant for its manipulation and control. An object space encapsulates an application runtime and provides with a clear and explicit interface to manipulate it. This interface is split in two different kind of objects: an \ct{objectSpace} object provides general operations on the virtualized runtime while mirror objects~\cite{Brac04b} provide operations to manipulate individual objects that reside inside it~(Figure \ref{fig:objectSpaceMirrors}). Specific mirrors manipulate elements with a different object-format or runtime representation to enforce their internal representation, such as the \ct{ClassMirror}.
+An object space is a first-class representation of an object oriented application runtime, meant for its manipulation and control. An object space encapsulates an application runtime and provides with a clear and explicit interface to manipulate it. This interface is split in two different kind of objects: an \ct{objectSpace} object provides general operations on the virtualized runtime; mirror objects~\cite{Brac04b} provide operations to manipulate individual objects that reside inside the virtualized runtime~(Figure \ref{fig:objectSpaceMirrors}). Specific mirrors manipulate elements with a different object-format or runtime representation to enforce their internal representation, such as the \ct{ClassMirror}.
 
 \begin{figure}[ht]
 \begin{center}
@@ -80,9 +80,9 @@ An object space is a first-class representation of an object oriented applicatio
 
 These objects make explicit through the operations they expose two important parts of a \VM-language interface, explained in detail in the following subsections. First, The \VM setup interface exposes the elements of the language that should be initialized so it can run a program. Second, the runtime manipulation interface exposes operations that manipulate elements/structures that live during an application's execution, such as objects, classes, threads and the execution stack.
 
-\subsection{\VM Setup Interface}
+\subsection{\VM-Setup Interface}
 
-The \VM setup is the configuration required by the \VM to run.
+The \VM-setup interface is the set of bindings between the \VM and the language that the \VM needs to run a program.
 For example, a \VM may need the boolean objects \ct{true} and \ct{false} to push them as the result of a boolean operation at runtime.
 This configuration is usually done only during the language runtime initialization and before the execution of a program, as the \VM cannot execute it before such elements exist.
 The \VM setup interface allows us to configure the following kind of elements:
@@ -187,7 +187,7 @@ ClassMirror {
 
 \section{First-Class Hypervisors}\label{sec:hypervisor}
 
-The client of an object space is a \emph{hypervisor}. A hypervisor is first-class object that implements a particular monitoring/modification strategy for that object space. A hypervisor monitors an object space by splitting the execution in cycles. A cycle is an execution that lasts at least a time window and finishes when it finds the next safe suspension point~(Figure \ref{fig:execution_cycle}). A safe suspension point is a point during execution where suspending a thread will not leave it in an inconsistent state. To illustrate with a concrete example, in our \Vtt prototype written for the Pharo language described in \chapref{prototype} safe suspension points are the activation of message sends and bytecode backjumps. During each execution cycle, the object space runs unmanaged using the full \VM's capacity. When the cycle finishes because the execution completed a time window and found a suspension point, the control is returned to the hypervisor. Then, the hypervisor applies its corresponding action and resumes the execution of the object space from the last suspension point.
+The client of an object space is a \emph{hypervisor}. A hypervisor is first-class object that implements a particular monitoring/modification strategy for that object space. For this we split a virtualized application's execution in cycles. A cycle is an execution that lasts at least a time window and finishes when it finds the next safe suspension point~(Figure \ref{fig:execution_cycle}). A safe suspension point is a point during execution where suspending a thread will not leave it in an inconsistent state. To illustrate with a concrete example, in our \Vtt prototype written for the Pharo language described in \chapref{prototype} safe suspension points are the activation of message sends and bytecode backjumps. During each execution cycle, the object space runs unmanaged using the full \VM's capacity. When the cycle finishes because the execution completed a time window and found a suspension point, the control is given to the hypervisor. The hypervisor can monitor and modify the virtualized application at this point and then resume the execution of the object space from the last suspension point.
 
 \begin{figure}[ht]
 \center
@@ -322,7 +322,7 @@ This solution for cross-runtime communication solves both problems observed befo
 
 \subsection{Virtual Interpretation} \label{sec:interpretation}
 
-It may happen that an object space is in an state where it cannot execute code by itself. An object space may be in a buggy state due to a change, or it may be under construction (as in the subject of this thesis). In those cases, we cannot delegate the execution to the object space and thus, we cannot use the process injection mechanism. Let's for example consider that we accidentally break or remove the \ct{at:put:} method from the \ct{MethodDictionary} class. Since that method is the one used to install new methods, from that moment on we cannot install methods in classes using process injection any more. Moreover, we cannot use process injection not even to solve this problem.
+It may happen that an object space is in an state where it cannot execute code by itself. An object space may be in a buggy state due to a change, or it may be under construction (as in the subject of this thesis). In those cases, we cannot delegate the execution to the object space and thus, we cannot use the process injection mechanism. Let's for example consider that we accidentally break or remove the \ct{at:put:} method from the \ct{MethodDictionary} class. Since that method is the one used to install new methods, from that moment on we cannot install methods in classes using process injection any more. Moreover, solving this problem would require to install a method, preventing us to do it through process injection.
 
 \begin{code}
 methodDictionaryClass := objectSpace classNamed: #MethodDictionary.
@@ -331,13 +331,13 @@ methodDictionaryClass remoteMethod: #at:put:.
 "now we cannot install methods using process injection any more"
 \end{code}
 
-For such cases \Vtt allows to execute an expression inside an object space within the context of the hypervisor through the \emph{virtual interpretation} of \eg abstract syntax trees~(ASTs) or bytecodes. A virtual code interpreter is a first-class entity that resides inside the hypervisor and interprets code inside an object space. As it is a first-class entity, we can easily modify its implementation details such as the method lookup or the execution of primitives. These kind of modifications allows us to handle the special cases that cannot be handled by process injection. Then, we can use a virtual interpreter to execute an AST equivalent to the \ct{at:put:} method to install back our corresponding method. This puts the object space in our example back into a stable state before it can continue its own execution.
+For such cases \Vtt allows to execute an expression inside an object space within the context of the hypervisor through the \emph{virtual interpretation} of \eg abstract syntax trees~(ASTs) or bytecodes. A virtual interpreter is a first-class entity that resides inside the hypervisor and interprets code inside an object space. As it is a first-class entity, we can easily modify its implementation details such as the method lookup or the execution of primitives. These kind of modifications allows us to handle the special cases that cannot be handled by process injection. Then, we can use a virtual interpreter to execute an AST equivalent to the \ct{at:put:} method to install back our corresponding method. This puts the object space in our example back into a stable state before it can continue its own execution.
 
 \begin{code}
 "newMethod is a method that fixes the bug"
 newMethod := objectSpace compileMethod: 'at: aKey put: aMethod ....'.
 
-interpreter := VirtualCodeInterpreter newOn: anObjectSpace.
+interpreter := VirtualInterpreter newOn: anObjectSpace.
 interpreter
 	execute: [ Object methodDictionary at: #brokenSelector put: newMethod ]
 	with: newMethod.
@@ -352,7 +352,7 @@ interpreter
 
 The execution of an object space is organized in cycles. In between cycles, the hypervisor can perform an operation and then resume the object space execution. We ensure that the state of the object space keeps its coherence by only suspending it in safe suspension points.
 
-Besides the direct manipulation through mirrors, a hypervisor can perform cross-runtime message-sends for a richer communication using process injection. Process injection prevents failures in the method lookup and avoids stack traversing techniques such as exception to leak cross-runtime references. Additionally, a virtual code interpreter allows us to execute code on the object space with full intercession. A virtual code interpreter is a first class entity, allowing us to easily specialize and change it.
+Besides the direct manipulation through mirrors, a hypervisor can perform cross-runtime message-sends for a richer communication using process injection. Process injection prevents failures in the method lookup and avoids stack traversing techniques such as exception to leak cross-runtime references. Additionally, a virtual interpreter allows us to execute code on the object space with full intercession. A virtual interpreter is a first class entity, allowing us to easily specialize and change it.
 
 In following chapters we will show our prototype implementation of this infrastructure and how this infrastructure supports the evolution of a programming application runtime in two different scenarios. First, the recreation of a application runtime using an explicit bootstrap process. Second, an application tailoring technique that specializes an application runtime to contain only elements that are used during runtime.
 
