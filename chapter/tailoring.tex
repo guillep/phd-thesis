@@ -40,19 +40,19 @@ Once finished, the nurtured runtime is ready to be deployed on the target device
 \end{center}
 \end{figure}
 
-On one side, we start the reference runtime and pause it at the point where either it contains all its collection of code units, either we can load them dynamically~(under a lazy loading strategy). The reference runtime remains paused to avoid to mutate its state during the tailoring process. Pausing consists in suspending all processes and threads from the application runtime.
+On one hand, we start the reference runtime and pause it at the point where either it contains all its collection of code units, or we can load them dynamically~(under a lazy loading strategy). The reference runtime remains paused to avoid to mutate its state during the tailoring process. Pausing consists in suspending all processes and threads from the application runtime.
 
-On the other side, we fill initially the nurtured runtime with the \emph{seed} \ie the set of code units that we want to ensure in the final application runtime. This seed allows us to specify the level of specialization of our deployable application runtime.
+On the other hand, we fill initially the nurtured runtime with the \emph{seed} \ie the set of code units that we want to ensure in the final application runtime. This seed allows us to specify the level of specialization of our deployable application runtime.
 By using a seed that contains all base libraries, RFG will only affect the application specific code units and third-party libraries.
 However, by using an empty seed, it will also tailor base libraries~(cf. Section \ref{sec:seeds}).
 
-Running the nurtured runtime consists in two main steps. We first install in the nurtured runtime one or more \emph{application's entry points} in the form of threads, and then we resume them.
-The execution of these entry points results into sending messages to objects in the seed. These messages will signal \emph{missing code failures} when the respective classes and methods to resolve the message are not available.
+Running the nurtured runtime consists in two main steps. We first install in the nurtured runtime one or more \emph{application entry points} in the form of threads, and then we resume them.
+The execution of these entry points results in sending messages to objects in the seed. These messages will signal \emph{missing code failures} when the respective classes and methods to resolve the message are not available.
 We detect the missing code failures and solve them by fetching the needed code units from the reference runtime and install them into the nurtured runtime. RFG installs only code units on demand \ie the content of installed classes and objects is not installed until it is actually needed; methods are not installed until they are invoked.
 The process repeats until we end it explicitly. As part of the process we can interact with the application runtime under construction through \eg its user interface. These interactions may signal more missing code failures, complementing the tailoring process. Ideally, the nurtured runtime reaches a stable point where it needs no more code units.
 The nurtured runtime is then ready for deployment.
 
-The dynamic nature of RFG tackles all our challenges~(cf. \chapref{state_tailoring}). Missing code units are detected and resolved at runtime, where two main elements are available: the exact messages that are sent with their corresponding receiver and arguments, and their concrete types\footnote{We consider the exact class of an object its concrete type}. The methods and classes to install can be easily deduced from the available concrete types, \emph{without depending on type declarations nor their inference}. RFG \emph{takes into account the configuration of the application} such as the ones present in files, since the code that reads and interprets them is actually executed, without the need of custom code for them. \emph{Reflection is supported for free} since reflection invocations are treated as simple message sends and executed as any other code, and strings composed dynamically by the application are available at runtime. 
+The dynamic nature of RFG addresses all our challenges~(cf. \chapref{state_tailoring}). Missing code units are detected and resolved at runtime, where two main elements are available: the exact messages that are sent with their corresponding receiver and arguments, and their concrete types. The methods and classes to install can be easily deduced from the available concrete types, \emph{depending neither on type declarations nor their inference}. RFG \emph{takes into account the configuration of the application} such as the ones present in files, since the code that reads and interprets them is actually executed, without the need of custom code for them. \emph{Reflection is supported for free} since reflective invocations are treated as simple message sends and executed as any other code, and strings composed dynamically by the application are available at run time. 
 
 
 %%%%%%%%%% 
@@ -89,7 +89,7 @@ StdoutLogger>>log: aMessage
 !\unusedcode{~~~"creates an instance of socket given some configuration"}!
 \end{code}
 
-\caption{\textbf{Code of the example logging application.} In gray, methods not used by the application.\label{fig:code_example_again}}
+\caption{\textbf{Code of the example logging application.} Methods in gray are not used by the application.\label{fig:code_example_again}}
 \end{figure}
 
 
@@ -134,7 +134,7 @@ When the execution starts, the \ct{mainApp} instance receives the \ct{start} mes
 %\end{figure}
 
 \paragraph{Activating the start method}
-The method \ct{start} defined in Figure~\ref{fig:code_example_again} is executed, as we can see in Figure~\ref{fig:example_all} Step c. During the execution of its first statement~(Figure~\ref{fig:code_example_again} line 2) we detect a missing code unit failure: The \ct{StdoutLogger} class does not exist. Thus, before continuing, we install a \ct{StdoutLogger} class with the same shape as its reference counterpart~(cf. Figure~\ref{fig:example_all} Step d). This class does not contain, however, all the methods nor the meta-data (\eg superclass, package, subclasses) from the reference class since they may not be necessary.
+The method \ct{start} defined in Figure~\ref{fig:code_example_again} is executed, as we can see in Figure~\ref{fig:example_all} Step c. During the execution of its first statement~(Figure~\ref{fig:code_example_again} line 2) we detect a missing code unit failure: The \ct{StdoutLogger} class does not exist. Thus, before continuing, we install a \ct{StdoutLogger} class with the same shape as its reference counterpart~(cf. Figure~\ref{fig:example_all} Step d). This class does contains however neither all the methods nor the meta-data (\eg superclass, package, subclasses) from the reference class since they may not be necessary.
 
 %a \emph{shadow} of the \ct{Formatter} class~(Figure~\ref{fig:example_shadow}).\gp{I don't like the word shadow here, since it does not go with the tailor metaphor} The \ct{Formatter} shadow is a proxy object the tailor will use to know if and when the \ct{Formatter} class is used.
 
@@ -149,7 +149,7 @@ The method \ct{start} defined in Figure~\ref{fig:code_example_again} is executed
 
 %Note that copies of classes are treated specially: they contain a method dictionary where methods are installed, but since no instance of \ct{Formatter} received yet a message, its method dictionary is empty.
 
-Once we install the \ct{StdoutLogger} class, we resume the execution. The first statement results into a new \ct{StdoutLogger} instance. Note that the \ct{new} method is already installed because it is part of the language base library, already available in the seed. 
+Once we install the \ct{StdoutLogger} class, we resume the execution. The first statement results in a new \ct{StdoutLogger} instance. Note that the \ct{new} method is already installed because it is part of the language base library, already available in the seed. 
 During the second statement's execution~(Figure~\ref{fig:code_example_again} line 3), we detect a missing code unit failure on the \ct{log:} message~(cf. Figure~\ref{fig:example_all} Step e): the corresponding method is not installed in the \ct{StdoutLogger} class. We install it and resume the execution. This time the method is found, and the \ct{log:} method is activated.
 
 %\begin{figure*}[ht]
@@ -189,23 +189,23 @@ RFG depends on getting notified when a missing code unit failure appears. RFG's 
  \caption{\textbf{An abstract view of the run-fail-grow process.}\label{alg:tailoring_process}}
 \end{algorithm}
 
-RFG follows the next rules to install code units inside the nurtured runtime:
+RFG follows the following rules to install code units inside the nurtured runtime:
 
 \begin{enumerate}
 \item A class is installed when we install a method that belongs to it or one of its superclasses.
 \item A method is installed when it needs to be executed, following the rules of the method-lookup in the underlying \VM.
-\item An object is installed when \emph{any} message is sent to it, including self and super sends.
-\item An object is installed when they are needed by the \VM to execute some operation~(\eg primitives and method literals).
+\item An object is installed when \emph{any} message is sent to it.%, including self and super sends.
+\item An object is installed when it is needed by the \VM to execute some operation~(\eg primitives and method literals).
 \end{enumerate}
 
-Then, we identify the following as the basic traps that are necessary to tailor an application.
+We identify the following as the basic traps that are necessary to tailor an application.
 
 \begin{description}
 \item[Message Received Trap.] A \emph{message received} trap takes the place of a normal object and captures \emph{all} messages sent to it. These traps are activated when a message is sent to the trap. When it is activated, it installs the object that corresponded to the trap~(Rule 3). RFG installs the object as a \emph{partial} clone of the original object \ie we set all its state to traps to capture the access to its class and fields.%When a method refers to a static variable, we install one of this traps for it.
 
-\item[Method Nonexistent Trap.] A \emph{method nonexistent} trap captures message-sends to already existing object that cannot be resolved because the corresponding method does not yet exist in the nurtured runtime yet. When the application execution triggers one of these traps, RFG installs the corresponding method in the class hierarchy of the object~(Rule 2). In the class owner of the method does yet not exist, RFG installs it~(Rule 1). When RFG installs a method, its method literals~(\eg strings and numbers that are part of the method definition) are installed along with it because the \VM can manipulate them directly during the bytecode interpretation~(Rule 4).
+\item[Method Nonexistent Trap.] A \emph{method nonexistent} trap captures message-sends to already existing object that cannot be resolved because the corresponding method does not yet exist in the nurtured runtime yet. When the application execution triggers one of these traps, RFG installs the corresponding method in the class hierarchy of the object~(Rule 2). If the class owner of the method does yet not exist, RFG installs it~(Rule 1). When RFG installs a method, its method literals~(\eg strings and numbers that are part of the method definition) are installed along with it because the \VM can manipulate them directly during the bytecode interpretation~(Rule 4).
 
-\item[Method Invoked Trap.] A particular case of method nonexistent traps are \emph{method invoked traps}. An method invoked trap captures the execution of a particular method. Method invoked traps are useful to capture overridden methods. Overridden methods must be captured to avoid the method lookup to answer a superclass implementation instead of the right one~(Rule 2), resulting into an unexpected behavior. Figure~\ref{fig:need_override} illustrates this problem: the class \ct{B} from the reference runtime contains an override, while it is not present in the nurtured runtime. If no trap is placed to capture the override, the method \ct{doSomething} from class \ct{A} would be executed, thus changing the semantics of our application.
+\item[Method Invoked Trap.] A particular case of method nonexistent traps are \emph{method invoked traps}. A method invoked trap captures the execution of a particular method. Method invoked traps are useful to capture overridden methods. Overridden methods must be captured to avoid the method lookup to answer a superclass implementation instead of the right one~(Rule 2), resulting in an unexpected behavior. Figure~\ref{fig:need_override} illustrates this problem: the class \ct{B} from the reference runtime contains an override, while it is not present in the nurtured runtime. If no trap is placed to capture the override, the method \ct{doSomething} from class \ct{A} would be executed, thus changing the semantics of our application.
 
 \begin{figure}[ht]
 \begin{center}
@@ -227,12 +227,12 @@ Let's take as a first example a smartphone where the base libraries of the langu
 
 Let's take as a second example a constrained device robot-like which will contain only our application. When targeting this robot as deployment scenario, we want to specialize all the code to deploy including base libraries. In such a case, the seed is empty to allow the RFG algorithm to work on every code unit.
 
-Figure \ref{fig:nurturing_map_model} presents two tailoring maps showing exemplar usages of seeds. Each application contains code units corresponding to the base libraries, third-party libraries and application code. To the left the seed covers base and third party libraries, thus RFG applies and selects a subset of the application code units only. To the right, the seed covers only the base libraries, thus RFG applies and select a subset of the code units from the third party libraries and application code.
+Figure \ref{fig:nurturing_map_model} presents two tailoring maps showing example usages of seeds. Each application contains code units corresponding to the base libraries, third-party libraries and application code. To the left the seed covers base and third party libraries, thus RFG applies and selects a subset of the application code units only. To the right, the seed covers only the base libraries, thus RFG applies and selects a subset of the code units from the third party libraries and application code.
 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.7\linewidth]{nurture_map}
-\caption{\textbf{Tailoring Map.} A tailoring map describes which code units of an application are included in the seed~(in gray), which ones are subject to the RFG technique~(in white) and the amount of them that are finally selected~(within the thick area).
+\caption{\textbf{Tailoring Map.} A tailoring map describes which code units of an application are included in the seed~(in gray), which ones are subject to the RFG technique~(in white) and the number of them that are finally selected~(within the thick area).
 \label{fig:nurturing_map_model}}
 \end{center}
 \end{figure}
@@ -243,7 +243,7 @@ Figure \ref{fig:nurturing_map_model} presents two tailoring maps showing exempla
 
 We implemented our RFG technique as a tool called \emph{Tornado}. Tornado is implemented using \Vtt to tailor applications written in the Pharo programming language.
 %Pharo is a reflective and dynamic programming language inspired from Smalltalk.
-Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite{Mart14z}~(cf. Section \ref{sec:proxies}) illustrated in Figure \ref{fig:tornado_code units}. The nurtured runtime is hosted inside an object space Tornado's hypervisor runs and monitors the nurtured runtime. It installs traps in the nurtured runtime as Ghost proxies, and use the object space interface to query and install code units it. Notice that due to the limitations of our prototype implementation, the reference runtime cohabits with the hypervisor, which may cause problems when trying to tailor the tailoring process itself. Following, we detail how we fulfilled each of RFG's requirements in our solution:
+Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite{Mart14z}~(cf. Section \ref{sec:proxies}) illustrated in Figure \ref{fig:tornado_code units}. The nurtured runtime is hosted inside an object space. Tornado's hypervisor runs and monitors the nurtured runtime. It installs traps in the nurtured runtime as Ghost proxies, and uses the object space interface to query and install code units in it. Notice that due to the limitations of our prototype implementation, the reference runtime cohabits with the hypervisor, which may cause problems when trying to tailor the tailoring process itself. Following, we detail how we fulfilled each of RFG's requirements in our solution:
 
 \begin{figure}[ht]
 \begin{center}
