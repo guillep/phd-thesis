@@ -243,7 +243,7 @@ Figure \ref{fig:nurturing_map_model} presents two tailoring maps showing example
 
 We implemented our RFG technique as a tool called \emph{Tornado}. Tornado is implemented using \Vtt to tailor applications written in the Pharo programming language.
 %Pharo is a reflective and dynamic programming language inspired from Smalltalk.
-Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite{Mart14z}~(cf. Section \ref{sec:proxies}) illustrated in Figure \ref{fig:tornado_code units}. The nurtured runtime is hosted inside an object space. Tornado's hypervisor runs and monitors the nurtured runtime. It installs traps in the nurtured runtime as Ghost proxies, and uses the object space interface to query and install code units in it. Notice that due to the limitations of our prototype implementation, the reference runtime cohabits with the hypervisor, which may cause problems when trying to tailor the tailoring process itself. Following, we detail how we fulfilled each of RFG's requirements in our solution:
+Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite{Mart14z}~(cf. Section \ref{sec:proxies}) illustrated in Figure \ref{fig:tornado_code units}. The nurtured runtime is hosted inside an object space. Tornado's hypervisor runs and monitors the nurtured runtime. It installs traps in the nurtured runtime as Ghost proxies, and uses the object space interface to query and install code units in it. Notice that due to the limitations of our prototype implementation, the reference runtime cohabits with the hypervisor, which may cause problems when trying to tailor the tailoring process itself. We now detail how we fulfilled each of RFG's requirements in our solution:
 
 \begin{figure}[ht]
 \begin{center}
@@ -257,7 +257,7 @@ Tornado's architecture combines \Vtt~(cf. \chapref{vtt}) and Ghost proxies~\cite
 
 \item[Advanced proxies.] Pharo's libraries includes Ghost, an advanced proxy implementation. Ghost allows one to capture all kind of message sends, intercept particular method executions, and even to proxy classes and special objects. We use the Ghost model to implement execution traps.
 
-\item[Object space runtime manipulation.] An object space provide already with operations to query and install the classes and methods in the virtualized runtime.
+\item[Object space runtime manipulation.] An object space provides already with operations to query and install the classes and methods in the virtualized runtime.
 
 \end{description}
 
@@ -270,7 +270,7 @@ To achieve this, we implemented a set of proxies following the Ghost model~\cite
 % The Ghost proxy library provides already several kinds of handlers including for example message forwarding or logging.
 Using Ghost proxies we are able to detect all situations corresponding to our traps.
 Ghost proxies represent missing objects, classes and methods. When a proxy is accessed, Tornado replaces it by its corresponding real object.
-Tornado correctly respect identity by using a table relating each proxy to the code unit or object it represents in the reference runtime.
+Tornado correctly respects identity by using a table relating each proxy to the code unit or object it represents in the reference runtime.
 %Ghost proxies capture all messages.
 Additionally, each proxy is attached to a \emph{handler} that may perform some action when the proxy receives a message.
 We use proxy handlers to perform the right action for each trap.
@@ -282,7 +282,7 @@ Its handler replaces the proxy by a \emph{partial} copy of the original object f
 The copy is created and all references to the proxy are replaced by references to this new object~(achieved through the \ct{become:} facility of the Pharo language that dynamically swaps object references).
 Each field of this new installed object is set to message received traps.
 
-\item[Class Message Received Trap.] In Pharo classes are reified as objects, meaning that they can receive messages in addition of participating on the \VM's method lookup. To handle this case Tornado uses special message received traps to capture messages sent to classes. These \emph{class message received} traps are implemented with proxies in the same way as normal message received traps. A main difference relies, however, in that the proxies that replace classes have the same internal structure as the normal classes from the Pharo \VM~(we guarantee they have the three instance variable for their superclass, method dictionary and format). By doing that, the \VM can take the proxy/trap as a class and continue its execution without crashing.
+\item[Class Message Received Trap.] In Pharo classes are reified as objects, meaning that they can receive messages in addition to participating in the \VM's method lookup. To handle this case Tornado uses special message received traps to capture messages sent to classes. These \emph{class message received} traps are implemented with proxies in the same way as normal message received traps. A main difference relies, however, in that the proxies that replace classes have the same internal structure as the normal classes from the Pharo \VM~(we guarantee they have the three instance variables for their superclass, method dictionary and format). By doing that, the \VM can take the proxy/trap as a class and continue its execution without crashing.
 
 \item[Method Nonexistent Trap.]  We implemented the method nonexistent trap in Tornado as a class proxy located at the top of the class hierarchy. Whenever a message is sent to an object, the VM looks up the method in the object's class hierarchy. This trap is triggered when a message arrives to it, meaning that there was no method for it in the hierarchy of the receiver. When triggered, the handler installs the classes part of the hierarchy of this method and the missing method in its corresponding class. The literal objects that belong to the method are installed with it because they are objects that could be used directly by the \VM during bytecode interpretation.
 
@@ -346,7 +346,7 @@ Identity is an important concern in the presence of proxies. Tornado guarantees 
 
 \begin{center}\emph{An object and its proxy do not exist concurrently in the nurtured application.}\end{center}
 
-That is, the nurtured application contains either an object, either the proxy trap that represents its absence, but not both at the same point in time. When the proxy is replaced by the actual object's copy, all references to the proxy are swapped to references to the new object. The proxy is no longer referenced and thus, garbage collected. This invariant guarantees that identity checks in a program that should be \ct{true} are indeed \ct{true}. Either the compared references point both to the same proxy, or both to the same copy.
+That is, the nurtured application contains either an object or the proxy trap that represents its absence, but not both at the same point in time. When the proxy is replaced by the actual object's copy, all references to the proxy are swapped to references to the new object. The proxy is no longer referenced and thus, garbage collected. This invariant guarantees that identity checks in a program that should be \ct{true} are indeed \ct{true}. Either the compared references point both to the same proxy, or both to the same copy.
 
 \subsection{Implementing Seeds in Tornado}
 
@@ -361,7 +361,7 @@ Tornado's seeds specify the level of tailoring. The seeds are in charge of initi
 
 \subsection{Preparing the Application for Deployment}\label{sec:deploy}
 
-Once Tornado is stopped, the nurtured runtime contains all the code units needed to run. Tornado procceeds to prepare the application for deployment \ie it removes all trap leftovers and extracts the nurtured runtime. Tornado identifies the traps by the presence of proxies and replaces the references to those proxies by references to another object, defaulting to the \ct{nil} object. Proxy objects do not then represent a drawback in space consumption because they are garbage collected. %Additionally, an application using the Ghost proxy library will see no issues regarding its proxies. Tornado manages its own Ghost proxies differently from those of the application(if any).
+Once Tornado is stopped, the nurtured runtime contains all the code units needed to run. Tornado proceeds to prepare the application for deployment \ie it removes all trap leftovers and extracts the nurtured runtime. Tornado identifies the traps by the presence of proxies and replaces the references to those proxies by references to another object, defaulting to the \ct{nil} object. Proxy objects do not then represent a drawback in space consumption because they are garbage collected. %Additionally, an application using the Ghost proxy library will see no issues regarding its proxies. Tornado manages its own Ghost proxies differently from those of the application(if any).
 
 Once the traps are removed, the nurtured runtime keeps no dependencies to Tornado nor its infrastructure. Thus, the application can run outside the Espell infrastructure with no performance penalties. Finally, Tornado extracts the application code units using one of two different techniques: (a) the creation of a snapshot file containing all code units and already initialized objects; or (b) build a static description of the application containing the code for all classes and methods that should be part of it.
 
