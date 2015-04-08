@@ -40,12 +40,12 @@ A hypervisor can perform four basic kind of manipulations on an object space, ea
 
 \section{Controlling Virtualized Runtimes in \Vtt} \label{sec:virtualization_overview}
 
-\Vtt presents an architecture where multiple application runtimes co-exist independently from each other. An application runtime fulfills a role inside the virtualization infrastructure. An \emph{hypervisor} monitors and controls \emph{virtualized} application runtimes. Both the virtualized runtime and the hypervisor are full-fledged high-level application runtimes. On one side, the virtualized application runtime is written in a high-level language as the focus of this thesis is the virtualization of such runtime. Although, we would like to emphasize that the hypervisor is as well written in a high-level language~(in contrast with \eg JVMTI\cite{JVMPI}), bringing three main benefits to our solution:
+\Vtt presents an architecture where multiple application runtimes co-exist independently from each other. An application runtime fulfills a role inside the virtualization infrastructure. An \emph{hypervisor} monitors and controls \emph{virtualized} application runtimes. Both the virtualized runtime and the hypervisor are full-fledged high-level application runtimes. On one hand, the virtualized application runtime is written in a high-level language as the focus of this thesis is the virtualization of such runtime. Although, we would like to emphasize that the hypervisor is as well written in a high-level language~(in contrast with \eg JVMTI\cite{JVMPI}), bringing three main benefits to our solution:
 
 \begin{description}
 \item[Expressiveness and abstraction.] We can use the expressiveness and abstraction power supported by a high-level language to describe a hypervisor. For example, an hypervisor written in the Pharo language can benefit from the usage of inheritance, polymorphism and traits amongst others.
 \item[Infrastructure.] The hypervisor can use all the infrastructure already available to our high-level language. It can access existing libraries such as collections, sockets and files. It also benefits from the infrastructure provided by the \VM such as automatic memory management.
-\item[Toolling.] We can use the same tools that we use to describe our high-level language to manipulate our hypervisor. This means that we can benefit from code browsers, refactorings, unit tests and other existing tools.
+\item[Tools.] We can use the same tools that we use to describe our high-level language to manipulate our hypervisor. This means that we can benefit from code browsers, refactorings, unit tests and other existing tools.
 \end{description}
 
 
@@ -59,22 +59,22 @@ A first-class object space resides inside the hypervisor and represents the virt
 \end{figure}
 
 
-Notice that the hypervisor and the virtualized runtime do not share any \VM or language state \ie each one has its own interpreter, stack, classes and objects. Their object graphs are isolated from each other \eg each one has its own \ct{Object} and \ct{String} class and their own set of unique interned strings~(the symbols). This isolation strategy pursues to allow the hypervisor to change any part of the virtualized runtime without affecting itself, as it happens in reflective architectures. From the virtualized runtime point of view, all modifications come and are applied from the outside~(the hypervisor), in contrast with reflective architectures where such changes are applied from within the application runtime under modification. This separation provides \Vtt with the following properties:
+Notice that the hypervisor and the virtualized runtime do not share any \VM or language state \ie each one has its own interpreter, stack, classes and objects. Their object graphs are isolated from each other \eg each one has its own \ct{Object} and \ct{String} class and their own set of unique interned strings~(the symbols). This isolation strategy allows the hypervisor to change any part of the virtualized runtime without affecting itself, as it happens in reflective architectures. From the virtualized runtime point of view, all modifications come and are applied from the outside~(the hypervisor), in contrast with reflective architectures where such changes are applied from within the application runtime under modification. This separation provides \Vtt with the following properties:
 
 \begin{description}
-\item[Transparency.] Our solution does not require any changes in the applications residing inside the virtualized runtime. Thus, we can virtualize existing application runtimes without modifying them \ie \Vtt does not require virtualized applications to include particular libraries, use particular interfaces nor change their execution model.
+\item[Transparency.] Our solution does not require any changes to the applications residing inside the virtualized runtime. Thus, we can virtualize existing application runtimes without modifying them \ie \Vtt does not require virtualized applications to include particular libraries, use particular interfaces nor change their execution model.
 
 \item[Application independence.] Our solution does not depend on the particular application inside the virtualized runtime. Different runtime hypervisors can be written for different use cases, including application specific and general ones. The limitation of this approach is, however, its dependance on the execution model imposed by the \VM. We do not change the \VM execution semantics such as the code interpreter or the method lookup.
 \end{description}
 
 \section{Object Spaces: First-class Application Runtimes} \label{sec:object_space}
 
-An object space is a first-class representation of an object oriented application runtime, meant for its manipulation and control. An object space encapsulates an application runtime and provides with a clear and explicit interface to manipulate it. This interface is split in two different kind of objects: an \ct{objectSpace} object provides general operations on the virtualized runtime; mirror objects~\cite{Brac04b} provide operations to manipulate individual objects that reside inside the virtualized runtime~(Figure \ref{fig:objectSpaceMirrors}). Specific mirrors manipulate elements with a different object-format or runtime representation to enforce their internal representation, such as the \ct{ClassMirror}.
+An object space is a first-class representation of an object oriented application runtime, meant for its manipulation and control. An object space encapsulates an application runtime and provides a clear and explicit interface to manipulate it. This interface is split in two different kind of objects: an \ct{objectSpace} object provides general operations on the virtualized runtime; mirror objects~\cite{Brac04b} provide operations to manipulate individual objects that reside inside the virtualized runtime~(Figure \ref{fig:objectSpaceMirrors}). Specific mirrors manipulate elements with a different object-format or runtime representation to enforce their internal representation, such as the \ct{ClassMirror}.
 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=.9\linewidth]{object_space_mirrors}
-\caption{\textbf{Mirrors in Object Spaces.} An object space is the main entry point for runtime manipulation. An object space provides with mirrors to modify particular objects. \label{fig:objectSpaceMirrors}}
+\caption{\textbf{Mirrors in Object Spaces.} An object space is the main entry point for runtime manipulation. An object space provides mirrors to modify particular objects. \label{fig:objectSpaceMirrors}}
 \end{center}
 \end{figure}
 
@@ -112,7 +112,7 @@ ObjectSpace {
 }
 \end{code}
 
-\item[Special messages.] Special messages are callbacks that the \VM will invoke into the application to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(and its equivalent Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will send a \ct{doesNotUnderstand} message to the receiver object and let the user program decide what to do in such a case.
+\item[Special messages.] Special messages are callbacks that the \VM will invoke in the application to notify particular events. The probably most known of such messages is Smalltalk's \ct{doesNotUnderstand}~(and its equivalent Ruby's \ct{methodMissing}). When the \VM does not find a method matching a message-send, it will send a \ct{doesNotUnderstand} message to the receiver object and let the user program decide what to do in such a case.
 
 \begin{code}
 ObjectSpace {
@@ -122,7 +122,7 @@ ObjectSpace {
 
 \end{description}
 
-This \VM setup interface avoids to hardcode particular knowledge of a language inside the \VM. This gives us the possibility to easily change particular language internals such as renaming special messages or changing the class hierarchy of special classes without leaving the object space in an inconsistent state. Being radical, we could think on porting another language to this VM, as long as they share similar execution semantics \ie the \VM execution model is compatible with the given language and we configure this interface accordingly.
+This \VM setup interface avoids to hardcode particular knowledge of a language inside the \VM. This gives us the possibility to easily change particular language internals such as renaming special messages or changing the class hierarchy of special classes without leaving the object space in an inconsistent state. Being radical, we could think about porting another language to this VM, as long as they share similar execution semantics \ie the \VM execution model is compatible with the given language and we configure this interface accordingly.
 
 
 %In our particular implementation the list of classes exposed through this interface are those of literal objects and those related with the internal \VM execution model. For the sake of completeness the list of classes is the following: \ct{Array}, \ct{Association}, \ct{BlockClosure}, \ct{ByteArray}, \ct{ByteString}, \ct{ByteSymbol}, \ct{Character}, \ct{Context}, \ct{Float}, \ct{SmallInteger}, \ct{LargePositiveInteger}, \ct{LargeNegativeInteger}, \ct{Message}, \ct{CompiledMethod}, \ct{MethodDictionary}, \ct{Semaphore}, \ct{WeakFinalizationList}.
@@ -149,7 +149,7 @@ ObjectSpace {
 }
 \end{code}
 
-\item[Runtime Object Access.] Mirrors~\cite{Brac04b} expose operations to query or alter a particular object or element in the object space. Different kind of mirrors enforce the object-format of the different type of objects we can manipulate. For example, we expose specific mirrors for normal objects, classes, methods, activation records or processes. Notice that these mirrors are low-level mirrors as they expose operations to mutate and access objects in their \VM representation. Additionally, through mirrors we can execute \VM primitives on objects, providing the correct primitive ID~(an integer or native function pointer, depending on the implementation) and the corresponding arguments. These primitives are operations that the \VM exposes normally to the language.
+\item[Runtime Object Access.] Mirrors~\cite{Brac04b} expose operations to query or alter a particular object or element in the object space. Different kinds of mirrors enforce the object-format of the different types of objects we can manipulate. For example, we expose specific mirrors for normal objects, classes, methods, activation records or processes. Notice that these mirrors are low-level mirrors as they expose operations to mutate and access objects in their \VM representation. Additionally, through mirrors we can execute \VM primitives on objects, providing the correct primitive ID~(an integer or native function pointer, depending on the implementation) and the corresponding arguments. These primitives are operations that the \VM exposes normally to the language.
 
 \begin{code}
 Mirror {
@@ -195,7 +195,7 @@ The client of an object space is a \emph{hypervisor}. A hypervisor is first-clas
 \caption{\textbf{Execution Cycle.} \label{fig:execution_cycle}}
 \end{figure}
 
-To allow cycle execution, the \ct{objectSpace} interface allows to execute an application runtime during a cycle of time. An \Vtt implementation should additionally include support for suspension points. This operation will awake the object space processes and execute them for at least a given time. Once the cycle is finished, it will be suspended in the next suspension point it finds and the control will return to the hypervisor.
+To enable cycle execution, the \ct{objectSpace} interface allows us to execute an application runtime during a cycle of time. An \Vtt implementation should additionally include support for suspension points. This operation will wake up the object space processes and execute them for at least a given time. Once the cycle is finished, it will be suspended in the next suspension point it finds and the control will return to the hypervisor.
 
 \begin{code}
 ObjectSpace {
@@ -280,7 +280,7 @@ objectSpace execute: [ Logger disable ].
 To achieve this kind of communication \Vtt provides two mechanisms: process injection and virtual interpretation.
 
 \subsection{Process Injection}
-Our no-sharing strategy prevents us to easily perform a message-send between our co-existing application runtimes. Using the existing message-send mechanism provided by the \VM has the following challenges:
+The hypervisor and the virtualized runtime do not share core-libraries nor special objects, preventing us to easily perform a message-send between our co-existing application runtimes. Using the existing message-send mechanism provided by the \VM has the following challenges:
 
 \begin{description}
 
@@ -331,7 +331,7 @@ methodDictionaryClass remoteMethod: #at:put:.
 "now we cannot install methods using process injection any more"
 \end{code}
 
-For such cases \Vtt allows to execute an expression inside an object space within the context of the hypervisor through the \emph{virtual interpretation} of \eg abstract syntax trees~(ASTs) or bytecodes. A virtual interpreter is a first-class entity that resides inside the hypervisor and interprets code inside an object space. As it is a first-class entity, we can easily modify its implementation details such as the method lookup or the execution of primitives. These kind of modifications allows us to handle the special cases that cannot be handled by process injection. Then, we can use a virtual interpreter to execute an AST equivalent to the \ct{at:put:} method to install back our corresponding method. This puts the object space in our example back into a stable state before it can continue its own execution.
+For such cases \Vtt allows us to execute an expression inside an object space within the context of the hypervisor through the \emph{virtual interpretation} of \eg abstract syntax trees~(ASTs) or bytecodes. A virtual interpreter is a first-class entity that resides inside the hypervisor and interprets code inside an object space. As it is a first-class entity, we can easily modify its implementation details such as the method lookup or the execution of primitives. These kinds of modifications allow us to handle the special cases that cannot be handled by process injection. Then, we can use a virtual interpreter to execute an AST equivalent to the \ct{at:put:} method to install back our corresponding method. This puts the object space in our example back into a stable state before it can continue its own execution.
 
 \begin{code}
 "newMethod is a method that fixes the bug"
@@ -348,7 +348,7 @@ interpreter
 % =============================================================================
 \section{Conclusion and Summary}
 
-\Vtt presents an architecture where several application runtimes can share the same process. A virtualized application runtime is subject of monitoring and manipulation from another application runtime, namely the hypervisor runtime. The hypervisor runtime contains a first class representation of the virtualized runtime, namely an object space. The object space exposes a clear interface to safely access and modify an application runtime. This interface includes operations to configure the virtualized application runtime and operations to modify particular objects from it. The latter is encapsulated in mirror objects.
+\Vtt presents an architecture where several application runtimes can share the same process. A virtualized application runtime is subject to monitoring and manipulation from another application runtime, namely the hypervisor runtime. The hypervisor runtime contains a first class representation of the virtualized runtime, namely an object space. The object space exposes a clear interface to safely access and modify an application runtime. This interface includes operations to configure the virtualized application runtime and operations to modify particular objects from it. The latter is encapsulated in mirror objects.
 
 The execution of an object space is organized in cycles. In between cycles, the hypervisor can perform an operation and then resume the object space execution. We ensure that the state of the object space keeps its coherence by only suspending it in safe suspension points.
 
