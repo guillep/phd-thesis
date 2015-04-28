@@ -110,9 +110,9 @@
     {\renewcommand{\@ThesisOrderId}{#1}}
 
 \newcommand\includesLogo {
-		\includegraphics[scale=0.5]\logoInria\hspace{6em}
-		\includegraphics[scale=0.1]\logoMinesDouai\hspace{6em}
-		\includegraphics[scale=0.45]\logoLifl \hspace{6em}
+		\includegraphics[scale=0.5]\logoInria\hspace{4em}
+		\includegraphics[scale=0.1]\logoMinesDouai\hspace{4em}
+		\includegraphics[scale=0.15]\logoLifl \hspace{3em}
 		\includegraphics[scale=0.4]\logoUSTL
 	}
 	
