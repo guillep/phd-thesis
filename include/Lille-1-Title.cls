@@ -20,14 +20,8 @@
          }%
          }
 \newcommand{\@LilleIhead}{{\UseEntryFont{ThesisFirstPageHead}\noindent
-    \centerline{\if@logo@uhp@
-                    {\setbox0=\hbox{$\raise2.5cm\hbox{\UHPLogo}$}%
-                     \ht0=\baselineskip\box0}\hfill
-                \else
-                    Universit\'e des Sciences et Technologies de Lille -- Lille 1%
-                \fi}%
     \@TL@cmn@head\\
-    UFR IEEA\par
+    Num\'ero d'ordre : \@ThesisOrderId\par
     }%
     }
     
@@ -40,14 +34,10 @@
 %	 	CEA -- Laboratoire d'IntÈgration des SystËmes et des Technologies
 %				 }
      \centerline{\UseEntryFont{ThesisFirstPageFoot}%
-                 Laboratoire d'Informatique Fondamentale de Lille --- UMR USTL/CNRS 8022
+                 Centre de Recherche en Informatique, Signal et Automatique de Lille
 				 }
-     \centerline{\UseEntryFont{ThesisFirstPageFoot}%
-                 INRIA Lille - Nord Europe
-				 }
-    \centerline{\UseEntryFont{ThesisFirstPageFoot} Num\'ero d'ordre : \@ThesisOrderId}
-     \centerline{\UseEntryFont{ThesisFirstPageFoot}%
-                 ~
+	\centerline{\UseEntryFont{ThesisFirstPageFoot}%
+                 D\'epartement IA Mines Douai     -     INRIA Lille Nord Europe
 				 }
      \centerline{
                     $\raise\baselineskip\hbox{\Logo}$\hskip2.5cm%
@@ -82,7 +72,7 @@
             {\UseEntryFont{ThesisSpecialty}(sp\'ecialit\'e informatique)}}}}
 \newcommand\ThesisLilleI{\renewcommand{\@ThesisFirstPageHead}{\@LilleIhead}%
                          \ThesisDiploma{{\UseEntryFont{ThesisDiploma}%
-                Doctorat de l'Universit\'e des Sciences et Technologies de Lille \\[3mm]
+                Doctorat D\'elivr\'e Cojointement par\\Mines Douai et l'Universit\'e des Sciences et Technologies de Lille\\[3mm]
             {\UseEntryFont{ThesisSpecialty}(sp\'ecialit\'e informatique)}}}}
 \newcommand\ThesisLilleII{\renewcommand{\@ThesisFirstPageHead}{\@INPLhead}%
                          \ThesisDiploma{{\UseEntryFont{ThesisDiploma}%
