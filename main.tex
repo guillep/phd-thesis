@@ -103,13 +103,17 @@ Nous montrons au travers de notre prototype que cet infrastructure supporte le \
 % =============================================================================
 %\include{chapter/cv}
 
-\chapter*{}
+\vspace*{-0.5in}
 \section*{Résumé}
 \footnotesize
 Un environnement d'exécution est l'ensemble des éléments logiciels qui représentent une application pendant son exécution. Les environnements d'exécution doivent être adaptables à différents contextes. Par exemple, nous pouvons envisager d'étendre un language de programmation pour améliorer la productivité des developpeurs. Aussi, nous pouvons envisager de réduire la consommation memoire des applications de manière transparente afin de les adapter à certaines contraintes d'exécution \eg des réseaux lents ou de la mémoire limités.
 
 Nous proposons \Vtt, une infrastructure pour la virtualisation d'environnement d'execution de langages orienté-objets haut-niveau. \Vtt fournit une infrastructure généraliste pour la manipulation d'environnements d'exécution. Une représentation de 'premier-ordre' de l'environnement d'exécution orienté-objet fournit une interface haut-niveau qui permet la manipulation de ces environnements. Un hyperviseur utilise cette représentation de 'premier-ordre' et le manipule soit directement, soit en y exécutant des expressions arbitraires.
 Nous montrons que cet infrastructure supporte le \emph{bootstrapping}~(\ie l'amorçage ou initialisation circulaire) des languages et le \emph{tailoring}~(\ie la construction sur-mesure ou 'taille') d'environnement d'exécution. En utilisant l'amorçage nous initialisons un language orienté-objet haut-niveau qui est auto-décrit. Un langage amorcé profite des ses propres abstractions se montrant donc plus simple à étendre. La taille d'environnements d'exécution est une technique qui génère une application spécialisé en extrayant seulement le code utilisé pendant l'exécution d'un programme. Une application taillée inclut seulement les classes et méthodes qu'elle nécessite, et évite que des librairies et des frameworks externes surchargent inutilement la base de code.
+\newline
+
+\noindent\textbf{Mots cl\'es:} environnement d'execution, orienté objet, virtualisation, amorçage, taille.
+
 \section*{Abstract}
 \footnotesize
 An application runtime is the set of software elements that represent an application during its execution. Application runtimes should be adaptable to different contexts. For example, on one hand we can think about extending a programming language to enhance the developers' productivity. On the other hand we can also think about transparently reducing the memory footprint of applications to make them fit in constrained resource scenarios \eg low networks or limited memory availability.
@@ -117,7 +121,7 @@ An application runtime is the set of software elements that represent an applica
 We propose \Vtt, a virtualization infrastructure for object-oriented high-level language runtimes. \Vtt provides a general purpose infrastructure to manipulate object-oriented runtimes in different situations. A first-class representation of an object-oriented runtime provides a high-level API for the manipulation of such runtime. A hypervisor uses this first-class object and manipulates it either directly or by executing arbitrary expressions into it.
 We show with our prototype that this infrastructure supports language \emph{bootstrapping} and application runtime \emph{tailoring}. Using bootstrapping we describe an object-oriented high-level language initialization in terms of itself. A bootstrapped language takes advantage of its own abstractions and is easier to extend. With application runtime tailoring we generate specialized applications by extracting the elements of a program that are used during execution. A tailored application encompasses only the classes and methods it needs and avoids the code bloat that appears from the usage of third-party libraries and frameworks.\newline
 
-\textbf{Mots cl\'e:} application runtimes, object-oriented, virtualization, bootstrapping, tailoring.
+\noindent\textbf{Keywords:} application runtimes, object-oriented, virtualization, bootstrapping, tailoring.
 
 \thispagestyle{empty}
 % =============================================================================

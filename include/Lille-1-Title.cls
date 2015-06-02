@@ -72,7 +72,7 @@
             {\UseEntryFont{ThesisSpecialty}(sp\'ecialit\'e informatique)}}}}
 \newcommand\ThesisLilleI{\renewcommand{\@ThesisFirstPageHead}{\@LilleIhead}%
                          \ThesisDiploma{{\UseEntryFont{ThesisDiploma}%
-                Doctorat D\'elivr\'e Cojointement par\\Mines Douai et l'Universit\'e des Sciences et Technologies de Lille\\[3mm]
+                Doctorat D\'elivr\'e Conjointement par\\Mines Douai et l'Universit\'e des Sciences et Technologies de Lille\\[3mm]
             {\UseEntryFont{ThesisSpecialty}(sp\'ecialit\'e informatique)}}}}
 \newcommand\ThesisLilleII{\renewcommand{\@ThesisFirstPageHead}{\@INPLhead}%
                          \ThesisDiploma{{\UseEntryFont{ThesisDiploma}%
