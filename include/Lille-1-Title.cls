@@ -1,4 +1,4 @@
-\newcommand{\@DFD}{D\'epartement de formation doctorale en informatique
+\newcommand{\@DFD}{Num\'ero d'ordre : \@ThesisOrderId
             \hfill\'Ecole doctorale SPI Lille}
 \newcommand{\@TL@cmn@head}{\par\nointerlineskip\vskip1mm\noindent\hrulefill\\
                           \@DFD}
@@ -21,7 +21,9 @@
          }
 \newcommand{\@LilleIhead}{{\UseEntryFont{ThesisFirstPageHead}\noindent
     \@TL@cmn@head\\
-    Num\'ero d'ordre : \@ThesisOrderId\par
+         \centerline{
+                    $\raise\baselineskip\hbox{\Logo}$\hskip2.5cm%
+                 }
     }%
     }
     
@@ -39,10 +41,6 @@
 	\centerline{\UseEntryFont{ThesisFirstPageFoot}%
                  D\'epartement IA Mines Douai     -     INRIA Lille Nord Europe
 				 }
-     \centerline{
-                    $\raise\baselineskip\hbox{\Logo}$\hskip2.5cm%
-                 }
-     \vskip2mm
     }
 \newcommand\ThesisFirstPageFoot[1]%
          {\renewcommand{\@ThesisFirstPageFoot}{{#1}}}
@@ -63,21 +61,21 @@
 \newcommand\ThesisPresentedThe[1]%
   {\renewcommand{\@ThesisPresentedThe}{{\UseEntryFont{ThesisPresentedThe}#1}}}
 \newcommand{\@ThesisInOrderToGet}%
-        {{\UseEntryFont{ThesisInOrderToGet}pour l'obtention du}}
+        {{\UseEntryFont{ThesisInOrderToGet}d'obtenir le garde de}}
 \newcommand\ThesisInOrderToGet[1]%
   {\renewcommand{\@ThesisInOrderToGet}{{\UseEntryFont{ThesisInOrderToGet}#1}}}
 \newcommand\ThesisINPL{\renewcommand{\@ThesisFirstPageHead}{\@INPLhead}%
                        \ThesisDiploma{{\UseEntryFont{ThesisDiploma}%
       Doctorat de l'Institut National Polytechnique de Lorraine\\[3mm]
-            {\UseEntryFont{ThesisSpecialty}(sp\'ecialit\'e informatique)}}}}
+            {\UseEntryFont{ThesisSpecialty}Sp\'ecialit\'e: Informatique}}}}
 \newcommand\ThesisLilleI{\renewcommand{\@ThesisFirstPageHead}{\@LilleIhead}%
                          \ThesisDiploma{{\UseEntryFont{ThesisDiploma}%
-                Doctorat D\'elivr\'e Conjointement par\\Mines Douai et l'Universit\'e des Sciences et Technologies de Lille\\[3mm]
-            {\UseEntryFont{ThesisSpecialty}(sp\'ecialit\'e informatique)}}}}
+                Docteur\\[3mm]
+            {\UseEntryFont{ThesisSpecialty}Sp\'ecialit\'e: Informatique}}}}
 \newcommand\ThesisLilleII{\renewcommand{\@ThesisFirstPageHead}{\@INPLhead}%
                          \ThesisDiploma{{\UseEntryFont{ThesisDiploma}%
                          Doctorat de l'universit\'e Nancy 2\\[3mm]
-            {\UseEntryFont{ThesisSpecialty}(sp\'ecialit\'e informatique)}}}}
+            {\UseEntryFont{ThesisSpecialty}Sp\'ecialit\'e: Informatique}}}}
 \newcommand{\@ThesisDiploma}%
          {\fbox{Choisir {\tt\char`\\ThesisINPL} ou {\tt\char`\\ThesisLilleI}}}
 \newcommand\ThesisDiploma[1]%
@@ -163,7 +161,7 @@
 \SetTLFont{ThesisFirstPageHead}%
              {\TitlePageFontEncoding}{\TitlePageFontFamily}{bx}{n}{10}{14}%
 \SetTLFont{ThesisTitle}%
-             {\TitlePageFontEncoding}{\TitlePageFontFamily}{bx}{n}{25}{30}%
+             {\TitlePageFontEncoding}{\TitlePageFontFamily}{bx}{n}{20}{24}%
 \SetTLFont{ThesisKind}%
              {\TitlePageFontEncoding}{\TitlePageFontFamily}{bx}{n}{20.74}{25}%
 \SetTLFont{ThesisPresentedThe}%
@@ -315,21 +313,25 @@
 \newcommand\@thesis@titlep@gebody{%
     %---------------------------------------------------
                              \@ThesisFirstPageHead
-       \vskip10mm plus2fil
+       \vskip15mm plus2fil
     \begin{center}
-                                \@ThesisTitle
-       \vskip10mm plus2fil
                                 \@ThesisKind
-       \vskip5mm plus2fil
-                             \@ThesisPresentedThe
+       \vskip3mm
+                                \@ThesisPresentedThe
+       \vskip1mm
+                              \@ThesisInOrderToGet
+                             
+       \vskip3mm
+                            \@ThesisDiploma
+       \vskip5mm  
+                                \@ThesisPresentedBy
+       \vskip3mm
+                              
+                              \@ThesisAuthor
+       \vskip3mm                       
+                               \UseEntryFont{ThesisAuthor}{D\'elivr\'e Conjointement par\\Mines Douai et l'Universit\'e des Sciences et Technologies de Lille}
        \vskip3mm plus1fil
-                             \@ThesisInOrderToGet
-       \vskip5mm plus1fil
-                                \@ThesisDiploma
-       \vskip3mm plus1fil
-                              \@ThesisPresentedBy
-       \vskip3mm plus1fil
-                                \@ThesisAuthor
+                                \@ThesisTitle
     \end{center}
        \vskip5mm plus2fil
                                 \@ThesisJuryTitle
