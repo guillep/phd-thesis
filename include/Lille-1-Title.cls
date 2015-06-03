@@ -203,8 +203,8 @@
 \NewJuryCategory{President}   {\textit{Pr\'esident :}}            {\textit{Pr\'esidents :}}
 \NewJuryCategory{Rapporteurs} {\textit{Rapporteur :}}           {\textit{Rapporteurs :}}
 \NewJuryCategory{Examinateurs}{\textit{Examinateur :}}          {\textit{Examinateurs :}}
-\NewJuryCategory{Directeur}   {\textit{Directeur de th\`ese :}}   {\textit{Directeurs de th\`ese :}}
-\NewJuryCategory{Coencadreur} {\textit{Co-Encadrant de th\`ese :}}{\textit{Co-Encadrant de th\`ese :}}
+\NewJuryCategory{Directeur}   {\textit{Directeur :}}   {\textit{Directeurs de th\`ese :}}
+\NewJuryCategory{Coencadreur} {\textit{Co-Encadrants :}}{\textit{Co-Encadrant de th\`ese :}}
 \NewJuryCategory{Invites}     {\textit{Invit\'e :}}               {\textit{Invit\'es :}}
 \def\@selecti#1{\expandafter\@@selecti#1}
 \def\@@selecti#1#2{{#1}}
